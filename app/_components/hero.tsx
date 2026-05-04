@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Icon, type IconName } from './icon';
-import { phImg } from './images';
+import { imgUrl } from './images';
 
 type Slide = {
   kind: 'showroom' | 'product' | 'sale';
@@ -69,8 +70,17 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
             className={`hero-slide ${idx === i ? 'on' : ''} ${s.accent ? 'hero-slide-accent' : ''}`}
             aria-hidden={idx !== i}
           >
-            <div className="ph ph-dark hero-bg" {...phImg(s.bgImg)}>
-              <span className="ph-label">{s.bgLabel}</span>
+            <div className="hero-bg">
+              <Image
+                src={imgUrl(s.bgImg)}
+                alt=""
+                fill
+                priority={idx === 0}
+                fetchPriority={idx === 0 ? 'high' : 'auto'}
+                sizes="100vw"
+                quality={75}
+                className="hero-bg-img"
+              />
             </div>
             <div className="hero-grad" />
             <div className="container hero-content">
