@@ -10,11 +10,15 @@ import { collections as inventoryCollections } from '@/lib/inventory';
 import { formatPriceRange } from '@/lib/format';
 import { Icon } from '@/app/_components/icon';
 import { SortControl } from './sort-control';
-import { FilterPanel } from './filter-panel';
-import { FilterMobileTrigger } from './filter-mobile-trigger';
-import { FilterShell } from './filter-shell';
-import { ActiveFilters } from './active-filters';
-import { FILTER_PARAMS, parseFilterSelection, selectionToProductFilters } from './filters';
+import {
+  FilterPanel,
+  FilterMobileTrigger,
+  FilterShell,
+  ActiveFilters,
+  FILTER_PARAMS,
+  parseFilterSelection,
+  selectionToProductFilters,
+} from '@/app/_components/plp-filters';
 
 type Params = {
   params: { handle: string };
