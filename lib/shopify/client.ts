@@ -70,6 +70,15 @@ export async function shopifyFetch<TData = unknown, TVars = Record<string, unkno
   }
 
   const json = (await res.json()) as { data?: TData; errors?: unknown };
+  // GraphQL allows partial responses: errors[] alongside data{}. Storefront API
+  // does this on ACCESS_DENIED for individual fields when the token lacks a
+  // scope (e.g. `quantityAvailable` without unauthenticated_read_product_inventory).
+  // Surface as a warning and return the partial data — throwing would 404
+  // every page over a non-fatal field error.
+  if (json.errors && json.data) {
+    console.warn('[shopify] partial GraphQL errors:', JSON.stringify(json.errors).slice(0, 500));
+    return json.data;
+  }
   if (json.errors) {
     throw new ShopifyApiError('Storefront API GraphQL errors', 200, json.errors);
   }
