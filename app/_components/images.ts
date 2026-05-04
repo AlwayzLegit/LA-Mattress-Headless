@@ -7,9 +7,9 @@ const FALLBACK_PRODUCT =
 
 export const IMAGES: Record<string, string> = {
   // Hero
-  'hero-showroom':     'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=2000&q=85&auto=format&fit=crop',
-  'hero-engineered':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=2000&q=85&auto=format&fit=crop',
-  'hero-sale':         'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=2000&q=85&auto=format&fit=crop',
+  'hero-showroom':     'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=1600&q=80&auto=format&fit=crop',
+  'hero-engineered':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1600&q=80&auto=format&fit=crop',
+  'hero-sale':         'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=1600&q=80&auto=format&fit=crop',
 
   // Product cutouts (LA Mattress Shopify CDN)
   'product-tempur-proadapt':   'https://cdn.shopify.com/s/files/1/0684/1759/files/pro-adapt-soft-cover.jpg?v=1739813427&width=800',
@@ -39,8 +39,8 @@ export const IMAGES: Record<string, string> = {
   'showroom-glendale':     'https://mattressstoreslosangeles.com/images/locations/glendale-storefront.jpg',
 
   // Lifestyle
-  'lifestyle-couple':   'https://images.unsplash.com/photo-1616627781901-92f81a36c4d6?w=2000&q=85&auto=format&fit=crop',
-  'lifestyle-bedroom':  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=2000&q=85&auto=format&fit=crop',
+  'lifestyle-couple':   'https://images.unsplash.com/photo-1616627781901-92f81a36c4d6?w=1600&q=80&auto=format&fit=crop',
+  'lifestyle-bedroom':  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1600&q=80&auto=format&fit=crop',
 };
 
 export function imgUrl(name: string, fallbackKind: 'product' | 'bedroom' = 'bedroom'): string {

@@ -4,7 +4,9 @@
    See /design-handoff/02-design-system.md for tokens reference.
    =========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500&display=swap');
+/* Geist + Geist Mono are self-hosted via next/font/google in app/layout.tsx.
+   Their CSS custom properties --font-geist-sans / --font-geist-mono are
+   exposed on <body className={...}>. */
 
 :root {
   /* Surfaces */
@@ -89,14 +91,14 @@
   --ink: var(--text);
   --ink-mid: var(--text-3);
   --ink-soft: var(--text-4);
-  --font-display: 'Geist', ui-sans-serif, -apple-system, system-ui, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --font-display: var(--font-geist-sans), ui-sans-serif, -apple-system, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  font-family: 'Geist', ui-sans-serif, -apple-system, system-ui, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, -apple-system, system-ui, sans-serif;
   font-size: var(--t-body);
   line-height: 1.6;
   color: var(--text);
@@ -109,7 +111,7 @@ body {
 button { font-family: inherit; }
 a { color: inherit; text-decoration: none; }
 
-.mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+.mono { font-family: var(--font-geist-mono), ui-monospace, monospace; }
 .tnum { font-variant-numeric: tabular-nums; }
 
 /* Brand accent stripe */
@@ -200,7 +202,7 @@ a { color: inherit; text-decoration: none; }
 }
 .ph-label {
   position: relative;
-  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 11px;
   color: rgba(0,0,0,0.55);
   background: rgba(255,255,255,0.85);

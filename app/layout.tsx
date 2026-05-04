@@ -1,6 +1,23 @@
 import type { Metadata, Viewport } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { TopBar } from './_components/topbar';
+
+const geistSans = Geist({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-geist-sans',
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  preload: true,
+});
+
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-geist-mono',
+  weight: ['400', '500'],
+  preload: false,
+});
 import { Nav } from './_components/nav';
 import { Footer } from './_components/footer';
 import { CartProvider } from './_components/cart-context';
@@ -39,12 +56,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="preconnect" href="https://cdn.shopify.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://cdn.shopify.com" />
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
       </head>
       <body>
         <CartProvider>
