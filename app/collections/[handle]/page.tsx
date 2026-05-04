@@ -11,6 +11,8 @@ import { formatPriceRange } from '@/lib/format';
 import { Icon } from '@/app/_components/icon';
 import { SortControl } from './sort-control';
 import { FilterPanel } from './filter-panel';
+import { FilterMobileTrigger } from './filter-mobile-trigger';
+import { FilterShell } from './filter-shell';
 import { ActiveFilters } from './active-filters';
 import { FILTER_PARAMS, parseFilterSelection, selectionToProductFilters } from './filters';
 
@@ -145,26 +147,30 @@ export default async function CollectionPage({ params, searchParams }: Params) {
       </header>
 
       <section className="section plp-section">
-        <div className="plp-layout">
-          <FilterPanel availableFilters={availableFilters} />
-          <div className="plp-main">
-            <div className="plp-toolbar">
-              <span className="plp-toolbar-count">
-                {hasResults
-                  ? `Showing ${collection.products.nodes.length} ${after ? 'more ' : ''}product${collection.products.nodes.length === 1 ? '' : 's'}`
-                  : 'No products match your filters'}
-              </span>
-              <SortControl
-                options={SORT_OPTIONS.map((o, i) => ({
-                  value: `${o.value}${o.reverse ? '-r' : ''}`,
-                  label: o.label,
-                  index: i,
-                }))}
-                currentIndex={sortIndex}
-              />
-            </div>
+        <FilterShell>
+          <div className="plp-layout">
+            <FilterPanel availableFilters={availableFilters} />
+            <div className="plp-main">
+              <div className="plp-toolbar">
+                <div className="plp-toolbar-left">
+                  <FilterMobileTrigger sel={filterSel} />
+                  <span className="plp-toolbar-count">
+                    {hasResults
+                      ? `Showing ${collection.products.nodes.length} ${after ? 'more ' : ''}product${collection.products.nodes.length === 1 ? '' : 's'}`
+                      : 'No products match your filters'}
+                  </span>
+                </div>
+                <SortControl
+                  options={SORT_OPTIONS.map((o, i) => ({
+                    value: `${o.value}${o.reverse ? '-r' : ''}`,
+                    label: o.label,
+                    index: i,
+                  }))}
+                  currentIndex={sortIndex}
+                />
+              </div>
 
-            <ActiveFilters sel={filterSel} />
+              <ActiveFilters sel={filterSel} />
 
             {hasResults ? (
               <>
@@ -214,8 +220,9 @@ export default async function CollectionPage({ params, searchParams }: Params) {
                 .
               </p>
             )}
+            </div>
           </div>
-        </div>
+        </FilterShell>
       </section>
 
       <Script id="ld-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />

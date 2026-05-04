@@ -13,6 +13,7 @@ import {
   type FilterParam,
   type FilterSelection,
 } from './filters';
+import { useFilterShell } from './filter-shell';
 import { Icon } from '@/app/_components/icon';
 
 type Props = { availableFilters: AvailableFilter[] };
@@ -22,6 +23,7 @@ export function FilterPanel({ availableFilters }: Props) {
   const pathname = usePathname();
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
+  const { open: mobileOpen, setOpen: setMobileOpen } = useFilterShell();
 
   const sel = useMemo<FilterSelection>(() => {
     const obj: Record<string, string | undefined> = {};
@@ -74,47 +76,78 @@ export function FilterPanel({ availableFilters }: Props) {
 
   if (!grouped.length) return null;
 
+  const cls = [
+    'plp-filters',
+    pending ? 'is-pending' : '',
+    mobileOpen ? 'is-mobile-open' : '',
+  ].filter(Boolean).join(' ');
+
   return (
-    <aside className={`plp-filters ${pending ? 'is-pending' : ''}`} aria-label="Filter products">
+    <>
+      {mobileOpen ? (
+        <div className="plp-filters-scrim" onClick={() => setMobileOpen(false)} aria-hidden />
+      ) : null}
+      <aside className={cls} aria-label="Filter products" role={mobileOpen ? 'dialog' : undefined} aria-modal={mobileOpen || undefined}>
       <div className="plp-filters-head">
         <span className="eyebrow">Filter</span>
-        {hasAnyFilter(sel) ? (
-          <button type="button" className="plp-filters-clear" onClick={onClearAll}>
-            Clear all
+        <div className="plp-filters-head-actions">
+          {hasAnyFilter(sel) ? (
+            <button type="button" className="plp-filters-clear" onClick={onClearAll}>
+              Clear all
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="plp-filters-close icon-btn"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close filters"
+          >
+            <Icon name="close" size={18} />
           </button>
-        ) : null}
+        </div>
       </div>
 
-      {grouped.map(({ filter, param }) => (
-        <details key={filter.id} className="plp-filter-group" open>
-          <summary>
-            <span>{filter.label}</span>
-            <Icon name="chevron-down" size={14} />
-          </summary>
-          <div className="plp-filter-body">
-            {param === 'price' ? (
-              <PriceFilter sel={sel} onSubmit={onPriceSubmit} />
-            ) : (
-              <ul className="plp-filter-values">
-                {filter.values.map((v) => (
-                  <li key={v.id}>
-                    <label className="plp-filter-row">
-                      <input
-                        type="checkbox"
-                        checked={isActive(param, v.label)}
-                        onChange={() => onToggle(param, v.label)}
-                      />
-                      <span className="plp-filter-label">{v.label}</span>
-                      <span className="plp-filter-count tnum">{v.count}</span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </details>
-      ))}
-    </aside>
+      <div className="plp-filters-body">
+        {grouped.map(({ filter, param }) => (
+          <details key={filter.id} className="plp-filter-group" open>
+            <summary>
+              <span>{filter.label}</span>
+              <Icon name="chevron-down" size={14} />
+            </summary>
+            <div className="plp-filter-body">
+              {param === 'price' ? (
+                <PriceFilter sel={sel} onSubmit={onPriceSubmit} />
+              ) : (
+                <ul className="plp-filter-values">
+                  {filter.values.map((v) => (
+                    <li key={v.id}>
+                      <label className="plp-filter-row">
+                        <input
+                          type="checkbox"
+                          checked={isActive(param, v.label)}
+                          onChange={() => onToggle(param, v.label)}
+                        />
+                        <span className="plp-filter-label">{v.label}</span>
+                        <span className="plp-filter-count tnum">{v.count}</span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </details>
+        ))}
+      </div>
+
+      {mobileOpen ? (
+        <div className="plp-filters-mobile-foot">
+          <button type="button" className="btn btn-primary btn-lg" onClick={() => setMobileOpen(false)}>
+            Show results
+          </button>
+        </div>
+      ) : null}
+      </aside>
+    </>
   );
 }
 
