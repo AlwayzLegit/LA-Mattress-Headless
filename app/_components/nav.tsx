@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from './icon';
+import { useCart } from './cart-context';
 
 type MegaCol = { title: string; links: { label: string; href: string }[] };
 type MegaTile = { eyebrow: string; title: string; label: string; href: string };
@@ -103,6 +104,7 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
 export function Nav() {
   const [mega, setMega] = useState<MegaKey | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { count, openDrawer } = useCart();
 
   return (
     <>
@@ -134,9 +136,14 @@ export function Nav() {
           <div className="nav-actions">
             <button className="icon-btn" aria-label="Search" type="button"><Icon name="search" size={18} /></button>
             <Link className="icon-btn" aria-label="Account" href="/account"><Icon name="user" size={18} /></Link>
-            <button className="icon-btn cart-btn" aria-label="Cart" type="button">
+            <button
+              className="icon-btn cart-btn"
+              aria-label={`Cart, ${count} item${count === 1 ? '' : 's'}`}
+              type="button"
+              onClick={openDrawer}
+            >
               <Icon name="cart" size={18} />
-              <span className="cart-count">0</span>
+              {count > 0 ? <span className="cart-count">{count}</span> : null}
             </button>
             <button
               className="icon-btn mobile-only"

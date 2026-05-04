@@ -3,6 +3,9 @@ import './globals.css';
 import { TopBar } from './_components/topbar';
 import { Nav } from './_components/nav';
 import { Footer } from './_components/footer';
+import { CartProvider } from './_components/cart-context';
+import { CartDrawer } from './_components/cart-drawer';
+import { readCart } from './_actions/cart';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mattressstoreslosangeles.com'),
@@ -34,14 +37,18 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const initialCart = await readCart();
   return (
     <html lang="en">
       <body>
-        <TopBar />
-        <Nav />
-        {children}
-        <Footer />
+        <CartProvider initialCart={initialCart}>
+          <TopBar />
+          <Nav />
+          {children}
+          <Footer />
+          <CartDrawer />
+        </CartProvider>
       </body>
     </html>
   );

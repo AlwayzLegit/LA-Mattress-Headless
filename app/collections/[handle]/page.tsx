@@ -5,24 +5,42 @@ import Link from 'next/link';
 import Script from 'next/script';
 
 import { getCollectionByHandle } from '@/lib/shopify';
+import type { CollectionSort } from '@/lib/shopify';
 import { collections as inventoryCollections } from '@/lib/inventory';
 import { formatPriceRange } from '@/lib/format';
 import { Icon } from '@/app/_components/icon';
+import { SortControl } from './sort-control';
 
-type Params = { params: { handle: string } };
+type Params = { params: { handle: string }; searchParams: { sort?: string; after?: string } };
 
 export const revalidate = 600;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
 
+const PER_PAGE = 24;
+
+const SORT_OPTIONS: { value: CollectionSort; label: string; reverse?: boolean }[] = [
+  { value: 'COLLECTION_DEFAULT', label: 'Featured' },
+  { value: 'PRICE',              label: 'Price: low to high' },
+  { value: 'PRICE',              label: 'Price: high to low', reverse: true },
+  { value: 'BEST_SELLING',       label: 'Best selling' },
+  { value: 'CREATED',            label: 'Newest', reverse: true },
+];
+
+function parseSort(raw: string | undefined): { sortKey: CollectionSort; reverse: boolean; index: number } {
+  const idx = SORT_OPTIONS.findIndex((o) => `${o.value}${o.reverse ? '-r' : ''}` === raw);
+  const i = idx >= 0 ? idx : 0;
+  const opt = SORT_OPTIONS[i];
+  return { sortKey: opt.value, reverse: opt.reverse ?? false, index: i };
+}
+
 export function generateStaticParams() {
   if (!SHOPIFY_CONFIGURED) return [];
-  // Build every collection in the inventory snapshot. There are only ~60.
   return inventoryCollections.map((c) => ({ handle: c.handle }));
 }
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Params['params'] }): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Collection' };
   const collection = await getCollectionByHandle({ handle: params.handle, first: 1 }).catch(() => null);
   if (!collection) return { title: 'Collection not found' };
@@ -42,9 +60,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-export default async function CollectionPage({ params }: Params) {
+export default async function CollectionPage({ params, searchParams }: Params) {
   if (!SHOPIFY_CONFIGURED) notFound();
-  const collection = await getCollectionByHandle({ handle: params.handle, first: 24 }).catch(() => null);
+  const { sortKey, reverse, index: sortIndex } = parseSort(searchParams.sort);
+  const after = searchParams.after ?? null;
+  const collection = await getCollectionByHandle({
+    handle: params.handle,
+    first: PER_PAGE,
+    after,
+    sortKey,
+    reverse,
+  }).catch(() => null);
   if (!collection) notFound();
 
   const breadcrumbLd = {
@@ -64,6 +90,13 @@ export default async function CollectionPage({ params }: Params) {
     url: `https://mattressstoreslosangeles.com/collections/${collection.handle}`,
   };
 
+  const nextHref = collection.products.pageInfo.hasNextPage && collection.products.pageInfo.endCursor
+    ? `/collections/${collection.handle}?${new URLSearchParams({
+        sort: searchParams.sort ?? '',
+        after: collection.products.pageInfo.endCursor,
+      }).toString()}`
+    : null;
+
   return (
     <main className="container plp">
       <header className="lp-hero">
@@ -81,9 +114,9 @@ export default async function CollectionPage({ params }: Params) {
               <div className="lp-hero-lede rte" dangerouslySetInnerHTML={{ __html: collection.descriptionHtml }} />
             ) : null}
             <div className="lp-hero-meta">
-              <span><strong>{collection.products.nodes.length}</strong> shown</span>
               <span><Icon name="truck" size={14} /> Free delivery</span>
               <span><Icon name="shield" size={14} /> 120-night exchange</span>
+              <span><Icon name="card" size={14} /> 0% APR financing</span>
             </div>
           </div>
         </div>
@@ -95,6 +128,19 @@ export default async function CollectionPage({ params }: Params) {
         </section>
       ) : (
         <section className="section">
+          <div className="plp-toolbar">
+            <span className="plp-toolbar-count">
+              Showing {collection.products.nodes.length} {after ? 'more' : ''} product{collection.products.nodes.length === 1 ? '' : 's'}
+            </span>
+            <SortControl
+              options={SORT_OPTIONS.map((o, i) => ({
+                value: `${o.value}${o.reverse ? '-r' : ''}`,
+                label: o.label,
+                index: i,
+              }))}
+              currentIndex={sortIndex}
+            />
+          </div>
           <div className="plp-grid">
             {collection.products.nodes.map((p) => (
               <Link key={p.id} href={`/products/${p.handle}`} className="pcard plp-card">
@@ -122,11 +168,13 @@ export default async function CollectionPage({ params }: Params) {
               </Link>
             ))}
           </div>
-          {collection.products.pageInfo.hasNextPage ? (
-            <p className="muted" style={{ marginTop: 'var(--s-5)' }}>
-              Showing first 24 products. Pagination wired in next iteration.
-            </p>
-          ) : null}
+          <div className="plp-pagination">
+            {nextHref ? (
+              <Link href={nextHref} className="btn btn-ghost btn-lg">
+                Load more <Icon name="arrow-right" size={16} />
+              </Link>
+            ) : null}
+          </div>
         </section>
       )}
 

@@ -8,7 +8,7 @@ import { getProductByHandle } from '@/lib/shopify';
 import { products as inventoryProducts } from '@/lib/inventory';
 import { formatMoney, formatPriceRange } from '@/lib/format';
 import { Icon } from '@/app/_components/icon';
-import { VariantSelector } from './variant-selector';
+import { BuyBox } from './buy-box';
 
 type Params = { params: { handle: string } };
 
@@ -165,13 +165,7 @@ export default async function ProductPage({ params }: Params) {
             )}
           </div>
 
-          {product.options.length > 0 ? (
-            <VariantSelector options={product.options} variants={product.variants} />
-          ) : null}
-
-          <a className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: 'var(--s-5)' }} href="#cart">
-            Add to cart <Icon name="cart" size={16} />
-          </a>
+          <BuyBox options={product.options} variants={product.variants} />
 
           <ul className="pdp-trust">
             <li><Icon name="truck" size={16} /> Free white glove delivery</li>
