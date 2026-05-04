@@ -1,11 +1,12 @@
-# Session handoff — 2026-05-04 (updated)
+# Session handoff — 2026-05-04 (Phase 19)
 
 ## Where things stand
 
-**Branch:** `claude/resume-fix-error-9jYGI` (continued from `claude/migrate-hydrogen-nextjs-O4Lo0`)
-**Last code commit:** Phase 13 — Next 15 / React 19 upgrade + status-code fixes
+**Branch:** `main` (Phases 13–19 merged)
+**Last code commit:** Phase 19 — hybrid Suspense skeletons on PDP/PLP
 **Build state:** clean — `tsc --noEmit`, `next lint`, `next build` all pass.
-**Live Storefront:** wired and verified (see "What got verified" below).
+**Live Storefront:** wired and verified.
+**Vercel preview:** project `la-mattress-headless` (team `alwayzlegits-projects`), auto-deploying on `main` push. Latest deploy URL: alias `la-mattress-headless-git-main-alwayzlegits-projects.vercel.app` (auth-protected).
 
 The Next.js side of the migration is structurally complete. All four URL
 shapes from the brief — `/products`, `/collections`, `/pages`,
@@ -62,6 +63,49 @@ currently only used server-side via `lib/shopify/client.ts`.
 > Admin → Apps and sales channels → Develop apps → [their app] → API
 > credentials. It was never used by the codebase, but it's been visible
 > in the chat transcript.
+
+## Phases 14–19 — what got done in the resume session
+
+Each phase is one commit on `main`.
+
+| Phase | What | Commit |
+|---|---|---|
+| 13 | Next 14 → 15 + React 18 → 19, async-request-api codemod | `6498116` |
+| 14 | Soft-404 fix on PDP/PLP, 500 fix on `/collections` & `/blogs/[blog]` | `e0ee706` |
+| 15 | Drop `quantityAvailable` (scope-denied), tolerate partial GraphQL errors | `f479f60` |
+| 16 | LD-JSON in initial HTML, title cap, description fallbacks (`firstNonEmpty`) | `068bb6c` |
+| 17 | Self-hosted Geist via `next/font`, hero preconnect + preload, smaller hero img | `3773c12` |
+| 18 | Hero CSS-bg → `<Image priority>` — homepage LCP 12.9s → 4.3s | `169f661` |
+| 19 | Hybrid Suspense skeletons on PDP/PLP (known handles fast-path, unknown 404) | `a4bd5fa` |
+
+### End-to-end verification on the Vercel preview (Phase 18 numbers)
+
+Lighthouse (mobile, simulated 4G, six routes):
+
+| Route | Perf | LCP | CLS |
+|---|---|---|---|
+| home | 77 | 4.3s | 0 |
+| pdp | 90+ | 1.9s | 0 |
+| plp | 91 | 2.8s | 0 |
+| page | 97 | 1.6s | 0 |
+| blog-index | 94 | 2.4s | 0 |
+| search | 96 | 2.2s | 0 |
+
+Status codes (real Storefront, after Phase 19):
+
+| Route | Status |
+|---|---|
+| `/products/{known}` | 200 (Suspense + skeleton) |
+| `/products/{unknown}` | 404 (sync path) |
+| `/collections/{known}` | 200 (Suspense + skeleton) |
+| `/collections/{unknown}` | 404 (sync path) |
+| `/pages/{unknown}`, `/blogs/{unknown}`, `/blogs/{blog}/{bad article}` | 404 |
+| `/collections/sale` | 308 → `/collections/on-sale` |
+| `/`, `/cart`, `/account`, `/sleep-quiz`, `/search` | 200 |
+
+LD-JSON: 5 valid blocks in initial HTML on every key route (Org / FurnitureStore / WebSite + page-specific Product / CollectionPage / Article / Quiz + BreadcrumbList). All parse cleanly.
+
+Cart → checkout: `cartCreate` mutation works, `cart.checkoutUrl` is on the `checkout.mattressstoreslosangeles.com` domain. The cart drawer (`app/_components/cart-drawer.tsx:133`) and `/cart` page (`app/cart/page.tsx:109`) both link `href={cart.checkoutUrl}` directly — no rewrite, no proxy.
 
 ## Phase 13 — Next 15 upgrade + status-code fixes (resolved)
 
