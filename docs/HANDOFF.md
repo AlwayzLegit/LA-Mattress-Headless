@@ -63,37 +63,91 @@ currently only used server-side via `lib/shopify/client.ts`.
 > credentials. It was never used by the codebase, but it's been visible
 > in the chat transcript.
 
-## Known issue — to address next session
+## Known issues — to address next session
 
-**`/products/[handle]` and `/collections/[handle]` return HTTP 200 (not
-404) when the handle doesn't exist.** Body is correct (renders the 404
-"Lost in the night" page), but the status code is wrong. This is bad
-for SEO since Google would index missing handles as live 200 pages.
+### 1. PDP and PLP return HTTP 200 (not 404) on bad handles — soft 404
 
-What works correctly: `/pages/[handle]`, `/blogs/[blog]`,
-`/blogs/[blog]/[article]` all return 404.
+**Symptom:** `/products/[bad-handle]` and `/collections/[bad-handle]`
+render the 404 "Lost in the night" body but with HTTP 200 status. Bad
+for SEO (Google may index missing handles as live 200 pages with thin
+content).
 
-What I tried that didn't fix it:
-- Calling `notFound()` from `generateMetadata` (in addition to the page
-  handler) — didn't change PDP/PLP status, and on the article route it
-  caused a 500 (`DYNAMIC_SERVER_USAGE` digest). Reverted.
+**Status of other dynamic routes:**
+- `/pages/[handle]` — 404 ✓
+- `/blogs/[blog]` — 404 ✓
+- `/blogs/[blog]/[article]` — **500** (DYNAMIC_SERVER_USAGE) ❌ — see
+  issue #2 below
 
-The pattern in PDP/PLP/PAGES/BLOG is identical (same `revalidate = 600`,
-`dynamicParams = true`, `notFound()` in page handler) so it's not
-obvious why two of the five misbehave. Likely a Next.js 14.2.x quirk
-related to ISR + `notFound()` interacting with how PDP/PLP pages also
-render multiple client islands (`<BuyBox>`, `<FilterPanel>` etc).
+**Root cause (confirmed by isolation test):** route-level `loading.tsx`
+wraps the route in a Suspense boundary. In Next.js 14.2.x, when
+`notFound()` is thrown from inside a Suspense, the framework
+sometimes serves the not-found body but loses the 404 status code.
 
-Next session: try one of these in order, smallest to largest:
-1. Upgrade Next.js to 14.2.x latest patch (currently 14.2.35) — there
-   was a known regression around `notFound()` + ISR statuses fixed in
-   later patches.
-2. Try `export const dynamic = 'force-dynamic'` on PDP/PLP only when
-   the entity is null (won't work cleanly — `dynamic` is module-level).
-3. Switch PDP/PLP to use a server-side redirect to `/not-found` on
-   missing entity (preserves URL but emits 404). Hacky.
-4. Upgrade to Next 15 — the entire `notFound` semantic has been
-   reworked there.
+PDP and PLP both have a `loading.tsx` (skeleton during navigation).
+`/pages` and `/blogs` index don't. That's the differentiator.
+
+**What was tried:**
+- ✗ Calling `notFound()` from `generateMetadata` — no effect on
+  PDP/PLP, broke article route to 500.
+- ✗ Removing `revalidate = 600` from PDP — no effect.
+- ✗ Adding route-segment `not-found.tsx` siblings — files compiled
+  into the build, but Next.js still serves with 200. Kept anyway
+  because they DO give route-specific 404 copy (better UX than the
+  generic root not-found.tsx).
+- ✗ Removing `loading.tsx` outright — confirmed cause but breaks
+  navigation skeletons; also somehow broke real-handle PDP rendering
+  in production mode (probably need to clear Vercel-style ISR cache).
+
+**Recommended next-session approach:**
+1. **Upgrade Next.js to 15.x** (`npm install next@latest react@latest`).
+   The notFound() / Suspense interaction was reworked in Next 15. This
+   is likely the cleanest fix and has the side benefit of unlocking
+   `next/font/google` self-hosting for Geist (Phase 4b note).
+2. If staying on Next 14: reimplement loading skeletons as a
+   page-internal `<Suspense fallback={<Skeleton/>}>` boundary around
+   the data-fetch component, rather than route-level `loading.tsx`.
+   The notFound() call would happen OUTSIDE the Suspense and emit the
+   correct 404 status. Pattern:
+   ```tsx
+   export default async function ProductPage({ params }) {
+     // Sync check up front: if handle isn't in our inventory snapshot,
+     // 404 immediately. Note: misses recently-added products until we
+     // re-run pull-inventory.mjs.
+     if (!findProduct(params.handle)) notFound();
+     return (
+       <Suspense fallback={<ProductSkeleton/>}>
+         <ProductBody handle={params.handle} />  {/* awaits Storefront */}
+       </Suspense>
+     );
+   }
+   ```
+
+### 2. `/blogs/[blog]/[article]` returns 500 on bad article handles
+
+**Symptom:** When the article handle doesn't exist (blog handle is
+real, e.g. `/blogs/sleep-blog/no-such-article`), the route returns
+HTTP 500 with a `DYNAMIC_SERVER_USAGE` digest in server logs.
+`/blogs/[bad-blog]/anything` correctly 404s.
+
+**Confirmed:** This was already broken before any of my fix attempts;
+it's not a regression from the not-found.tsx work.
+
+**Root cause (suspected):** the layout's `readCart()` calls
+`cookies()`, which forces dynamic rendering. The article route's
+`revalidate = 600` + `notFound()` + nested-dynamic-segment combo
+(two dynamic params: `[blog]/[article]`) trips a known Next.js 14
+edge case where the framework can't resolve "is this a not-found or
+a forced-dynamic-due-to-cookies?" and surfaces the conflict as a
+500.
+
+**What was tried:**
+- ✗ `export const dynamic = 'force-dynamic'` on the article route —
+  made it WORSE (real articles also 500'd).
+
+**Recommended next-session approach:** same as #1 — Next 15 upgrade
+likely resolves this, OR refactor `readCart()` to not call cookies()
+inline during layout render (e.g., move cart hydration to a client
+component that fetches via a server action after mount).
 
 ## What's left before launch
 
