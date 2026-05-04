@@ -3,13 +3,18 @@
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via MCP, 2026-05-04. Snapshot is PARTIAL (~200 of an estimated 400+).",
   "$status": "partial",
   "$nextStep": "Run `node scripts/pull-inventory.mjs` with an Admin token that has read_themes (or equivalent) scope to enumerate every redirect. The script writes the complete list to this file plus a Shopify-Admin-import-format CSV at redirects.csv.",
-  "$applicationNote": "Once complete, mirror these into next.config.mjs `redirects()` (or middleware) so they resolve at the Vercel edge, since requests now hit Vercel before Shopify. The brief’s §9 rule #2 calls this out explicitly.",
+  "$applicationNote": "Loaded by next.config.mjs at build time and emitted as Next.js `redirects()`. Once redirects.csv is fully imported, this file becomes the single source of truth at the edge.",
   "$observedPatterns": [
     "Old location-page slugs → current /pages/{handle} (e.g. /pages/koreatown-mattress-store → /pages/koreatown-best-mattress-store)",
     "Tempur-Pedic product handle history (early product slugs → current canonical PDPs)",
     "Old collection slugs → current (e.g. /collections/sale, /collections/mattresses-on-sale, /collections/mattress-protectors → current handles)",
     "Many obsolete /blogs/beds-mattresses/* article slugs → /collections/mattresses (soft 404 redirects to keep link equity)"
   ],
-  "$count": 0,
-  "redirects": []
+  "$count": 4,
+  "redirects": [
+    { "source": "/collections/sale",                    "destination": "/collections/on-sale",                       "permanent": true, "verified": "2026-05-04" },
+    { "source": "/collections/mattresses-on-sale",       "destination": "/collections/on-sale",                       "permanent": true, "verified": "2026-05-04" },
+    { "source": "/collections/mattress-protectors",      "destination": "/collections/mattress-protector",            "permanent": true, "verified": "2026-05-04" },
+    { "source": "/pages/koreatown-mattress-store",       "destination": "/pages/koreatown-best-mattress-store",       "permanent": true, "verified": "2026-05-04" }
+  ]
 }

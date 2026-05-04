@@ -1123,3 +1123,28 @@ a { color: inherit; text-decoration: none; }
 }
 .showroom-info-meta span { display: inline-flex; align-items: center; gap: 6px; }
 .showroom-page-body .cms-body { font-size: 16px; line-height: 1.7; }
+
+/* Skeleton loaders (route-level loading.tsx) */
+@keyframes skel-shimmer {
+  0%   { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+.skel {
+  display: block;
+  background-color: var(--surface-2);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0,
+    rgba(0, 0, 0, 0.04) 40px,
+    rgba(0, 0, 0, 0.04) 80px,
+    transparent 120px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  border-radius: var(--r-2);
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+  color: transparent;
+}
+.skel-line { height: 1em; border-radius: var(--r-1); }
+.skel-block { width: 100%; aspect-ratio: 1; }
+@media (prefers-reduced-motion: reduce) { .skel { animation: none; } }
