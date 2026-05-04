@@ -16,7 +16,7 @@ import {
 } from '@/app/_components/plp-filters';
 import { SearchInput } from './search-input';
 
-type Params = { searchParams: Record<string, string | undefined> };
+type Params = { searchParams: Promise<Record<string, string | undefined>> };
 
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
@@ -31,7 +31,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default async function SearchPage({ searchParams }: Params) {
+export default async function SearchPage(props: Params) {
+  const searchParams = await props.searchParams;
   const q = (searchParams.q ?? '').trim();
   const after = searchParams.after ?? null;
   const filterSel = parseFilterSelection(searchParams);

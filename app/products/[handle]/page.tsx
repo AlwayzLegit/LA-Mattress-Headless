@@ -10,7 +10,7 @@ import { formatMoney, formatPriceRange } from '@/lib/format';
 import { Icon } from '@/app/_components/icon';
 import { BuyBox } from './buy-box';
 
-type Params = { params: { handle: string } };
+type Params = { params: Promise<{ handle: string }> };
 
 export const revalidate = 600;
 export const dynamicParams = true;
@@ -44,7 +44,8 @@ export function generateStaticParams() {
     .map((p) => ({ handle: p.handle }));
 }
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata(props: Params): Promise<Metadata> {
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Product' };
   const product = await getProductByHandle(params.handle).catch(() => null);
   if (!product) return { title: 'Product not found' };
@@ -67,7 +68,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-export default async function ProductPage({ params }: Params) {
+export default async function ProductPage(props: Params) {
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
   const product = await getProductByHandle(params.handle).catch(() => null);
   if (!product) notFound();

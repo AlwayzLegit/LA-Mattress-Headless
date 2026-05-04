@@ -21,12 +21,13 @@ import {
 } from '@/app/_components/plp-filters';
 
 type Params = {
-  params: { handle: string };
-  searchParams: Record<string, string | undefined>;
+  params: Promise<{ handle: string }>;
+  searchParams: Promise<Record<string, string | undefined>>;
 };
 
-export const revalidate = 600;
-export const dynamicParams = true;
+// PLP depends on searchParams (sort, after, filters) — must be dynamic per request.
+// The Storefront `getCollectionByHandle` fetch is cached by URL on Next's data layer.
+export const dynamic = 'force-dynamic';
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
 
@@ -52,7 +53,8 @@ export function generateStaticParams() {
   return inventoryCollections.map((c) => ({ handle: c.handle }));
 }
 
-export async function generateMetadata({ params }: { params: Params['params'] }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<Params['params']> }): Promise<Metadata> {
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Collection' };
   const collection = await getCollectionByHandle({ handle: params.handle, first: 1 }).catch(() => null);
   if (!collection) return { title: 'Collection not found' };
@@ -72,7 +74,9 @@ export async function generateMetadata({ params }: { params: Params['params'] })
   };
 }
 
-export default async function CollectionPage({ params, searchParams }: Params) {
+export default async function CollectionPage(props: Params) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
   const { sortKey, reverse, index: sortIndex } = parseSort(searchParams.sort);
   const after = searchParams.after ?? null;

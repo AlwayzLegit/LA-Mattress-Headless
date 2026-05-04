@@ -7,7 +7,7 @@ import Script from 'next/script';
 import { getArticleByHandle } from '@/lib/shopify';
 import { Icon } from '@/app/_components/icon';
 
-type Params = { params: { blog: string; article: string } };
+type Params = { params: Promise<{ blog: string; article: string }> };
 
 export const revalidate = 600;
 export const dynamicParams = true;
@@ -22,7 +22,8 @@ export function generateStaticParams() {
   return [];
 }
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata(props: Params): Promise<Metadata> {
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Article' };
   const article = await getArticleByHandle(params.blog, params.article).catch(() => null);
   if (!article) return { title: 'Article not found' };
@@ -48,7 +49,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-export default async function ArticlePage({ params }: Params) {
+export default async function ArticlePage(props: Params) {
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
   const article = await getArticleByHandle(params.blog, params.article).catch(() => null);
   if (!article) notFound();

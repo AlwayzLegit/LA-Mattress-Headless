@@ -1,9 +1,9 @@
-# Session handoff — 2026-05-04
+# Session handoff — 2026-05-04 (updated)
 
 ## Where things stand
 
-**Branch:** `claude/migrate-hydrogen-nextjs-O4Lo0`
-**Last code commit:** `9b364e6` — "Phase 11: pre-Storefront wrap-up"
+**Branch:** `claude/resume-fix-error-9jYGI` (continued from `claude/migrate-hydrogen-nextjs-O4Lo0`)
+**Last code commit:** Phase 13 — Next 15 / React 19 upgrade + status-code fixes
 **Build state:** clean — `tsc --noEmit`, `next lint`, `next build` all pass.
 **Live Storefront:** wired and verified (see "What got verified" below).
 
@@ -63,7 +63,41 @@ currently only used server-side via `lib/shopify/client.ts`.
 > credentials. It was never used by the codebase, but it's been visible
 > in the chat transcript.
 
-## Known issues — to address next session
+## Phase 13 — Next 15 upgrade + status-code fixes (resolved)
+
+Both known issues from Phase 12 are now fixed.
+
+**What changed:**
+- `next 14.2.35` → `next 15.5.15`, `react 18.3.1` → `19.2.5` (matching `eslint-config-next`, `@types/react*` bumped).
+- `@next/codemod` `next-async-request-api` codemod ran clean across 7 files: `params` and `searchParams` are now `Promise<...>` and awaited; `cookies()` is awaited.
+- Cleaned up the codemod's `UnsafeUnwrappedCookies` casts in `app/_actions/cart.ts` by making `setCartCookie` / `clearCartCookie` async.
+- **Root layout no longer reads cookies.** `app/layout.tsx` was awaiting `readCart()` server-side, which forced every route to be dynamic. Cart hydration now happens client-side via `useEffect` in `CartProvider` calling `readCart()` as a server action. Side effect: `/`, `/account`, `/sleep-quiz` are now fully static (○) where they were dynamic (ƒ) before.
+- **Removed route-level `loading.tsx`** for `/products/[handle]` and `/collections/[handle]`. The implicit Suspense boundary was swallowing `notFound()` and emitting 200 with the not-found body. Trade-off: navigation no longer shows a skeleton on those routes. Add page-internal `<Suspense fallback={<Skeleton />}>` later if we want it back.
+- **`force-dynamic` on `searchParams`-consuming routes.** `/collections/[handle]` and `/blogs/[blog]` consume `?after=`, `?sort=`, and filter params. With `revalidate = 600`, awaiting `searchParams` in Next 15 throws `DYNAMIC_SERVER_USAGE`. Switched both to `export const dynamic = 'force-dynamic'`. Per-fetch caching (Storefront API responses) still applies via Next's data layer.
+
+**Status codes verified on `next start` (no env vars set, so all dynamic routes hit the `!SHOPIFY_CONFIGURED ⇒ notFound()` guard):**
+
+| Route | Before | After |
+|---|---|---|
+| `/products/this-does-not-exist` | 200 (soft-404) | **404** ✓ |
+| `/collections/this-does-not-exist` | 200 (soft-404) | **404** ✓ |
+| `/pages/this-does-not-exist` | 404 | **404** ✓ |
+| `/blogs/this-does-not-exist` | 404 | **404** ✓ |
+| `/blogs/sleep-blog/no-such-article` | 500 | **404** ✓ |
+| `/` | 200 | **200** ✓ |
+| `/search?q=x` | 200 | **200** ✓ |
+| `/cart`, `/account`, `/sleep-quiz` | 200 | **200** ✓ |
+
+**Files touched:**
+- `package.json`, `package-lock.json` — version bumps
+- `app/layout.tsx` — drop server-side `readCart()`
+- `app/_components/cart-context.tsx` — add `useEffect` hydration
+- `app/_actions/cart.ts` — async cookies, drop unsafe-unwrap
+- `app/products/[handle]/page.tsx`, `app/collections/[handle]/page.tsx`, `app/pages/[handle]/page.tsx`, `app/blogs/[blog]/page.tsx`, `app/blogs/[blog]/[article]/page.tsx`, `app/search/page.tsx` — `Promise<params>` / `Promise<searchParams>`
+- `app/products/[handle]/loading.tsx`, `app/collections/[handle]/loading.tsx` — **deleted**
+- `data/seo-audit/mattressstoreslosangeles.com_mega_export_20260504.csv` — refreshed export
+
+## Pre-Phase-13 known issues (now resolved — kept for history)
 
 ### 1. PDP and PLP return HTTP 200 (not 404) on bad handles — soft 404
 

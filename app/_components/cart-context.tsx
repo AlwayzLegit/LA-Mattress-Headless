@@ -1,9 +1,9 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useOptimistic, useState, useTransition } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useOptimistic, useState, useTransition } from 'react';
 import type { ReactNode } from 'react';
 import type { Cart } from '@/lib/shopify';
-import { addToCart as addAction, updateCartLine, removeCartLine } from '@/app/_actions/cart';
+import { addToCart as addAction, updateCartLine, removeCartLine, readCart } from '@/app/_actions/cart';
 
 type CartContextValue = {
   cart: Cart | null;
@@ -20,10 +20,16 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function CartProvider({ initialCart, children }: { initialCart: Cart | null; children: ReactNode }) {
-  const [cart, setCart] = useState<Cart | null>(initialCart);
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [cart, setCart] = useState<Cart | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    let cancelled = false;
+    readCart().then((c) => { if (!cancelled) setCart(c); }).catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
   const [optimisticCount, setOptimisticCount] = useOptimistic(
     cart?.totalQuantity ?? 0,
     (state, delta: number) => Math.max(0, state + delta),

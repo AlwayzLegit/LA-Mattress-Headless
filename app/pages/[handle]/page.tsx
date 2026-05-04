@@ -8,7 +8,7 @@ import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, type Showroom } from '@/lib/showrooms';
 import { Icon } from '@/app/_components/icon';
 
-type Params = { params: { handle: string } };
+type Params = { params: Promise<{ handle: string }> };
 
 export const revalidate = 600;
 export const dynamicParams = true;
@@ -21,7 +21,8 @@ export function generateStaticParams() {
   return publishedPages.map((p) => ({ handle: p.handle }));
 }
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata(props: Params): Promise<Metadata> {
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) return { title: 'Page not found' };
@@ -38,7 +39,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-export default async function ShopifyPage({ params }: Params) {
+export default async function ShopifyPage(props: Params) {
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) notFound();
@@ -154,7 +156,6 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
           </section>
         ) : null}
       </article>
-
       <Script id="ld-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
       <Script id="ld-breadcrumb-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
@@ -287,7 +288,6 @@ function ShowroomPage({
           </p>
         </section>
       </article>
-
       <Script id="ld-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
       <Script id="ld-breadcrumb-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>

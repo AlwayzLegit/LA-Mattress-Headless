@@ -6,7 +6,6 @@ import { Nav } from './_components/nav';
 import { Footer } from './_components/footer';
 import { CartProvider } from './_components/cart-context';
 import { CartDrawer } from './_components/cart-drawer';
-import { readCart } from './_actions/cart';
 import { ORGANIZATION_LD, LOCAL_BUSINESS_LD, WEBSITE_LD } from '@/lib/structured-data';
 
 export const metadata: Metadata = {
@@ -39,8 +38,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const initialCart = await readCart();
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -50,7 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="dns-prefetch" href="https://cdn.shopify.com" />
       </head>
       <body>
-        <CartProvider initialCart={initialCart}>
+        <CartProvider>
           <TopBar />
           <Nav />
           {children}

@@ -9,12 +9,12 @@ import { blogs as inventoryBlogs } from '@/lib/inventory';
 import { Icon } from '@/app/_components/icon';
 
 type Params = {
-  params: { blog: string };
-  searchParams: { after?: string };
+  params: Promise<{ blog: string }>;
+  searchParams: Promise<{ after?: string }>;
 };
 
-export const revalidate = 600;
-export const dynamicParams = true;
+// Blog index uses ?after= cursor — dynamic per request.
+export const dynamic = 'force-dynamic';
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
 const SITE = 'https://mattressstoreslosangeles.com';
@@ -25,7 +25,8 @@ export function generateStaticParams() {
   return inventoryBlogs.map((b) => ({ blog: b.handle }));
 }
 
-export async function generateMetadata({ params }: { params: Params['params'] }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<Params['params']> }): Promise<Metadata> {
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Blog' };
   const blog = await getBlogByHandle({ handle: params.blog, first: 1 }).catch(() => null);
   if (!blog) return { title: 'Blog not found' };
@@ -40,7 +41,9 @@ export async function generateMetadata({ params }: { params: Params['params'] })
   };
 }
 
-export default async function BlogIndexPage({ params, searchParams }: Params) {
+export default async function BlogIndexPage(props: Params) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
   const after = searchParams.after ?? null;
   const blog = await getBlogByHandle({ handle: params.blog, first: PER_PAGE, after }).catch(() => null);
