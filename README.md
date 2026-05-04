@@ -6,8 +6,6 @@ See the operating brief in conversation history for full migration scope. This R
 
 ## Status
 
-**Phase 0 — Foundation (homepage only)**: scaffold + design-port complete.
-
 | Phase | Status |
 |---|---|
 | Phase 0 — Next.js scaffold + design system | ✅ Done |
@@ -15,17 +13,21 @@ See the operating brief in conversation history for full migration scope. This R
 | Phase 0 — Storefront API client + typed queries + cart mutations | ✅ Done |
 | Phase 0 — URL inventory snapshot (collections, products, pages) | ✅ Done |
 | Phase 1 — `/products/[handle]` PDP w/ variant selector + Product JSON-LD | ✅ Done |
-| Phase 1 — `/collections/[handle]` PLP w/ grid + CollectionPage JSON-LD | ✅ Done |
+| Phase 1 — `/collections/[handle]` PLP w/ grid + sort + cursor pagination + CollectionPage JSON-LD | ✅ Done |
 | Phase 1 — `/pages/[handle]` w/ HTML body + LocalBusiness JSON-LD on location pages | ✅ Done |
 | Phase 1 — `sitemap.xml` + `robots.txt` + `not-found` page | ✅ Done |
-| Phase 2 — Cart + checkout hand-off (UI) | ⬜ Mutations done; UI not started |
-| Phase 3 — Custom pages (showrooms, quiz, financing) | ⬜ Not started |
-| Add to cart UI + cart drawer + /cart page | ⬜ Not started |
-| Search route (`predictiveSearch` API) | ⬜ Not started |
+| Phase 1 — `/search` route (Storefront `search`) + nav search wiring | ✅ Done |
+| Phase 2 — Server-action cart layer (cookie-backed cart id, `useOptimistic` count) | ✅ Done |
+| Phase 2 — Cart drawer + `/cart` page with line editor | ✅ Done |
+| Phase 3 — Showroom-page template override on `/pages/[handle]` (5 LA locations w/ FurnitureStore JSON-LD) | ✅ Done |
+| Phase 3 — `/sleep-quiz` placeholder + `/account` placeholder | ✅ Done |
+| Phase 4 — `error.tsx`, `global-error.tsx`, route-level `loading.tsx` | ✅ Done |
+| Phase 4 — `next.config.mjs` `redirects()` pipeline reading from `data/url-inventory/redirects.json` | ✅ Done |
+| Phase 4 — Resource hints (preconnect to Google Fonts + cdn.shopify.com) + drop unused fonts | ✅ Done |
 | Blog routes (`/blogs/[blog]/[article]`) | ⬜ Deferred — design out of scope for v1 |
-| Run `scripts/pull-inventory.mjs` to fill blog articles + redirects | 🟡 Pending — needs Admin token w/ proper scopes |
+| `scripts/pull-inventory.mjs` for full blog articles + redirects pull | 🟡 Pending — needs Admin token w/ `read_themes` + `read_content` scopes |
 | Wire Storefront API (token + domain in `.env.local`) | 🟡 Code ready; awaiting token from user |
-| SEO audit CSV → next.config redirects | 🟡 CSV imported; not yet applied |
+| Sleep-quiz interactive matcher | ⬜ Placeholder live; full implementation deferred |
 
 ## Local development
 
@@ -57,7 +59,7 @@ Ported from a complete handoff bundle (see conversation history). Key tokens liv
 
 - Brand: `--brand-navy #1B2C5E` (logo / dark sections), `--brand-red #D8232A` (logo accent only — never functional)
 - Accent: `--accent #1428A0` (Samsung electric blue, locked) — all buttons, links, focus rings
-- Type: `Geist` (UI/body), `Geist Mono` (numerics/eyebrows), `Source Serif 4` (editorial display), `Bebas Neue` (display only)
+- Type: `Geist` (UI/body) + `Geist Mono` (numerics/eyebrows), loaded from Google Fonts with preconnect hints. Source Serif 4 / Bebas Neue from the original design handoff are unused and intentionally not loaded
 - Spacing: 8px base, micro 4px step
 - Layout: 1440px max container, 32px gutter, 64px nav, 32px top bar
 
@@ -86,9 +88,17 @@ public/
   assets/
     la-mattress-logo.png   Brand logo (400×224)
 app/
-  products/[handle]/       PDP route w/ variant selector + Product JSON-LD
-  collections/[handle]/    PLP route w/ grid + CollectionPage JSON-LD
-  pages/[handle]/          Shopify Page renderer + LocalBusiness JSON-LD on location handles
+  products/[handle]/       PDP — variant selector + Product JSON-LD + loading.tsx skeleton
+  collections/[handle]/    PLP — grid + sort + cursor pagination + CollectionPage JSON-LD + loading.tsx
+  pages/[handle]/          Shopify Page renderer; showroom-template override (FurnitureStore JSON-LD,
+                           opening hours, address, geo) for the 5 published LA showroom handles
+  search/                  /search route + SearchInput client + loading.tsx skeleton
+  cart/                    /cart page (force-dynamic, noindex) + line editor + loading.tsx
+  account/                 /account placeholder (noindex) — deflects to phone + showrooms
+  sleep-quiz/              /sleep-quiz placeholder (full matcher deferred)
+  _actions/cart.ts         Server actions over Storefront cart mutations (HTTP-only `cartId` cookie)
+  error.tsx                Page-level error boundary
+  global-error.tsx         Root error boundary (renders own html/body)
   sitemap.ts               Sitemap from inventory snapshot (home + 61 + 195 + 26 URLs)
   robots.ts                robots.txt — allow everything except /cart, /checkout, /account, /api, /search?
   not-found.tsx            404 page — "Lost in the night" w/ link list
@@ -108,11 +118,12 @@ data/
     products.json          195 active+published products
     pages.json             110 pages (26 published)
     blogs.json             7 blog handles (article enumeration deferred)
-    redirects.json         placeholder — populate via scripts/pull-inventory.mjs
+    redirects.json         4 verified seed redirects + pipeline; full pull pending Admin scopes
+                           (loaded by next.config.mjs `redirects()` at build time)
 scripts/
   pull-inventory.mjs       Re-runnable Admin-API inventory pull
                            (needs SHOPIFY_STORE_DOMAIN + SHOPIFY_ADMIN_TOKEN env)
-next.config.mjs            Allows images.unsplash.com, cdn.shopify.com, mattressstoreslosangeles.com
+next.config.mjs            Image remote patterns + redirects() pipeline reading the inventory JSON
 ```
 
 ## Hard constraints (from the migration brief)

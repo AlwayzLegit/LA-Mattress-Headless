@@ -41,6 +41,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const initialCart = await readCart();
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="preconnect" href="https://cdn.shopify.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://cdn.shopify.com" />
+      </head>
       <body>
         <CartProvider initialCart={initialCart}>
           <TopBar />
