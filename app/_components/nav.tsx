@@ -4,10 +4,17 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from './icon';
+import { phImg, type PhFit } from './images';
 import { useCart } from './cart-context';
 
 type MegaCol = { title: string; links: { label: string; href: string }[] };
-type MegaTile = { eyebrow: string; title: string; label: string; href: string };
+type MegaTile = {
+  eyebrow: string;
+  title: string;
+  href: string;
+  img: string;
+  fit?: PhFit;
+};
 type MegaKey = 'mattresses' | 'brands' | 'learn';
 
 const NAV_ITEMS: { label: string; mega: MegaKey | null; href: string; accent?: boolean }[] = [
@@ -48,8 +55,8 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
       ]},
     ],
     tiles: [
-      { eyebrow: 'Bestseller',    title: 'Tempur-Pedic ProAdapt', label: '[Mattress cutout — 600x600]', href: '/products/tempur-pedic-tempur-proadapt-medium-hybrid' },
-      { eyebrow: 'On sale · −25%', title: 'Memorial Day savings',   label: '[Sale — 600x600]',           href: '/collections/on-sale' },
+      { eyebrow: 'Bestseller',     title: 'Tempur-Pedic ProAdapt', href: '/products/tempur-pedic-tempur-proadapt-medium-hybrid', img: 'product-tempur-proadapt', fit: 'contain-cream' },
+      { eyebrow: 'On sale · −25%', title: 'Memorial Day savings',  href: '/collections/on-sale',                                  img: 'lifestyle-couple' },
     ],
   },
   brands: {
@@ -71,8 +78,8 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
       ]},
     ],
     tiles: [
-      { eyebrow: 'Featured', title: 'The Tempur-Pedic Collection', label: '[Brand lifestyle — 600x600]', href: '/collections/tempur-pedic-mattresses' },
-      { eyebrow: 'Limited',  title: 'Stearns & Foster Reserve',    label: '[Brand lifestyle — 600x600]', href: '/collections/stearns-foster-mattresses' },
+      { eyebrow: 'Featured', title: 'The Tempur-Pedic Collection', href: '/collections/tempur-pedic-mattresses', img: 'product-tempur-proadapt', fit: 'contain-cream' },
+      { eyebrow: 'Limited',  title: 'Stearns & Foster Reserve',    href: '/collections/stearns-foster-mattresses', img: 'product-stearns-foster',  fit: 'contain-cream' },
     ],
   },
   learn: {
@@ -95,8 +102,8 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
       ]},
     ],
     tiles: [
-      { eyebrow: 'Most-read', title: 'The 30-minute buying guide',     label: '[Editorial — 600x600]', href: '/pages/mattress-types' },
-      { eyebrow: 'Free',      title: 'Take the 8-question sleep quiz', label: '[Quiz — 600x600]',      href: '/sleep-quiz' },
+      { eyebrow: 'Most-read', title: 'The 30-minute buying guide',     href: '/pages/mattress-types', img: 'lifestyle-bedroom' },
+      { eyebrow: 'Free',      title: 'Take the 8-question sleep quiz', href: '/sleep-quiz',           img: 'lifestyle-couple' },
     ],
   },
 };
@@ -173,7 +180,7 @@ export function Nav() {
               <div className="mega-tiles">
                 {MEGA[mega].tiles.map((t) => (
                   <Link key={t.title} className="mega-tile" href={t.href}>
-                    <div className="ph mega-tile-img"><span className="ph-label">{t.label}</span></div>
+                    <div className="ph mega-tile-img" {...phImg(t.img, t.fit ?? 'cover')} />
                     <div className="mega-tile-meta">
                       <div className="eyebrow">{t.eyebrow}</div>
                       <div className="mega-tile-title">{t.title} <Icon name="arrow-up-right" size={14} /></div>
