@@ -1,0 +1,151 @@
+'use client';
+
+import { useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useCart } from './cart-context';
+import { Icon } from './icon';
+import { formatMoney } from '@/lib/format';
+
+export function CartDrawer() {
+  const { cart, drawerOpen, closeDrawer, updateLine, removeLine, pending } = useCart();
+
+  // Close on Escape
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeDrawer(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [drawerOpen, closeDrawer]);
+
+  // Lock body scroll while open
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [drawerOpen]);
+
+  if (!drawerOpen) return null;
+
+  const lines = cart?.lines.nodes ?? [];
+  const isEmpty = lines.length === 0;
+
+  return (
+    <div className="cart-drawer-root" role="dialog" aria-label="Shopping cart" aria-modal="true">
+      <button className="cart-drawer-scrim" type="button" onClick={closeDrawer} aria-label="Close cart" />
+      <aside className="cart-drawer">
+        <header className="cart-drawer-hd">
+          <div>
+            <div className="eyebrow">Your cart</div>
+            <h2 className="h3" style={{ margin: '4px 0 0' }}>
+              {cart?.totalQuantity ?? 0} item{(cart?.totalQuantity ?? 0) === 1 ? '' : 's'}
+            </h2>
+          </div>
+          <button className="icon-btn" type="button" onClick={closeDrawer} aria-label="Close">
+            <Icon name="close" size={22} />
+          </button>
+        </header>
+
+        {isEmpty ? (
+          <div className="cart-drawer-empty">
+            <Icon name="cart" size={32} />
+            <p className="muted" style={{ marginTop: 'var(--s-3)' }}>Your cart is empty.</p>
+            <Link href="/collections/mattresses" className="btn btn-primary" onClick={closeDrawer} style={{ marginTop: 'var(--s-4)' }}>
+              Shop mattresses
+            </Link>
+          </div>
+        ) : (
+          <>
+            <ul className="cart-line-list" aria-busy={pending}>
+              {lines.map((line) => {
+                const v = line.merchandise;
+                return (
+                  <li key={line.id} className="cart-line">
+                    <Link href={`/products/${v.product.handle}`} onClick={closeDrawer} className="cart-line-img">
+                      {v.product.featuredImage ? (
+                        <Image
+                          src={v.product.featuredImage.url}
+                          alt={v.product.featuredImage.altText ?? v.product.title}
+                          width={120}
+                          height={120}
+                          sizes="120px"
+                          style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                        />
+                      ) : (
+                        <div className="ph" style={{ width: '100%', height: '100%' }} />
+                      )}
+                    </Link>
+                    <div className="cart-line-meta">
+                      <Link href={`/products/${v.product.handle}`} onClick={closeDrawer} className="cart-line-title">
+                        {v.product.title}
+                      </Link>
+                      <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
+                        {v.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(' · ')}
+                      </div>
+                      <div className="cart-line-row">
+                        <div className="cart-qty">
+                          <button
+                            className="cart-qty-btn"
+                            type="button"
+                            onClick={() => updateLine(line.id, line.quantity - 1)}
+                            disabled={pending}
+                            aria-label="Decrease quantity"
+                          >−</button>
+                          <span className="tnum cart-qty-val">{line.quantity}</span>
+                          <button
+                            className="cart-qty-btn"
+                            type="button"
+                            onClick={() => updateLine(line.id, line.quantity + 1)}
+                            disabled={pending}
+                            aria-label="Increase quantity"
+                          >+</button>
+                        </div>
+                        <span className="tnum cart-line-price">{formatMoney(line.cost.totalAmount)}</span>
+                      </div>
+                      <button
+                        className="cart-line-remove"
+                        type="button"
+                        onClick={() => removeLine(line.id)}
+                        disabled={pending}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <footer className="cart-drawer-ft">
+              <div className="cart-summary-row">
+                <span className="muted">Subtotal</span>
+                <span className="tnum cart-subtotal">
+                  {cart ? formatMoney(cart.cost.subtotalAmount) : '—'}
+                </span>
+              </div>
+              <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+                Tax &amp; shipping calculated at checkout.
+              </p>
+              <a
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%', marginTop: 'var(--s-3)' }}
+                href={cart?.checkoutUrl ?? '/cart'}
+              >
+                Checkout <Icon name="arrow-right" size={16} />
+              </a>
+              <Link
+                href="/cart"
+                onClick={closeDrawer}
+                className="link-arrow"
+                style={{ marginTop: 'var(--s-3)', justifyContent: 'center', width: '100%' }}
+              >
+                View full cart <Icon name="arrow-right" size={14} />
+              </Link>
+            </footer>
+          </>
+        )}
+      </aside>
+    </div>
+  );
+}

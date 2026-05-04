@@ -1,0 +1,25 @@
+{
+  "$schema": "Shopify Blogs inventory — blog handle list. Article enumeration is deferred (large dataset, mostly historical and unpublished).",
+  "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via MCP, 2026-05-04. Article handles populated by scripts/pull-inventory.mjs.",
+  "$count": 7,
+  "$articlesPartial": true,
+  "$articlesNote": "Article handles per blog are not enumerated in this snapshot. Run `node scripts/pull-inventory.mjs` (with Admin token + read_content scope) to populate every article handle for /blogs/[blog]/[article] route generation. The brief defers /blog/* routes to a separate scoping pass (design-handoff/01-overview.md — 'Blog / editorial CMS pass not yet scoped').",
+  "$articleSamplesObserved": {
+    "beds-mattresses": "100+ historical posts, mostly unpublished (many redirected to /collections/mattresses)",
+    "mattress-buying-guide": "50+ buying-guide articles (mostly published 2023+)",
+    "sleep-blog": "50+ wellness articles (mostly published 2023+)",
+    "mattress-care-tips": "50+ care/cleaning articles (published 2023+)",
+    "sleep-health": "50+ health-focused articles (published 2023+)",
+    "sales": "5 sale-event articles",
+    "extra-info": "2 misc articles"
+  },
+  "blogs": [
+    { "handle": "sales",                 "id": "gid://shopify/Blog/21972680794", "title": "Sales" },
+    { "handle": "beds-mattresses",       "id": "gid://shopify/Blog/22001221722", "title": "LA Mattress Stores Blog" },
+    { "handle": "extra-info",            "id": "gid://shopify/Blog/23395532890", "title": "Extra Info" },
+    { "handle": "mattress-buying-guide", "id": "gid://shopify/Blog/89331695869", "title": "Mattress Buying Guide | Find Your Perfect Mattress" },
+    { "handle": "sleep-blog",            "id": "gid://shopify/Blog/89331728637", "title": "Sleep Blog | Tips, Research & Wellness" },
+    { "handle": "mattress-care-tips",    "id": "gid://shopify/Blog/89331761405", "title": "Mattress Care Tips | Extend Your Mattress Life" },
+    { "handle": "sleep-health",          "id": "gid://shopify/Blog/89331794173", "title": "Sleep Health | Science, Benefits & Tips" }
+  ]
+}
