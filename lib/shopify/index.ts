@@ -6,6 +6,7 @@ export * from './types';
 export { getProductByHandle }                from './queries/product';
 export { getCollectionByHandle }              from './queries/collection';
 export type { CollectionSort, GetCollectionArgs } from './queries/collection';
+export type { ProductFilter, AvailableFilter, AvailableFilterValue } from './types';
 export { getPageByHandle }                    from './queries/page';
 export { getMenu }                            from './queries/menu';
 export { getAllProductHandles, getAllCollectionHandles, getAllPageHandles } from './queries/handles';

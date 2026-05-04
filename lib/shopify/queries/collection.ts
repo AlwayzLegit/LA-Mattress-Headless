@@ -1,5 +1,10 @@
 import { shopifyFetch } from '../client';
-import type { CollectionWithProducts, ProductSummary } from '../types';
+import type {
+  AvailableFilter,
+  CollectionWithProducts,
+  ProductFilter,
+  ProductSummary,
+} from '../types';
 import {
   IMAGE_FRAGMENT, MONEY_FRAGMENT, SEO_FRAGMENT, PRODUCT_SUMMARY_FRAGMENT,
 } from './fragments';
@@ -22,7 +27,8 @@ const GET_COLLECTION = /* GraphQL */ `
     $first: Int!,
     $after: String,
     $sortKey: ProductCollectionSortKeys,
-    $reverse: Boolean
+    $reverse: Boolean,
+    $filters: [ProductFilter!]
   ) {
     collection(handle: $handle) {
       id
@@ -33,9 +39,14 @@ const GET_COLLECTION = /* GraphQL */ `
       updatedAt
       image { ...ImageFields }
       seo { ...SeoFields }
-      products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse) {
+      products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse, filters: $filters) {
         nodes { ...ProductSummaryFields }
         pageInfo { hasNextPage endCursor }
+        filters {
+          id
+          label
+          values { id label count input }
+        }
       }
     }
   }
@@ -47,6 +58,7 @@ type Raw = {
         products: {
           nodes: ProductSummary[];
           pageInfo: { hasNextPage: boolean; endCursor: string | null };
+          filters: AvailableFilter[];
         };
       })
     | null;
@@ -58,14 +70,20 @@ export type GetCollectionArgs = {
   after?: string | null;
   sortKey?: CollectionSort;
   reverse?: boolean;
+  filters?: ProductFilter[];
 };
 
 export async function getCollectionByHandle({
-  handle, first = 24, after, sortKey = 'COLLECTION_DEFAULT', reverse = false,
+  handle,
+  first = 24,
+  after,
+  sortKey = 'COLLECTION_DEFAULT',
+  reverse = false,
+  filters,
 }: GetCollectionArgs): Promise<CollectionWithProducts | null> {
   const data = await shopifyFetch<Raw, GetCollectionArgs>(
     GET_COLLECTION,
-    { handle, first, after, sortKey, reverse },
+    { handle, first, after, sortKey, reverse, filters: filters ?? [] },
     { tags: [`collection:${handle}`] },
   );
   return data.collection ?? null;

@@ -87,10 +87,32 @@ export type Collection = {
   seo: Seo;
 };
 
+export type AvailableFilterValue = {
+  id: string;
+  label: string;
+  count: number;
+  input: string; // JSON-encoded ProductFilter — passable straight back to Shopify
+};
+
+export type AvailableFilter = {
+  id: string;       // e.g. "filter.v.option.size", "filter.p.vendor", "filter.v.price"
+  label: string;    // human-readable, e.g. "Size", "Brand", "Price"
+  values: AvailableFilterValue[];
+};
+
+// Subset of the Storefront `ProductFilter` input we use.
+export type ProductFilter =
+  | { productVendor: string }
+  | { productType: string }
+  | { available: boolean }
+  | { price: { min?: number; max?: number } }
+  | { variantOption: { name: string; value: string } };
+
 export type CollectionWithProducts = Collection & {
   products: {
     nodes: ProductSummary[];
     pageInfo: { hasNextPage: boolean; endCursor: string | null };
+    filters: AvailableFilter[];
   };
 };
 
