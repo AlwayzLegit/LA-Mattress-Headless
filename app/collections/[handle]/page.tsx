@@ -142,7 +142,7 @@ export default async function CollectionPage({ params, searchParams }: Params) {
             />
           </div>
           <div className="plp-grid">
-            {collection.products.nodes.map((p) => (
+            {collection.products.nodes.map((p, idx) => (
               <Link key={p.id} href={`/products/${p.handle}`} className="pcard plp-card">
                 <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
                   {p.featuredImage ? (
@@ -153,6 +153,8 @@ export default async function CollectionPage({ params, searchParams }: Params) {
                       height={600}
                       sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                      priority={!after && idx < 3}
+                      loading={!after && idx < 3 ? 'eager' : 'lazy'}
                     />
                   ) : <span className="ph-label">[Image coming]</span>}
                 </div>
