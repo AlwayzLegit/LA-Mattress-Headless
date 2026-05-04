@@ -21,8 +21,8 @@ export function FAQ() {
         <div className="faq-head">
           <div className="eyebrow">FAQ</div>
           <h2 className="h2">Questions, answered.</h2>
-          <Link href="/pages/mattress-faq" className="link-arrow">
-            Visit help center <Icon name="arrow-right" size={14} />
+          <Link href="/pages/mattress-store-contact" className="link-arrow">
+            Ask a question <Icon name="arrow-right" size={14} />
           </Link>
         </div>
         <div className="faq-list">

@@ -10,11 +10,13 @@
     "Old collection slugs → current (e.g. /collections/sale, /collections/mattresses-on-sale, /collections/mattress-protectors → current handles)",
     "Many obsolete /blogs/beds-mattresses/* article slugs → /collections/mattresses (soft 404 redirects to keep link equity)"
   ],
-  "$count": 4,
+  "$count": 6,
   "redirects": [
-    { "source": "/collections/sale",                    "destination": "/collections/on-sale",                       "permanent": true, "verified": "2026-05-04" },
-    { "source": "/collections/mattresses-on-sale",       "destination": "/collections/on-sale",                       "permanent": true, "verified": "2026-05-04" },
-    { "source": "/collections/mattress-protectors",      "destination": "/collections/mattress-protector",            "permanent": true, "verified": "2026-05-04" },
-    { "source": "/pages/koreatown-mattress-store",       "destination": "/pages/koreatown-best-mattress-store",       "permanent": true, "verified": "2026-05-04" }
+    { "source": "/collections/sale",                    "destination": "/collections/on-sale",                       "permanent": true,  "verified": "2026-05-04" },
+    { "source": "/collections/mattresses-on-sale",       "destination": "/collections/on-sale",                       "permanent": true,  "verified": "2026-05-04" },
+    { "source": "/collections/mattress-protectors",      "destination": "/collections/mattress-protector",            "permanent": true,  "verified": "2026-05-04" },
+    { "source": "/pages/koreatown-mattress-store",       "destination": "/pages/koreatown-best-mattress-store",       "permanent": true,  "verified": "2026-05-04" },
+    { "source": "/pages/mattress-faq",                   "destination": "/pages/mattress-store-contact",              "permanent": false, "verified": "2026-05-04", "note": "temporary — Shopify page exists but is unpublished; remove this once content team publishes /pages/mattress-faq" },
+    { "source": "/pages/mattress-store-delivery",        "destination": "/pages/love-your-bed-guarantee",             "permanent": false, "verified": "2026-05-04", "note": "temporary — Shopify page exists but is unpublished; remove this once content team publishes /pages/mattress-store-delivery" }
   ]
 }
