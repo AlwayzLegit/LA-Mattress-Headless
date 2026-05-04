@@ -28,7 +28,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Params['params'] }): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Blog' };
   const blog = await getBlogByHandle({ handle: params.blog, first: 1 }).catch(() => null);
-  if (!blog) return { title: 'Blog not found' };
+  if (!blog) return { title: 'Blog not found', robots: { index: false, follow: true } };
   const title = blog.seo.title ?? `${blog.title} — LA Mattress Store`;
   const description = blog.seo.description ?? `Articles from ${blog.title} — LA Mattress Store.`;
   const url = `/blogs/${blog.handle}`;

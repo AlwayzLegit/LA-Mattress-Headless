@@ -55,7 +55,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Params['params'] }): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Collection' };
   const collection = await getCollectionByHandle({ handle: params.handle, first: 1 }).catch(() => null);
-  if (!collection) return { title: 'Collection not found' };
+  // See PDP route comment: tag missing-handle responses noindex to
+  // mitigate the Next 14.2 soft-404 issue. Tracked in docs/HANDOFF.md.
+  if (!collection) return { title: 'Collection not found', robots: { index: false, follow: true } };
   const title = collection.seo.title ?? `${collection.title} | LA Mattress Store`;
   const fallbackDesc = collection.description.length > 160
     ? `${collection.description.slice(0, 157)}...`

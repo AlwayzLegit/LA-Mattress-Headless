@@ -24,7 +24,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
   const page = await getPageByHandle(params.handle).catch(() => null);
-  if (!page) return { title: 'Page not found' };
+  if (!page) return { title: 'Page not found', robots: { index: false, follow: true } };
   const title = page.seo.title ?? page.title;
   const description =
     page.seo.description ??

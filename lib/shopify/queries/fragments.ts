@@ -26,12 +26,17 @@ export const SEO_FRAGMENT = /* GraphQL */ `
   }
 `;
 
+// Note: `quantityAvailable` is intentionally NOT selected — that field requires
+// the `unauthenticated_read_product_inventory` Storefront API access scope, which
+// the LA Mattress Headless channel token doesn't currently grant. We don't render
+// stock counts in the UI, so this is a pure storage savings. If you ever want
+// "Only N left" badges, enable the scope in Shopify Admin → Headless → Storefront
+// API access scopes, and add `quantityAvailable` back below + in types.ts.
 export const VARIANT_FRAGMENT = /* GraphQL */ `
   fragment VariantFields on ProductVariant {
     id
     title
     availableForSale
-    quantityAvailable
     sku
     selectedOptions { name value }
     price { ...MoneyFields }

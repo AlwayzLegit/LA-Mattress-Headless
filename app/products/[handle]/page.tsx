@@ -47,7 +47,12 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Product' };
   const product = await getProductByHandle(params.handle).catch(() => null);
-  if (!product) return { title: 'Product not found' };
+  // SEO mitigation: Next.js 14.2 emits soft-404 (HTTP 200 + body of
+  // not-found.tsx) instead of a real 404 when notFound() is called
+  // from a route with route-level loading.tsx (Suspense interaction).
+  // Tag missing-handle responses as noindex so Google doesn't index
+  // thin 200 pages. See docs/HANDOFF.md for the underlying issue.
+  if (!product) return { title: 'Product not found', robots: { index: false, follow: true } };
   const title = product.seo.title ?? product.title;
   const description =
     product.seo.description ??

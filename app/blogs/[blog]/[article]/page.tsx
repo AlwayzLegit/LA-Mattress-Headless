@@ -25,7 +25,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Article' };
   const article = await getArticleByHandle(params.blog, params.article).catch(() => null);
-  if (!article) return { title: 'Article not found' };
+  if (!article) return { title: 'Article not found', robots: { index: false, follow: true } };
   const title = article.seo.title ?? article.title;
   const description =
     article.seo.description ??
