@@ -12,6 +12,7 @@
 import collectionsJson from '@/data/url-inventory/collections.json';
 import productsJson    from '@/data/url-inventory/products.json';
 import pagesJson       from '@/data/url-inventory/pages.json';
+import blogsJson       from '@/data/url-inventory/blogs.json';
 
 export type CollectionInv = {
   handle: string;
@@ -39,9 +40,19 @@ export type PageInv = {
   updatedAt: string;
 };
 
+export type BlogInv = {
+  handle: string;
+  id: string;
+  title: string;
+  // Articles are deferred until scripts/pull-inventory.mjs runs with
+  // read_content scope. When populated, each entry will be a string handle.
+  articles?: string[];
+};
+
 export const collections: CollectionInv[] = collectionsJson.collections as CollectionInv[];
 export const products:    ProductInv[]    = productsJson.products as ProductInv[];
 export const pages:       PageInv[]       = pagesJson.pages as PageInv[];
+export const blogs:       BlogInv[]       = blogsJson.blogs as BlogInv[];
 
 /** Pages with `isPublished: true` are the only ones with live `/pages/{handle}` URLs. */
 export const publishedPages: PageInv[] = pages.filter((p) => p.isPublished);
@@ -57,4 +68,7 @@ export function findCollection(handle: string): CollectionInv | undefined {
 }
 export function findPage(handle: string): PageInv | undefined {
   return pages.find((p) => p.handle === handle);
+}
+export function findBlog(handle: string): BlogInv | undefined {
+  return blogs.find((b) => b.handle === handle);
 }

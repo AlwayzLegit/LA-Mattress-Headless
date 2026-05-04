@@ -127,6 +127,40 @@ export type Page = {
   seo: Seo;
 };
 
+export type ArticleAuthor = { name: string; bio: string | null };
+
+export type ArticleSummary = {
+  id: string;
+  handle: string;
+  title: string;
+  excerpt: string | null;
+  publishedAt: string;
+  image: Image | null;
+  author: ArticleAuthor | null;
+};
+
+export type Article = ArticleSummary & {
+  contentHtml: string;
+  content: string;
+  tags: string[];
+  blog: { handle: string; title: string };
+  seo: Seo;
+};
+
+export type Blog = {
+  id: string;
+  handle: string;
+  title: string;
+  seo: Seo;
+};
+
+export type BlogWithArticles = Blog & {
+  articles: {
+    nodes: ArticleSummary[];
+    pageInfo: { hasNextPage: boolean; endCursor: string | null };
+  };
+};
+
 export type MenuItem = {
   id: string;
   title: string;

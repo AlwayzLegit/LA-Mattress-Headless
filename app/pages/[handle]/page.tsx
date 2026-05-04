@@ -5,7 +5,7 @@ import Script from 'next/script';
 
 import { getPageByHandle } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
-import { findShowroom, type Showroom } from '@/lib/showrooms';
+import { SHOWROOMS, findShowroom, type Showroom } from '@/lib/showrooms';
 import { Icon } from '@/app/_components/icon';
 
 type Params = { params: { handle: string } };
@@ -45,24 +45,13 @@ export default async function ShopifyPage({ params }: Params) {
 
   const showroom = findShowroom(page.handle);
   if (showroom) return <ShowroomPage page={page} showroom={showroom} />;
+  if (page.handle === 'mattress-store-locations') return <LocationsIndexPage page={page} />;
 
   return <DefaultPage page={page} />;
 }
 
 function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle>> }) {
   if (!page) return null;
-  const isLocations = page.handle === 'mattress-store-locations';
-
-  const localBusinessLd = isLocations
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'LocalBusiness',
-        name: 'LA Mattress Store',
-        url: `${SITE}/pages/${page.handle}`,
-        telephone: '+1-213-555-0142',
-        priceRange: '$$$',
-      }
-    : null;
 
   return (
     <main className="container">
@@ -79,10 +68,95 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
           <p className="muted">This page has no content yet.</p>
         )}
       </article>
+    </main>
+  );
+}
 
-      {localBusinessLd ? (
-        <Script id="ld-localbusiness-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
-      ) : null}
+function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>> }) {
+  const url = `${SITE}/pages/${page.handle}`;
+
+  // Top-level LocalBusiness w/ each showroom as a department/branch.
+  const localBusinessLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FurnitureStore',
+    '@id': url,
+    name: 'LA Mattress Store',
+    url,
+    telephone: '+1-213-555-0142',
+    priceRange: '$$$',
+    image: `${SITE}/assets/la-mattress-logo.png`,
+    areaServed: { '@type': 'City', name: 'Los Angeles' },
+    department: SHOWROOMS.map((s) => ({
+      '@type': 'FurnitureStore',
+      name: s.name,
+      url: `${SITE}/pages/${s.handle}`,
+      telephone: s.phone,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: s.street,
+        addressLocality: s.city,
+        addressRegion: s.region,
+        postalCode: s.postalCode,
+        addressCountry: 'US',
+      },
+      ...(s.geo ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } } : {}),
+    })),
+  };
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE },
+      { '@type': 'ListItem', position: 2, name: 'Stores' },
+    ],
+  };
+
+  return (
+    <main className="container">
+      <article className="locations-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
+        <nav className="lp-breadcrumbs">
+          <Link href="/">Home</Link>
+          <span className="sep">/</span>
+          <span>Stores</span>
+        </nav>
+
+        <header className="locations-page-hero">
+          <div className="eyebrow"><Icon name="pin" size={14} /> Five LA showrooms</div>
+          <h1 className="h1">{page.title}</h1>
+          <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
+            Visit any of our showrooms across Los Angeles to try every mattress in person. Open daily — no appointment needed.
+          </p>
+        </header>
+
+        <section className="locations-grid" aria-label="Showroom directory">
+          {SHOWROOMS.map((s) => (
+            <Link key={s.handle} href={`/pages/${s.handle}`} className="location-card">
+              <div className="location-card-meta">
+                <div className="eyebrow">{s.area}</div>
+                <h2 className="location-card-name">{s.name}</h2>
+                <address className="location-card-addr">
+                  <div>{s.street}</div>
+                  <div>{s.city}, {s.region} {s.postalCode}</div>
+                </address>
+                <div className="location-card-actions">
+                  <span className="location-card-phone tnum">{s.phone.replace('+1-', '(').replace(/-/, ') ').replace(/-/, '-')}</span>
+                  <span className="link-arrow">Store details <Icon name="arrow-right" size={14} /></span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </section>
+
+        {page.body ? (
+          <section className="locations-page-body" style={{ marginTop: 'var(--s-8)', maxWidth: 760, marginLeft: 'auto', marginRight: 'auto' }}>
+            <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: page.body }} />
+          </section>
+        ) : null}
+      </article>
+
+      <Script id="ld-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
+      <Script id="ld-breadcrumb-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 
 import { Hero } from './_components/hero';
 import {
@@ -21,40 +20,9 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://mattressstoreslosangeles.com/' },
 };
 
-const ORG_LD = {
-  '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
-  '@id': 'https://mattressstoreslosangeles.com/#localbusiness',
-  name: 'LA Mattress Store',
-  url: 'https://mattressstoreslosangeles.com/',
-  telephone: '+1-213-555-0142',
-  priceRange: '$$$',
-  image: 'https://mattressstoreslosangeles.com/assets/la-mattress-logo.png',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: '3550 Wilshire Blvd',
-    addressLocality: 'Los Angeles',
-    addressRegion: 'CA',
-    postalCode: '90010',
-    addressCountry: 'US',
-  },
-  areaServed: { '@type': 'City', name: 'Los Angeles' },
-  sameAs: [
-    'https://www.google.com/maps/place/LA+Mattress+Store',
-  ],
-};
-
-const WEBSITE_LD = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  url: 'https://mattressstoreslosangeles.com/',
-  name: 'LA Mattress Store',
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: 'https://mattressstoreslosangeles.com/search?q={query}',
-    'query-input': 'required name=query',
-  },
-};
+// Site-wide Organization / LocalBusiness / WebSite JSON-LD lives in app/layout.tsx
+// and emits on every page. Per-template structured data (Product, CollectionPage,
+// BlogPosting, etc.) is emitted by each route's page.tsx.
 
 export default function Home() {
   return (
@@ -69,11 +37,6 @@ export default function Home() {
       <QuizTeaser />
       <Reviews />
       <FAQ />
-
-      <Script id="ld-localbusiness" type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_LD) }} />
-      <Script id="ld-website" type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }} />
     </>
   );
 }

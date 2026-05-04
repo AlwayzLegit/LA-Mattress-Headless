@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import { TopBar } from './_components/topbar';
 import { Nav } from './_components/nav';
@@ -6,6 +7,7 @@ import { Footer } from './_components/footer';
 import { CartProvider } from './_components/cart-context';
 import { CartDrawer } from './_components/cart-drawer';
 import { readCart } from './_actions/cart';
+import { ORGANIZATION_LD, LOCAL_BUSINESS_LD, WEBSITE_LD } from '@/lib/structured-data';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mattressstoreslosangeles.com'),
@@ -55,6 +57,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Footer />
           <CartDrawer />
         </CartProvider>
+        <Script id="ld-organization" type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }} />
+        <Script id="ld-localbusiness" type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_LD) }} />
+        <Script id="ld-website" type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }} />
       </body>
     </html>
   );

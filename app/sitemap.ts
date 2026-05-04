@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { collections, products, publishedPages } from '@/lib/inventory';
+import { blogs, collections, products, publishedPages } from '@/lib/inventory';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mattressstoreslosangeles.com';
 
@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const home: MetadataRoute.Sitemap = [
     { url: u('/'), lastModified: now, changeFrequency: 'daily', priority: 1.0 },
+    { url: u('/sleep-quiz'), lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
   ];
 
   const productEntries: MetadataRoute.Sitemap = products.map((p) => ({
@@ -32,5 +33,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...home, ...productEntries, ...collectionEntries, ...pageEntries];
+  // Blog index URLs are emitted; individual /blogs/{blog}/{article} URLs
+  // get added once scripts/pull-inventory.mjs populates article handles.
+  const blogEntries: MetadataRoute.Sitemap = blogs.map((b) => ({
+    url: u(`/blogs/${b.handle}`),
+    lastModified: now,
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }));
+
+  return [...home, ...productEntries, ...collectionEntries, ...pageEntries, ...blogEntries];
 }
