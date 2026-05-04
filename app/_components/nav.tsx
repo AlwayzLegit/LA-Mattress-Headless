@@ -134,7 +134,7 @@ export function Nav() {
             ))}
           </nav>
           <div className="nav-actions">
-            <button className="icon-btn" aria-label="Search" type="button"><Icon name="search" size={18} /></button>
+            <Link className="icon-btn" aria-label="Search" href="/search"><Icon name="search" size={18} /></Link>
             <Link className="icon-btn" aria-label="Account" href="/account"><Icon name="user" size={18} /></Link>
             <button
               className="icon-btn cart-btn"

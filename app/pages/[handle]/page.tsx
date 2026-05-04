@@ -5,6 +5,8 @@ import Script from 'next/script';
 
 import { getPageByHandle } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
+import { findShowroom, type Showroom } from '@/lib/showrooms';
+import { Icon } from '@/app/_components/icon';
 
 type Params = { params: { handle: string } };
 
@@ -12,6 +14,7 @@ export const revalidate = 600;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
+const SITE = 'https://mattressstoreslosangeles.com';
 
 export function generateStaticParams() {
   if (!SHOPIFY_CONFIGURED) return [];
@@ -35,24 +38,27 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-const isLocationPage = (handle: string) =>
-  handle.includes('koreatown') ||
-  handle.includes('best-mattress-store') ||
-  handle.includes('mattress-store-studio-city') ||
-  handle.includes('mattress-store-in-glendale') ||
-  handle.includes('mattress-store-locations');
-
 export default async function ShopifyPage({ params }: Params) {
   if (!SHOPIFY_CONFIGURED) notFound();
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) notFound();
 
-  const localBusinessLd = isLocationPage(page.handle)
+  const showroom = findShowroom(page.handle);
+  if (showroom) return <ShowroomPage page={page} showroom={showroom} />;
+
+  return <DefaultPage page={page} />;
+}
+
+function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle>> }) {
+  if (!page) return null;
+  const isLocations = page.handle === 'mattress-store-locations';
+
+  const localBusinessLd = isLocations
     ? {
         '@context': 'https://schema.org',
         '@type': 'LocalBusiness',
         name: 'LA Mattress Store',
-        url: `https://mattressstoreslosangeles.com/pages/${page.handle}`,
+        url: `${SITE}/pages/${page.handle}`,
         telephone: '+1-213-555-0142',
         priceRange: '$$$',
       }
@@ -79,4 +85,145 @@ export default async function ShopifyPage({ params }: Params) {
       ) : null}
     </main>
   );
+}
+
+function ShowroomPage({
+  page,
+  showroom,
+}: {
+  page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
+  showroom: Showroom;
+}) {
+  const url = `${SITE}/pages/${page.handle}`;
+
+  const localBusinessLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FurnitureStore',
+    '@id': url,
+    name: showroom.name,
+    url,
+    telephone: showroom.phone,
+    priceRange: '$$$',
+    image: `${SITE}/assets/la-mattress-logo.png`,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: showroom.street,
+      addressLocality: showroom.city,
+      addressRegion: showroom.region,
+      postalCode: showroom.postalCode,
+      addressCountry: 'US',
+    },
+    ...(showroom.geo
+      ? { geo: { '@type': 'GeoCoordinates', latitude: showroom.geo.latitude, longitude: showroom.geo.longitude } }
+      : {}),
+    openingHoursSpecification: showroom.hours.map((h) => ({
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek:
+        h.day === 'Mon-Sat'
+          ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+          : h.day === 'Sun'
+            ? 'Sunday'
+            : h.day,
+      opens: h.open,
+      closes: h.close,
+    })),
+    areaServed: ['Los Angeles', showroom.area],
+    parentOrganization: { '@type': 'Organization', name: 'LA Mattress Store', url: SITE },
+  };
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE },
+      { '@type': 'ListItem', position: 2, name: 'Stores', item: `${SITE}/pages/mattress-store-locations` },
+      { '@type': 'ListItem', position: 3, name: showroom.area },
+    ],
+  };
+
+  return (
+    <main className="container">
+      <article className="showroom-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
+        <nav className="lp-breadcrumbs">
+          <Link href="/">Home</Link>
+          <span className="sep">/</span>
+          <Link href="/pages/mattress-store-locations">Stores</Link>
+          <span className="sep">/</span>
+          <span>{showroom.area}</span>
+        </nav>
+
+        <header className="showroom-page-hero">
+          <div className="eyebrow"><Icon name="pin" size={14} /> {showroom.area} · Los Angeles</div>
+          <h1 className="h1">{page.title}</h1>
+          <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
+            Visit our {showroom.area} showroom — try every mattress, talk with our local team, and walk out the same day with free white-glove delivery on most beds.
+          </p>
+        </header>
+
+        <section className="showroom-page-grid">
+          <aside className="showroom-info-card">
+            <div className="eyebrow">Visit us</div>
+            <address className="showroom-info-addr">
+              <div>{showroom.street}</div>
+              <div>{showroom.city}, {showroom.region} {showroom.postalCode}</div>
+            </address>
+            <a href={`tel:${showroom.phone.replace(/[^+\d]/g, '')}`} className="showroom-info-phone">
+              <Icon name="phone" size={14} /> {showroom.phone}
+            </a>
+            <ul className="showroom-info-hours">
+              {showroom.hours.map((h) => (
+                <li key={h.day}>
+                  <span>{h.day}</span>
+                  <span className="tnum">{formatHour(h.open)}&ndash;{formatHour(h.close)}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="showroom-info-cta">
+              <a href={showroom.mapUrl} target="_blank" rel="noopener" className="btn btn-primary">
+                Get directions <Icon name="arrow-up-right" size={14} />
+              </a>
+              <Link href="/pages/mattress-store-financing" className="btn btn-ghost">
+                Financing options
+              </Link>
+            </div>
+            <div className="showroom-info-meta">
+              <span><Icon name="truck" size={14} /> Free delivery within LA</span>
+              <span><Icon name="shield" size={14} /> 120-night exchange</span>
+              <span><Icon name="card" size={14} /> 0% APR financing</span>
+            </div>
+          </aside>
+
+          <div className="showroom-page-body">
+            {page.body ? (
+              <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: page.body }} />
+            ) : (
+              <p className="muted">More information about this showroom is coming soon.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="eyebrow">Other LA showrooms</div>
+          <h2 className="h2">Five locations across Los Angeles</h2>
+          <p className="muted" style={{ maxWidth: '60ch', marginBottom: 'var(--s-5)' }}>
+            See all five showrooms, hours, and directions on our{' '}
+            <Link href="/pages/mattress-store-locations" className="link-arrow">
+              full locations page <Icon name="arrow-right" size={14} />
+            </Link>.
+          </p>
+        </section>
+      </article>
+
+      <Script id="ld-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
+      <Script id="ld-breadcrumb-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+    </main>
+  );
+}
+
+function formatHour(hhmm: string): string {
+  const [h, m] = hhmm.split(':').map((n) => Number.parseInt(n, 10));
+  if (!Number.isFinite(h)) return hhmm;
+  const ampm = h >= 12 ? 'pm' : 'am';
+  const h12 = ((h + 11) % 12) + 1;
+  return m ? `${h12}:${String(m).padStart(2, '0')}${ampm}` : `${h12}${ampm}`;
 }
