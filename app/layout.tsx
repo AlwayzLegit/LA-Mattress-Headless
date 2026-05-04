@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
 import './globals.css';
 import { TopBar } from './_components/topbar';
 import { Nav } from './_components/nav';
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
     template: '%s · LA Mattress',
   },
   description:
-    'Family-owned LA mattress store with 5 showrooms across Los Angeles. Tempur-Pedic, Stearns & Foster, Helix, Diamond and more — same-day white glove delivery, 120-night comfort exchange, 0% APR financing.',
+    'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white glove delivery & 0% APR financing.',
   applicationName: 'LA Mattress Store',
   authors: [{ name: 'LA Mattress Store' }],
   category: 'shopping',
@@ -55,11 +54,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <CartDrawer />
         </CartProvider>
-        <Script id="ld-organization" type="application/ld+json"
+        <script id="ld-organization" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }} />
-        <Script id="ld-localbusiness" type="application/ld+json"
+        <script id="ld-localbusiness" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_LD) }} />
-        <Script id="ld-website" type="application/ld+json"
+        <script id="ld-website" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }} />
       </body>
     </html>

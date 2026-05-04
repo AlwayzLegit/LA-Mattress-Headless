@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Script from 'next/script';
 import { SleepQuiz } from './sleep-quiz';
 
 export const metadata: Metadata = {
@@ -47,7 +46,7 @@ export default function SleepQuizPage() {
         </div>
       </section>
 
-      <Script id="ld-sleep-quiz" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(quizLd) }} />
+      <script id="ld-sleep-quiz" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(quizLd) }} />
     </main>
   );
 }

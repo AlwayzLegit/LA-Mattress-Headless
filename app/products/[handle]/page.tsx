@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import Script from 'next/script';
 
 import { getProductByHandle } from '@/lib/shopify';
 import { products as inventoryProducts } from '@/lib/inventory';
 import { formatMoney, formatPriceRange } from '@/lib/format';
+import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 import { BuyBox } from './buy-box';
 
@@ -49,10 +49,14 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Product' };
   const product = await getProductByHandle(params.handle).catch(() => null);
   if (!product) return { title: 'Product not found' };
-  const title = product.seo.title ?? product.title;
-  const description =
-    product.seo.description ??
-    (product.description.length > 160 ? `${product.description.slice(0, 157)}...` : product.description);
+  const title = capTitle(firstNonEmpty(product.seo.title, product.title));
+  const description = truncDescription(
+    firstNonEmpty(
+      product.seo.description,
+      product.description,
+      `${product.title} — buy at LA Mattress Store, Los Angeles.`,
+    ),
+  );
   const url = `/products/${product.handle}`;
   return {
     title,
@@ -185,8 +189,8 @@ export default async function ProductPage(props: Params) {
         </section>
       ) : null}
 
-      <Script id="ld-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }} />
-      <Script id="ld-breadcrumb-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <script id="ld-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }} />
+      <script id="ld-breadcrumb-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }

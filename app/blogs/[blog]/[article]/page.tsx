@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import Script from 'next/script';
 
 import { getArticleByHandle } from '@/lib/shopify';
+import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 
 type Params = { params: Promise<{ blog: string; article: string }> };
@@ -27,11 +27,14 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Article' };
   const article = await getArticleByHandle(params.blog, params.article).catch(() => null);
   if (!article) return { title: 'Article not found' };
-  const title = article.seo.title ?? article.title;
-  const description =
-    article.seo.description ??
-    (article.excerpt && article.excerpt.length > 160 ? `${article.excerpt.slice(0, 157)}...` : article.excerpt) ??
-    `${article.title} — LA Mattress Store`;
+  const title = capTitle(firstNonEmpty(article.seo.title, article.title));
+  const description = truncDescription(
+    firstNonEmpty(
+      article.seo.description,
+      article.excerpt,
+      `${article.title} — LA Mattress Store buying guide`,
+    ),
+  );
   const url = `/blogs/${article.blog.handle}/${article.handle}`;
   return {
     title,
@@ -132,8 +135,8 @@ export default async function ArticlePage(props: Params) {
         </footer>
       </article>
 
-      <Script id="ld-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
-      <Script id="ld-breadcrumb-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <script id="ld-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
+      <script id="ld-breadcrumb-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }

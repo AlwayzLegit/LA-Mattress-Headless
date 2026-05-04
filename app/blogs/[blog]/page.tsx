@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import Script from 'next/script';
 
 import { getBlogByHandle } from '@/lib/shopify';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
+import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 
 type Params = {
@@ -30,8 +30,10 @@ export async function generateMetadata(props: { params: Promise<Params['params']
   if (!SHOPIFY_CONFIGURED) return { title: 'Blog' };
   const blog = await getBlogByHandle({ handle: params.blog, first: 1 }).catch(() => null);
   if (!blog) return { title: 'Blog not found' };
-  const title = blog.seo.title ?? `${blog.title} — LA Mattress Store`;
-  const description = blog.seo.description ?? `Articles from ${blog.title} — LA Mattress Store.`;
+  const title = capTitle(firstNonEmpty(blog.seo.title, `${blog.title} — LA Mattress Store`));
+  const description = truncDescription(
+    firstNonEmpty(blog.seo.description, `Articles from ${blog.title} — LA Mattress Store.`),
+  );
   const url = `/blogs/${blog.handle}`;
   return {
     title,
@@ -137,8 +139,8 @@ export default async function BlogIndexPage(props: Params) {
         )}
       </section>
 
-      <Script id="ld-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogLd) }} />
-      <Script id="ld-breadcrumb-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <script id="ld-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogLd) }} />
+      <script id="ld-breadcrumb-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }

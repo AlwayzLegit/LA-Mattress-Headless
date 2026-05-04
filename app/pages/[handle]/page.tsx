@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Script from 'next/script';
 
 import { getPageByHandle } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, type Showroom } from '@/lib/showrooms';
+import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 
 type Params = { params: Promise<{ handle: string }> };
@@ -26,10 +26,10 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) return { title: 'Page not found' };
-  const title = page.seo.title ?? page.title;
-  const description =
-    page.seo.description ??
-    (page.bodySummary?.length ? page.bodySummary.slice(0, 160) : `${page.title} — LA Mattress Store`);
+  const title = capTitle(firstNonEmpty(page.seo.title, page.title));
+  const description = truncDescription(
+    firstNonEmpty(page.seo.description, page.bodySummary, `${page.title} — LA Mattress Store`),
+  );
   const url = `/pages/${page.handle}`;
   return {
     title,
@@ -156,8 +156,8 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
           </section>
         ) : null}
       </article>
-      <Script id="ld-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
-      <Script id="ld-breadcrumb-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <script id="ld-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
+      <script id="ld-breadcrumb-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }
@@ -288,8 +288,8 @@ function ShowroomPage({
           </p>
         </section>
       </article>
-      <Script id="ld-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
-      <Script id="ld-breadcrumb-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <script id="ld-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
+      <script id="ld-breadcrumb-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }

@@ -16,7 +16,7 @@ import { FAQ } from './_components/sections/faq';
 export const metadata: Metadata = {
   title: 'LA Mattress — Sleep, engineered in Los Angeles.',
   description:
-    'Family-owned LA mattress store with 5 showrooms across Los Angeles. Tempur-Pedic, Stearns & Foster, Helix, Diamond and more — same-day white glove delivery, 120-night comfort exchange, 0% APR financing.',
+    'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white glove delivery & 0% APR financing.',
   alternates: { canonical: 'https://mattressstoreslosangeles.com/' },
 };
 

@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import Script from 'next/script';
 
 import { getCollectionByHandle } from '@/lib/shopify';
 import type { CollectionSort } from '@/lib/shopify';
 import { collections as inventoryCollections } from '@/lib/inventory';
 import { formatPriceRange } from '@/lib/format';
+import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 import { SortControl } from './sort-control';
 import {
@@ -58,13 +58,14 @@ export async function generateMetadata(props: { params: Promise<Params['params']
   if (!SHOPIFY_CONFIGURED) return { title: 'Collection' };
   const collection = await getCollectionByHandle({ handle: params.handle, first: 1 }).catch(() => null);
   if (!collection) return { title: 'Collection not found' };
-  const title = collection.seo.title ?? `${collection.title} | LA Mattress Store`;
-  const fallbackDesc = collection.description.length > 160
-    ? `${collection.description.slice(0, 157)}...`
-    : collection.description;
-  const description =
-    collection.seo.description
-      ?? (fallbackDesc || `Shop ${collection.title.toLowerCase()} at LA Mattress Store. Free white glove delivery in Los Angeles.`);
+  const title = capTitle(firstNonEmpty(collection.seo.title, `${collection.title} | LA Mattress Store`));
+  const description = truncDescription(
+    firstNonEmpty(
+      collection.seo.description,
+      collection.description,
+      `Shop ${collection.title.toLowerCase()} at LA Mattress Store. Free white glove delivery in Los Angeles.`,
+    ),
+  );
   const url = `/collections/${collection.handle}`;
   return {
     title,
@@ -105,7 +106,7 @@ export default async function CollectionPage(props: Params) {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: collection.title,
-    description: collection.seo.description ?? collection.description ?? undefined,
+    description: firstNonEmpty(collection.seo.description, collection.description) || undefined,
     url: `https://mattressstoreslosangeles.com/collections/${collection.handle}`,
   };
 
@@ -233,8 +234,8 @@ export default async function CollectionPage(props: Params) {
         </FilterShell>
       </section>
 
-      <Script id="ld-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
-      <Script id="ld-breadcrumb-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <script id="ld-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
+      <script id="ld-breadcrumb-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }
