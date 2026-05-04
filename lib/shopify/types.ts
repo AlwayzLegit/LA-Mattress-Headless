@@ -1,0 +1,146 @@
+/**
+ * Hand-written TypeScript types for the Storefront API responses we use.
+ *
+ * These mirror the shape of the GraphQL queries in `lib/shopify/queries/*.ts`
+ * — they are NOT auto-generated. When a query changes, update the type here.
+ *
+ * If/when we adopt graphql-codegen (per brief §5), this file gets replaced
+ * by the generated `types.generated.ts` and queries pull types from there.
+ */
+
+export type Money = {
+  amount: string;        // string-encoded decimal, e.g. "3499.00"
+  currencyCode: string;  // ISO 4217, e.g. "USD"
+};
+
+export type Image = {
+  url: string;
+  altText: string | null;
+  width: number | null;
+  height: number | null;
+};
+
+export type Seo = {
+  title: string | null;
+  description: string | null;
+};
+
+export type SelectedOption = { name: string; value: string };
+
+export type ProductVariant = {
+  id: string;
+  title: string;
+  availableForSale: boolean;
+  quantityAvailable: number | null;
+  selectedOptions: SelectedOption[];
+  price: Money;
+  compareAtPrice: Money | null;
+  sku: string | null;
+  image: Image | null;
+};
+
+export type ProductOption = {
+  id: string;
+  name: string;
+  values: string[];
+};
+
+export type Product = {
+  id: string;
+  handle: string;
+  title: string;
+  vendor: string;
+  productType: string;
+  description: string;
+  descriptionHtml: string;
+  availableForSale: boolean;
+  tags: string[];
+  updatedAt: string;
+  publishedAt: string;
+  featuredImage: Image | null;
+  images: Image[];
+  options: ProductOption[];
+  variants: ProductVariant[];
+  priceRange: { minVariantPrice: Money; maxVariantPrice: Money };
+  compareAtPriceRange: { minVariantPrice: Money; maxVariantPrice: Money };
+  seo: Seo;
+};
+
+export type ProductSummary = {
+  id: string;
+  handle: string;
+  title: string;
+  vendor: string;
+  featuredImage: Image | null;
+  priceRange: { minVariantPrice: Money; maxVariantPrice: Money };
+  compareAtPriceRange: { minVariantPrice: Money; maxVariantPrice: Money };
+};
+
+export type Collection = {
+  id: string;
+  handle: string;
+  title: string;
+  description: string;
+  descriptionHtml: string;
+  image: Image | null;
+  updatedAt: string;
+  seo: Seo;
+};
+
+export type CollectionWithProducts = Collection & {
+  products: {
+    nodes: ProductSummary[];
+    pageInfo: { hasNextPage: boolean; endCursor: string | null };
+  };
+};
+
+export type Page = {
+  id: string;
+  handle: string;
+  title: string;
+  body: string;        // sanitized HTML — render via DOMPurify before injecting
+  bodySummary: string;
+  updatedAt: string;
+  createdAt: string;
+  seo: Seo;
+};
+
+export type MenuItem = {
+  id: string;
+  title: string;
+  url: string;
+  type: string;
+  items: MenuItem[];
+};
+
+export type Menu = {
+  id: string;
+  handle: string;
+  title: string;
+  items: MenuItem[];
+};
+
+export type CartLine = {
+  id: string;
+  quantity: number;
+  cost: { totalAmount: Money; subtotalAmount: Money };
+  merchandise: ProductVariant & { product: { handle: string; title: string; featuredImage: Image | null } };
+};
+
+export type Cart = {
+  id: string;
+  checkoutUrl: string;
+  totalQuantity: number;
+  cost: {
+    subtotalAmount: Money;
+    totalAmount: Money;
+    totalTaxAmount: Money | null;
+    totalDutyAmount: Money | null;
+  };
+  lines: { nodes: CartLine[] };
+  buyerIdentity: {
+    email: string | null;
+    phone: string | null;
+    countryCode: string | null;
+  };
+};

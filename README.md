@@ -12,25 +12,37 @@ See the operating brief in conversation history for full migration scope. This R
 |---|---|
 | Phase 0 — Next.js scaffold + design system | ✅ Done |
 | Phase 0 — Homepage (`/`) — full design port | ✅ Done |
-| Phase 1 — `/products/[handle]` PDP | ⬜ Not started |
-| Phase 1 — `/collections/[handle]` PLP | ⬜ Not started |
-| Phase 1 — `/pages/[handle]` | ⬜ Not started |
-| Phase 2 — Cart + checkout hand-off | ⬜ Not started |
+| Phase 0 — Storefront API client + typed queries + cart mutations | ✅ Done |
+| Phase 0 — URL inventory snapshot (collections, products, pages) | ✅ Done |
+| Phase 1 — `/products/[handle]` PDP w/ variant selector + Product JSON-LD | ✅ Done |
+| Phase 1 — `/collections/[handle]` PLP w/ grid + CollectionPage JSON-LD | ✅ Done |
+| Phase 1 — `/pages/[handle]` w/ HTML body + LocalBusiness JSON-LD on location pages | ✅ Done |
+| Phase 1 — `sitemap.xml` + `robots.txt` + `not-found` page | ✅ Done |
+| Phase 2 — Cart + checkout hand-off (UI) | ⬜ Mutations done; UI not started |
 | Phase 3 — Custom pages (showrooms, quiz, financing) | ⬜ Not started |
-| URL inventory pull | 🟢 Collections (61), products (195), pages (110) — complete. 🟡 Blog articles + redirects need full pull via `scripts/pull-inventory.mjs` |
-| Storefront API integration | ⬜ Not started — homepage uses hardcoded sample data per design spec |
-| SEO audit CSV ingestion | 🟡 Imported to `data/seo-audit/`, not yet applied |
+| Add to cart UI + cart drawer + /cart page | ⬜ Not started |
+| Search route (`predictiveSearch` API) | ⬜ Not started |
+| Blog routes (`/blogs/[blog]/[article]`) | ⬜ Deferred — design out of scope for v1 |
+| Run `scripts/pull-inventory.mjs` to fill blog articles + redirects | 🟡 Pending — needs Admin token w/ proper scopes |
+| Wire Storefront API (token + domain in `.env.local`) | 🟡 Code ready; awaiting token from user |
+| SEO audit CSV → next.config redirects | 🟡 CSV imported; not yet applied |
 
 ## Local development
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000
-npm run build        # production build
-npm run typecheck    # tsc --noEmit
+cp .env.example .env.local         # then add SHOPIFY_STOREFRONT_PUBLIC_TOKEN
+npm run dev                         # http://localhost:3000
+npm run build                       # production build (works w/o env, just no prerender)
+npm run typecheck                   # tsc --noEmit
 ```
 
-Requires Node ≥ 18.18.
+Requires Node ≥ 18.18 (Node 22 recommended).
+
+The build will succeed without the Storefront token — dynamic routes
+(`/products/[handle]`, `/collections/[handle]`, `/pages/[handle]`) just won't
+pre-render any pages. Once the token is set, `next build` will SSG every
+collection, every published page, and the priority PDPs from the inventory.
 
 ## Tech stack
 
@@ -73,6 +85,22 @@ app/
 public/
   assets/
     la-mattress-logo.png   Brand logo (400×224)
+app/
+  products/[handle]/       PDP route w/ variant selector + Product JSON-LD
+  collections/[handle]/    PLP route w/ grid + CollectionPage JSON-LD
+  pages/[handle]/          Shopify Page renderer + LocalBusiness JSON-LD on location handles
+  sitemap.ts               Sitemap from inventory snapshot (home + 61 + 195 + 26 URLs)
+  robots.ts                robots.txt — allow everything except /cart, /checkout, /account, /api, /search?
+  not-found.tsx            404 page — "Lost in the night" w/ link list
+lib/
+  shopify/
+    client.ts              fetch-based Storefront client w/ typed errors + Next cache config
+    types.ts               Hand-written TS types for Product, Collection, Page, Cart, Money, Image
+    queries/               getProductByHandle, getCollectionByHandle, getPageByHandle, getMenu, handles
+    mutations/cart.ts      cartCreate, cartLinesAdd/Update/Remove, getCart
+    index.ts               Barrel export — routes import from `@/lib/shopify`
+  inventory.ts             Build-time accessors over data/url-inventory snapshots
+  format.ts                formatMoney, formatPriceRange (Intl.NumberFormat)
 data/
   seo-audit/               Semrush-style site audit CSV from the live site
   url-inventory/
