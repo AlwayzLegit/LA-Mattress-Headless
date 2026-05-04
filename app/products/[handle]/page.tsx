@@ -1,14 +1,17 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { getProductByHandle } from '@/lib/shopify';
-import { products as inventoryProducts } from '@/lib/inventory';
-import { formatMoney, formatPriceRange } from '@/lib/format';
+import type { Product } from '@/lib/shopify';
+import { products as inventoryProducts, findProduct } from '@/lib/inventory';
+import { formatPriceRange } from '@/lib/format';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 import { BuyBox } from './buy-box';
+import { ProductSkeleton } from './skeleton';
 
 type Params = { params: Promise<{ handle: string }> };
 
@@ -75,9 +78,33 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 export default async function ProductPage(props: Params) {
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
+
+  // Hybrid: known handles (in inventory snapshot) take the Suspense fast-path
+  // with a skeleton during navigation. Unknown handles fall through to a
+  // synchronous fetch — bad URLs hit notFound() OUTSIDE any Suspense, which
+  // is the only way to emit a real HTTP 404 in Next 15 (notFound() called
+  // inside a Suspense streams as 200 with the not-found body in the chunked
+  // response — confirmed in Phase 19).
+  if (findProduct(params.handle)) {
+    return (
+      <Suspense fallback={<ProductSkeleton />}>
+        <ProductBody handle={params.handle} />
+      </Suspense>
+    );
+  }
+
   const product = await getProductByHandle(params.handle).catch(() => null);
   if (!product) notFound();
+  return <ProductView product={product} />;
+}
 
+async function ProductBody({ handle }: { handle: string }) {
+  const product = await getProductByHandle(handle).catch(() => null);
+  if (!product) notFound();
+  return <ProductView product={product} />;
+}
+
+function ProductView({ product }: { product: Product }) {
   const min = product.priceRange.minVariantPrice;
   const max = product.priceRange.maxVariantPrice;
   const compareMin = product.compareAtPriceRange.minVariantPrice;

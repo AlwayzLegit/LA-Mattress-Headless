@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { getCollectionByHandle } from '@/lib/shopify';
 import type { CollectionSort } from '@/lib/shopify';
-import { collections as inventoryCollections } from '@/lib/inventory';
+import { collections as inventoryCollections, findCollection } from '@/lib/inventory';
 import { formatPriceRange } from '@/lib/format';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 import { SortControl } from './sort-control';
+import { CollectionSkeleton } from './skeleton';
 import {
   FilterPanel,
   FilterMobileTrigger,
@@ -79,12 +81,30 @@ export default async function CollectionPage(props: Params) {
   const searchParams = await props.searchParams;
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
+
+  // Hybrid: known handles in inventory snapshot use Suspense fast-path with
+  // skeleton on filter/sort/page changes. Unknown handles fall through to a
+  // synchronous fetch so bad URLs hit notFound() outside any Suspense and
+  // emit a real HTTP 404. See app/products/[handle]/page.tsx for the
+  // Phase 19 finding (notFound() inside Suspense returns 200, not 404).
+  if (findCollection(params.handle)) {
+    const suspenseKey = `${params.handle}|${searchParams.sort ?? ''}|${searchParams.after ?? ''}|${FILTER_PARAMS.map((p) => searchParams[p] ?? '').join('|')}`;
+    return (
+      <Suspense fallback={<CollectionSkeleton />} key={suspenseKey}>
+        <CollectionBody handle={params.handle} searchParams={searchParams} />
+      </Suspense>
+    );
+  }
+  return <CollectionBody handle={params.handle} searchParams={searchParams} />;
+}
+
+async function CollectionBody({ handle, searchParams }: { handle: string; searchParams: Record<string, string | undefined> }) {
   const { sortKey, reverse, index: sortIndex } = parseSort(searchParams.sort);
   const after = searchParams.after ?? null;
   const filterSel = parseFilterSelection(searchParams);
   const filters = selectionToProductFilters(filterSel);
   const collection = await getCollectionByHandle({
-    handle: params.handle,
+    handle,
     first: PER_PAGE,
     after,
     sortKey,
