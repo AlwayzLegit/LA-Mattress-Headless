@@ -17,7 +17,7 @@ See the operating brief in conversation history for full migration scope. This R
 | Phase 1 — `/pages/[handle]` | ⬜ Not started |
 | Phase 2 — Cart + checkout hand-off | ⬜ Not started |
 | Phase 3 — Custom pages (showrooms, quiz, financing) | ⬜ Not started |
-| URL inventory pull | 🟡 In progress (collections + products + pages enumerated, blogs/articles partial, redirects partial) |
+| URL inventory pull | 🟢 Collections (61), products (195), pages (110) — complete. 🟡 Blog articles + redirects need full pull via `scripts/pull-inventory.mjs` |
 | Storefront API integration | ⬜ Not started — homepage uses hardcoded sample data per design spec |
 | SEO audit CSV ingestion | 🟡 Imported to `data/seo-audit/`, not yet applied |
 
@@ -75,7 +75,15 @@ public/
     la-mattress-logo.png   Brand logo (400×224)
 data/
   seo-audit/               Semrush-style site audit CSV from the live site
-  url-inventory/           Pulled product/collection/page handles (in progress)
+  url-inventory/
+    collections.json       61 collections (handle + SEO + counts)
+    products.json          195 active+published products
+    pages.json             110 pages (26 published)
+    blogs.json             7 blog handles (article enumeration deferred)
+    redirects.json         placeholder — populate via scripts/pull-inventory.mjs
+scripts/
+  pull-inventory.mjs       Re-runnable Admin-API inventory pull
+                           (needs SHOPIFY_STORE_DOMAIN + SHOPIFY_ADMIN_TOKEN env)
 next.config.mjs            Allows images.unsplash.com, cdn.shopify.com, mattressstoreslosangeles.com
 ```
 
