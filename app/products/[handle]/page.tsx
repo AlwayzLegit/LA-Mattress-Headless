@@ -216,6 +216,8 @@ function ProductView({ product }: { product: Product }) {
             variants={product.variants}
             priceRange={product.priceRange}
             compareAtPriceRange={product.compareAtPriceRange}
+            productTitle={product.title}
+            productImage={product.featuredImage}
           />
 
           <ul className="pdp-trust">

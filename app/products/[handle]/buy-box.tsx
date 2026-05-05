@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import type { Money, ProductOption, ProductVariant } from '@/lib/shopify';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { Image, Money, ProductOption, ProductVariant } from '@/lib/shopify';
 import { useCart } from '@/app/_components/cart-context';
 import { Icon } from '@/app/_components/icon';
 import { formatMoney, formatPriceRange } from '@/lib/format';
@@ -14,9 +14,12 @@ type Props = {
   // the buy box renders before hydration with sensible numbers.
   priceRange: { minVariantPrice: Money; maxVariantPrice: Money };
   compareAtPriceRange: { minVariantPrice: Money; maxVariantPrice: Money };
+  // Used by the sticky mobile bar.
+  productTitle: string;
+  productImage: Image | null;
 };
 
-export function BuyBox({ options, variants, priceRange, compareAtPriceRange }: Props) {
+export function BuyBox({ options, variants, priceRange, compareAtPriceRange, productTitle, productImage }: Props) {
   const initial = useMemo(() => {
     const first = variants.find((v) => v.availableForSale) ?? variants[0];
     const out: Record<string, string> = {};
@@ -42,6 +45,22 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange }: P
   }
 
   const canBuy = !!matchingVariant?.availableForSale && !pending;
+
+  // Sticky mobile add-to-cart bar: appears only after the user scrolls past
+  // the main ATC button. We observe its visibility via IntersectionObserver
+  // and toggle a class. CSS hides it entirely on desktop (>880px).
+  const atcRef = useRef<HTMLButtonElement | null>(null);
+  const [showSticky, setShowSticky] = useState(false);
+  useEffect(() => {
+    const target = atcRef.current;
+    if (!target || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(
+      ([entry]) => setShowSticky(!entry.isIntersecting),
+      { rootMargin: '0px 0px -60px 0px' },
+    );
+    io.observe(target);
+    return () => io.disconnect();
+  }, []);
 
   // Variant-specific price beats the range. Fall back to the range only if
   // no variant matches the current selection (edge case: cleared selection).
@@ -122,6 +141,7 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange }: P
       ) : null}
 
       <button
+        ref={atcRef}
         type="button"
         className="btn btn-primary btn-lg"
         style={{ width: '100%', marginTop: 'var(--s-5)' }}
@@ -137,6 +157,36 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange }: P
           This combination is currently out of stock. Call {SITE_PHONE_DISPLAY} for availability.
         </p>
       ) : null}
+
+      <div className={`pdp-sticky-bar${showSticky ? ' on' : ''}`} aria-hidden={!showSticky}>
+        <div className="pdp-sticky-bar__inner">
+          {productImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={productImage.url}
+              alt={productImage.altText ?? productTitle}
+              className="pdp-sticky-bar__img"
+              width={48}
+              height={48}
+            />
+          ) : null}
+          <div className="pdp-sticky-bar__text">
+            <div className="pdp-sticky-bar__title">{productTitle}</div>
+            <div className="pdp-sticky-bar__price tnum">
+              {matchingVariant ? formatMoney(matchingVariant.price) : formatMoney(priceRange.minVariantPrice)}
+            </div>
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={!canBuy}
+            onClick={() => matchingVariant && addLine(matchingVariant.id, 1)}
+            tabIndex={showSticky ? 0 : -1}
+          >
+            {pending ? 'Adding…' : matchingVariant?.availableForSale ? 'Add' : 'Out of stock'}
+          </button>
+        </div>
+      </div>
     </>
   );
 }
