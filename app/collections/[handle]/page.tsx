@@ -11,6 +11,7 @@ import { formatPriceRange } from '@/lib/format';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
+import { CompareToggle } from '@/app/_components/compare';
 import { SortControl } from './sort-control';
 import { CollectionSkeleton } from './skeleton';
 import {
@@ -255,6 +256,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                             {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
                           </span>
                         </div>
+                        <CompareToggle handle={p.handle} title={p.title} />
                       </div>
                     </Link>
                   ))}
