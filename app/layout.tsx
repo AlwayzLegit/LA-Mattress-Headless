@@ -64,11 +64,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
       </head>
       <body>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <CartProvider>
           <TopBar />
           <Nav />
           <TrustStrip />
-          {children}
+          <div id="main-content">{children}</div>
           <Footer />
           <CartDrawer />
         </CartProvider>

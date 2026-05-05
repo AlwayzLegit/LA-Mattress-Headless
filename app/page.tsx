@@ -13,6 +13,7 @@ import { PopularProducts } from './_components/sections/popular-products';
 import { Showrooms } from './_components/sections/showrooms';
 import { FAQ } from './_components/sections/faq';
 import { RecentlyViewedRail } from './_components/recently-viewed';
+import { faqJsonLd } from '@/lib/faq';
 
 export const metadata: Metadata = {
   title: 'LA Mattress — Sleep, engineered in Los Angeles.',
@@ -39,6 +40,11 @@ export default function Home() {
       <QuizTeaser />
       <Reviews />
       <FAQ />
+      <script
+        id="ld-faq-home"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }}
+      />
     </>
   );
 }
