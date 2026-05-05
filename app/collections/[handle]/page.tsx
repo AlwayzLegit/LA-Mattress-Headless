@@ -198,7 +198,10 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
       <section className="section plp-section">
         <FilterShell>
           <div className="plp-layout">
-            <FilterPanel availableFilters={availableFilters} />
+            <FilterPanel
+              availableFilters={availableFilters}
+              resultCount={hasFiltersApplied ? collection.products.nodes.length : (totalInCollection ?? collection.products.nodes.length)}
+            />
             <div className="plp-main">
               <div className="plp-toolbar">
                 <div className="plp-toolbar-left">

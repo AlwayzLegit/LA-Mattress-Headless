@@ -16,9 +16,13 @@ import {
 import { useFilterShell } from './filter-shell';
 import { Icon } from '@/app/_components/icon';
 
-type Props = { availableFilters: AvailableFilter[] };
+type Props = {
+  availableFilters: AvailableFilter[];
+  /** Current result count, used in the mobile "Show N results" CTA. */
+  resultCount?: number;
+};
 
-export function FilterPanel({ availableFilters }: Props) {
+export function FilterPanel({ availableFilters, resultCount }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -142,7 +146,9 @@ export function FilterPanel({ availableFilters }: Props) {
       {mobileOpen ? (
         <div className="plp-filters-mobile-foot">
           <button type="button" className="btn btn-primary btn-lg" onClick={() => setMobileOpen(false)}>
-            Show results
+            {typeof resultCount === 'number'
+              ? `Show ${resultCount} result${resultCount === 1 ? '' : 's'}`
+              : 'Show results'}
           </button>
         </div>
       ) : null}
