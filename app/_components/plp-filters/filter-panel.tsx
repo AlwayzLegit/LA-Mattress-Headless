@@ -68,8 +68,11 @@ export function FilterPanel({ availableFilters, resultCount }: Props) {
 
   const isActive = (param: FilterParam, value: string): boolean => {
     if (param === 'vendor') return sel.vendor.includes(value);
-    if (param === 'type') return sel.type.includes(value);
-    if (param === 'size') return sel.size.includes(value);
+    if (param === 'type')   return sel.type.includes(value);
+    if (param === 'size')   return sel.size.includes(value);
+    if (param === 'firmness')      return sel.firmness.includes(value);
+    if (param === 'sleepPosition') return sel.sleepPosition.includes(value);
+    if (param === 'heightRange')   return sel.heightRange.includes(value);
     return false;
   };
 

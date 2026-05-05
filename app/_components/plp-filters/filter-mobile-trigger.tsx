@@ -5,7 +5,15 @@ import { useFilterShell } from './filter-shell';
 import type { FilterSelection } from './filters';
 
 function activeCount(sel: FilterSelection): number {
-  return sel.vendor.length + sel.type.length + sel.size.length + (sel.price ? 1 : 0);
+  return (
+    sel.vendor.length +
+    sel.type.length +
+    sel.size.length +
+    sel.firmness.length +
+    sel.sleepPosition.length +
+    sel.heightRange.length +
+    (sel.price ? 1 : 0)
+  );
 }
 
 export function FilterMobileTrigger({ sel }: { sel: FilterSelection }) {
