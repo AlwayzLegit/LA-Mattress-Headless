@@ -306,6 +306,22 @@ a { color: inherit; text-decoration: none; }
 
 .nav-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 
+/* A11y skip link — visible only when keyboard-focused */
+.skip-link {
+  position: absolute;
+  top: 0; left: 0;
+  padding: 10px 16px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 var(--r-2) 0;
+  transform: translateY(-100%);
+  transition: transform 120ms ease-out;
+  z-index: 200;
+}
+.skip-link:focus { transform: translateY(0); outline: 2px solid var(--accent-fg); outline-offset: -4px; }
+
 /* Article — "Keep reading" related list */
 .article-related-list { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
 .article-related-list > li { border-bottom: 1px solid var(--line); }
@@ -1060,7 +1076,12 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--r-2);
   cursor: pointer; font: inherit; font-size: 14px;
   transition: border-color var(--d-fast), background var(--d-fast);
+  display: inline-flex; align-items: center; gap: 8px;
+  line-height: 1.2;
 }
+.pdp-option-chip-label { font-weight: 500; }
+.pdp-option-chip-price { font-size: 13px; color: var(--text-3); }
+.pdp-option-chip.on .pdp-option-chip-price { color: rgba(255,255,255,0.85); }
 .pdp-option-chip:hover { border-color: var(--text); }
 .pdp-option-chip.on { border-color: var(--accent); background: var(--accent); color: var(--accent-fg); }
 .pdp-option-chip.unavailable { color: var(--text-4); position: relative; }

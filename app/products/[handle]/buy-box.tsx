@@ -44,6 +44,32 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
     });
   }
 
+  // Find the variant that would result from clicking a chip — used to show
+  // its price inline. Falls back to any variant matching just this option
+  // value when the cross-selection has no exact match.
+  function variantForChip(name: string, value: string): ProductVariant | undefined {
+    const exact = variants.find((v) =>
+      v.selectedOptions.every((o) => (o.name === name ? o.value === value : selection[o.name] === o.value)),
+    );
+    if (exact) return exact;
+    return variants.find((v) => v.selectedOptions.some((o) => o.name === name && o.value === value));
+  }
+
+  // Only show prices on chips when there's meaningful variation (>$1 spread
+  // across the option). Saves clutter on products where every size is the
+  // same price.
+  function shouldShowPriceForOption(name: string): boolean {
+    const prices = new Set<number>();
+    for (const v of variants) {
+      const matchesName = v.selectedOptions.some((o) => o.name === name);
+      if (!matchesName) continue;
+      prices.add(Number.parseFloat(v.price.amount));
+    }
+    if (prices.size < 2) return false;
+    const arr = Array.from(prices);
+    return Math.max(...arr) - Math.min(...arr) >= 1;
+  }
+
   const canBuy = !!matchingVariant?.availableForSale && !pending;
 
   // Sticky mobile add-to-cart bar: appears only after the user scrolls past
@@ -121,6 +147,8 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
                 {opt.values.map((v) => {
                   const available = isAvailable(opt.name, v);
                   const active = selection[opt.name] === v;
+                  const showPrice = shouldShowPriceForOption(opt.name);
+                  const variantForThisChip = showPrice ? variantForChip(opt.name, v) : undefined;
                   return (
                     <button
                       key={v}
@@ -128,9 +156,12 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
                       className={`pdp-option-chip ${active ? 'on' : ''} ${available ? '' : 'unavailable'}`}
                       onClick={() => setSelection((s) => ({ ...s, [opt.name]: v }))}
                       aria-pressed={active}
-                      aria-label={`${opt.name}: ${v}${available ? '' : ' (unavailable)'}`}
+                      aria-label={`${opt.name}: ${v}${variantForThisChip ? `, ${formatMoney(variantForThisChip.price)}` : ''}${available ? '' : ' (unavailable)'}`}
                     >
-                      {v}
+                      <span className="pdp-option-chip-label">{v}</span>
+                      {variantForThisChip ? (
+                        <span className="pdp-option-chip-price tnum">{formatMoney(variantForThisChip.price)}</span>
+                      ) : null}
                     </button>
                   );
                 })}
