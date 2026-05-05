@@ -306,6 +306,29 @@ a { color: inherit; text-decoration: none; }
 
 .nav-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 
+/* Article — "Keep reading" related list */
+.article-related-list { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+.article-related-list > li { border-bottom: 1px solid var(--line); }
+.article-related-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-3) 0;
+  text-decoration: none;
+  color: inherit;
+  font-size: 15px;
+}
+.article-related-row:hover { color: var(--accent); }
+.article-related-row time { font-size: 13px; white-space: nowrap; }
+.article-related-row svg { color: var(--text-3); }
+.article-related-row:hover svg { color: var(--accent); }
+.article-related-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 480px) {
+  .article-related-row { grid-template-columns: 1fr auto; }
+  .article-related-row time { display: none; }
+}
+
 /* 404 — category browse-back grid + secondary links */
 .nf-grid {
   display: grid;
