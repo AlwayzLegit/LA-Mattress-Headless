@@ -112,6 +112,36 @@ async function ProductBody({ handle }: { handle: string }) {
   return <ProductView product={product} related={related} />;
 }
 
+function SpecTable({ product }: { product: Product }) {
+  const { specs } = product;
+  const sizeOpt = product.options.find((o) => /size/i.test(o.name));
+  const rows: { label: string; value: string }[] = [];
+  if (specs.materialType)              rows.push({ label: 'Material',       value: specs.materialType });
+  else if (product.productType)        rows.push({ label: 'Type',           value: product.productType });
+  if (specs.firmness)                  rows.push({ label: 'Firmness',       value: specs.firmness });
+  if (specs.heightInches !== null)     rows.push({ label: 'Height',         value: `${specs.heightInches}"` });
+  if (sizeOpt && sizeOpt.values.length) rows.push({ label: 'Sizes',         value: sizeOpt.values.join(', ') });
+  if (specs.trialNights !== null)      rows.push({ label: 'Comfort trial',  value: `${specs.trialNights} nights` });
+  if (specs.warrantyYears !== null)    rows.push({ label: 'Warranty',       value: `${specs.warrantyYears} years` });
+  rows.push({ label: 'Brand', value: product.vendor });
+
+  if (rows.length === 0) return null;
+  return (
+    <section className="section pdp-spec-table-section">
+      <div className="eyebrow">Specs</div>
+      <h2 className="h2">At a glance</h2>
+      <dl className="pdp-spec-table">
+        {rows.map((r) => (
+          <div key={r.label} className="pdp-spec-row">
+            <dt>{r.label}</dt>
+            <dd>{r.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
 function SpecStrip({ specs }: { specs: Product['specs'] }) {
   // Render only the spec values that are actually populated. Order matches
   // the buying-decision priority: material → firmness → height. Values
@@ -197,6 +227,8 @@ function ProductView({ product, related }: { product: Product; related: ProductS
           featured={product.featuredImage}
           images={product.images}
         />
+
+        <SpecTable product={product} />
 
         {product.descriptionHtml ? (
           <section className="section pdp-description">
