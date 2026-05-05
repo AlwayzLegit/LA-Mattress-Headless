@@ -10,6 +10,7 @@ import { products as inventoryProducts, findProduct } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
+import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { BuyBox } from './buy-box';
 import { ProductSkeleton } from './skeleton';
 
@@ -129,6 +130,19 @@ function ProductView({ product }: { product: Product }) {
       offerCount: product.variants.length,
       availability: product.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
     },
+    // Only include aggregateRating when the merchant's review vendor (Judge.me)
+    // has populated the reviews.* metafields. Google rejects fabricated values.
+    ...(product.reviews
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: product.reviews.rating.toFixed(1),
+            reviewCount: product.reviews.count,
+            bestRating: '5',
+            worstRating: '1',
+          },
+        }
+      : {}),
   };
 
   const breadcrumbLd = {
@@ -195,6 +209,7 @@ function ProductView({ product }: { product: Product }) {
         <aside className="pdp-buybox">
           <div className="eyebrow">{product.vendor}</div>
           <h1 className="h2 pdp-title">{product.title}</h1>
+          <ReviewsBadge reviews={product.reviews} size="block" />
 
           <BuyBox
             options={product.options}

@@ -44,6 +44,16 @@ export type ProductOption = {
   values: string[];
 };
 
+/**
+ * Aggregated review data from Judge.me (or any Storefront-exposed metafield
+ * pair under namespace "reviews"). Null until the metafield definitions are
+ * created in Shopify Admin and a vendor populates them.
+ */
+export type ProductReviews = {
+  rating: number;          // average, e.g. 4.8 (out of 5)
+  count: number;           // total review count
+};
+
 export type Product = {
   id: string;
   handle: string;
@@ -63,6 +73,7 @@ export type Product = {
   priceRange: { minVariantPrice: Money; maxVariantPrice: Money };
   compareAtPriceRange: { minVariantPrice: Money; maxVariantPrice: Money };
   seo: Seo;
+  reviews: ProductReviews | null;
 };
 
 export type ProductSummary = {

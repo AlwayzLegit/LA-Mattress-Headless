@@ -1,22 +1,1866 @@
 {
-  "$schema": "Shopify URL Redirects — paths that must continue to redirect after the migration cutover (Phase 5 SEO hardening).",
-  "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via MCP, 2026-05-04. Snapshot is PARTIAL (~200 of an estimated 400+).",
-  "$status": "partial",
-  "$nextStep": "Run `node scripts/pull-inventory.mjs` with an Admin token that has read_themes (or equivalent) scope to enumerate every redirect. The script writes the complete list to this file plus a Shopify-Admin-import-format CSV at redirects.csv.",
-  "$applicationNote": "Loaded by next.config.mjs at build time and emitted as Next.js `redirects()`. Once redirects.csv is fully imported, this file becomes the single source of truth at the edge.",
-  "$observedPatterns": [
-    "Old location-page slugs → current /pages/{handle} (e.g. /pages/koreatown-mattress-store → /pages/koreatown-best-mattress-store)",
-    "Tempur-Pedic product handle history (early product slugs → current canonical PDPs)",
-    "Old collection slugs → current (e.g. /collections/sale, /collections/mattresses-on-sale, /collections/mattress-protectors → current handles)",
-    "Many obsolete /blogs/beds-mattresses/* article slugs → /collections/mattresses (soft 404 redirects to keep link equity)"
-  ],
-  "$count": 6,
+  "$schema": "Shopify URL Redirects — paths that must continue to redirect after the migration cutover.",
+  "$source": "Shopify Admin → URL Redirects export (CSV), 2026-05-05.",
+  "$status": "imported",
+  "$applicationNote": "Loaded by next.config.mjs at build time and emitted as Next.js redirects(). Edge-evaluated.",
+  "$count": 370,
+  "$importedAt": "2026-05-05T09:22:35.804Z",
+  "$importStats": {
+    "csvRows": 372,
+    "imported": 370,
+    "selfRedirectsDropped": 2,
+    "invalidRowsDropped": 0
+  },
   "redirects": [
-    { "source": "/collections/sale",                    "destination": "/collections/on-sale",                       "permanent": true,  "verified": "2026-05-04" },
-    { "source": "/collections/mattresses-on-sale",       "destination": "/collections/on-sale",                       "permanent": true,  "verified": "2026-05-04" },
-    { "source": "/collections/mattress-protectors",      "destination": "/collections/mattress-protector",            "permanent": true,  "verified": "2026-05-04" },
-    { "source": "/pages/koreatown-mattress-store",       "destination": "/pages/koreatown-best-mattress-store",       "permanent": true,  "verified": "2026-05-04" },
-    { "source": "/pages/mattress-faq",                   "destination": "/pages/mattress-store-contact",              "permanent": false, "verified": "2026-05-04", "note": "temporary — Shopify page exists but is unpublished; remove this once content team publishes /pages/mattress-faq" },
-    { "source": "/pages/mattress-store-delivery",        "destination": "/pages/love-your-bed-guarantee",             "permanent": false, "verified": "2026-05-04", "note": "temporary — Shopify page exists but is unpublished; remove this once content team publishes /pages/mattress-store-delivery" }
+    {
+      "source": "/blogs/beds-mattresses/9-easy-steps-on-how-to-clean-a-mattress",
+      "destination": "/blogs/mattress-care-tips/9-easy-steps-on-how-to-clean-a-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/bedroom-storage-ideas-for-those-who-need-space",
+      "destination": "/blogs/mattress-care-tips/bedroom-storage-ideas-for-those-who-need-space",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/breakfast-muffins-taste-buds-6996",
+      "destination": "/blogs/beds-mattresses/low-cal-high-protein-breakfast-3495",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/choosing-the-right-mattress-for-improved-sleep-quality-and-alleviatin",
+      "destination": "/blogs/sleep-health/choosing-the-right-mattress-for-improved-sleep-quality-and-alleviatin",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/choosing-the-right-mattress-for-improved-sleep-quality-and-alleviating",
+      "destination": "/blogs/sleep-health/choosing-the-right-mattress-for-improved-sleep-quality-and-alleviatin",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/dos-donts-good-nights-sleep-2291",
+      "destination": "/blogs/sleep-blog/how-many-hours-of-sleep-do-kids-need",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/elevate-your-sleep-with-bedroom-plants-a-comprehensive-guide",
+      "destination": "/blogs/sleep-blog/elevate-your-sleep-with-bedroom-plants-a-comprehensive-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/guide-to-choosing-pillows-for-back-pain-relief",
+      "destination": "/blogs/sleep-blog/guide-to-choosing-pillows-for-back-pain-relief",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/how-often-should-you-wash-your-sheet-set",
+      "destination": "/blogs/mattress-care-tips/how-often-should-you-wash-your-sheet-set",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/how-to-choose-the-best-mattress-size",
+      "destination": "/blogs/mattress-buying-guide/how-to-choose-the-best-mattress-size",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/how-to-make-your-dorm-bed-more-comfortable-in-4-easy-steps",
+      "destination": "/blogs/mattress-care-tips/how-to-make-your-dorm-bed-more-comfortable-in-4-easy-steps",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/how-to-reduce-allergens-in-your-bedroom",
+      "destination": "/blogs/mattress-care-tips/how-to-reduce-allergens-in-your-bedroom",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/live-longer-healthy",
+      "destination": "/blogs/beds-mattresses/sleep-heart-health",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/mattress-buying-guide",
+      "destination": "/blogs/mattress-buying-guide/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/mattress-faqs-complete-guide",
+      "destination": "/blogs/mattress-buying-guide/mattress-faqs-complete-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/should-you-be-tested-for-sleep-apnea-a-crucial-step-for-your-heart-h",
+      "destination": "/blogs/sleep-health/should-you-be-tested-for-sleep-apnea-a-crucial-step-for-your-heart-h",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/sleep-better-feel-better-managing-hot-flashes-and-night-sweats-with",
+      "destination": "/blogs/sleep-health/sleep-better-feel-better-managing-hot-flashes-and-night-sweats-with",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/sleep-disorder-5701",
+      "destination": "/blogs/sleep-health/sleep-disorder-5701",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/stress-sleep-better",
+      "destination": "/products/royale-ii-extra-firm-gel-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/take-back-your-sleep-declutter-your-bedroom-with-11-diy-tips",
+      "destination": "/blogs/beds-mattresses/declutter-bedroom-6452",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/the-impact-of-staying-hydrated-while-you-sleep",
+      "destination": "/blogs/sleep-blog/the-impact-of-staying-hydrated-while-you-sleep",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/ultimate-sleep-better-diet-4736",
+      "destination": "/blogs/beds-mattresses/ultimate-sleep-diet",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/unbeatable-savings-at-la-mattress-stores-best-4th-of-july-mattress-sale-2023",
+      "destination": "/blogs/beds-mattresses/best-4th-of-july-mattress-sale-2023",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-alarm-clock-about-you-5123",
+      "destination": "/blogs/beds-mattresses/sleep-experts-best-advice-insomnia-384765",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-a-hybrid",
+      "destination": "/blogs/mattress-buying-guide/what-is-a-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-a-hybrid-mattress-2023-facts-pros-cons",
+      "destination": "/blogs/mattress-buying-guide/what-is-a-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-a-pocket-spring",
+      "destination": "/blogs/mattress-buying-guide/what-is-a-pocket-spring",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-bamboo-infused",
+      "destination": "/blogs/mattress-buying-guide/what-is-bamboo-infused",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-bonnell-spring",
+      "destination": "/blogs/mattress-buying-guide/what-is-bonnell-spring",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-coil-spring",
+      "destination": "/blogs/mattress-buying-guide/what-is-coil-spring",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-coir",
+      "destination": "/blogs/mattress-buying-guide/what-is-coir",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-egg-crate-foam",
+      "destination": "/blogs/mattress-buying-guide/what-is-egg-crate-foam",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-foam",
+      "destination": "/blogs/mattress-buying-guide/what-is-foam",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-gel",
+      "destination": "/blogs/mattress-buying-guide/what-is-gel",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-high-density-foam",
+      "destination": "/blogs/mattress-buying-guide/what-is-high-density-foam",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-high-resilience-foam",
+      "destination": "/blogs/mattress-buying-guide/what-is-high-resilience-foam",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-innerspring",
+      "destination": "/blogs/mattress-buying-guide/what-is-innerspring",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-latex",
+      "destination": "/blogs/mattress-buying-guide/what-is-latex",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-memory-foam",
+      "destination": "/blogs/mattress-buying-guide/what-is-memory-foam",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-open-coil",
+      "destination": "/blogs/mattress-buying-guide/what-is-open-coil",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-orthopedic",
+      "destination": "/blogs/mattress-buying-guide/what-is-orthopedic",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-pillow-top",
+      "destination": "/blogs/mattress-buying-guide/what-is-pillow-top",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-polyurethane-foam",
+      "destination": "/blogs/mattress-buying-guide/what-is-polyurethane-foam",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-reflex-foam",
+      "destination": "/blogs/mattress-buying-guide/what-is-reflex-foam",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-tempur",
+      "destination": "/blogs/mattress-buying-guide/what-is-tempur",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-the-proper-pillow-position-for-optimal-sleeping",
+      "destination": "/blogs/sleep-blog/what-is-the-proper-pillow-position-for-optimal-sleeping",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-visco-elastic-foam",
+      "destination": "/blogs/mattress-buying-guide/what-is-visco-elastic-foam",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/what-is-wool",
+      "destination": "/blogs/mattress-buying-guide/what-is-wool",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/why-is-rem-sleep-so-important",
+      "destination": "/blogs/sleep-blog/why-is-rem-sleep-so-important",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/la-mattress-stores-blog",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide-expert-tips/10-top-rated-by-comfort-best-mattresses-of-2023",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/10-ways-beat-heat-sleep-0716",
+      "destination": "/blogs/beds-mattresses/10-ways-beat-heat-sleep-0716",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/adjustable-mattress-toppers-whats-all-the-buzz-about",
+      "destination": "/blogs/mattress-buying-guide/adjustable-mattress-toppers",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/avocado-vs-tempur-pedic-detailed-comparison",
+      "destination": "/blogs/mattress-buying-guide/avocado-vs-tempur-pedic",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/beautyrest-black-vs-tempurpedic-mattresses-how-to-make-your-pick",
+      "destination": "/blogs/mattress-buying-guide/beautyrest-black-vs-tempurpedic-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/bed-size",
+      "destination": "/blogs/beds-mattresses/bed-size",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-mattress-f",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-mattress-for-healthy-sleep-2023-how-to-choose",
+      "destination": "/blogs/mattress-buying-guide/best-mattress-for-healthy-sleep-2023",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-mattress-for-your-bad-back",
+      "destination": "/blogs/beds-mattresses/mattress-protector-buying-guide-2398",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-place-to-buy-a-king-sized-mattress-in-la-1",
+      "destination": "/blogs/mattress-buying-guide/best-place-to-buy-a-talalay-latex-mattress-in-la",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-place-to-buy-a-talalay-latex-mattress-in-la-1",
+      "destination": "/blogs/mattress-buying-guide/best-place-to-buy-a-talalay-latex-mattress-in-la",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/buy-a-mattress-online",
+      "destination": "/blogs/mattress-buying-guide/buying-a-mattress-online-vs-buying-in-store",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/hotel-sleep-friendly-3471",
+      "destination": "/blogs/sleep-health/why-gardening-may-help-you-sleep-better",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/how-to-price-a-used-stearns-foster-mattress-1",
+      "destination": "/blogs/mattress-buying-guide/how-to-price-a-used-englander-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/is-a-full-bed-wide-enough-for-two-sleepers",
+      "destination": "/blogs/mattress-buying-guide/full-size-bed-dimensions-width-couples",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/key-facts-about-mattress-size-5839",
+      "destination": "/blogs/beds-mattresses/key-facts-about-mattress-size-5839",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/mattress-myths-4876",
+      "destination": "/blogs/beds-mattresses/mattress-myths-4876",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/mattress-thickn",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/mattress-thickness-guide-find-the-perfect-mattress-thickness-for-you",
+      "destination": "/blogs/mattress-buying-guide/mattress-thickness-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/spring-vs-foam-is-a-spring-mattress-good-for-back-pain",
+      "destination": "/blogs/mattress-buying-guide/spring-vs-foam-mattress-back-pain",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/test",
+      "destination": "/blogs/mattress-buying-guide/best-mattress-for-ms-multiple-sclerosis",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/test-blog",
+      "destination": "/blogs/mattress-buying-guide/tempurpedic-sale-la",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/what-is-egg-crate-foam",
+      "destination": "/blogs/mattress-buying-guide/egg-crate-mattress-topper-complete-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/air-mattress-making-popping-noises-a-fun-and-simple-guide-to-unravel-the-mystery",
+      "destination": "/blogs/mattress-care-tips/air-mattress-making-popping-noises",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/bed-size",
+      "destination": "/blogs/beds-mattresses/bed-size",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/bedroom-therapy-wanda-horton",
+      "destination": "/blogs/beds-mattresses/bedroom-therapy-wanda-horton",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/bedroom-therapy-wendy-patrick",
+      "destination": "/blogs/beds-mattresses/bedroom-therapy-wendy-patrick",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/benefit-sleep",
+      "destination": "/blogs/sleep-blog/the-benefits-of-white-noise-for-sleep",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/cleaning-air-mattresses-step-by-step-guide-on-how-to-clean-an-air-mattress-in-2024",
+      "destination": "/blogs/mattress-care-tips/cleaning-air-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/clutter-sleep-3595",
+      "destination": "/blogs/beds-mattresses/clutter-sleep-3595",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/family-bed",
+      "destination": "/blogs/beds-mattresses/back-school-sleep-family-2546",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/healthy-new-years-resolutions-2018",
+      "destination": "/blogs/beds-mattresses/mattress-myths-4876",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/hotel-sleep-friendly-3471",
+      "destination": "/blogs/beds-mattresses/hotel-sleep-friendly-3471",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/how-to-deflate-an-intex-air-mattress-5-ways-explained-step-by-step",
+      "destination": "/blogs/mattress-care-tips/how-to-deflate-an-intex-air-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/love-mattress",
+      "destination": "/blogs/beds-mattresses/love-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/melatonin-good-nights-sleep-9824",
+      "destination": "/blogs/sleep-health/melatonin",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/pajamas-naked-sleep-23256",
+      "destination": "/blogs/beds-mattresses/6-scientific-reasons-sleep-naked-7832",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/sleep-athlete-2547",
+      "destination": "/blogs/beds-mattresses/sleep-athlete-2547",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/sleep-experts-best-advice-insomnia-384765",
+      "destination": "/blogs/beds-mattresses/sleep-experts-best-advice-insomnia-384765",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/sleep-study-social-media-18923",
+      "destination": "/blogs/beds-mattresses/sleep-study-social-media-18923",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/summer-cleaning-tips-bedroom-4693",
+      "destination": "/blogs/beds-mattresses/summer-cleaning-tips-bedroom-4693",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/weighted-blankets-help-sleep-better-4569",
+      "destination": "/blogs/beds-mattresses/weighted-blankets-help-sleep-better-4569",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-care-tips/why-cant-i-sleep",
+      "destination": "/blogs/beds-mattresses/why-cant-i-sleep",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/pages/financing-credit-card-la-mattress",
+      "destination": "/blogs/pages/financing-1",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/12-steps-buying-new-mattress-5647",
+      "destination": "/blogs/mattress-buying-guide/12-steps-buying-new-mattress-5647",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/7-best-sounds-to-fall-asleep-to",
+      "destination": "/blogs/sleep-blog/10-best-sounds-for-sleep",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/8-things-stealing-sleep-2154",
+      "destination": "/blogs/beds-mattresses/8-things-stealing-sleep-2154",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/art-power-nap-9456",
+      "destination": "/blogs/beds-mattresses/art-power-nap-9456",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/benefit-sleep",
+      "destination": "/blogs/sleep-health/why-gardening-may-help-you-sleep-better",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/benefits-sleeping-alone-9889",
+      "destination": "/blogs/beds-mattresses/benefits-sleeping-alone-9889",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/cant-sleep-8-proven-mind-tricks-soothe-anxious-mind",
+      "destination": "/blogs/beds-mattresses/cant-sleep-8-proven-mind-tricks-soothe-anxious-mind",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/choose-best-blanket-sleep-2541",
+      "destination": "/blogs/beds-mattresses/choose-best-blanket-sleep-2541",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/clutter-sleep-3595",
+      "destination": "/blogs/beds-mattresses/clutter-sleep-3595",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/coffee-sleep-and-you",
+      "destination": "/blogs/beds-mattresses/coffee-sleep-you-2514",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/declutter-bedroom-6452",
+      "destination": "/blogs/beds-mattresses/declutter-bedroom-6452",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/eating-bed-affects-sleep-3825",
+      "destination": "/blogs/beds-mattresses/eating-bed-affects-sleep-3825",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/electronics-bed-affects-sleep-9682",
+      "destination": "/blogs/beds-mattresses/sleep-survey-electronics-exercise-sleep-quality-3218",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/famous-love-stories-sleep-6354",
+      "destination": "/blogs/beds-mattresses/famous-love-stories-sleep-6354",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/fen-shui-help-sleep-2648",
+      "destination": "/blogs/beds-mattresses/fen-shui-help-sleep-2648",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/getting-older-wiser-about-sleep-6369",
+      "destination": "/blogs/beds-mattresses/getting-older-wiser-about-sleep-6369",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/golden-rules-best-sleep-8376",
+      "destination": "/blogs/beds-mattresses/golden-rules-best-sleep-8376",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/horror-movies-nightmares-6666",
+      "destination": "/blogs/beds-mattresses/horror-movies-nightmares-6666",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/how-to-buy-the-world-s-best-mattress",
+      "destination": "/blogs/beds-mattresses/how-to-buy-the-world-s-best-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/how-to-choose-best-sheets-for-bed-9933",
+      "destination": "/blogs/beds-mattresses/how-to-choose-best-sheets-for-bed-9933",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/hybrid-mattress",
+      "destination": "/blogs/mattress-buying-guide/the-difference-between-hybrid-and-innerspring-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/light-sleep-technology",
+      "destination": "/blogs/beds-mattresses/light-sleep-technology",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/low-calorie-bedtime-snack-recipes-9641",
+      "destination": "/blogs/beds-mattresses/low-calorie-bedtime-snack-recipes-9641",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/lucid-dreams-meaning-232456",
+      "destination": "/blogs/beds-mattresses/lucid-dreams-meaning-232456",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/mattress-buying-tips",
+      "destination": "/blogs/mattress-buying-guide/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/mattress-pain-back-1985",
+      "destination": "/blogs/sleep-health/from-arthritis-to-chronic-back-pain-finding-the-right-mattress-for-y",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/milk-before-bed-2457",
+      "destination": "/blogs/beds-mattresses/milk-before-bed-2457",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/napping-work-5247",
+      "destination": "/blogs/beds-mattresses/napping-work-5247",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/nightstand-clutter-25760",
+      "destination": "/blogs/beds-mattresses/nightstand-clutter-25760",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/perfect-pillow-sleep-position-1995",
+      "destination": "/blogs/beds-mattresses/perfect-pillow-sleep-position-1995",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/prep-mattress-winter-1648",
+      "destination": "/blogs/beds-mattresses/prep-mattress-winter-1648",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/reasons-ditch-netflix-sleep-2465",
+      "destination": "/blogs/beds-mattresses/reasons-ditch-netflix-sleep-2465",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/sleep-hack-habits",
+      "destination": "/blogs/beds-mattresses/sleep-hack-habits",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/sleep-scents-chamomile-6541",
+      "destination": "/blogs/beds-mattresses/sleep-scents-chamomile-6541",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/sleep-spa",
+      "destination": "/blogs/beds-mattresses/sleep-spa",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/sleeping-like-a-hot-tamale-get-cool-as-a-cucumber",
+      "destination": "/blogs/beds-mattresses/sleeping-like-a-hot-tamale-get-cool-as-a-cucumber",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/sleeping-with-anxiety-4020",
+      "destination": "/blogs/beds-mattresses/sleeping-with-anxiety-4020",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/smell-of-sleep",
+      "destination": "/blogs/beds-mattresses/smell-of-sleep",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/ted-talk-sleep",
+      "destination": "/blogs/beds-mattresses/ted-talk-sleep",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/wear-socks-bed-67832",
+      "destination": "/blogs/beds-mattresses/wear-socks-bed-67832",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/12-steps-buying-new-mattress-5647",
+      "destination": "/blogs/mattress-buying-guide/12-steps-buying-new-mattress-5647",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/7-habits-highly-effective-nappers",
+      "destination": "/blogs/beds-mattresses/7-habits-highly-effective-nappers",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/art-power-nap-9456",
+      "destination": "/blogs/beds-mattresses/art-power-nap-9456",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/benefit-sleep",
+      "destination": "/blogs/sleep-blog/the-benefits-of-white-noise-for-sleep",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/best-mattress-bad-back-2098",
+      "destination": "/blogs/beds-mattresses/best-mattress-bad-back-2098",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/best-mattress-for-your-bad-back",
+      "destination": "/blogs/beds-mattresses/best-mattress-for-your-bad-back",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/cant-sleep-8-proven-mind-tricks-soothe-anxious-mind",
+      "destination": "/blogs/beds-mattresses/cant-sleep-8-proven-mind-tricks-soothe-anxious-mind",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/coffee-sleep-and-you",
+      "destination": "/blogs/beds-mattresses/coffee-sleep-you-2514",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/do-beautyrest-mattresses-have-fiberglass",
+      "destination": "/blogs/mattress-buying-guide/do-beautyrest-mattresses-have-fiberglass",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/eat-sleep-travel",
+      "destination": "/blogs/beds-mattresses/eat-sleep-travel",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/energy-drinks-kids",
+      "destination": "/blogs/beds-mattresses/energy-drinks-kids",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/exercise-sleep-better-45978",
+      "destination": "/blogs/sleep-health/why-gardening-may-help-you-sleep-better",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/fiberglass-in-mattresses-heres-everything-you-need-to-know",
+      "destination": "/blogs/sleep-health/fiberglass-in-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/george-michael-prince-high-cost-sleep-deprivation",
+      "destination": "/blogs/beds-mattresses/george-michael-prince-high-cost-sleep-deprivation",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/hacks-work-day-1342",
+      "destination": "/blogs/sleep-health/why-gardening-may-help-you-sleep-better",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/insomnia",
+      "destination": "/blogs/beds-mattresses/insomnia",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/mattress-myths-4876",
+      "destination": "/blogs/beds-mattresses/mattress-myths-4876",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/perfect-pillow-sleep-position-1995",
+      "destination": "/blogs/beds-mattresses/perfect-pillow-sleep-position-1995",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/pressure-mapping-and-your-mattress-1975",
+      "destination": "/blogs/beds-mattresses/pressure-mapping-and-your-mattress-1975",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/sleep-doctor",
+      "destination": "/blogs/beds-mattresses/sleep-doctor",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/sleep-hack-habits",
+      "destination": "/blogs/sleep-blog/horoscope-say-sleep-habits",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/sleep-heart-health",
+      "destination": "/blogs/sleep-health/should-you-be-tested-for-sleep-apnea-a-crucial-step-for-your-heart-h",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/sleep-medication",
+      "destination": "/blogs/beds-mattresses/sleep-medication",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/sleep-sex-health-1298",
+      "destination": "/blogs/beds-mattresses/sleep-sex-health-1298",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/sleep-study-untruths-better-sleep-council-3975",
+      "destination": "/blogs/beds-mattresses/sleep-study-untruths-better-sleep-council-3975",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/sleep-survey-electronics-exercise-sleep-quality-3218",
+      "destination": "/blogs/beds-mattresses/sleep-survey-electronics-exercise-sleep-quality-3218",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/sleeping-like-a-hot-tamale-get-cool-as-a-cucumber",
+      "destination": "/blogs/beds-mattresses/sleeping-like-a-hot-tamale-get-cool-as-a-cucumber",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/smell-of-sleep",
+      "destination": "/blogs/beds-mattresses/smell-of-sleep",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/smoothie-recipes-sweet-dreams-2546",
+      "destination": "/blogs/beds-mattresses/smoothie-recipes-sweet-dreams-2546",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/testosterone-sleep-health",
+      "destination": "/blogs/beds-mattresses/testosterone-sleep-health",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/want-happier-blissful-relationship-better-sex-sleep-answer",
+      "destination": "/blogs/beds-mattresses/want-happier-blissful-relationship-better-sex-sleep-answer",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/what-is-sleep-apnea-9876",
+      "destination": "/blogs/beds-mattresses/what-is-sleep-apnea-9876",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/whats-right-mattress-97262",
+      "destination": "/blogs/beds-mattresses/whats-right-mattress-97262",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/worst-night-sleep",
+      "destination": "/blogs/beds-mattresses/worst-night-sleep",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/your-sleep-position-1645",
+      "destination": "/blogs/beds-mattresses/sleep-position-your-personality-9375",
+      "permanent": true
+    },
+    {
+      "source": "/collections/adjustable-base",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/all-collections",
+      "destination": "/collections/mattresses-adjustables-beds-furniture-pillows",
+      "permanent": true
+    },
+    {
+      "source": "/collections/all-foam-mattress",
+      "destination": "/collections/all-foam-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/beautyrest-mattresses",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/bed-in-a-box",
+      "destination": "/collections/bed-in-a-box-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/bed-in-a-box-mattress",
+      "destination": "/collections/bed-in-a-box-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/bedroom-furniture/brand_bed-in-a-box",
+      "destination": "/collections/bed-in-a-box-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/collections/best-la-furniture-sale-la-mattress-free-delivery-save-best-deals",
+      "destination": "/collections/los-angeles-furniture-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/best-sales",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/california-king",
+      "destination": "/collections/california-king-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/california-king-mattress",
+      "destination": "/collections/california-king-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/california-king-mattress-sale",
+      "destination": "/collections/california-king-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/chattam-&-wells-mattresses",
+      "destination": "/collections/chattam-wells-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/chattam-and-wells-twin-mattresses",
+      "destination": "/collections/chattam-wells-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/clearance-sale",
+      "destination": "/collections/floor-model-discontinued-mattress-clearance-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/eclipse-mattresses",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/ergopedic-adjustable",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/extra-firm-mattresses-save-online-or-in-store",
+      "destination": "/collections/extra-firm-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/extra-firm-mattresses-save-online-or-in-store-at-la-mattress",
+      "destination": "/collections/extra-firm-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/firm-mattresses",
+      "destination": "/collections/firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/collections/floor-model-clearance-sale",
+      "destination": "/collections/floor-model-discontinued-mattress-clearance-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/floor-model-discontinued-clearance-sale",
+      "destination": "/collections/floor-model-discontinued-mattress-clearance-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/full",
+      "destination": "/collections/full-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/full-mattress-sale",
+      "destination": "/collections/full-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/furniture",
+      "destination": "/collections/sofas",
+      "permanent": true
+    },
+    {
+      "source": "/collections/gel-foam-mattress",
+      "destination": "/collections/gel-foam-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/harvest-green-mattresses",
+      "destination": "/collections/harvest-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/helix-sleep-adjustable",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/hybrid-mattress",
+      "destination": "/collections/hybrid-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/innerspring-mattress",
+      "destination": "/collections/innerspring-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/innerspring-twin-size-mattresses",
+      "destination": "/collections/twin",
+      "permanent": true
+    },
+    {
+      "source": "/collections/king",
+      "destination": "/collections/king-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/king-mattress-sale",
+      "destination": "/collections/king-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/king-mattresses",
+      "destination": "/collections/king-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/la-mattress-store-mattresses",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/latex-mattress",
+      "destination": "/collections/latex-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattress-protectors",
+      "destination": "/collections/mattress-protector",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattress-sale",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattress-sales",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses-beds-adjustables-furniture-pillows",
+      "destination": "/collections/mattresses-adjustables-beds-furniture-pillows",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses-on-sale",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/medium-mattress",
+      "destination": "/collections/medium-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/medium-mattresses-save-online-or-in-store-at-la-mattress",
+      "destination": "/collections/medium-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/memory-foam-mattress",
+      "destination": "/collections/memory-foam-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/most-popular-mattresses",
+      "destination": "/collections/popular",
+      "permanent": true
+    },
+    {
+      "source": "/collections/on-sale-1",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/organic-mattresses",
+      "destination": "/collections/organic-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/collections/pillow-top-mattress",
+      "destination": "/collections/pillow-top-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/plush-mattresses-save-online-or-in-store-at-la-mattress",
+      "destination": "/collections/plush-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/pocketed-coil-mattress",
+      "destination": "/collections/pocketed-coil-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/queen",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/queen_bedframe",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/collections/queen-mattress",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/queen-mattress-sale",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/queen-size-southerland-mattress-sale",
+      "destination": "/collections/queen-size-mattress-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/restonic-mattresses",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/reverie-adjustable",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/rize-adjustable",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/sale",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/savvy-rest-mattresses",
+      "destination": "/collections/organic-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/collections/serta-adjustable",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/size_queen",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/sofa-furniture-best-prices-free-delivery-la-mattress-stores",
+      "destination": "/collections/sofas",
+      "permanent": true
+    },
+    {
+      "source": "/collections/southerland-adjustable",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/southerland-mattress",
+      "destination": "/collections/southerland-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/southerland-queen-mattresses",
+      "destination": "/collections/southerland-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/collections/southerland-twin-memory-foam-mattresses",
+      "destination": "/collections/southerland-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/collections/stearns-&-foster-mattresses",
+      "destination": "/collections/stearns-foster-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/stearns-and-foster-mattresses",
+      "destination": "/collections/stearns-foster-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/stearns-foster-mattress",
+      "destination": "/collections/stearns-foster-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/technogel-mattress",
+      "destination": "/collections/technogel-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-pedic",
+      "destination": "/collections/tempur-pedic-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-pedic-adjustable",
+      "destination": "/collections/tempur-pedic-adjustable-bases",
+      "permanent": true
+    },
+    {
+      "source": "/collections/twin",
+      "destination": "/collections/twin-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/twin-mattress-sale",
+      "destination": "/collections/twin-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/twin-mattresses",
+      "destination": "/collections/twin-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/twin-xl-mattresses",
+      "destination": "/collections/twin-xl-mattress-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/venus-mattresses",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/pages/10-year-tempur-pedic-mattress-and-flat-foundation-limited-warranty",
+      "destination": "/pages/tempur-pedic-warranty",
+      "permanent": true
+    },
+    {
+      "source": "/pages/about-us_old",
+      "destination": "/pages/about",
+      "permanent": true
+    },
+    {
+      "source": "/pages/bed-size",
+      "destination": "/pages/mattress-sizes",
+      "permanent": true
+    },
+    {
+      "source": "/pages/best-mattress-store-glendale-ca",
+      "destination": "/pages/mattress-store-in-glendale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/best-mattress-store-hancock-park",
+      "destination": "/pages/best-mattress-store-la-brea",
+      "permanent": true
+    },
+    {
+      "source": "/pages/best-mattress-store-koreatown",
+      "destination": "/pages/koreatown-best-mattress-store",
+      "permanent": true
+    },
+    {
+      "source": "/pages/best-mattress-store-la",
+      "destination": "/pages/best-mattress-store-west-la",
+      "permanent": true
+    },
+    {
+      "source": "/pages/best-mattress-store-near-me",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/best-mattress-store-santa-monica",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/best-mattress-store-studio-city",
+      "destination": "/pages/mattress-store-studio-city",
+      "permanent": true
+    },
+    {
+      "source": "/pages/black-friday-2025-mattress-sale-60-off-no-tax",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/black-friday-sale",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/chattam-and-wells-mattresses",
+      "destination": "/collections/chattam-wells-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/pages/cheap-mattress-store-near-me",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/contact",
+      "destination": "/pages/mattress-store-contact",
+      "permanent": true
+    },
+    {
+      "source": "/pages/contact-us",
+      "destination": "/pages/mattress-store-contact",
+      "permanent": true
+    },
+    {
+      "source": "/pages/free-120-night-comfort-guarantee",
+      "destination": "/blogs/pages/free-120-night-comfort-guarantee",
+      "permanent": true
+    },
+    {
+      "source": "/pages/glendale-ca-mattress-stores",
+      "destination": "/pages/mattress-store-in-glendale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/glendale-mattress-stores",
+      "destination": "/pages/mattress-store-in-glendale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/koreatown-central-los-angeles-mattress-store",
+      "destination": "/pages/koreatown-best-mattress-store",
+      "permanent": true
+    },
+    {
+      "source": "/pages/koreatown-mattress-store",
+      "destination": "/pages/koreatown-best-mattress-store",
+      "permanent": true
+    },
+    {
+      "source": "/pages/la-brea-hancock-park",
+      "destination": "/pages/best-mattress-store-la-brea",
+      "permanent": true
+    },
+    {
+      "source": "/pages/la-brea-hancock-park-mattress-store",
+      "destination": "/pages/best-mattress-store-la-brea",
+      "permanent": true
+    },
+    {
+      "source": "/pages/la-mattress-stores-find-a-store",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/labor-day-mattress-sale",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/labor-day-mattress-sales",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-sale",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-sizes-dimensions",
+      "destination": "/pages/mattress-sizes",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-store-beverly-hills",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-store-find-your-store",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-store-in-santa-monica",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-store-near-me",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-store-sale",
+      "destination": "/pages/mattress-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-store-west-hollywood",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-store-westwood",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-stores-near-me-studio-city-ca",
+      "destination": "/pages/mattress-store-studio-city",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-stores-near-me-west-los-angeles",
+      "destination": "/pages/best-mattress-store-west-la",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-warehouse-clearance-sale",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattresses",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/pages/memorial-day-mattress-sale",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/organic-latex",
+      "destination": "/products/harvest-green-original-firm-natural-latex-by-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/pages/organic-latex-mattress",
+      "destination": "/products/harvest-green-original-firm-natural-latex-by-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/pages/pico-blvd-west-la",
+      "destination": "/pages/best-mattress-store-west-la",
+      "permanent": true
+    },
+    {
+      "source": "/pages/pico-blvd-west-la-mattress",
+      "destination": "/pages/best-mattress-store-west-la",
+      "permanent": true
+    },
+    {
+      "source": "/pages/presidents-day-mattress-sale-2024",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/promotional-financing-offers",
+      "destination": "/blogs/pages/financing",
+      "permanent": true
+    },
+    {
+      "source": "/pages/queen-mattress-near-sylmar-la-mattress-store",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/pages/sale",
+      "destination": "/pages/mattress-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/sale-event",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/pages/santa-monica",
+      "destination": "/pages/santa-monica-mattress-store",
+      "permanent": true
+    },
+    {
+      "source": "/pages/santa-monica-mattress",
+      "destination": "/pages/santa-monica-mattress-store",
+      "permanent": true
+    },
+    {
+      "source": "/pages/santa-monica-mattress-store",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/stearns-and-foster-mattresses",
+      "destination": "/collections/stearns-foster-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/pages/studio-city",
+      "destination": "/pages/mattress-store-studio-city",
+      "permanent": true
+    },
+    {
+      "source": "/pages/studio-city-mattress",
+      "destination": "/pages/mattress-store-studio-city",
+      "permanent": true
+    },
+    {
+      "source": "/pages/studio-city-mattress-store",
+      "destination": "/pages/mattress-store-studio-city",
+      "permanent": true
+    },
+    {
+      "source": "/pages/tempur-pedic-mattresses",
+      "destination": "/collections/tempur-pedic-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/pages/tempur-pedic-mattresses-review-and-prices",
+      "destination": "/collections/tempur-pedic-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/pages/top-labor-day-mattress-sales-2023",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/products/10-gel-memory-foam-by-diamond-mattress",
+      "destination": "/products/10-gel-memory-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/align-8-gel-memory-diamond-mattress",
+      "destination": "/products/progel-8-memory-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/align-8-gel-memory-foam-by-diamond-mattress",
+      "destination": "/products/progel-8-memory-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-chattam-wells-kingston-luxury-plush-euro-top-18-floor-sample-clearance-mattress",
+      "destination": "/products/ca-king-chattam-wells-mattress-clearance-kingston-luxury-plush-euro-top-18",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-diamond-black-diamond-collection-azusa-luxury-latex-plush-euro-top-18-clearance-mattress",
+      "destination": "/products/ca-king-clearance-mattress-black-diamond-collection-azusa-luxury-latex-plush-euro-top-18",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-tempur-pedic-clearnce-mattress-tempur-proadapt-medium-12",
+      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/copy-of-sealy-posturepedic-performance-hybrid-copper-ii-plush-13-floor-model-clearance-mattress",
+      "destination": "/products/sealy-mattress-clearance-posturepedic-performance-hybrid-copper-ii-plush-13",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-black-diamond-collection-azusa-luxury-latex-plush-euro-top-16-clearance-mattress",
+      "destination": "/products/queen-diamond-mattress-clearance-black-diamond-collection-azusa-luxury-latex-plush-euro-top-16",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-lois-medium-natural-latex-hybrid-14-mattress",
+      "destination": "/products/lois-medium-natural-latex-hybrid-by-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-technogel-technology-estasi",
+      "destination": "/products/diamond-technogel-melodia-medium-firm",
+      "permanent": true
+    },
+    {
+      "source": "/products/eastman-house-royal-sands-medium-luxury-gel-memory-foam-pillow-top-14-clearance-mattress",
+      "destination": "/products/twin-xl-eastman-house-mattress-clearance-royal-sands-medium-luxury-gel-memory-foam-pillow-top-14",
+      "permanent": true
+    },
+    {
+      "source": "/products/full-diamond-generations-collection-jeremiah-plush-latex-euro-top-15-floor-sample-clearance-mattress",
+      "destination": "/products/full-diamond-mattress-clearance-generations-collection-jeremiah-plush-latex-euro-top-15",
+      "permanent": true
+    },
+    {
+      "source": "/products/harvest-green-original-pillow-top-natural-latex-by-harvest-green-mattress",
+      "destination": "/products/harvest-pillow-top-latex-by-harvest-green-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/helix-sleep-luxe-collection-twilight-elite-firm-15-mattress",
+      "destination": "/products/helix-luxe-collection-twilight-elite-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/jacquard-stripe-down-alternative-pillows-w-100-cotton-casing-cover",
+      "destination": "/collections/pillows",
+      "permanent": true
+    },
+    {
+      "source": "/products/janeiro-platform-bed-frame",
+      "destination": "/products/janeiro-gray-platform-bed-frame",
+      "permanent": true
+    },
+    {
+      "source": "/products/king-chattam-wells-kingston-luxury-plush-euro-top-18-clearance-mattress",
+      "destination": "/products/king-chattam-wells-mattress-kingston-clearance",
+      "permanent": true
+    },
+    {
+      "source": "/products/king-diamond-diana-firm-natural-latex-lux-euro-top-14-floor-sample-clearance-mattress",
+      "destination": "/products/king-diamond-mattress-diana-firm-natural-latex-lux-euro-top-14",
+      "permanent": true
+    },
+    {
+      "source": "/products/king-ergo-pedic-wireless-expression-clearance-adjustable-base-white",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/products/lois-plush-natural-latex-hybrid-by-diamond-mattress-1",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/premium-comfort-lyric-firm-mattress-scandinavian",
+      "destination": "/products/premium-comfort-prelude-firm-mattress-scandinavian",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-stearns-foster-clearance-mattress-lux-estate-cassatt-plush-euro-pillow-top-15",
+      "destination": "/products/the-luxe-estate-plush-pillow-top-by-stearns-foster",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-stearns-foster-lux-estate-cassatt-plush-euro-pillow-top-15-floor-sample-clearance-mattress",
+      "destination": "/products/the-luxe-estate-plush-pillow-top-by-stearns-foster",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-stearns-foster-mattress-clearance-lux-estate-cassatt-ultra-firm-14",
+      "destination": "/products/the-luxe-estate-firm-by-stearns-foster",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-tempur-pedic-tempur-luxebreeze-soft-13-discontinued-clearance-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxebreeze-soft-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/restonic-enchantment-latex-firm-mattress",
+      "destination": "/products/twin-xl-restonic-mattress-clearance-enchantment-latex-firm-12",
+      "permanent": true
+    },
+    {
+      "source": "/products/rock-x-firm-mattress-diamond",
+      "destination": "/products/rock-extra-firm-mattress-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/sealy-posturepedic-performance-hybrid-kelburn-ii-medium-13-clearance-mattress",
+      "destination": "/products/sealy-mattress-clearance-posturepedic-performance-hybrid-copper-ii-plush-13",
+      "permanent": true
+    },
+    {
+      "source": "/products/serta-icomfort-blue-max-touch-3000-plush-mattress",
+      "destination": "/products/ca-king-serta-mattress-clearance-icomfort-blue-max-touch-3000-plush-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/spring-air-back-davis-firm-value-collection-mattress",
+      "destination": "/collections/popular",
+      "permanent": true
+    },
+    {
+      "source": "/products/stearns-foster-lux-estate-cassatt-ultra-firm-14-floor-sample-clearance-mattress",
+      "destination": "/products/the-luxe-estate-firm-by-stearns-foster",
+      "permanent": true
+    },
+    {
+      "source": "/products/supreme-flat-box-spring",
+      "destination": "/products/standard-foundation-box-spring",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-luxeadapt-firm",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-luxeadapt-soft",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-soft-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-adapt-medium-hybrid",
+      "destination": "/products/tempur-pedic-adapt-medium-hybrid-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-adapt-medium-hybrid-mattress",
+      "destination": "/products/tempur-pedic-adapt-medium-hybrid-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-luxeadapt-firm",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-luxeadapt-soft",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-soft-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-proadapt-firm",
+      "destination": "/products/tempur-pedic-tempur-proadapt-firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-proadapt-medium",
+      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-proadapt-medium-12-discontinued-floor-model-clearance-mattress",
+      "destination": "/products/tempur-pedic-mattress-clearance-tempur-proadapt-medium-12",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-proadapt-soft",
+      "destination": "/products/tempur-pedic-tempur-proadapt-soft-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-proadapt-soft-12-floor-sample-clearance-mattress",
+      "destination": "/products/queen-tempur-pedic-mattress-clearance-tempur-proadapt-soft-12",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-3-cooler",
+      "destination": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-12-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-mattress",
+      "destination": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-12-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pro-adapt-firm",
+      "destination": "/products/tempur-pedic-tempur-proadapt-firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pro-adapt-medium",
+      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pro-adapt-medium-hybrid",
+      "destination": "/products/tempur-pedic-tempur-proadapt-medium-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pro-adapt-soft",
+      "destination": "/products/tempur-pedic-tempur-proadapt-soft-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-proadapt-firm",
+      "destination": "/products/tempur-pedic-tempur-proadapt-firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-proadapt-medium",
+      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-proadapt-medium-hybrid",
+      "destination": "/products/tempur-pedic-tempur-proadapt-medium-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-probreeze-medium-hybrid-3-cooler",
+      "destination": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-12-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempurpedic-tempur-adapt-11-medium-hybrid-mattress",
+      "destination": "/products/tempur-pedic-adapt-medium-hybrid-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempurpedic-tempuradapt-11-medium-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempurpedic-tempurluxeadapt-13-soft-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxebreeze-soft-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempurpedic-tempurluxebreeze-soft-13-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-soft-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempurpedic-tempurproadapt-medium-12-mattress",
+      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempurpedic-tempurproadapt-soft-12-mattress",
+      "destination": "/products/tempur-pedic-tempur-proadapt-soft-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/the-buckingham-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
+      "destination": "/products/the-windsor-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
+      "permanent": true
+    },
+    {
+      "source": "/products/twin-xl-13-luxe-gel-memory-foam-plush-by-venus-mattress-limited-stock-may-not-be-available",
+      "destination": "/products/luxe-gel-memory-foam-plush-by-venus-mattress-limited-stock-may-not-be-available",
+      "permanent": true
+    },
+    {
+      "source": "/products/twin-xl-ergo-pedic-wired-expression-clearance-adjustable-base",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/products/twin-xl-restonic-mattress-clearance-enchantment-latex-firm-13",
+      "destination": "/products/twin-xl-restonic-mattress-clearance-enchantment-latex-firm-12",
+      "permanent": true
+    }
   ]
 }
