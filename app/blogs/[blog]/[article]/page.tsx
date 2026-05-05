@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { getArticleByHandle } from '@/lib/shopify';
+import type { Article } from '@/lib/shopify';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
+import { ArticleSkeleton } from './skeleton';
 
 type Params = { params: Promise<{ blog: string; article: string }> };
 
@@ -57,12 +60,39 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   };
 }
 
+function findArticle(blog: string, article: string): boolean {
+  const b = inventoryBlogs.find((x) => x.handle === blog);
+  if (!b) return false;
+  return (b.articles ?? []).some((a) => a.handle === article);
+}
+
 export default async function ArticlePage(props: Params) {
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
+
+  // Same hybrid pattern as PDP/PLP: known (blog, article) tuples take the
+  // Suspense fast-path with skeleton; unknown handles fall through to the
+  // sync fetch so notFound() emits a real 404.
+  if (findArticle(params.blog, params.article)) {
+    return (
+      <Suspense fallback={<ArticleSkeleton />}>
+        <ArticleBody blog={params.blog} article={params.article} />
+      </Suspense>
+    );
+  }
+
   const article = await getArticleByHandle(params.blog, params.article).catch(() => null);
   if (!article) notFound();
+  return <ArticleView article={article} />;
+}
 
+async function ArticleBody({ blog, article }: { blog: string; article: string }) {
+  const a = await getArticleByHandle(blog, article).catch(() => null);
+  if (!a) notFound();
+  return <ArticleView article={a} />;
+}
+
+function ArticleView({ article }: { article: Article }) {
   const url = `${SITE}/blogs/${article.blog.handle}/${article.handle}`;
 
   const articleLd = {
