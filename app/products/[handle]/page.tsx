@@ -13,6 +13,7 @@ import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
 import { BuyBox } from './buy-box';
+import { PdpGallery } from './gallery';
 import { RelatedRail } from './related-rail';
 import { ProductSkeleton } from './skeleton';
 
@@ -173,35 +174,11 @@ function ProductView({ product, related }: { product: Product; related: ProductS
 
       <div className="pdp-grid pdp-grid-with-body">
         <div className="pdp-left">
-        <section className="pdp-gallery">
-          {product.featuredImage ? (
-            <Image
-              src={product.featuredImage.url}
-              alt={product.featuredImage.altText ?? product.title}
-              width={1200}
-              height={1200}
-              className="pdp-hero-img"
-              sizes="(max-width: 880px) 100vw, 60vw"
-              priority
-            />
-          ) : (
-            <div className="ph pdp-hero-img"><span className="ph-label">[Image coming]</span></div>
-          )}
-          {product.images.length > 1 ? (
-            <div className="pdp-thumbs">
-              {product.images.slice(1, 6).map((img, i) => (
-                <Image
-                  key={i}
-                  src={img.url}
-                  alt={img.altText ?? `${product.title} view ${i + 2}`}
-                  width={200}
-                  height={200}
-                  className="pdp-thumb"
-                />
-              ))}
-            </div>
-          ) : null}
-        </section>
+        <PdpGallery
+          productTitle={product.title}
+          featured={product.featuredImage}
+          images={product.images}
+        />
 
         {product.descriptionHtml ? (
           <section className="section pdp-description">
