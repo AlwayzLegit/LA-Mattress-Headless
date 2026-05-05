@@ -93,7 +93,7 @@ export default async function SearchPage(props: Params) {
         <section className="section plp-section">
           <FilterShell>
             <div className="plp-layout">
-              <FilterPanel availableFilters={availableFilters} />
+              <FilterPanel availableFilters={availableFilters} resultCount={products.length} />
               <div className="plp-main">
                 <div className="plp-toolbar">
                   <div className="plp-toolbar-left">
