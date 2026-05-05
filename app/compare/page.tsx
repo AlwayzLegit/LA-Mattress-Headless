@@ -96,17 +96,35 @@ export default async function ComparePage({ searchParams }: Search) {
                   </td>
                 ))}
               </SpecRow>
-              <SpecRow label="Type">
-                {products.map((p) => <td key={p.id}>{p.productType || '—'}</td>)}
-              </SpecRow>
               <SpecRow label="Brand">
                 {products.map((p) => <td key={p.id}>{p.vendor || '—'}</td>)}
+              </SpecRow>
+              <SpecRow label="Material">
+                {products.map((p) => <td key={p.id}>{p.specs.materialType || p.productType || '—'}</td>)}
+              </SpecRow>
+              <SpecRow label="Firmness">
+                {products.map((p) => <td key={p.id}>{p.specs.firmness || '—'}</td>)}
+              </SpecRow>
+              <SpecRow label="Height">
+                {products.map((p) => (
+                  <td key={p.id}>{p.specs.heightInches !== null ? `${p.specs.heightInches}"` : '—'}</td>
+                ))}
               </SpecRow>
               <SpecRow label="Sizes">
                 {products.map((p) => {
                   const opt = p.options.find((o) => /size/i.test(o.name));
                   return <td key={p.id}>{opt ? opt.values.join(', ') : '—'}</td>;
                 })}
+              </SpecRow>
+              <SpecRow label="Comfort trial">
+                {products.map((p) => (
+                  <td key={p.id}>{p.specs.trialNights !== null ? `${p.specs.trialNights} nights` : '—'}</td>
+                ))}
+              </SpecRow>
+              <SpecRow label="Warranty">
+                {products.map((p) => (
+                  <td key={p.id}>{p.specs.warrantyYears !== null ? `${p.specs.warrantyYears} years` : '—'}</td>
+                ))}
               </SpecRow>
               <SpecRow label="Available">
                 {products.map((p) => (
@@ -138,9 +156,10 @@ export default async function ComparePage({ searchParams }: Search) {
       )}
 
       <p className="muted compare-fineprint">
-        Specs above reflect what we have in product data today. We&rsquo;re expanding to firmness,
-        height, materials, certifications, and warranty length — those rows will appear here
-        automatically once the merchandising team fills them in.
+        Spec data is populated from each product&rsquo;s Shopify metafields (Firmness, Height,
+        Material, Warranty, Trial). Where a row reads &ldquo;—&rdquo;, the merchant hasn&rsquo;t
+        set that field yet — fill it in Shopify Admin → Products → [product] → Custom data
+        and it&rsquo;ll appear here on the next page render.
       </p>
     </main>
   );

@@ -76,6 +76,25 @@ export const REVIEWS_METAFIELDS = /* GraphQL */ `
   ratingCountMetafield: metafield(namespace: "reviews", key: "rating_count") { value type }
 `;
 
+/**
+ * Custom mattress spec metafields. All five live in the `custom` namespace
+ * with storefront access set to PUBLIC_READ. Defined and bulk-populated
+ * in Phase 52. Each value is a string we parse downstream.
+ *
+ *   custom.firmness         single_line_text — "Soft" / "Medium" / "Firm" / "Extra Firm" / "Plush" / "Medium-Plush" / "Medium-Firm"
+ *   custom.height_inches    number_decimal
+ *   custom.material_type    single_line_text — "Memory Foam" / "Hybrid" / "Innerspring" / "Latex" / "Gel Foam"
+ *   custom.warranty_years   number_integer
+ *   custom.trial_nights     number_integer (LA Mattress universal = 120)
+ */
+export const SPEC_METAFIELDS = /* GraphQL */ `
+  firmnessMetafield: metafield(namespace: "custom", key: "firmness")        { value type }
+  heightMetafield:   metafield(namespace: "custom", key: "height_inches")   { value type }
+  materialMetafield: metafield(namespace: "custom", key: "material_type")   { value type }
+  warrantyMetafield: metafield(namespace: "custom", key: "warranty_years")  { value type }
+  trialMetafield:    metafield(namespace: "custom", key: "trial_nights")    { value type }
+`;
+
 export const PRODUCT_FRAGMENT = /* GraphQL */ `
   fragment ProductFields on Product {
     id
@@ -103,5 +122,6 @@ export const PRODUCT_FRAGMENT = /* GraphQL */ `
     }
     seo { ...SeoFields }
     ${REVIEWS_METAFIELDS}
+    ${SPEC_METAFIELDS}
   }
 `;
