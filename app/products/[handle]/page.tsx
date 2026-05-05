@@ -4,14 +4,15 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { getProductByHandle } from '@/lib/shopify';
-import type { Product } from '@/lib/shopify';
+import { getProductByHandle, getProductRecommendations } from '@/lib/shopify';
+import type { Product, ProductSummary } from '@/lib/shopify';
 import { products as inventoryProducts, findProduct } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { BuyBox } from './buy-box';
+import { RelatedRail } from './related-rail';
 import { ProductSkeleton } from './skeleton';
 
 type Params = { params: Promise<{ handle: string }> };
@@ -96,16 +97,20 @@ export default async function ProductPage(props: Params) {
 
   const product = await getProductByHandle(params.handle).catch(() => null);
   if (!product) notFound();
-  return <ProductView product={product} />;
+  const related = await getProductRecommendations(product.handle).catch(() => [] as ProductSummary[]);
+  return <ProductView product={product} related={related} />;
 }
 
 async function ProductBody({ handle }: { handle: string }) {
-  const product = await getProductByHandle(handle).catch(() => null);
+  const [product, related] = await Promise.all([
+    getProductByHandle(handle).catch(() => null),
+    getProductRecommendations(handle).catch(() => [] as ProductSummary[]),
+  ]);
   if (!product) notFound();
-  return <ProductView product={product} />;
+  return <ProductView product={product} related={related} />;
 }
 
-function ProductView({ product }: { product: Product }) {
+function ProductView({ product, related }: { product: Product; related: ProductSummary[] }) {
   const min = product.priceRange.minVariantPrice;
   const max = product.priceRange.maxVariantPrice;
 
@@ -227,6 +232,8 @@ function ProductView({ product }: { product: Product }) {
           </ul>
         </aside>
       </div>
+
+      <RelatedRail products={related} />
 
       <script id="ld-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }} />
       <script id="ld-breadcrumb-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
