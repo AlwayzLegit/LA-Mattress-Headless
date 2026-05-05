@@ -797,6 +797,13 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 880px) { .pdp-grid { grid-template-columns: 1fr; gap: var(--s-5); } }
 
+/* Phase 23: gallery + description live in the left column so the buy box
+   in the right column stays sticky through the entire content. The grid's
+   align-items: start keeps both columns top-aligned; the buy box sticks
+   while the user scrolls through gallery → description. */
+.pdp-left { display: flex; flex-direction: column; gap: var(--s-7); }
+@media (max-width: 880px) { .pdp-left { gap: var(--s-5); } }
+
 .pdp-gallery { display: flex; flex-direction: column; gap: var(--s-3); }
 .pdp-hero-img {
   width: 100%;

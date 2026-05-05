@@ -27,7 +27,17 @@ export function SleepQuiz() {
   const answered = answers[q.id];
 
   const onSelect = (optId: string) => {
+    const wasAnswered = !!answers[q.id];
     setAnswers((a) => ({ ...a, [q.id]: optId }));
+    // Auto-advance on first answer of a question. Re-selecting on a question
+    // the user came back to (Back button) does NOT auto-advance — that would
+    // be hostile behaviour.
+    if (!wasAnswered) {
+      setTimeout(() => {
+        if (idx + 1 >= total) setStep('result');
+        else setStep(idx + 1);
+      }, 250);
+    }
   };
 
   const onNext = () => {

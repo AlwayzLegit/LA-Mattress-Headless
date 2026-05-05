@@ -114,6 +114,15 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
   }).catch(() => null);
   if (!collection) notFound();
 
+  // Unfiltered total from the inventory snapshot. Shopify Storefront's
+  // `products` connection doesn't return a total count, so this can drift
+  // if a product is added or removed from the collection between snapshot
+  // pulls — accurate enough for "Showing 24 of 169" UX, though.
+  const totalInCollection = findCollection(handle)?.productsCount ?? null;
+  const filterCount =
+    Object.values(filterSel).filter((v) => Array.isArray(v) ? v.length > 0 : v != null).length;
+  const hasFiltersApplied = filterCount > 0;
+
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -195,9 +204,13 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                 <div className="plp-toolbar-left">
                   <FilterMobileTrigger sel={filterSel} />
                   <span className="plp-toolbar-count">
-                    {hasResults
-                      ? `Showing ${collection.products.nodes.length} ${after ? 'more ' : ''}product${collection.products.nodes.length === 1 ? '' : 's'}`
-                      : 'No products match your filters'}
+                    {!hasResults
+                      ? 'No products match your filters'
+                      : after
+                      ? `Showing ${collection.products.nodes.length} more product${collection.products.nodes.length === 1 ? '' : 's'}`
+                      : hasFiltersApplied || !totalInCollection
+                      ? `Showing ${collection.products.nodes.length} product${collection.products.nodes.length === 1 ? '' : 's'}`
+                      : `Showing ${collection.products.nodes.length} of ${totalInCollection} product${totalInCollection === 1 ? '' : 's'}`}
                   </span>
                 </div>
                 <SortControl

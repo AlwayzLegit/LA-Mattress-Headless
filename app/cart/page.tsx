@@ -28,10 +28,16 @@ export default async function CartPage() {
           <p className="muted" style={{ marginBottom: 'var(--s-5)', maxWidth: '50ch' }}>
             Browse mattresses, adjustable beds, and bedding — or come visit us in person at one of our 5 LA showrooms.
           </p>
-          <div style={{ display: 'flex', gap: 'var(--s-3)', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 'var(--s-3)', flexWrap: 'wrap', marginBottom: 'var(--s-7)' }}>
             <Link href="/collections/mattresses" className="btn btn-primary">Shop mattresses</Link>
+            <Link href="/sleep-quiz" className="btn btn-ghost">Take the sleep quiz</Link>
             <Link href="/pages/mattress-store-locations" className="btn btn-ghost">Find a store</Link>
           </div>
+          <ul className="pdp-trust" style={{ borderTop: '1px solid var(--line)', paddingTop: 'var(--s-5)', maxWidth: 480 }}>
+            <li><Icon name="truck" size={16} /> Free white glove delivery</li>
+            <li><Icon name="shield" size={16} /> 120-night comfort exchange</li>
+            <li><Icon name="card" size={16} /> 0% APR financing available</li>
+          </ul>
         </div>
       </main>
     );
@@ -40,6 +46,11 @@ export default async function CartPage() {
   return (
     <main className="container cart-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
       <header style={{ marginBottom: 'var(--s-6)' }}>
+        <div style={{ marginBottom: 'var(--s-3)' }}>
+          <Link href="/collections/mattresses" className="link-arrow muted" style={{ fontSize: 14 }}>
+            <Icon name="arrow-left" size={14} /> Continue shopping
+          </Link>
+        </div>
         <div className="eyebrow">Cart</div>
         <h1 className="h1" style={{ margin: 'var(--s-3) 0 0' }}>
           {cart.totalQuantity} item{cart.totalQuantity === 1 ? '' : 's'}
@@ -92,6 +103,10 @@ export default async function CartPage() {
           <div className="cart-summary-row" style={{ marginTop: 'var(--s-4)' }}>
             <span className="muted">Subtotal</span>
             <span className="tnum">{formatMoney(cart.cost.subtotalAmount)}</span>
+          </div>
+          <div className="cart-summary-row" style={{ color: 'var(--accent)', fontWeight: 500 }}>
+            <span><Icon name="truck" size={14} /> White-glove delivery</span>
+            <span className="tnum">Free</span>
           </div>
           {cart.cost.totalTaxAmount ? (
             <div className="cart-summary-row">

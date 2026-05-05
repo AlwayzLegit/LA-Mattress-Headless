@@ -151,7 +151,8 @@ function ProductView({ product }: { product: Product }) {
         <span>{product.title}</span>
       </nav>
 
-      <div className="pdp-grid">
+      <div className="pdp-grid pdp-grid-with-body">
+        <div className="pdp-left">
         <section className="pdp-gallery">
           {product.featuredImage ? (
             <Image
@@ -182,6 +183,15 @@ function ProductView({ product }: { product: Product }) {
           ) : null}
         </section>
 
+        {product.descriptionHtml ? (
+          <section className="section pdp-description">
+            <div className="eyebrow">Details</div>
+            <h2 className="h2">About this mattress</h2>
+            <div className="rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(product.descriptionHtml) }} />
+          </section>
+        ) : null}
+        </div>
+
         <aside className="pdp-buybox">
           <div className="eyebrow">{product.vendor}</div>
           <h1 className="h2 pdp-title">{product.title}</h1>
@@ -200,14 +210,6 @@ function ProductView({ product }: { product: Product }) {
           </ul>
         </aside>
       </div>
-
-      {product.descriptionHtml ? (
-        <section className="section pdp-description">
-          <div className="eyebrow">Details</div>
-          <h2 className="h2">About this mattress</h2>
-          <div className="rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(product.descriptionHtml) }} />
-        </section>
-      ) : null}
 
       <script id="ld-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }} />
       <script id="ld-breadcrumb-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />

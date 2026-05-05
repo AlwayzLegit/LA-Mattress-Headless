@@ -118,6 +118,9 @@ export function CartDrawer() {
             </ul>
 
             <footer className="cart-drawer-ft">
+              <div className="cart-shipping-strip" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--accent)', fontSize: 13, fontWeight: 500, marginBottom: 'var(--s-3)' }}>
+                <Icon name="truck" size={14} /> Free white-glove delivery applied.
+              </div>
               <div className="cart-summary-row">
                 <span className="muted">Subtotal</span>
                 <span className="tnum cart-subtotal">
@@ -142,6 +145,10 @@ export function CartDrawer() {
               >
                 View full cart <Icon name="arrow-right" size={14} />
               </Link>
+              <ul className="pdp-trust" style={{ marginTop: 'var(--s-4)', borderTop: '1px solid var(--line)', paddingTop: 'var(--s-3)', fontSize: 12 }}>
+                <li><Icon name="lock" size={14} /> Secure checkout</li>
+                <li><Icon name="shield" size={14} /> 120-night exchange</li>
+              </ul>
             </footer>
           </>
         )}
