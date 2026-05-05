@@ -324,6 +324,34 @@ function ShowroomPage({
       </article>
       <script id="ld-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
       <script id="ld-breadcrumb-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <script id="ld-services" type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'Service',
+              serviceType: 'Free White-Glove Mattress Delivery',
+              provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
+              areaServed: { '@type': 'City', name: 'Los Angeles' },
+              description: 'Free white-glove delivery and setup with old-mattress haul-away across Los Angeles.',
+            },
+            {
+              '@type': 'Service',
+              serviceType: '0% APR Mattress Financing',
+              provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
+              areaServed: { '@type': 'City', name: 'Los Angeles' },
+              description: 'Up to 60 months 0% APR financing on approved credit, no prepayment penalty, no origination fees.',
+            },
+            {
+              '@type': 'Service',
+              serviceType: '120-Night Comfort Exchange',
+              provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
+              areaServed: { '@type': 'City', name: 'Los Angeles' },
+              description: 'Sleep on it for at least 30 nights, then exchange for any other mattress within 120 nights of delivery.',
+            },
+          ],
+        }),
+      }} />
     </main>
   );
 }
