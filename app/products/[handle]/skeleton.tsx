@@ -39,6 +39,22 @@ export function ProductSkeleton() {
           <div className="skel" style={{ height: 48, width: '100%', marginTop: 'var(--s-5)', borderRadius: 999 }} aria-hidden>&nbsp;</div>
         </aside>
       </div>
+
+      {/* Description placeholder. Approximates the typical PDP description
+          section so the footer doesn't shift down when the real content
+          streams in (CLS = 0.324 → 0 in Phase 21+ Lighthouse). */}
+      <section className="section" style={{ marginTop: 'var(--s-7)', maxWidth: 760 }}>
+        <div className="skel skel-line" style={{ width: 120, marginBottom: 'var(--s-3)' }} aria-hidden>&nbsp;</div>
+        <div className="skel" style={{ height: 32, width: '60%', marginBottom: 'var(--s-5)' }} aria-hidden>&nbsp;</div>
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div
+            key={i}
+            className="skel skel-line"
+            style={{ width: i % 4 === 3 ? '55%' : '95%', marginTop: i ? 8 : 0 }}
+            aria-hidden
+          >&nbsp;</div>
+        ))}
+      </section>
     </main>
   );
 }
