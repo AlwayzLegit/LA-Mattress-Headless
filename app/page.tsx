@@ -12,6 +12,7 @@ import {
 import { PopularProducts } from './_components/sections/popular-products';
 import { Showrooms } from './_components/sections/showrooms';
 import { FAQ } from './_components/sections/faq';
+import { RecentlyViewedRail } from './_components/recently-viewed';
 
 export const metadata: Metadata = {
   title: 'LA Mattress — Sleep, engineered in Los Angeles.',
@@ -29,6 +30,7 @@ export default function Home() {
     <>
       <Hero />
       <TrustBar />
+      <RecentlyViewedRail heading="Welcome back" eyebrow="Pick up where you left off" />
       <PopularProducts />
       <ShopByCategory />
       <Showrooms />

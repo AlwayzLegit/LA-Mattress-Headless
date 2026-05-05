@@ -306,6 +306,40 @@ a { color: inherit; text-decoration: none; }
 
 .nav-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 
+/* 404 — category browse-back grid + secondary links */
+.nf-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+  margin: var(--s-5) 0 var(--s-6);
+  max-width: 920px;
+}
+@media (max-width: 760px) { .nf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .nf-grid { grid-template-columns: 1fr; } }
+.nf-tile {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color var(--d-fast), color var(--d-fast);
+}
+.nf-tile:hover { border-color: var(--accent); color: var(--accent); }
+.nf-tile-label { grid-column: 1; font-weight: 600; font-size: 15px; }
+.nf-tile-sub { grid-column: 1; font-size: 12px; }
+.nf-tile svg { grid-column: 2; grid-row: 1 / span 2; color: var(--text-3); }
+.nf-tile:hover svg { color: var(--accent); }
+.nf-secondary {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-wrap: wrap; gap: var(--s-4) var(--s-5);
+  font-size: 14px;
+}
+
 /* Sitewide value-prop strip below the main nav. Light surface tone
    with subtle border so it reads as utility, not promotional. */
 .trust-strip {
