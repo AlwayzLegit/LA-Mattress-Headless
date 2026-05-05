@@ -1,4 +1,40 @@
-# Session handoff — 2026-05-04 (Phase 21)
+# Session handoff — 2026-05-05 (Phase 49)
+
+## Phase 22-49 — what got added since the last handoff (most recent first)
+
+| Phase | What | Files |
+|---|---|---|
+| 49 | Sleep-quiz progress persists to localStorage (mid-quiz nav doesn't lose answers) | `app/sleep-quiz/sleep-quiz.tsx` |
+| 47-48 | PWA web manifest + Service schema (delivery / financing / 120-night exchange) on showroom pages | `app/manifest.ts`, `app/pages/[handle]/page.tsx` |
+| 44-46 | Recently-viewed clear button, search empty-state category grid, `/` keyboard shortcut to focus search | `app/_components/recently-viewed.tsx`, `app/search/page.tsx`, `app/_components/header-search.tsx` |
+| 42-43 | "Open now" badge on homepage Showrooms rail, click-to-swap PDP gallery thumbs | `app/_components/sections/showrooms.tsx`, `app/products/[handle]/gallery.tsx` |
+| 38-41 | FAQ JSON-LD on home, A11y skip-to-content link, variant prices in PDP option chips | `lib/faq.ts`, `app/layout.tsx`, `app/products/[handle]/buy-box.tsx` |
+| 37 | Article: read-time + "Keep reading" related list (sibling articles) | `app/blogs/[blog]/[article]/page.tsx` |
+| 35-36 | Showroom pages: storefront photo + open-now indicator + embedded Google Map; sticky PLP toolbar on mobile | `lib/showrooms.ts`, `app/pages/[handle]/page.tsx`, `app/globals.css` |
+| 32-34 | Working `/api/newsletter` (Shopify Admin opt-in + log fallback), recently-viewed on home, 404 with category browse-back grid | `app/api/newsletter/route.ts`, `app/_components/newsletter-form.tsx`, `app/page.tsx`, `app/not-found.tsx` |
+| 30-31 | Sitewide value-prop strip below nav (free white-glove / 120-night / 0% APR / 5 showrooms), recently-viewed rail (localStorage-backed) on PDPs | `app/_components/trust-strip.tsx`, `app/_components/recently-viewed.tsx` |
+| 28-29 | Mobile-first PLP: bottom-sheet filters, 2-col cards, live result count; predictive autocomplete in header search | `app/_components/plp-filters/*`, `app/_components/header-search.tsx`, `app/api/predictive-search/route.ts` |
+| 26-27 | Sticky mobile add-to-cart bar on PDP, cross-sell rail "Pairs well with" (Storefront productRecommendations COMPLEMENTARY → RELATED) | `app/products/[handle]/buy-box.tsx`, `app/products/[handle]/related-rail.tsx`, `lib/shopify/queries/recommendations.ts` |
+| 25 | 370 Shopify URL redirects imported (Shopify Admin → Online Store → Navigation → URL Redirects export → JSON → next.config.mjs `redirects()`) | `data/url-inventory/redirects.json`, `scripts/convert-redirects-csv.mjs` |
+| 24 | Judge.me reviews wire-up: parses `reviews.rating` + `reviews.rating_count` metafields, renders `<ReviewsBadge>` on PDP, emits `aggregateRating` in Product JSON-LD | `lib/shopify/queries/fragments.ts`, `lib/shopify/queries/product.ts`, `app/_components/reviews-badge.tsx` |
+| 22-23 | testing-agent + design-doc batch fixes: tunnel URLs sanitized, PDP variant price + sticky buybox, cart UX polish, quiz auto-advance, PLP totals, contact info canonicalized | many — see `git log` |
+
+### Shopify-side work done this session (via Admin MCP, no code change)
+
+- **Cleaned tunnel URLs** in the `/pages/mattress-store-locations` body. 17 instances of `https://vegetable-lamb-seek-sage.trycloudflare.com` replaced with relative paths + Shopify CDN URLs.
+- **Auto-paired complementary products** for all **148 mattresses** in Search & Discovery (`shopify--discovery--product_recommendation.complementary_products` metafield = Foundation + Protector + Adjustable Base). Storefront `productRecommendations(intent: COMPLEMENTARY)` now returns the trio. The Ultra-Soft Protector is currently DRAFT — once published, it'll surface as the third complementary item without code changes.
+
+### Launch gates still on the merchant side
+
+1. Enable **Shop Pay** in Shopify Admin → Settings → Payments.
+2. **Webhook for instant cache busts** — Shopify Admin → Settings → Notifications → Webhooks. Add `products/update`, `products/create`, `collections/update`, `articles/update`, format JSON, point at `https://<vercel-url>/api/revalidate`. Set the same secret as `SHOPIFY_WEBHOOK_SECRET` in Vercel env vars (the route HMAC-verifies it).
+3. **`SHOPIFY_ADMIN_TOKEN`** env var in Vercel — turns on automatic Shopify customer creation from `/api/newsletter`. Without it, signups fall back to Vercel logs (no emails dropped).
+4. **DNS cutover** when ready — point `mattressstoreslosangeles.com` apex + `www` to Vercel; keep `checkout.mattressstoreslosangeles.com` pointed at Shopify.
+5. **Publish** the existing DRAFT mattress protectors in Shopify Admin so they surface in cross-sell rails (no code change needed once published).
+
+---
+
+# Earlier — Session handoff — 2026-05-04 (Phase 21)
 
 ## Where things stand
 
