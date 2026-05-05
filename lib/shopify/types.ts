@@ -132,7 +132,8 @@ export type ProductFilter =
   | { productType: string }
   | { available: boolean }
   | { price: { min?: number; max?: number } }
-  | { variantOption: { name: string; value: string } };
+  | { variantOption: { name: string; value: string } }
+  | { productMetafield: { namespace: string; key: string; value: string } };
 
 export type CollectionWithProducts = Collection & {
   products: {

@@ -14,9 +14,12 @@ type Chip = { label: string; param: FilterParam; value?: string };
 
 function chipsForSelection(sel: FilterSelection): Chip[] {
   const chips: Chip[] = [];
-  for (const v of sel.vendor) chips.push({ label: v, param: 'vendor', value: v });
-  for (const t of sel.type)   chips.push({ label: t, param: 'type', value: t });
-  for (const s of sel.size)   chips.push({ label: s, param: 'size', value: s });
+  for (const v of sel.vendor)        chips.push({ label: v, param: 'vendor', value: v });
+  for (const t of sel.type)          chips.push({ label: t, param: 'type', value: t });
+  for (const s of sel.size)          chips.push({ label: s, param: 'size', value: s });
+  for (const v of sel.firmness)      chips.push({ label: v, param: 'firmness', value: v });
+  for (const v of sel.sleepPosition) chips.push({ label: v, param: 'sleepPosition', value: v });
+  for (const v of sel.heightRange)   chips.push({ label: v, param: 'heightRange', value: v });
   if (sel.price) {
     const { min, max } = sel.price;
     const label =
