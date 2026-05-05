@@ -1,9 +1,9 @@
-# Session handoff — 2026-05-04 (Phase 19)
+# Session handoff — 2026-05-04 (Phase 20)
 
 ## Where things stand
 
-**Branch:** `main` (Phases 13–19 merged)
-**Last code commit:** Phase 19 — hybrid Suspense skeletons on PDP/PLP
+**Branch:** `main` (Phases 13–20 merged)
+**Last code commit:** Phase 20 — article handles via Storefront, SSG articles, sitemap to 1184 URLs
 **Build state:** clean — `tsc --noEmit`, `next lint`, `next build` all pass.
 **Live Storefront:** wired and verified.
 **Vercel preview:** project `la-mattress-headless` (team `alwayzlegits-projects`), auto-deploying on `main` push. Latest deploy URL: alias `la-mattress-headless-git-main-alwayzlegits-projects.vercel.app` (auth-protected).
@@ -77,6 +77,7 @@ Each phase is one commit on `main`.
 | 17 | Self-hosted Geist via `next/font`, hero preconnect + preload, smaller hero img | `3773c12` |
 | 18 | Hero CSS-bg → `<Image priority>` — homepage LCP 12.9s → 4.3s | `169f661` |
 | 19 | Hybrid Suspense skeletons on PDP/PLP (known handles fast-path, unknown 404) | `a4bd5fa` |
+| 20 | Article handles via Storefront (no Admin needed), SSG articles, sitemap 298→1184 URLs | `54755af` |
 
 ### End-to-end verification on the Vercel preview (Phase 18 numbers)
 
