@@ -5,10 +5,34 @@ import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
 import { QUESTIONS, recommend, type Answers, type Recommendation } from './quiz-data';
 
+const PERSIST_KEY = 'la-mattress.sleep-quiz.v1';
+
 export function SleepQuiz() {
   // Step 0..QUESTIONS.length-1 = questions, then "result" = done.
   const [step, setStep] = useState<number | 'result'>(0);
   const [answers, setAnswers] = useState<Answers>({});
+  const [hydrated, setHydrated] = useState(false);
+
+  // Restore prior progress so a navigation away + back doesn't lose answers.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(PERSIST_KEY);
+      if (raw) {
+        const data = JSON.parse(raw) as { step?: number | 'result'; answers?: Answers };
+        if (data.answers && typeof data.answers === 'object') setAnswers(data.answers);
+        if (data.step === 'result' || (typeof data.step === 'number' && data.step >= 0)) setStep(data.step);
+      }
+    } catch { /* ignore */ }
+    setHydrated(true);
+  }, []);
+
+  // Persist on every change after hydration.
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.localStorage.setItem(PERSIST_KEY, JSON.stringify({ step, answers }));
+    } catch { /* ignore quota */ }
+  }, [step, answers, hydrated]);
 
   const total = QUESTIONS.length;
   const result = useMemo<Recommendation | null>(() => (step === 'result' ? recommend(answers) : null), [step, answers]);
