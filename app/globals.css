@@ -322,6 +322,15 @@ a { color: inherit; text-decoration: none; }
 }
 .skip-link:focus { transform: translateY(0); outline: 2px solid var(--accent-fg); outline-offset: -4px; }
 
+/* Recently-viewed clear-history button */
+.recently-viewed-clear {
+  appearance: none; border: 0; background: transparent;
+  font: inherit; font-size: 13px;
+  color: var(--text-3); cursor: pointer;
+  padding: 4px 8px;
+}
+.recently-viewed-clear:hover { color: var(--accent); }
+
 /* Article — "Keep reading" related list */
 .article-related-list { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
 .article-related-list > li { border-bottom: 1px solid var(--line); }

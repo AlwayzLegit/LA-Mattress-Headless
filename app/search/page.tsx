@@ -81,13 +81,26 @@ export default async function SearchPage(props: Params) {
 
       {!q ? (
         <section className="section">
-          <p className="muted" style={{ maxWidth: '60ch' }}>
+          <p className="muted" style={{ maxWidth: '60ch', marginBottom: 'var(--s-5)' }}>
             Try searching for a brand (Tempur-Pedic, Stearns &amp; Foster), a size (queen, king),
-            or a feature (cooling, adjustable). You can also{' '}
-            <Link href="/collections/mattresses" className="link-arrow">
-              browse all mattresses <Icon name="arrow-right" size={14} />
-            </Link>.
+            or a feature (cooling, adjustable) — or pick a category below.
           </p>
+          <div className="nf-grid" style={{ marginTop: 0 }}>
+            {[
+              { label: 'Mattresses',         href: '/collections/mattresses',                sub: 'All sizes & brands' },
+              { label: 'On Sale',            href: '/collections/on-sale',                   sub: 'Current markdowns' },
+              { label: 'Tempur-Pedic',       href: '/collections/tempur-pedic-mattresses',   sub: 'Memory foam, premium' },
+              { label: 'Stearns & Foster',   href: '/collections/stearns-foster-mattresses', sub: 'Luxury hybrids' },
+              { label: 'Diamond Mattress',   href: '/collections/diamond-mattresses',        sub: 'California-made' },
+              { label: 'Adjustable Bases',   href: '/collections/adjustable-beds',           sub: 'Pair with any mattress' },
+            ].map((c) => (
+              <Link key={c.href} href={c.href} className="nf-tile">
+                <div className="nf-tile-label">{c.label}</div>
+                <div className="nf-tile-sub muted">{c.sub}</div>
+                <Icon name="arrow-right" size={16} />
+              </Link>
+            ))}
+          </div>
         </section>
       ) : (
         <section className="section plp-section">
