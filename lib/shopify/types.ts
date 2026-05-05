@@ -54,6 +54,19 @@ export type ProductReviews = {
   count: number;           // total review count
 };
 
+/**
+ * Mattress spec data parsed from `custom.*` metafields (Phase 52). Each
+ * field is independently optional — partial population is fine, the
+ * compare table just omits missing rows.
+ */
+export type ProductSpecs = {
+  firmness: string | null;        // "Soft" / "Medium" / "Firm" / etc.
+  heightInches: number | null;    // e.g. 12, 14.5
+  materialType: string | null;    // "Memory Foam" / "Hybrid" / etc.
+  warrantyYears: number | null;
+  trialNights: number | null;
+};
+
 export type Product = {
   id: string;
   handle: string;
@@ -74,6 +87,7 @@ export type Product = {
   compareAtPriceRange: { minVariantPrice: Money; maxVariantPrice: Money };
   seo: Seo;
   reviews: ProductReviews | null;
+  specs: ProductSpecs;
 };
 
 export type ProductSummary = {

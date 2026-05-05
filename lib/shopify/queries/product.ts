@@ -1,5 +1,5 @@
 import { shopifyFetch } from '../client';
-import type { Product, ProductReviews } from '../types';
+import type { Product, ProductReviews, ProductSpecs } from '../types';
 import {
   IMAGE_FRAGMENT, MONEY_FRAGMENT, SEO_FRAGMENT,
   VARIANT_FRAGMENT, PRODUCT_FRAGMENT,
@@ -22,11 +22,16 @@ type RawMetafield = { value: string; type: string } | null;
 
 type Raw = {
   product:
-    | (Omit<Product, 'images' | 'variants' | 'reviews'> & {
+    | (Omit<Product, 'images' | 'variants' | 'reviews' | 'specs'> & {
         images: { nodes: Product['images'] };
         variants: { nodes: Product['variants'] };
         ratingMetafield?: RawMetafield;
         ratingCountMetafield?: RawMetafield;
+        firmnessMetafield?: RawMetafield;
+        heightMetafield?: RawMetafield;
+        materialMetafield?: RawMetafield;
+        warrantyMetafield?: RawMetafield;
+        trialMetafield?: RawMetafield;
       })
     | null;
 };
@@ -61,6 +66,32 @@ export function parseReviewsMetafields(
   return { rating, count };
 }
 
+/**
+ * Parse the five `custom.*` mattress spec metafields. Each field is
+ * independently optional — partial population is fine. Numbers that fail
+ * to parse fall back to null so the compare table omits the row.
+ */
+export function parseSpecMetafields(raw: {
+  firmnessMetafield?: RawMetafield;
+  heightMetafield?: RawMetafield;
+  materialMetafield?: RawMetafield;
+  warrantyMetafield?: RawMetafield;
+  trialMetafield?: RawMetafield;
+}): ProductSpecs {
+  const num = (m?: RawMetafield) => {
+    if (!m?.value) return null;
+    const n = Number.parseFloat(m.value);
+    return Number.isFinite(n) ? n : null;
+  };
+  return {
+    firmness:      raw.firmnessMetafield?.value || null,
+    heightInches:  num(raw.heightMetafield),
+    materialType:  raw.materialMetafield?.value || null,
+    warrantyYears: num(raw.warrantyMetafield),
+    trialNights:   num(raw.trialMetafield),
+  };
+}
+
 export async function getProductByHandle(handle: string): Promise<Product | null> {
   const data = await shopifyFetch<Raw, { handle: string }>(
     GET_PRODUCT_BY_HANDLE,
@@ -68,11 +99,18 @@ export async function getProductByHandle(handle: string): Promise<Product | null
     { tags: [`product:${handle}`] },
   );
   if (!data.product) return null;
-  const { ratingMetafield, ratingCountMetafield, ...rest } = data.product;
+  const {
+    ratingMetafield, ratingCountMetafield,
+    firmnessMetafield, heightMetafield, materialMetafield, warrantyMetafield, trialMetafield,
+    ...rest
+  } = data.product;
   return {
     ...rest,
     images: data.product.images.nodes,
     variants: data.product.variants.nodes,
     reviews: parseReviewsMetafields(ratingMetafield, ratingCountMetafield),
+    specs: parseSpecMetafields({
+      firmnessMetafield, heightMetafield, materialMetafield, warrantyMetafield, trialMetafield,
+    }),
   };
 }
