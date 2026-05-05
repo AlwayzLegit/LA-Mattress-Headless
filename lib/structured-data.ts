@@ -5,25 +5,27 @@
 // their OWN, more specific JSON-LD with a distinct `@id` — Schema.org
 // allows multiple of the same @type on a page so long as @id differs.
 
+import { SITE_BRAND, SITE_PHONE_SCHEMA } from './site-config';
+
 const SITE = 'https://mattressstoreslosangeles.com';
 
 export const ORGANIZATION_LD = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   '@id': `${SITE}/#organization`,
-  name: 'LA Mattress Store',
+  name: SITE_BRAND,
   url: `${SITE}/`,
   logo: `${SITE}/assets/la-mattress-logo.png`,
-  telephone: '+1-213-555-0142',
+  telephone: SITE_PHONE_SCHEMA,
 };
 
 export const LOCAL_BUSINESS_LD = {
   '@context': 'https://schema.org',
   '@type': 'FurnitureStore',
   '@id': `${SITE}/#localbusiness`,
-  name: 'LA Mattress Store',
+  name: SITE_BRAND,
   url: `${SITE}/`,
-  telephone: '+1-213-555-0142',
+  telephone: SITE_PHONE_SCHEMA,
   priceRange: '$$$',
   image: `${SITE}/assets/la-mattress-logo.png`,
   address: {
@@ -43,7 +45,7 @@ export const WEBSITE_LD = {
   '@type': 'WebSite',
   '@id': `${SITE}/#website`,
   url: `${SITE}/`,
-  name: 'LA Mattress Store',
+  name: SITE_BRAND,
   publisher: { '@id': `${SITE}/#organization` },
   potentialAction: {
     '@type': 'SearchAction',

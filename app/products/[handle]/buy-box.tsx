@@ -1,16 +1,22 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { ProductOption, ProductVariant } from '@/lib/shopify';
+import type { Money, ProductOption, ProductVariant } from '@/lib/shopify';
 import { useCart } from '@/app/_components/cart-context';
 import { Icon } from '@/app/_components/icon';
+import { formatMoney, formatPriceRange } from '@/lib/format';
+import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 type Props = {
   options: ProductOption[];
   variants: ProductVariant[];
+  // Fallbacks when no variant is selected — pre-streamed from the server so
+  // the buy box renders before hydration with sensible numbers.
+  priceRange: { minVariantPrice: Money; maxVariantPrice: Money };
+  compareAtPriceRange: { minVariantPrice: Money; maxVariantPrice: Money };
 };
 
-export function BuyBox({ options, variants }: Props) {
+export function BuyBox({ options, variants, priceRange, compareAtPriceRange }: Props) {
   const initial = useMemo(() => {
     const first = variants.find((v) => v.availableForSale) ?? variants[0];
     const out: Record<string, string> = {};
@@ -37,8 +43,53 @@ export function BuyBox({ options, variants }: Props) {
 
   const canBuy = !!matchingVariant?.availableForSale && !pending;
 
+  // Variant-specific price beats the range. Fall back to the range only if
+  // no variant matches the current selection (edge case: cleared selection).
+  const variantOnSale =
+    !!matchingVariant?.compareAtPrice &&
+    Number.parseFloat(matchingVariant.compareAtPrice.amount) >
+      Number.parseFloat(matchingVariant.price.amount);
+  const rangeOnSale =
+    Number.parseFloat(compareAtPriceRange.minVariantPrice.amount) > 0 &&
+    Number.parseFloat(compareAtPriceRange.minVariantPrice.amount) >
+      Number.parseFloat(priceRange.minVariantPrice.amount);
+
   return (
     <>
+      <div className="pdp-price">
+        {matchingVariant ? (
+          variantOnSale ? (
+            <>
+              <span className="pcard-was tnum">{formatMoney(matchingVariant.compareAtPrice!)}</span>
+              <span className="pcard-now tnum" style={{ color: 'var(--sale)' }}>
+                {formatMoney(matchingVariant.price)}
+              </span>
+              <span className="pdp-save tnum" style={{ color: 'var(--sale)', marginLeft: 'var(--s-2)', fontWeight: 600 }}>
+                Save{' '}
+                {formatMoney({
+                  amount: (
+                    Number.parseFloat(matchingVariant.compareAtPrice!.amount) -
+                    Number.parseFloat(matchingVariant.price.amount)
+                  ).toFixed(2),
+                  currencyCode: matchingVariant.price.currencyCode,
+                })}
+              </span>
+            </>
+          ) : (
+            <span className="pcard-now tnum">{formatMoney(matchingVariant.price)}</span>
+          )
+        ) : rangeOnSale ? (
+          <>
+            <span className="pcard-was tnum">{formatPriceRange(compareAtPriceRange.minVariantPrice, compareAtPriceRange.maxVariantPrice)}</span>
+            <span className="pcard-now tnum" style={{ color: 'var(--sale)' }}>
+              {formatPriceRange(priceRange.minVariantPrice, priceRange.maxVariantPrice)}
+            </span>
+          </>
+        ) : (
+          <span className="pcard-now tnum">{formatPriceRange(priceRange.minVariantPrice, priceRange.maxVariantPrice)}</span>
+        )}
+      </div>
+
       {options.length > 0 ? (
         <div className="pdp-options">
           {options.map((opt) => (
@@ -83,7 +134,7 @@ export function BuyBox({ options, variants }: Props) {
 
       {matchingVariant && !matchingVariant.availableForSale ? (
         <p className="muted" style={{ fontSize: 13, marginTop: 'var(--s-3)' }}>
-          This combination is currently out of stock. Call (213) 555-0142 for availability.
+          This combination is currently out of stock. Call {SITE_PHONE_DISPLAY} for availability.
         </p>
       ) : null}
     </>

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { SITE_PHONE_DISPLAY, SITE_EMAIL } from '@/lib/site-config';
 
 type Col = { title: string; links: { label: string; href: string }[] };
 const COLS: Col[] = [
@@ -73,7 +74,7 @@ export function Footer() {
           />
           <div className="footer-sig-tagline">
             <div className="footer-sig-tag-line">Family-owned in Los Angeles since 2012</div>
-            <div className="footer-sig-tag-line muted">5 showrooms · (213) 555-0142 · hello@lamattress.com</div>
+            <div className="footer-sig-tag-line muted">5 showrooms · {SITE_PHONE_DISPLAY} · {SITE_EMAIL}</div>
           </div>
         </div>
       </div>

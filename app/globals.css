@@ -1024,6 +1024,10 @@ a { color: inherit; text-decoration: none; }
   .cart-page-line-price { grid-area: price; text-align: right; }
 }
 .cart-page-line-img {
+  /* Without display:block the <a> stays inline and width/aspect-ratio don't
+     apply, leaving a 0×0 box that hides the product image (the gray
+     surface-2 background was the only thing rendering). Phase 22 fix. */
+  display: block;
   width: 140px; aspect-ratio: 1;
   background: var(--surface-2); border-radius: var(--r-2); overflow: hidden;
 }

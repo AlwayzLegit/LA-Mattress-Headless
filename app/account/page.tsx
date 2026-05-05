@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
+import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export const metadata: Metadata = {
   title: 'Account — LA Mattress Store',
@@ -42,8 +43,8 @@ export default function AccountPage() {
             directly — most questions are resolved on the first call.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--s-3)' }}>
-            <a href="tel:+12135550142" className="btn btn-primary">
-              <Icon name="phone" size={14} /> Call (213) 555-0142
+            <a href={`tel:${SITE_PHONE_TEL}`} className="btn btn-primary">
+              <Icon name="phone" size={14} /> Call {SITE_PHONE_DISPLAY}
             </a>
             <Link href="/pages/mattress-store-contact" className="btn btn-ghost">
               Contact us

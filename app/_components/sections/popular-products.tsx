@@ -8,8 +8,6 @@ import { phImg } from '../images';
 type Product = {
   brand: string;
   name: string;
-  rating: number;
-  reviews: number;
   price: number;
   was?: number;
   monthly: number;
@@ -24,16 +22,21 @@ type Product = {
  * Hardcoded sample matching the design's PRODUCTS table. Real Storefront
  * product data swap comes in Phase 1. Several handles already align to live
  * Shopify products (verified via Admin API earlier this session).
+ *
+ * Star ratings + review counts intentionally NOT shown until a reviews
+ * vendor (Birdeye / Yotpo) is wired. Fabricated review counts are an
+ * FTC compliance risk — Phase 22 stripped them; the .pcard-rating CSS hook
+ * stays in place for the post-vendor wire-up.
  */
 const PRODUCTS: Product[] = [
-  { brand: 'Tempur-Pedic',     name: 'TEMPUR-ProAdapt Medium Hybrid',         rating: 4.8, reviews: 1240, price: 3499, was: 4199, monthly: 58, tag: 'Bestseller',   img: 'product-tempur-proadapt', imgLabel: '[Tempur-Pedic ProAdapt]',  href: '/products/tempur-pedic-tempur-proadapt-medium-hybrid' },
-  { brand: 'Stearns & Foster', name: 'Lux Estate® Ultra Firm 14.5"',          rating: 4.9, reviews: 612,  price: 4299, was: 4899, monthly: 72, tag: 'New',          img: 'product-stearns-foster',  imgLabel: '[Stearns & Foster Reserve]', href: '/products/the-luxe-estate-firm-by-stearns-foster' },
-  { brand: 'Helix',             name: 'Midnight Luxe — Medium-Firm',           rating: 4.7, reviews: 3120, price: 1949,            monthly: 33, tag: 'Editor’s pick', img: 'product-helix',         imgLabel: '[Helix Midnight]',          href: '/products/helix-sleep-core-collection-midnight-luxe-medium-13-5-mattress' },
-  { brand: 'Diamond',           name: 'Diamond Rock Extra Firm 12"',           rating: 4.6, reviews: 488,  price: 1599, was: 1899, monthly: 27, tag: '−16%',     tagKind: 'sale', img: 'product-diamond', imgLabel: '[Diamond cutout]',           href: '/products/rock-extra-firm-mattress-diamond-mattress' },
-  { brand: 'Spring Air',        name: 'Back Supporter Plush Euro Top',         rating: 4.5, reviews: 740,  price: 1199,            monthly: 20,                       img: 'product-spring-air',     imgLabel: '[Spring Air cutout]',       href: '/products/spring-air-back-supporter-francesca-plush-mattress' },
-  { brand: 'Eastman House',     name: 'Avalon Latex Hybrid Firm 13"',          rating: 4.6, reviews: 320,  price: 1399,            monthly: 24, tag: 'Local make',   img: 'product-eastman-house',  imgLabel: '[Eastman House]',           href: '/products/eastman-house-avalon-late-firm' },
-  { brand: 'Chattam & Wells',   name: 'Lismore Luxury Firm 13"',                rating: 4.9, reviews: 210,  price: 3199,            monthly: 53,                       img: 'product-chattam-wells',  imgLabel: '[Chattam & Wells]',         href: '/products/lismore-luxury-firm-mattress-palace-collection-by-chattam-wells' },
-  { brand: 'Eclipse',            name: 'Ice Tufted Firm Euro Top 15"',          rating: 4.5, reviews: 980,  price: 1099, was: 1299, monthly: 19, tag: '−15%', tagKind: 'sale', img: 'product-eclipse', imgLabel: '[Eclipse cutout]',         href: '/products/eclipse-glacier-tufted-firm-euro-top-15-mattress' },
+  { brand: 'Tempur-Pedic',     name: 'TEMPUR-ProAdapt Medium Hybrid',         price: 3499, was: 4199, monthly: 58, tag: 'Bestseller',   img: 'product-tempur-proadapt', imgLabel: '[Tempur-Pedic ProAdapt]',  href: '/products/tempur-pedic-tempur-proadapt-medium-hybrid' },
+  { brand: 'Stearns & Foster', name: 'Lux Estate® Ultra Firm 14.5"',          price: 4299, was: 4899, monthly: 72, tag: 'New',          img: 'product-stearns-foster',  imgLabel: '[Stearns & Foster Reserve]', href: '/products/the-luxe-estate-firm-by-stearns-foster' },
+  { brand: 'Helix',             name: 'Midnight Luxe — Medium-Firm',           price: 1949,            monthly: 33, tag: 'Editor’s pick', img: 'product-helix',         imgLabel: '[Helix Midnight]',          href: '/products/helix-sleep-core-collection-midnight-luxe-medium-13-5-mattress' },
+  { brand: 'Diamond',           name: 'Diamond Rock Extra Firm 12"',           price: 1599, was: 1899, monthly: 27, tag: '−16%',     tagKind: 'sale', img: 'product-diamond', imgLabel: '[Diamond cutout]',           href: '/products/rock-extra-firm-mattress-diamond-mattress' },
+  { brand: 'Spring Air',        name: 'Back Supporter Plush Euro Top',         price: 1199,            monthly: 20,                       img: 'product-spring-air',     imgLabel: '[Spring Air cutout]',       href: '/products/spring-air-back-supporter-francesca-plush-mattress' },
+  { brand: 'Eastman House',     name: 'Avalon Latex Hybrid Firm 13"',          price: 1399,            monthly: 24, tag: 'Local make',   img: 'product-eastman-house',  imgLabel: '[Eastman House]',           href: '/products/eastman-house-avalon-late-firm' },
+  { brand: 'Chattam & Wells',   name: 'Lismore Luxury Firm 13"',                price: 3199,            monthly: 53,                       img: 'product-chattam-wells',  imgLabel: '[Chattam & Wells]',         href: '/products/lismore-luxury-firm-mattress-palace-collection-by-chattam-wells' },
+  { brand: 'Eclipse',            name: 'Ice Tufted Firm Euro Top 15"',          price: 1099, was: 1299, monthly: 19, tag: '−15%', tagKind: 'sale', img: 'product-eclipse', imgLabel: '[Eclipse cutout]',         href: '/products/eclipse-glacier-tufted-firm-euro-top-15-mattress' },
 ];
 
 function ProductCard({ p }: { p: Product }) {
@@ -51,10 +54,8 @@ function ProductCard({ p }: { p: Product }) {
       <div className="pcard-meta">
         <div className="pcard-brand">{p.brand}</div>
         <div className="pcard-name">{p.name}</div>
-        <div className="pcard-rating">
-          <Icon name="star" size={12} /> <span className="tnum">{p.rating}</span>
-          <span className="muted pcard-reviews">({p.reviews})</span>
-        </div>
+        {/* Star rating block intentionally omitted until reviews vendor is
+            wired (Birdeye / Yotpo). Fabricated counts are an FTC risk. */}
         <div className="pcard-price">
           {p.was ? <span className="pcard-was tnum">${p.was.toLocaleString()}</span> : null}
           <span className="pcard-now tnum">${p.price.toLocaleString()}</span>

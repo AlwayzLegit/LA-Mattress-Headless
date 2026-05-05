@@ -11,19 +11,19 @@ type Showroom = {
   area: string;
   address: string;
   hours: string;
-  rating: string;
-  reviews: string;
   img: string;
   label: string;
   href: string;
 };
 
+// Star ratings + review counts intentionally omitted until reviews vendor
+// is wired (Birdeye / Yotpo). Fabricated counts are an FTC compliance risk.
 const SHOWROOMS: Showroom[] = [
-  { idx: '01', name: 'Koreatown',    area: 'Wilshire & Western', address: '3550 Wilshire Blvd',  hours: 'Open daily · 10–8', rating: '4.9', reviews: '1,240', img: 'showroom-koreatown',    label: '[Koreatown storefront]',  href: '/pages/koreatown-best-mattress-store' },
-  { idx: '02', name: 'West LA',      area: 'Sawtelle / Pico',    address: '11456 W Pico Blvd',   hours: 'Open daily · 10–8', rating: '4.9', reviews: '780',   img: 'showroom-west-la',      label: '[West LA interior]',       href: '/pages/best-mattress-store-west-la' },
-  { idx: '03', name: 'Hancock Park', area: 'La Brea & 3rd',      address: '500 N La Brea Ave',   hours: 'Open daily · 10–7', rating: '4.8', reviews: '510',   img: 'showroom-hancock-park', label: '[Hancock Park entrance]',  href: '/pages/best-mattress-store-la-brea' },
-  { idx: '04', name: 'Studio City',  area: 'Ventura Blvd',       address: '12450 Ventura Blvd',  hours: 'Open daily · 10–8', rating: '4.9', reviews: '430',   img: 'showroom-studio-city',  label: '[Studio City showroom]',   href: '/pages/mattress-store-studio-city' },
-  { idx: '05', name: 'Glendale',     area: 'Brand Blvd',         address: '230 N Brand Blvd',    hours: 'Open daily · 10–8', rating: '4.8', reviews: '340',   img: 'showroom-glendale',     label: '[Glendale exterior]',      href: '/pages/mattress-store-in-glendale' },
+  { idx: '01', name: 'Koreatown',    area: 'Wilshire & Western', address: '3550 Wilshire Blvd',  hours: 'Open daily · 10–8', img: 'showroom-koreatown',    label: '[Koreatown storefront]',  href: '/pages/koreatown-best-mattress-store' },
+  { idx: '02', name: 'West LA',      area: 'Sawtelle / Pico',    address: '11456 W Pico Blvd',   hours: 'Open daily · 10–8', img: 'showroom-west-la',      label: '[West LA interior]',       href: '/pages/best-mattress-store-west-la' },
+  { idx: '03', name: 'Hancock Park', area: 'La Brea & 3rd',      address: '500 N La Brea Ave',   hours: 'Open daily · 10–7', img: 'showroom-hancock-park', label: '[Hancock Park entrance]',  href: '/pages/best-mattress-store-la-brea' },
+  { idx: '04', name: 'Studio City',  area: 'Ventura Blvd',       address: '12450 Ventura Blvd',  hours: 'Open daily · 10–8', img: 'showroom-studio-city',  label: '[Studio City showroom]',   href: '/pages/mattress-store-studio-city' },
+  { idx: '05', name: 'Glendale',     area: 'Brand Blvd',         address: '230 N Brand Blvd',    hours: 'Open daily · 10–8', img: 'showroom-glendale',     label: '[Glendale exterior]',      href: '/pages/mattress-store-in-glendale' },
 ];
 
 export function Showrooms() {
@@ -62,9 +62,6 @@ export function Showrooms() {
             <div className="showroom-meta">
               <div className="showroom-meta-top">
                 <span className="mono showroom-idx">{s.idx} / 05</span>
-                <span className="showroom-rating">
-                  <Icon name="star" size={12} /> {s.rating} <span className="muted">({s.reviews})</span>
-                </span>
               </div>
               <h3 className="showroom-name">{s.name}</h3>
               <div className="showroom-area muted">{s.area}</div>

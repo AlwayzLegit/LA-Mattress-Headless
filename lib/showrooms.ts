@@ -21,7 +21,7 @@ export const SHOWROOMS: Showroom[] = [
     city: 'Los Angeles',
     region: 'CA',
     postalCode: '90020',
-    phone: '+1-213-555-0142',
+    phone: '+1-800-218-3578',
     hours: [
       { day: 'Mon-Sat', open: '10:00', close: '20:00' },
       { day: 'Sun',     open: '11:00', close: '19:00' },
@@ -37,7 +37,7 @@ export const SHOWROOMS: Showroom[] = [
     city: 'Los Angeles',
     region: 'CA',
     postalCode: '90064',
-    phone: '+1-310-555-0188',
+    phone: '+1-800-218-3578',
     hours: [
       { day: 'Mon-Sat', open: '10:00', close: '20:00' },
       { day: 'Sun',     open: '11:00', close: '19:00' },
@@ -53,7 +53,7 @@ export const SHOWROOMS: Showroom[] = [
     city: 'Los Angeles',
     region: 'CA',
     postalCode: '90038',
-    phone: '+1-323-555-0196',
+    phone: '+1-800-218-3578',
     hours: [
       { day: 'Mon-Sat', open: '10:00', close: '20:00' },
       { day: 'Sun',     open: '11:00', close: '19:00' },
@@ -69,7 +69,7 @@ export const SHOWROOMS: Showroom[] = [
     city: 'Studio City',
     region: 'CA',
     postalCode: '91604',
-    phone: '+1-818-555-0173',
+    phone: '+1-800-218-3578',
     hours: [
       { day: 'Mon-Sat', open: '10:00', close: '20:00' },
       { day: 'Sun',     open: '11:00', close: '19:00' },
@@ -85,7 +85,7 @@ export const SHOWROOMS: Showroom[] = [
     city: 'Glendale',
     region: 'CA',
     postalCode: '91203',
-    phone: '+1-818-555-0211',
+    phone: '+1-800-218-3578',
     hours: [
       { day: 'Mon-Sat', open: '10:00', close: '20:00' },
       { day: 'Sun',     open: '11:00', close: '19:00' },

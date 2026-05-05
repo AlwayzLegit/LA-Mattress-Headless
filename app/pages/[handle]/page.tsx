@@ -6,6 +6,8 @@ import { getPageByHandle } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, type Showroom } from '@/lib/showrooms';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
+import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { SITE_PHONE_SCHEMA } from '@/lib/site-config';
 import { Icon } from '@/app/_components/icon';
 
 type Params = { params: Promise<{ handle: string }> };
@@ -65,7 +67,7 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
         </nav>
         <h1 className="h1" style={{ marginTop: 'var(--s-4)' }}>{page.title}</h1>
         {page.body ? (
-          <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: page.body }} />
+          <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
         ) : (
           <p className="muted">This page has no content yet.</p>
         )}
@@ -84,7 +86,7 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
     '@id': url,
     name: 'LA Mattress Store',
     url,
-    telephone: '+1-213-555-0142',
+    telephone: SITE_PHONE_SCHEMA,
     priceRange: '$$$',
     image: `${SITE}/assets/la-mattress-logo.png`,
     areaServed: { '@type': 'City', name: 'Los Angeles' },
@@ -152,7 +154,7 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
 
         {page.body ? (
           <section className="locations-page-body" style={{ marginTop: 'var(--s-8)', maxWidth: 760, marginLeft: 'auto', marginRight: 'auto' }}>
-            <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: page.body }} />
+            <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
           </section>
         ) : null}
       </article>
@@ -270,7 +272,7 @@ function ShowroomPage({
 
           <div className="showroom-page-body">
             {page.body ? (
-              <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: page.body }} />
+              <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
             ) : (
               <p className="muted">More information about this showroom is coming soon.</p>
             )}

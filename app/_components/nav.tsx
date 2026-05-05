@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Icon } from './icon';
 import { phImg, type PhFit } from './images';
 import { useCart } from './cart-context';
+import { SITE_PHONE_TEL } from '@/lib/site-config';
 
 type MegaCol = { title: string; links: { label: string; href: string }[] };
 type MegaTile = {
@@ -134,6 +135,18 @@ export function Nav() {
                 href={item.href}
                 className={`nav-item ${item.accent ? 'nav-item-accent' : ''} ${mega === item.mega ? 'nav-item-on' : ''}`}
                 onMouseEnter={() => setMega(item.mega)}
+                onFocus={() => setMega(item.mega)}
+                onKeyDown={(e) => {
+                  // Open mega menu via keyboard. Down opens; Esc closes.
+                  if (item.mega && (e.key === 'ArrowDown' || e.key === ' ')) {
+                    e.preventDefault();
+                    setMega(item.mega);
+                  } else if (e.key === 'Escape') {
+                    setMega(null);
+                  }
+                }}
+                aria-expanded={item.mega ? mega === item.mega : undefined}
+                aria-haspopup={item.mega ? 'menu' : undefined}
               >
                 {item.label}
                 {item.mega ? <Icon name="chevron-down" size={14} /> : null}
@@ -163,7 +176,12 @@ export function Nav() {
           </div>
         </div>
         {mega && MEGA[mega] ? (
-          <div className="mega" onMouseLeave={() => setMega(null)}>
+          <div
+            className="mega"
+            onMouseLeave={() => setMega(null)}
+            onKeyDown={(e) => { if (e.key === 'Escape') setMega(null); }}
+            role="menu"
+          >
             <div className="container mega-inner">
               <div className="mega-cols">
                 {MEGA[mega].cols.map((c) => (
@@ -218,7 +236,7 @@ export function Nav() {
           </ul>
           <div className="mobile-foot">
             <Link href="/pages/mattress-store-locations" className="topbar-link"><Icon name="pin" size={14} /> Find a store</Link>
-            <a href="tel:+12135550142" className="topbar-link"><Icon name="phone" size={14} /> Call</a>
+            <a href={`tel:${SITE_PHONE_TEL}`} className="topbar-link"><Icon name="phone" size={14} /> Call</a>
           </div>
         </div>
       ) : null}

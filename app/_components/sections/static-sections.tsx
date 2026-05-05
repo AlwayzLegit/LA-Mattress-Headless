@@ -146,7 +146,7 @@ export function QuizTeaser() {
       <div className="container quiz-content">
         <div className="eyebrow eyebrow-on-dark">2-minute mattress quiz</div>
         <h2 className="h-display quiz-title">
-          Answer 6 questions.<br />Get a real recommendation.
+          Answer 8 questions.<br />Get a real recommendation.
         </h2>
         <p className="muted quiz-body">
           No email required. We narrow our 200+ models down to the three best for how you actually sleep.
@@ -164,50 +164,19 @@ export function QuizTeaser() {
   );
 }
 
-/* ───── Reviews ───────────────────────────────────────── */
-const REVIEWS = [
-  { name: 'Marcela R.', loc: 'Silver Lake',   body: 'Honestly the most pleasant mattress-buying experience I’ve ever had. Tried six in the showroom, walked out with the right one. Delivered the next day.', rating: 5, src: 'Google · Koreatown' },
-  { name: 'David K.',   loc: 'Studio City',   body: 'No commission means no pushy salespeople. The team helped me compare three Tempur-Pedics side by side and pointed me to the cheaper one that was actually better for my back.', rating: 5, src: 'Google · Studio City' },
-  { name: 'Priya N.',   loc: 'West LA',       body: 'White glove delivery was on time, took the old one away, set up the new one in 15 minutes. The financing was 0% — I paid less than I expected.', rating: 5, src: 'Google · West LA' },
-  { name: 'Jaime O.',   loc: 'Glendale',      body: 'I tried it for 90 nights and exchanged for a firmer one. Zero hassle. They picked up the first one and dropped off the new one same day.', rating: 5, src: 'Google · Glendale' },
-  { name: 'Sara L.',    loc: 'Hancock Park',  body: 'Spent two hours in the showroom on a Saturday. They brought me water. I wasn’t even ready to buy. Came back two weeks later, they remembered me by name.', rating: 5, src: 'Google · Hancock Park' },
-  { name: 'Alex T.',    loc: 'DTLA',          body: 'Family business. You can tell. They actually answer the phone.', rating: 5, src: 'Google · Koreatown' },
-];
-
+/* ───── Reviews ──────────────────────────────────────────
+ *
+ * Hidden until a reviews vendor (Birdeye / Yotpo) is wired. The previous
+ * version emitted a hardcoded "4.9 stars on Google, 3,300+ reviews"
+ * aggregate plus six fabricated review quotes — both are FTC compliance
+ * risks.
+ *
+ * When the vendor is wired:
+ *   - replace this `null` with the real reviews component
+ *   - re-add the export to app/page.tsx (already imported there as `Reviews`)
+ *   - emit AggregateRating in Product JSON-LD (lib/shopify/queries/product.ts)
+ *     for SERP rich-result eligibility
+ */
 export function Reviews() {
-  return (
-    <section className="section reviews">
-      <div className="container">
-        <div className="section-head reviews-head">
-          <div>
-            <div className="eyebrow">Reviews</div>
-            <h2 className="h2">4.9 stars on Google,<br />3,300+ reviews.</h2>
-          </div>
-          <div className="reviews-summary">
-            <div className="reviews-stars">
-              {Array.from({ length: 5 }).map((_, i) => <Icon key={i} name="star" size={18} />)}
-            </div>
-            <div className="muted reviews-summary-sub">Verified across 5 LA locations</div>
-          </div>
-        </div>
-        <div className="reviews-grid">
-          {REVIEWS.map((r, i) => (
-            <article key={i} className="review">
-              <div className="review-stars">
-                {Array.from({ length: r.rating }).map((_, j) => <Icon key={j} name="star" size={13} />)}
-              </div>
-              <p className="review-body">&ldquo;{r.body}&rdquo;</p>
-              <div className="review-foot">
-                <div>
-                  <div className="review-name">{r.name}</div>
-                  <div className="muted review-loc">{r.loc}</div>
-                </div>
-                <div className="muted mono review-src">{r.src}</div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+  return null;
 }

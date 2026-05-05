@@ -7,8 +7,8 @@ import Link from 'next/link';
 import { getProductByHandle } from '@/lib/shopify';
 import type { Product } from '@/lib/shopify';
 import { products as inventoryProducts, findProduct } from '@/lib/inventory';
-import { formatPriceRange } from '@/lib/format';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
+import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { BuyBox } from './buy-box';
 import { ProductSkeleton } from './skeleton';
@@ -107,17 +107,18 @@ async function ProductBody({ handle }: { handle: string }) {
 function ProductView({ product }: { product: Product }) {
   const min = product.priceRange.minVariantPrice;
   const max = product.priceRange.maxVariantPrice;
-  const compareMin = product.compareAtPriceRange.minVariantPrice;
-  const onSale =
-    Number.parseFloat(compareMin.amount) > 0 &&
-    Number.parseFloat(compareMin.amount) > Number.parseFloat(min.amount);
+
+  // Google's structured-data guidelines say to omit fields rather than emit
+  // empty strings. Some merchants leave SKUs blank in Shopify Admin; only
+  // include the sku key when at least one variant has a non-empty SKU.
+  const firstSku = product.variants.find((v) => v.sku && v.sku.trim().length > 0)?.sku;
 
   const productLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
     description: product.description.slice(0, 5000),
-    sku: product.variants[0]?.sku ?? undefined,
+    ...(firstSku ? { sku: firstSku } : {}),
     brand: { '@type': 'Brand', name: product.vendor },
     image: product.images.length ? product.images.map((i) => i.url) : (product.featuredImage ? [product.featuredImage.url] : []),
     offers: {
@@ -185,20 +186,12 @@ function ProductView({ product }: { product: Product }) {
           <div className="eyebrow">{product.vendor}</div>
           <h1 className="h2 pdp-title">{product.title}</h1>
 
-          <div className="pdp-price">
-            {onSale ? (
-              <>
-                <span className="pcard-was tnum">{formatPriceRange(compareMin, product.compareAtPriceRange.maxVariantPrice)}</span>
-                <span className="pcard-now tnum" style={{ color: 'var(--sale)' }}>
-                  {formatPriceRange(min, max)}
-                </span>
-              </>
-            ) : (
-              <span className="pcard-now tnum">{formatPriceRange(min, max)}</span>
-            )}
-          </div>
-
-          <BuyBox options={product.options} variants={product.variants} />
+          <BuyBox
+            options={product.options}
+            variants={product.variants}
+            priceRange={product.priceRange}
+            compareAtPriceRange={product.compareAtPriceRange}
+          />
 
           <ul className="pdp-trust">
             <li><Icon name="truck" size={16} /> Free white glove delivery</li>
@@ -212,7 +205,7 @@ function ProductView({ product }: { product: Product }) {
         <section className="section pdp-description">
           <div className="eyebrow">Details</div>
           <h2 className="h2">About this mattress</h2>
-          <div className="rte" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+          <div className="rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(product.descriptionHtml) }} />
         </section>
       ) : null}
 

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Icon } from './icon';
+import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export function TopBar() {
   return (
@@ -15,7 +16,7 @@ export function TopBar() {
         <div className="topbar-right">
           <Link href="/pages/mattress-store-locations" className="topbar-link"><Icon name="pin" size={13} /> Find a store</Link>
           <span className="topbar-sep" />
-          <a href="tel:+12135550142" className="topbar-link"><Icon name="phone" size={13} /> (213) 555-0142</a>
+          <a href={`tel:${SITE_PHONE_TEL}`} className="topbar-link"><Icon name="phone" size={13} /> {SITE_PHONE_DISPLAY}</a>
         </div>
       </div>
     </div>

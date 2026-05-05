@@ -39,7 +39,10 @@ export const IMAGES: Record<string, string> = {
   'showroom-glendale':     'https://mattressstoreslosangeles.com/images/locations/glendale-storefront.jpg',
 
   // Lifestyle
-  'lifestyle-couple':   'https://images.unsplash.com/photo-1616627781901-92f81a36c4d6?w=1600&q=80&auto=format&fit=crop',
+  // Original photo-1616627781901-92f81a36c4d6 was 404'd by Unsplash; reusing
+  // the lifestyle-bedroom photo here until a real brand asset is supplied.
+  // Confirmed 200 OK at time of Phase 22 commit.
+  'lifestyle-couple':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1600&q=80&auto=format&fit=crop',
   'lifestyle-bedroom':  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1600&q=80&auto=format&fit=crop',
 };
 

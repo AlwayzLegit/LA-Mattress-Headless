@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
+import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export default function ProductNotFound() {
   return (
@@ -18,7 +19,7 @@ export default function ProductNotFound() {
           <li><Link href="/collections/on-sale" className="link-arrow">Current sale <Icon name="arrow-right" size={14} /></Link></li>
           <li><Link href="/search" className="link-arrow">Search the catalog <Icon name="arrow-right" size={14} /></Link></li>
           <li><Link href="/pages/mattress-store-locations" className="link-arrow">Find a store <Icon name="arrow-right" size={14} /></Link></li>
-          <li><a href="tel:+12135550142" className="link-arrow">Call us at (213) 555-0142 <Icon name="phone" size={14} /></a></li>
+          <li><a href={`tel:${SITE_PHONE_TEL}`} className="link-arrow">Call us at {SITE_PHONE_DISPLAY} <Icon name="phone" size={14} /></a></li>
         </ul>
       </div>
     </main>

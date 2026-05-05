@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { Icon } from './_components/icon';
+import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export default function Error({
   error,
@@ -24,7 +25,7 @@ export default function Error({
         </h1>
         <p className="muted" style={{ fontSize: 17, lineHeight: 1.55, maxWidth: '52ch', marginBottom: 'var(--s-5)' }}>
           This is usually temporary. Try again, or jump to one of our showrooms or the mattress
-          collection — you can always reach us by phone at (213) 555-0142.
+          collection — you can always reach us by phone at {SITE_PHONE_DISPLAY}.
         </p>
         {error.digest ? (
           <p className="muted" style={{ fontSize: 12, marginBottom: 'var(--s-5)' }}>

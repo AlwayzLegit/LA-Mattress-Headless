@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export default function GlobalError({
   error,
@@ -34,7 +35,7 @@ export default function GlobalError({
             The site couldn&rsquo;t load.
           </h1>
           <p style={{ fontSize: 16, lineHeight: 1.55, color: '#475569', marginBottom: 24 }}>
-            This is unusual. Please refresh in a moment, or reach us by phone at (213) 555-0142.
+            This is unusual. Please refresh in a moment, or reach us by phone at {SITE_PHONE_DISPLAY}.
           </p>
           {error.digest ? (
             <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 24 }}>

@@ -9,6 +9,7 @@ import type { CollectionSort } from '@/lib/shopify';
 import { collections as inventoryCollections, findCollection } from '@/lib/inventory';
 import { formatPriceRange } from '@/lib/format';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
+import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { SortControl } from './sort-control';
 import { CollectionSkeleton } from './skeleton';
@@ -128,6 +129,16 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
     name: collection.title,
     description: firstNonEmpty(collection.seo.description, collection.description) || undefined,
     url: `https://mattressstoreslosangeles.com/collections/${collection.handle}`,
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: collection.products.nodes.length,
+      itemListElement: collection.products.nodes.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `https://mattressstoreslosangeles.com/products/${p.handle}`,
+        name: p.title,
+      })),
+    },
   };
 
   // Preserve sort + filter params when paginating; only `after` advances.
@@ -164,7 +175,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
           <div className="lp-hero-copy">
             <h1 className="h1">{collection.title}</h1>
             {collection.descriptionHtml ? (
-              <div className="lp-hero-lede rte" dangerouslySetInnerHTML={{ __html: collection.descriptionHtml }} />
+              <div className="lp-hero-lede rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(collection.descriptionHtml) }} />
             ) : null}
             <div className="lp-hero-meta">
               <span><Icon name="truck" size={14} /> Free delivery</span>

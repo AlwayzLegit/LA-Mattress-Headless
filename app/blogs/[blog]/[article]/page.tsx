@@ -8,6 +8,7 @@ import { getArticleByHandle } from '@/lib/shopify';
 import type { Article } from '@/lib/shopify';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
+import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
 
@@ -95,12 +96,22 @@ async function ArticleBody({ blog, article }: { blog: string; article: string })
 function ArticleView({ article }: { article: Article }) {
   const url = `${SITE}/blogs/${article.blog.handle}/${article.handle}`;
 
+  // BlogPosting description prefers Shopify's SEO field (the merchant's
+  // deliberate description_tag metafield, surfaced via Storefront `seo`)
+  // over the article excerpt, falling back to the article title. Same
+  // priority order as the page's <meta name="description">.
+  const ldDescription = firstNonEmpty(
+    article.seo.description,
+    article.excerpt,
+    article.title,
+  );
+
   const articleLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     headline: article.title,
-    description: article.excerpt ?? undefined,
+    ...(ldDescription ? { description: ldDescription } : {}),
     datePublished: article.publishedAt,
     image: article.image ? [article.image.url] : undefined,
     author: article.author ? { '@type': 'Person', name: article.author.name } : undefined,
@@ -160,7 +171,7 @@ function ArticleView({ article }: { article: Article }) {
         <div
           className="rte article-body"
           style={{ maxWidth: 720, margin: 'var(--s-7) auto 0' }}
-          dangerouslySetInnerHTML={{ __html: article.contentHtml }}
+          dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(article.contentHtml) }}
         />
 
         <footer className="article-foot" style={{ maxWidth: 720, margin: 'var(--s-7) auto 0', paddingTop: 'var(--s-5)', borderTop: '1px solid var(--line)' }}>
