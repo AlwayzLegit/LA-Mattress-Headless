@@ -1,9 +1,9 @@
-# Session handoff — 2026-05-04 (Phase 20)
+# Session handoff — 2026-05-04 (Phase 21)
 
 ## Where things stand
 
-**Branch:** `main` (Phases 13–20 merged)
-**Last code commit:** Phase 20 — article handles via Storefront, SSG articles, sitemap to 1184 URLs
+**Branch:** `main` (Phases 13–21 merged, ready for the testing agent)
+**Last code commit:** Phase 21+ — article Suspense, /api/revalidate webhook, PDP CLS fix
 **Build state:** clean — `tsc --noEmit`, `next lint`, `next build` all pass.
 **Live Storefront:** wired and verified.
 **Vercel preview:** project `la-mattress-headless` (team `alwayzlegits-projects`), auto-deploying on `main` push. Latest deploy URL: alias `la-mattress-headless-git-main-alwayzlegits-projects.vercel.app` (auth-protected).
@@ -78,19 +78,23 @@ Each phase is one commit on `main`.
 | 18 | Hero CSS-bg → `<Image priority>` — homepage LCP 12.9s → 4.3s | `169f661` |
 | 19 | Hybrid Suspense skeletons on PDP/PLP (known handles fast-path, unknown 404) | `a4bd5fa` |
 | 20 | Article handles via Storefront (no Admin needed), SSG articles, sitemap 298→1184 URLs | `54755af` |
+| 21 | Article Suspense fast-path, `/api/revalidate` webhook, query-scope audit | `d048900` |
+| 21+ | Extend ProductSkeleton with description placeholder (PDP CLS 0.324 → 0) | `a4ce538` |
 
-### End-to-end verification on the Vercel preview (Phase 18 numbers)
+### End-to-end verification on the Vercel preview (Phase 21+ final)
 
-Lighthouse (mobile, simulated 4G, six routes):
+Lighthouse (mobile, simulated 4G, warmed edge cache):
 
 | Route | Perf | LCP | CLS |
 |---|---|---|---|
-| home | 77 | 4.3s | 0 |
-| pdp | 90+ | 1.9s | 0 |
-| plp | 91 | 2.8s | 0 |
-| page | 97 | 1.6s | 0 |
-| blog-index | 94 | 2.4s | 0 |
-| search | 96 | 2.2s | 0 |
+| home | 79 | 3.9s | 0 |
+| pdp | 90 | 2.7s | 0 |
+| plp | 89 | 2.2s | 0 |
+| article | 93 | 2.2s | 0 |
+| page | 99 | 2.0s | 0 |
+| blog-index | 100 | 1.8s | 0 |
+
+CLS = 0 on every route. PDP regressed to CLS 0.324 in Phase 20+ (skeleton mismatch caused footer to shift); fixed in Phase 21+ by extending the skeleton with a description-section placeholder. Home LCP 3.9s is bound by the Unsplash hero image's `/_next/image` cold optimization; production with a custom domain + warmed edge cache should comfortably hit <2.5s.
 
 Status codes (real Storefront, after Phase 19):
 
@@ -286,3 +290,83 @@ curl -sI http://localhost:3000/pages/this-does-not-exist              # 404 ✓
 | `33106b0` | 9 | Real /sleep-quiz interactive matcher |
 | `8d7bb07` | 10 | Faceted filters on /search + shared plp-filters module |
 | `9b364e6` | 11 | Blog routes + locations index + site-wide JSON-LD + ESLint |
+
+---
+
+# Brief for the testing agent
+
+The migration is functionally complete and pushed to `main`. A testing agent should now exercise the preview end-to-end (browser + Shopify Admin + Vercel) and report what's missing for production.
+
+## What you have access to
+
+- **Preview URL** (auth-protected via Vercel Deployment Protection):
+  https://la-mattress-headless-git-main-alwayzlegits-projects.vercel.app
+  Sign in via the project owner's Vercel account, or use a generated share link from `get_access_to_vercel_url`.
+- **Vercel project:** `la-mattress-headless` (team `alwayzlegits-projects`, id `prj_ZsYbO47m3igJBAFSiYDyz0fjZrwW`).
+- **GitHub repo:** `AlwayzLegit/LA-Mattress-Headless`. `main` is the production branch.
+- **Shopify Admin** (via the connected MCP server). Read-only is enough for the audit, but you'll need write access if remediating Shopify-side issues.
+- **Live Shopify storefront** (the existing Hydrogen site) at `https://mattressstoreslosangeles.com` for comparison.
+
+## Things you should test (frontend)
+
+1. **Visual QA** in a real browser, mobile + desktop:
+   - Hero rotation (3 slides), the LCP image renders correctly.
+   - Mega menu opens, tile images load from Shopify CDN.
+   - PLP filters (vendor / type / size / price), sort dropdown, "Load more" pagination, mobile filter drawer.
+   - PDP gallery, variant selector (BuyBox), Add-to-cart UX, JSON-LD blocks present.
+   - Cart drawer (slides in, line editor, totals correct), `/cart` page, "Checkout" CTA.
+   - Article rendering (`/blogs/{blog}/{article}`) — pick 2-3 from `data/url-inventory/blogs.json` to spot-check.
+   - Sleep quiz (8 questions, recommendation result links to a real PDP).
+   - Showroom pages (`/pages/{handle}` for the 5 LA stores) and the locations index.
+   - Footer, topbar, search.
+2. **End-to-end checkout flow:**
+   - Add a real mattress (e.g. tempur-pedic-tempur-proadapt-medium-hybrid) to cart.
+   - Open cart drawer → click "Checkout".
+   - Confirm browser navigates to `checkout.mattressstoreslosangeles.com/...`.
+   - Walk through to the payment step (don't pay). Verify Shop Pay / cards / Apple Pay all show. Verify order summary matches the cart.
+3. **404 / 500 / redirect smoke:**
+   - `/products/{any-bad-handle}` → expect 404 with "Lost in the night" body and "404 — Product" eyebrow.
+   - `/collections/{bad}`, `/blogs/{bad}`, `/blogs/sleep-blog/{bad}` → 404 with route-specific copy.
+   - `/collections/sale` → 308 redirect to `/collections/on-sale`.
+   - Pages we haven't tested: report which routes throw 500 if any.
+4. **SEO surface:**
+   - Run a Semrush / Ahrefs / Sitebulb crawl on the preview URL. Compare against `data/seo-audit/mattressstoreslosangeles.com_mega_export_20260504.csv` (the audit of the *live Hydrogen site*) — flag what's still flagged on our build.
+   - Validate JSON-LD with https://validator.schema.org/ on every page-template (PDP, PLP, page, article, sleep-quiz, locations).
+   - Sitemap 1184 entries — spot-check that random URLs resolve.
+   - Verify `noindex` on `/cart` and `/search`.
+5. **Performance:**
+   - Run PageSpeed Insights on the preview URL (warning: preview deploys are auth-protected and have `X-Robots-Tag: noindex`, so SEO score will be artificially ~58-69; performance is the meaningful signal).
+   - For mobile + desktop, target homepage / PDP / PLP / article. The Phase 21+ baseline (Lighthouse, simulated 4G, mobile) was: home 89, pdp 80→fixed in 21+, plp 94, page 99, blog 100, article 98.
+   - Web Vitals targets: LCP < 2.5s, CLS < 0.1, INP < 200ms.
+
+## Things you should test (backend / data layer)
+
+6. **Storefront API connectivity:**
+   - Verify `cart.checkoutUrl` always points to `checkout.mattressstoreslosangeles.com` (not the `myshopify.com` subdomain).
+   - Confirm partial GraphQL errors (Phase 15) still don't 5xx — the `quantityAvailable` field was dropped, but if any other field becomes scope-denied on token rotation, `lib/shopify/client.ts` should log a warning and return data.
+   - Edge cases: out-of-stock variant (does Add to Cart fail gracefully?), variant with no compareAtPrice.
+7. **Webhook receiver (`/api/revalidate`):**
+   - GET on `/api/revalidate` should return `{ok: true, route: "/api/revalidate", method: "POST"}`.
+   - POST without `SHOPIFY_WEBHOOK_SECRET` env var → 503.
+   - POST with bad HMAC → 401.
+   - With the env var set + a valid Shopify webhook payload, POST → 200 + `revalidated: ["product:..."]` etc.
+   - To test with real webhooks: in Shopify Admin → Settings → Notifications → Webhooks, register `products/update` with format JSON and the secret, point at the preview URL. Update a product, watch Vercel function logs.
+
+## Things you should look at (Shopify Admin side)
+
+The audit `data/seo-audit/mattressstoreslosangeles.com_mega_export_20260504.csv` flagged 791 pages on the live Hydrogen store. Some are migration-fixable; others need merchant work in Shopify Admin:
+
+- **Duplicate h1 / title (129 pages)** — needs a copy decision from the merchant. Two patterns to consider, suggested in the chat checklist.
+- **URL redirects** — `data/url-inventory/redirects.json` has 6 entries; the live store has roughly 1500. Pull the full table either via `scripts/pull-inventory.mjs` (needs an Admin token with `read_themes`) or export from Shopify Admin → Online Store → Navigation → URL Redirects → Export CSV. Convert the CSV to the JSON shape and commit. Vercel re-evaluates `next.config.mjs redirects()` on each build.
+- **Missing meta description on 12 articles** — fixed in code (`firstNonEmpty()` fallback), but the merchant should still write proper SEO descriptions in Shopify Admin → Online Store → Blog Posts → SEO.
+- **SEO title length** — capped programmatically at 56 chars + " · LA Mattress" suffix. Merchant should still aim for ≤ 60 char SEO titles in Admin.
+- **Unpublished pages** flagged: ~80 of 113 Shopify pages are unpublished. Those are intentionally not in our sitemap. Merchant should cull truly-dead pages from Admin to keep their inventory tidy.
+- **Reviews widget** placeholder on PDP + homepage Reviews section. Vendor decision pending (Birdeye vs Yotpo). Recommend the merchant pick one.
+- **`/account` is a placeholder.** Customer Account API integration deferred per the original brief.
+
+## Hand-back
+
+After your audit, return:
+1. A list of issues found in the Next.js storefront, with severity (blocker / regression / polish).
+2. A list of Shopify-side recommendations (copy / config / data hygiene).
+3. A go/no-go assessment for production cutover, with the remaining gates.
