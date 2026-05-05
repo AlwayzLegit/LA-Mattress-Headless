@@ -42,10 +42,30 @@ export type SearchResult = {
   filters: AvailableFilter[];
 };
 
+type RawSummary = ProductSummary & {
+  firmnessMetafield?: { value: string } | null;
+  heightMetafield?:   { value: string } | null;
+  materialMetafield?: { value: string } | null;
+};
+
+function liftSummarySpecs(n: RawSummary): ProductSummary {
+  const { firmnessMetafield, heightMetafield, materialMetafield, ...rest } = n;
+  const heightStr = heightMetafield?.value;
+  const heightNum = heightStr ? Number.parseFloat(heightStr) : NaN;
+  return {
+    ...rest,
+    specs: {
+      firmness: firmnessMetafield?.value || null,
+      heightInches: Number.isFinite(heightNum) ? heightNum : null,
+      materialType: materialMetafield?.value || null,
+    },
+  };
+}
+
 type Raw = {
   search: {
     totalCount: number;
-    edges: { node: ProductSummary }[];
+    edges: { node: RawSummary }[];
     pageInfo: { hasNextPage: boolean; endCursor: string | null };
     productFilters: AvailableFilter[];
   };
@@ -63,7 +83,7 @@ export async function searchProducts(
   });
   return {
     totalCount: data.search.totalCount,
-    products: data.search.edges.map((e) => e.node),
+    products: data.search.edges.map((e) => liftSummarySpecs(e.node)),
     pageInfo: data.search.pageInfo,
     filters: data.search.productFilters ?? [],
   };
@@ -90,7 +110,12 @@ export type Predictive = {
   queries: { text: string }[];
 };
 
+type PredictiveRaw = Omit<Predictive, 'products'> & { products: RawSummary[] };
+
 export async function predictiveSearch(query: string): Promise<Predictive> {
-  const data = await shopifyFetch<{ predictiveSearch: Predictive }>(PREDICTIVE_SEARCH, { query });
-  return data.predictiveSearch;
+  const data = await shopifyFetch<{ predictiveSearch: PredictiveRaw }>(PREDICTIVE_SEARCH, { query });
+  return {
+    ...data.predictiveSearch,
+    products: data.predictiveSearch.products.map(liftSummarySpecs),
+  };
 }

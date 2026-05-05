@@ -12,6 +12,7 @@ import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { CompareToggle } from '@/app/_components/compare';
+import { PcardSpecs } from '@/app/_components/pcard-specs';
 import { SortControl } from './sort-control';
 import { CollectionSkeleton } from './skeleton';
 import {
@@ -251,6 +252,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                       <div className="pcard-meta">
                         <div className="pcard-brand">{p.vendor}</div>
                         <div className="pcard-name">{p.title}</div>
+                        <PcardSpecs specs={p.specs} />
                         <div className="pcard-price">
                           <span className="pcard-now tnum">
                             {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}

@@ -98,6 +98,8 @@ export type ProductSummary = {
   featuredImage: Image | null;
   priceRange: { minVariantPrice: Money; maxVariantPrice: Money };
   compareAtPriceRange: { minVariantPrice: Money; maxVariantPrice: Money };
+  /** Subset of ProductSpecs surfaced in ProductSummary fragment for PLP cards. */
+  specs?: { firmness: string | null; heightInches: number | null; materialType: string | null };
 };
 
 export type Collection = {

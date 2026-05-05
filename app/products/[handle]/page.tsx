@@ -112,6 +112,24 @@ async function ProductBody({ handle }: { handle: string }) {
   return <ProductView product={product} related={related} />;
 }
 
+function SpecStrip({ specs }: { specs: Product['specs'] }) {
+  // Render only the spec values that are actually populated. Order matches
+  // the buying-decision priority: material → firmness → height. Values
+  // separated by middle-dot for a tight, scannable strip.
+  const items: string[] = [];
+  if (specs.materialType) items.push(specs.materialType);
+  if (specs.firmness)     items.push(specs.firmness);
+  if (specs.heightInches !== null) items.push(`${specs.heightInches}"`);
+  if (items.length === 0) return null;
+  return (
+    <div className="pdp-spec-strip" aria-label="Mattress specs">
+      {items.map((s, i) => (
+        <span key={i} className="pdp-spec-strip-item">{s}</span>
+      ))}
+    </div>
+  );
+}
+
 function ProductView({ product, related }: { product: Product; related: ProductSummary[] }) {
   const min = product.priceRange.minVariantPrice;
   const max = product.priceRange.maxVariantPrice;
@@ -193,6 +211,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
           <div className="eyebrow">{product.vendor}</div>
           <h1 className="h2 pdp-title">{product.title}</h1>
           <ReviewsBadge reviews={product.reviews} size="block" />
+          <SpecStrip specs={product.specs} />
 
           <BuyBox
             options={product.options}

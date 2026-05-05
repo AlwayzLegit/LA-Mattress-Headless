@@ -835,6 +835,7 @@ a { color: inherit; text-decoration: none; }
 .pcard-meta { padding: 16px 0 0; display: flex; flex-direction: column; gap: 6px; }
 .pcard-brand { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); font-weight: 500; }
 .pcard-name { font-size: 15px; font-weight: 500; line-height: 1.35; min-height: 2.7em; }
+.pcard-specs { font-size: 12px; color: var(--text-3); line-height: 1.3; }
 .pcard-rating { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-2); }
 .pcard-rating svg { color: var(--text); }
 .pcard-reviews { font-size: 12px; }
@@ -1256,6 +1257,21 @@ a { color: inherit; text-decoration: none; }
 .pdp-option-chip.unavailable::after {
   content: ''; position: absolute; left: 8%; right: 8%; top: 50%;
   border-top: 1px solid var(--text-4); transform: rotate(-12deg); pointer-events: none;
+}
+
+/* PDP buybox spec strip — Material · Firmness · Height pills */
+.pdp-spec-strip {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin: var(--s-3) 0 0;
+}
+.pdp-spec-strip-item {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px;
+  font-size: 12px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-radius: var(--r-pill);
+  white-space: nowrap;
 }
 
 .pdp-trust {
