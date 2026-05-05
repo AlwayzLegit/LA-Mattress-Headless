@@ -95,6 +95,11 @@ export function RecentlyViewedRail({
   const filtered = excludeHandle ? items.filter((p) => p.handle !== excludeHandle) : items;
   if (filtered.length < 2) return null;
 
+  const onClear = () => {
+    try { window.localStorage.removeItem(KEY); } catch { /* ignore */ }
+    setItems([]);
+  };
+
   return (
     <section className="section pdp-related" aria-labelledby="recently-viewed-heading">
       <div className="container">
@@ -103,6 +108,9 @@ export function RecentlyViewedRail({
             <div className="eyebrow">{eyebrow}</div>
             <h2 id="recently-viewed-heading" className="h2">{heading}</h2>
           </div>
+          <button type="button" className="link-arrow recently-viewed-clear" onClick={onClear} aria-label="Clear recently viewed history">
+            Clear history
+          </button>
         </div>
       </div>
       <div className="pcard-scroll-wrap">

@@ -71,6 +71,24 @@ export function HeaderSearch() {
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [open]);
 
+  // Global "/" shortcut to open + focus the header search, like GitHub does.
+  // Ignored when the user is already typing in another input/textarea/select
+  // or in an editable area, so it doesn't hijack regular typing.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target as HTMLElement | null;
+      const tag = (t?.tagName ?? '').toLowerCase();
+      const editable = tag === 'input' || tag === 'textarea' || tag === 'select' || (t && t.isContentEditable);
+      if (editable) return;
+      e.preventDefault();
+      setOpen(true);
+      requestAnimationFrame(() => inputRef.current?.focus());
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
   // Esc to close, ↑/↓ to navigate suggestions, Enter to commit highlight.
   const flat = flatten(results);
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -109,7 +127,8 @@ export function HeaderSearch() {
       <button
         type="button"
         className="icon-btn"
-        aria-label="Search"
+        aria-label="Search (press / to focus)"
+        title="Search (/)"
         onClick={() => {
           setOpen(true);
           requestAnimationFrame(() => inputRef.current?.focus());
