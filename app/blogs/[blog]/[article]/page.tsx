@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { getArticleByHandle } from '@/lib/shopify';
+import { blogs as inventoryBlogs } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 
@@ -15,11 +16,15 @@ export const dynamicParams = true;
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
 const SITE = 'https://mattressstoreslosangeles.com';
 
-// Article handles aren't enumerated in the inventory snapshot yet —
-// scripts/pull-inventory.mjs needs read_content scope to populate them.
-// Until then, articles render dynamically (dynamicParams = true).
+// Pre-render the published article handles from the inventory snapshot.
+// `dynamicParams = true` still serves articles published since the last
+// pull on demand via ISR. Re-run `node scripts/pull-articles-via-storefront.mjs`
+// to refresh after publishing new posts.
 export function generateStaticParams() {
-  return [];
+  if (!SHOPIFY_CONFIGURED) return [];
+  return inventoryBlogs.flatMap((b) =>
+    (b.articles ?? []).map((a) => ({ blog: b.handle, article: a.handle })),
+  );
 }
 
 export async function generateMetadata(props: Params): Promise<Metadata> {

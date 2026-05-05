@@ -40,14 +40,27 @@ export type PageInv = {
   updatedAt: string;
 };
 
+export type BlogArticleInv = {
+  handle: string;
+  id?: string;
+  title?: string;
+  isPublished?: boolean;
+  publishedAt?: string | null;
+};
+
 export type BlogInv = {
   handle: string;
   id: string;
   title: string;
-  // Articles are deferred until scripts/pull-inventory.mjs runs with
-  // read_content scope. When populated, each entry will be a string handle.
-  articles?: string[];
+  // Populated by scripts/pull-articles-via-storefront.mjs (or
+  // scripts/pull-inventory.mjs with read_content scope on Admin).
+  articles?: BlogArticleInv[];
 };
+
+/** Convenience: just article handles, used by sitemap + generateStaticParams. */
+export function articleHandles(blog: BlogInv): string[] {
+  return (blog.articles ?? []).map((a) => a.handle);
+}
 
 export const collections: CollectionInv[] = collectionsJson.collections as CollectionInv[];
 export const products:    ProductInv[]    = productsJson.products as ProductInv[];

@@ -33,8 +33,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  // Blog index URLs are emitted; individual /blogs/{blog}/{article} URLs
-  // get added once scripts/pull-inventory.mjs populates article handles.
   const blogEntries: MetadataRoute.Sitemap = blogs.map((b) => ({
     url: u(`/blogs/${b.handle}`),
     lastModified: now,
@@ -42,5 +40,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...home, ...productEntries, ...collectionEntries, ...pageEntries, ...blogEntries];
+  const articleEntries: MetadataRoute.Sitemap = blogs.flatMap((b) =>
+    (b.articles ?? []).map((a) => ({
+      url: u(`/blogs/${b.handle}/${a.handle}`),
+      lastModified: a.publishedAt ? new Date(a.publishedAt) : now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.55,
+    })),
+  );
+
+  return [...home, ...productEntries, ...collectionEntries, ...pageEntries, ...blogEntries, ...articleEntries];
 }
