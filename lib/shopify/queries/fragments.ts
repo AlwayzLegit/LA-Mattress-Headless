@@ -54,6 +54,9 @@ export const PRODUCT_SUMMARY_FRAGMENT = /* GraphQL */ `
       minVariantPrice { ...MoneyFields }
       maxVariantPrice { ...MoneyFields }
     }
+    firmnessMetafield: metafield(namespace: "custom", key: "firmness")        { value }
+    heightMetafield:   metafield(namespace: "custom", key: "height_inches")   { value }
+    materialMetafield: metafield(namespace: "custom", key: "material_type")   { value }
   }
 `;
 

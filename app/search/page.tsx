@@ -6,6 +6,7 @@ import { searchProducts } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
 import { Icon } from '@/app/_components/icon';
 import { CompareToggle } from '@/app/_components/compare';
+import { PcardSpecs } from '@/app/_components/pcard-specs';
 import {
   FilterPanel,
   FilterMobileTrigger,
@@ -144,6 +145,7 @@ export default async function SearchPage(props: Params) {
                           <div className="pcard-meta">
                             <div className="pcard-brand">{p.vendor}</div>
                             <div className="pcard-name">{p.title}</div>
+                            <PcardSpecs specs={p.specs} />
                             <div className="pcard-price">
                               <span className="pcard-now tnum">
                                 {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}

@@ -52,17 +52,39 @@ const GET_COLLECTION = /* GraphQL */ `
   }
 `;
 
+type RawSummary = ProductSummary & {
+  firmnessMetafield?: { value: string } | null;
+  heightMetafield?:   { value: string } | null;
+  materialMetafield?: { value: string } | null;
+};
+
 type Raw = {
   collection:
     | (Omit<CollectionWithProducts, 'products'> & {
         products: {
-          nodes: ProductSummary[];
+          nodes: RawSummary[];
           pageInfo: { hasNextPage: boolean; endCursor: string | null };
           filters: AvailableFilter[];
         };
       })
     | null;
 };
+
+/** Lifts the three summary spec metafields off a raw node into a clean
+ * ProductSummary.specs object. */
+function liftSummarySpecs(n: RawSummary): ProductSummary {
+  const { firmnessMetafield, heightMetafield, materialMetafield, ...rest } = n;
+  const heightStr = heightMetafield?.value;
+  const heightNum = heightStr ? Number.parseFloat(heightStr) : NaN;
+  return {
+    ...rest,
+    specs: {
+      firmness: firmnessMetafield?.value || null,
+      heightInches: Number.isFinite(heightNum) ? heightNum : null,
+      materialType: materialMetafield?.value || null,
+    },
+  };
+}
 
 export type GetCollectionArgs = {
   handle: string;
@@ -86,5 +108,12 @@ export async function getCollectionByHandle({
     { handle, first, after, sortKey, reverse, filters: filters ?? [] },
     { tags: [`collection:${handle}`] },
   );
-  return data.collection ?? null;
+  if (!data.collection) return null;
+  return {
+    ...data.collection,
+    products: {
+      ...data.collection.products,
+      nodes: data.collection.products.nodes.map(liftSummarySpecs),
+    },
+  };
 }
