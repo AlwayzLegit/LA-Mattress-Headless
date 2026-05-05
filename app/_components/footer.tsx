@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { SITE_PHONE_DISPLAY, SITE_EMAIL } from '@/lib/site-config';
+import { NewsletterForm } from './newsletter-form';
 
 type Col = { title: string; links: { label: string; href: string }[] };
 const COLS: Col[] = [
@@ -44,10 +45,7 @@ export function Footer() {
         <div className="footer-newsletter">
           <h3 className="h2 footer-h">Sleep on it.</h3>
           <p className="muted footer-lede">First dibs on floor-model markdowns, plus our quarterly mattress-care guide. No spam.</p>
-          <form className="footer-form" action="/api/newsletter" method="post">
-            <input className="footer-input" type="email" name="email" placeholder="you@email.com" required />
-            <button className="btn btn-secondary" type="submit">Subscribe</button>
-          </form>
+          <NewsletterForm />
           <div className="footer-fineprint muted">By subscribing you agree to our Privacy Policy.</div>
         </div>
         <div className="footer-cols">
