@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Icon } from './icon';
 import { phImg, type PhFit } from './images';
 import { useCart } from './cart-context';
+import { HeaderSearch } from './header-search';
 import { SITE_PHONE_TEL } from '@/lib/site-config';
 
 type MegaCol = { title: string; links: { label: string; href: string }[] };
@@ -154,7 +155,7 @@ export function Nav() {
             ))}
           </nav>
           <div className="nav-actions">
-            <Link className="icon-btn" aria-label="Search" href="/search"><Icon name="search" size={18} /></Link>
+            <HeaderSearch />
             <Link className="icon-btn" aria-label="Account" href="/account"><Icon name="user" size={18} /></Link>
             <button
               className="icon-btn cart-btn"
