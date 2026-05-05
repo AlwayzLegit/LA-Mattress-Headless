@@ -2,9 +2,11 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
+import Image from 'next/image';
+
 import { getPageByHandle } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
-import { SHOWROOMS, findShowroom, type Showroom } from '@/lib/showrooms';
+import { SHOWROOMS, findShowroom, getOpenStatus, type Showroom } from '@/lib/showrooms';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { SITE_PHONE_SCHEMA } from '@/lib/site-config';
@@ -172,6 +174,10 @@ function ShowroomPage({
   showroom: Showroom;
 }) {
   const url = `${SITE}/pages/${page.handle}`;
+  const openStatus = getOpenStatus(showroom);
+  const mapEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(
+    `${showroom.street}, ${showroom.city}, ${showroom.region} ${showroom.postalCode}`,
+  )}&z=15&output=embed`;
 
   const localBusinessLd = {
     '@context': 'https://schema.org',
@@ -181,7 +187,7 @@ function ShowroomPage({
     url,
     telephone: showroom.phone,
     priceRange: '$$$',
-    image: `${SITE}/assets/la-mattress-logo.png`,
+    image: showroom.imageUrl ?? `${SITE}/assets/la-mattress-logo.png`,
     address: {
       '@type': 'PostalAddress',
       streetAddress: showroom.street,
@@ -232,10 +238,27 @@ function ShowroomPage({
         <header className="showroom-page-hero">
           <div className="eyebrow"><Icon name="pin" size={14} /> {showroom.area} · Los Angeles</div>
           <h1 className="h1">{page.title}</h1>
+          <div className={`showroom-open-status${openStatus.isOpen ? ' is-open' : ''}`}>
+            <span className="showroom-open-dot" aria-hidden /> {openStatus.message}
+          </div>
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
             Visit our {showroom.area} showroom — try every mattress, talk with our local team, and walk out the same day with free white-glove delivery on most beds.
           </p>
         </header>
+
+        {showroom.imageUrl ? (
+          <div className="showroom-photo">
+            <Image
+              src={showroom.imageUrl}
+              alt={`${showroom.name} storefront`}
+              width={1600}
+              height={900}
+              sizes="(max-width: 1024px) 100vw, 1080px"
+              priority
+              style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+            />
+          </div>
+        ) : null}
 
         <section className="showroom-page-grid">
           <aside className="showroom-info-card">
@@ -271,6 +294,15 @@ function ShowroomPage({
           </aside>
 
           <div className="showroom-page-body">
+            <div className="showroom-map">
+              <iframe
+                title={`Map of ${showroom.name}`}
+                src={mapEmbedSrc}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </div>
             {page.body ? (
               <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
             ) : (

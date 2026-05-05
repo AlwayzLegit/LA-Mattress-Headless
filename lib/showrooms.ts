@@ -10,6 +10,8 @@ export type Showroom = {
   hours: { day: string; open: string; close: string }[];
   geo?: { latitude: number; longitude: number };
   mapUrl: string;
+  /** Shopify CDN URL for the storefront photo. */
+  imageUrl?: string;
 };
 
 export const SHOWROOMS: Showroom[] = [
@@ -28,6 +30,7 @@ export const SHOWROOMS: Showroom[] = [
     ],
     geo: { latitude: 34.0639, longitude: -118.3046 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+Koreatown',
+    imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Koreatown.jpg?v=1734092287',
   },
   {
     handle: 'best-mattress-store-west-la',
@@ -44,6 +47,7 @@ export const SHOWROOMS: Showroom[] = [
     ],
     geo: { latitude: 34.0407, longitude: -118.4499 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+West+LA',
+    imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/West_LA.jpg?v=1734092103',
   },
   {
     handle: 'best-mattress-store-la-brea',
@@ -60,6 +64,7 @@ export const SHOWROOMS: Showroom[] = [
     ],
     geo: { latitude: 34.0830, longitude: -118.3441 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+La+Brea',
+    imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/hancock.jpg?v=1734095213',
   },
   {
     handle: 'mattress-store-studio-city',
@@ -76,6 +81,7 @@ export const SHOWROOMS: Showroom[] = [
     ],
     geo: { latitude: 34.1426, longitude: -118.4014 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+Studio+City',
+    imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Studio_City.jpg?v=1734378534',
   },
   {
     handle: 'mattress-store-in-glendale',
@@ -92,9 +98,103 @@ export const SHOWROOMS: Showroom[] = [
     ],
     geo: { latitude: 34.1502, longitude: -118.2551 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+Glendale',
+    imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Glendale.jpg?v=1734092279',
   },
 ];
 
 export function findShowroom(handle: string): Showroom | undefined {
   return SHOWROOMS.find((s) => s.handle === handle);
+}
+
+/**
+ * Computes whether the showroom is open at the given time and returns a
+ * human-readable status. All five showrooms operate on America/Los_Angeles
+ * time, so we ignore the server's zone and read the LA wall-clock instead
+ * — that keeps the page consistent regardless of where it's rendered.
+ *
+ * Returns:
+ *   { isOpen: true,  message: 'Open now · Closes at 8pm' }
+ *   { isOpen: false, message: 'Opens at 10am' }
+ *   { isOpen: false, message: 'Closed today · Opens Mon at 10am' } (rare)
+ */
+export type OpenStatus = { isOpen: boolean; message: string };
+
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+
+export function getOpenStatus(showroom: Showroom, now: Date = new Date()): OpenStatus {
+  // Read LA wall clock no matter where this renders.
+  const la = laParts(now);
+  const todaysHours = matchHoursForDay(showroom.hours, la.dayIdx);
+  const nowHM = la.hour * 60 + la.min;
+
+  if (todaysHours) {
+    const open = parseHM(todaysHours.open);
+    const close = parseHM(todaysHours.close);
+    if (open !== null && close !== null) {
+      if (nowHM < open) return { isOpen: false, message: `Opens at ${formatHour(todaysHours.open)}` };
+      if (nowHM < close) return { isOpen: true, message: `Open now · Closes at ${formatHour(todaysHours.close)}` };
+      // Past close — fall through to find the next open day.
+    }
+  }
+
+  // Walk forward up to 7 days to find the next opening time.
+  for (let i = 1; i <= 7; i++) {
+    const nextIdx = (la.dayIdx + i) % 7;
+    const nextHours = matchHoursForDay(showroom.hours, nextIdx);
+    if (nextHours) {
+      const dayLabel = i === 1 ? 'tomorrow' : DAY_NAMES[nextIdx];
+      return { isOpen: false, message: `Closed · Opens ${dayLabel} at ${formatHour(nextHours.open)}` };
+    }
+  }
+  return { isOpen: false, message: 'Closed' };
+}
+
+function laParts(d: Date): { dayIdx: number; hour: number; min: number } {
+  // Intl with timeZone gives us LA wall-clock without pulling moment/dayjs.
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  const parts = fmt.formatToParts(d);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
+  const wd = get('weekday');
+  const hour = Number.parseInt(get('hour'), 10);
+  const min = Number.parseInt(get('minute'), 10);
+  const dayIdx = (DAY_NAMES as readonly string[]).indexOf(wd);
+  // 24h format with hour12=false sometimes returns "24" for midnight; clamp.
+  return {
+    dayIdx: dayIdx >= 0 ? dayIdx : 0,
+    hour: Number.isFinite(hour) ? hour % 24 : 0,
+    min: Number.isFinite(min) ? min : 0,
+  };
+}
+
+function matchHoursForDay(
+  hours: Showroom['hours'],
+  dayIdx: number,
+): { open: string; close: string } | null {
+  for (const h of hours) {
+    if (h.day === 'Mon-Sat' && dayIdx >= 1 && dayIdx <= 6) return h;
+    if (h.day === 'Sun' && dayIdx === 0) return h;
+    if (h.day === 'Mon-Fri' && dayIdx >= 1 && dayIdx <= 5) return h;
+    if (h.day === 'Sat' && dayIdx === 6) return h;
+    if (h.day === DAY_NAMES[dayIdx]) return h;
+  }
+  return null;
+}
+
+function parseHM(hm: string): number | null {
+  const [h, m] = hm.split(':').map((n) => Number.parseInt(n, 10));
+  return Number.isFinite(h) ? h * 60 + (Number.isFinite(m) ? m : 0) : null;
+}
+
+function formatHour(hhmm: string): string {
+  const [h, m] = hhmm.split(':').map((n) => Number.parseInt(n, 10));
+  if (!Number.isFinite(h)) return hhmm;
+  const ampm = h >= 12 ? 'pm' : 'am';
+  const h12 = ((h + 11) % 12) + 1;
+  return m ? `${h12}:${String(m).padStart(2, '0')}${ampm}` : `${h12}${ampm}`;
 }
