@@ -11,6 +11,7 @@ import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
+import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
 import { BuyBox } from './buy-box';
 import { RelatedRail } from './related-rail';
 import { ProductSkeleton } from './skeleton';
@@ -234,6 +235,8 @@ function ProductView({ product, related }: { product: Product; related: ProductS
       </div>
 
       <RelatedRail products={related} />
+      <RecentlyViewedRail excludeHandle={product.handle} />
+      <RecordRecentlyViewed product={product} />
 
       <script id="ld-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }} />
       <script id="ld-breadcrumb-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
