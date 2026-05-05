@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import { getArticleByHandle } from '@/lib/shopify';
 import type { Article } from '@/lib/shopify';
-import { blogs as inventoryBlogs } from '@/lib/inventory';
+import { blogs as inventoryBlogs, findBlog } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
@@ -95,6 +95,8 @@ async function ArticleBody({ blog, article }: { blog: string; article: string })
 
 function ArticleView({ article }: { article: Article }) {
   const url = `${SITE}/blogs/${article.blog.handle}/${article.handle}`;
+  const readMinutes = estimateReadMinutes(article.contentHtml);
+  const related = findRelatedArticles(article);
 
   // BlogPosting description prefers Shopify's SEO field (the merchant's
   // deliberate description_tag metafield, surfaced via Storefront `seo`)
@@ -151,6 +153,7 @@ function ArticleView({ article }: { article: Article }) {
               {new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </time>
             {article.author?.name ? <> · <span>By {article.author.name}</span></> : null}
+            {readMinutes > 0 ? <> · <span>{readMinutes} min read</span></> : null}
           </div>
         </header>
 
@@ -179,10 +182,60 @@ function ArticleView({ article }: { article: Article }) {
             <Icon name="arrow-left" size={14} /> More from {article.blog.title}
           </Link>
         </footer>
+
+        {related.length > 0 ? (
+          <section className="article-related" aria-labelledby="article-related-heading" style={{ maxWidth: 720, margin: 'var(--s-7) auto 0' }}>
+            <div className="eyebrow">Keep reading</div>
+            <h2 id="article-related-heading" className="h2" style={{ margin: 'var(--s-3) 0 var(--s-4)' }}>More from {article.blog.title}</h2>
+            <ul className="article-related-list">
+              {related.map((r) => (
+                <li key={r.handle}>
+                  <Link href={`/blogs/${article.blog.handle}/${r.handle}`} className="article-related-row">
+                    <span className="article-related-title">{r.title ?? r.handle.replace(/-/g, ' ')}</span>
+                    {r.publishedAt ? (
+                      <time dateTime={r.publishedAt} className="muted">
+                        {new Date(r.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                      </time>
+                    ) : null}
+                    <Icon name="arrow-right" size={14} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
       </article>
 
       <script id="ld-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
       <script id="ld-breadcrumb-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
+}
+
+/**
+ * Rough read-time estimate from HTML content. Strips tags + counts words,
+ * divides by 220 wpm (a slightly fast pace, biased so the displayed number
+ * doesn't oversell long-form posts). Returns 0 for empty content so the
+ * caller can drop the chip entirely.
+ */
+function estimateReadMinutes(html: string): number {
+  if (!html) return 0;
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!text) return 0;
+  const words = text.split(' ').length;
+  return Math.max(1, Math.round(words / 220));
+}
+
+/** Pull up to 4 sibling articles from the same blog (excluding the current one). */
+function findRelatedArticles(article: Article): { handle: string; title?: string; publishedAt?: string | null }[] {
+  const blog = findBlog(article.blog.handle);
+  if (!blog?.articles) return [];
+  return blog.articles
+    .filter((a) => a.handle !== article.handle && a.isPublished !== false)
+    .sort((a, b) => {
+      const ad = a.publishedAt ? Date.parse(a.publishedAt) : 0;
+      const bd = b.publishedAt ? Date.parse(b.publishedAt) : 0;
+      return bd - ad;
+    })
+    .slice(0, 4);
 }
