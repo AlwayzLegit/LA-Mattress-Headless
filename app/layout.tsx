@@ -19,6 +19,7 @@ const geistMono = Geist_Mono({
   preload: false,
 });
 import { Nav } from './_components/nav';
+import { TrustStrip } from './_components/trust-strip';
 import { Footer } from './_components/footer';
 import { CartProvider } from './_components/cart-context';
 import { CartDrawer } from './_components/cart-drawer';
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <CartProvider>
           <TopBar />
           <Nav />
+          <TrustStrip />
           {children}
           <Footer />
           <CartDrawer />
