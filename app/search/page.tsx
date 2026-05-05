@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { searchProducts } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
 import { Icon } from '@/app/_components/icon';
+import { CompareToggle } from '@/app/_components/compare';
 import {
   FilterPanel,
   FilterMobileTrigger,
@@ -148,6 +149,7 @@ export default async function SearchPage(props: Params) {
                                 {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
                               </span>
                             </div>
+                            <CompareToggle handle={p.handle} title={p.title} />
                           </div>
                         </Link>
                       ))}

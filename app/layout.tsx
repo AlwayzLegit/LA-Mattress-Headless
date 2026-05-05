@@ -23,6 +23,7 @@ import { TrustStrip } from './_components/trust-strip';
 import { Footer } from './_components/footer';
 import { CartProvider } from './_components/cart-context';
 import { CartDrawer } from './_components/cart-drawer';
+import { CompareTray } from './_components/compare';
 import { ORGANIZATION_LD, LOCAL_BUSINESS_LD, WEBSITE_LD } from '@/lib/structured-data';
 
 export const metadata: Metadata = {
@@ -72,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div id="main-content">{children}</div>
           <Footer />
           <CartDrawer />
+          <CompareTray />
         </CartProvider>
         <script id="ld-organization" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }} />
