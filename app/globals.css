@@ -1261,6 +1261,19 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: var(--s-5);
   padding-bottom: var(--s-4); border-bottom: 1px solid var(--line);
 }
+@media (max-width: 880px) {
+  .plp-toolbar {
+    position: sticky; top: 0;
+    z-index: 30;
+    margin-bottom: var(--s-4);
+    padding: var(--s-3) var(--gutter);
+    margin-left: calc(var(--gutter) * -1);
+    margin-right: calc(var(--gutter) * -1);
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+}
 .plp-toolbar-count { font-size: 13px; color: var(--text-3); }
 .plp-toolbar-sort {
   display: inline-flex; align-items: center; gap: var(--s-2);
