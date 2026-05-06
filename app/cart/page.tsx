@@ -21,7 +21,7 @@ export default async function CartPage() {
 
   if (!cart || lines.length === 0) {
     return (
-      <main className="container" style={{ padding: 'var(--s-9) 0' }}>
+      <main className="container" style={{ padding: 'var(--s-9) 0', minHeight: '60vh' }}>
         <div style={{ maxWidth: 640 }}>
           <div className="eyebrow">Cart</div>
           <h1 className="h1" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>Your cart is empty.</h1>

@@ -69,6 +69,7 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
             key={idx}
             className={`hero-slide ${idx === i ? 'on' : ''} ${s.accent ? 'hero-slide-accent' : ''}`}
             aria-hidden={idx !== i}
+            inert={idx !== i}
           >
             <div className="hero-bg">
               <Image

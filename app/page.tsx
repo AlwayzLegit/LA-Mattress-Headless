@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <>
+    <main>
       <Hero />
       <TrustBar />
       <RecentlyViewedRail heading="Welcome back" eyebrow="Pick up where you left off" />
@@ -51,6 +51,6 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_LD) }}
       />
-    </>
+    </main>
   );
 }
