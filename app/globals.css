@@ -1171,7 +1171,12 @@ a { color: inherit; text-decoration: none; }
   background: var(--surface-2);
   object-fit: contain;
 }
-.pdp-thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--s-2); margin-top: var(--s-3); }
+.pdp-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
 .pdp-thumb-btn {
   appearance: none; padding: 0; border: 0; background: transparent; cursor: pointer;
   border-radius: var(--r-2);
@@ -1260,8 +1265,10 @@ a { color: inherit; text-decoration: none; }
   border-top: 1px solid var(--text-4); transform: rotate(-12deg); pointer-events: none;
 }
 
-/* PDP "At a glance" spec table — clean two-column dt/dd grid */
-.pdp-spec-table-section { margin-top: var(--s-6); }
+/* PDP "At a glance" spec table — clean two-column dt/dd grid.
+   Inline within the left column of pdp-grid, so no .section padding —
+   the parent pdp-left's flex `gap` handles spacing between sections. */
+.pdp-spec-table-section { /* margin handled by pdp-left gap */ }
 .pdp-spec-table {
   margin: var(--s-4) 0 0;
   display: grid;
@@ -1305,7 +1312,8 @@ a { color: inherit; text-decoration: none; }
 }
 .pdp-trust li { display: inline-flex; align-items: center; gap: 8px; }
 
-.pdp-description { padding: var(--s-9) 0 var(--s-7); }
+/* Inline within pdp-left — spacing handled by parent flex gap, not own padding. */
+.pdp-description { padding: 0; }
 
 /* RTE — Shopify-authored body HTML */
 .rte { font-size: 16px; line-height: 1.65; color: var(--text-2); max-width: 70ch; }
