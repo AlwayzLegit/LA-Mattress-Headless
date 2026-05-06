@@ -43,7 +43,7 @@ export function Footer() {
     <footer className="footer">
       <div className="container footer-top">
         <div className="footer-newsletter">
-          <h3 className="h2 footer-h">Sleep on it.</h3>
+          <div className="h2 footer-h" role="presentation">Sleep on it.</div>
           <p className="muted footer-lede">First dibs on floor-model markdowns, plus our quarterly mattress-care guide. No spam.</p>
           <NewsletterForm />
           <div className="footer-fineprint muted">By subscribing you agree to our Privacy Policy.</div>

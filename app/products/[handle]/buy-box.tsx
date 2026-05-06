@@ -156,7 +156,7 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
                       className={`pdp-option-chip ${active ? 'on' : ''} ${available ? '' : 'unavailable'}`}
                       onClick={() => setSelection((s) => ({ ...s, [opt.name]: v }))}
                       aria-pressed={active}
-                      aria-label={`${opt.name}: ${v}${variantForThisChip ? `, ${formatMoney(variantForThisChip.price)}` : ''}${available ? '' : ' (unavailable)'}`}
+                      aria-label={available ? undefined : `${v}${variantForThisChip ? ` ${formatMoney(variantForThisChip.price)}` : ''} (unavailable)`}
                     >
                       <span className="pdp-option-chip-label">{v}</span>
                       {variantForThisChip ? (

@@ -1383,9 +1383,19 @@
       "permanent": true
     },
     {
+      "source": "/pages/mattress-faq",
+      "destination": "/pages/mattress-store-contact",
+      "permanent": false
+    },
+    {
       "source": "/pages/mattress-sale",
       "destination": "/collections/on-sale",
       "permanent": true
+    },
+    {
+      "source": "/pages/mattress-store-delivery",
+      "destination": "/pages/love-your-bed-guarantee",
+      "permanent": false
     },
     {
       "source": "/pages/mattress-sizes-dimensions",
