@@ -24,6 +24,8 @@ import { Footer } from './_components/footer';
 import { CartProvider } from './_components/cart-context';
 import { CartDrawer } from './_components/cart-drawer';
 import { CompareTray } from './_components/compare';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ORGANIZATION_LD, WEBSITE_LD } from '@/lib/structured-data';
 
 export const metadata: Metadata = {
@@ -75,6 +77,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CartDrawer />
           <CompareTray />
         </CartProvider>
+        <Analytics />
+        <SpeedInsights />
         <script id="ld-organization" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }} />
         <script id="ld-website" type="application/ld+json"
