@@ -1,4 +1,19 @@
-# Session handoff — 2026-05-05 (Phase 49)
+# Session handoff — 2026-05-05 (Phase 57 — clean GO)
+
+## Status
+
+**GO from testing agent** (re-test 2026-05-05): no blockers, no bugs, no regressions. Clean pass against the brief. Latest commit on main: `136e899` (Phase 57). All 5 launch gates below are merchant-side and outside the codebase.
+
+## Phase 50-57 — recent additions
+
+| Phase | What |
+|---|---|
+| 57 | Testing-agent fixes: dedupe FurnitureStore (move LOCAL_BUSINESS_LD layout → home only), newsletter inline error via `noValidate`, "Clear" text on compare tray, single-hop Santa Monica redirects |
+| 56 | PLP filters by firmness / sleep position / height range — wired to the merchant's existing Search & Discovery metafields |
+| 53-55 | PDP buybox spec strip, PLP card spec lines, PDP "At a glance" spec table |
+| 52 | 5 mattress spec metafield definitions + bulk-populated 565 metafields across 146 mattresses |
+| 51 | Compare table: localStorage selection (max 4) + floating tray + side-by-side `/compare` page |
+| 50 | HANDOFF refresh (this doc, prior pass) |
 
 ## Phase 22-49 — what got added since the last handoff (most recent first)
 
