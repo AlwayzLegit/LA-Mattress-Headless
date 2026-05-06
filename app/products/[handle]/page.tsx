@@ -127,7 +127,7 @@ function SpecTable({ product }: { product: Product }) {
 
   if (rows.length === 0) return null;
   return (
-    <section className="section pdp-spec-table-section">
+    <section className="pdp-spec-table-section">
       <div className="eyebrow">Specs</div>
       <h2 className="h2">At a glance</h2>
       <dl className="pdp-spec-table">
@@ -231,7 +231,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
         <SpecTable product={product} />
 
         {product.descriptionHtml ? (
-          <section className="section pdp-description">
+          <section className="pdp-description">
             <div className="eyebrow">Details</div>
             <h2 className="h2">About this mattress</h2>
             <div className="rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(product.descriptionHtml) }} />
