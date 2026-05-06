@@ -1,5 +1,30 @@
 # Session handoff — 2026-05-05 (Phase 57 — clean GO)
 
+# Session handoff — 2026-05-06 (Phase 59 — clean GO)
+
+## Status
+
+**Final clean GO from testing agent** (Phase 59 re-test, 2026-05-06): no blockers, no regressions, no bugs. All 6 Phase 58-flagged bugs closed; all 3 false positives confirmed.
+
+Latest commit on main: `3a40fa1` (Phase 59).
+
+Lighthouse mobile delta vs Phase 58 baseline:
+- Home: Perf 90 → **99** (+9); A11y 87 → **93** (+6)
+- PDP: Perf 97 → 98; A11y 94 → 94
+- PLP: A11y 92 → 93 (perf 98 → 92 is single-run variance, not a regression)
+- Article: Perf 96 → 98
+- Cart: **CLS 0.043 → 0.000** (Fix 6 eliminated the empty-state shift entirely)
+
+All 7 launch gates remain merchant-side (see below).
+
+## Phase 58-59 — fix log
+
+| Phase | What |
+|---|---|
+| 59 | E2E testing agent round 2: footer dead-link redirects, `<main>` landmark on home, footer `<h3>` → `<div role="presentation">`, `inert` on hidden hero slides, variant chip `aria-label` removed on available, cart `minHeight: 60vh` |
+| 58 | Vercel Analytics + Speed Insights + Sentry SDK stub (no-op until DSN set) |
+| 57 | E2E testing agent round 1: dedup FurnitureStore (layout LOCAL_BUSINESS_LD → home only), newsletter inline error via `noValidate`, "Clear" text on compare tray, single-hop Santa Monica redirects |
+
 ## Status
 
 **GO from testing agent** (re-test 2026-05-05): no blockers, no bugs, no regressions. Clean pass against the brief. Latest commit on main: `136e899` (Phase 57). All 5 launch gates below are merchant-side and outside the codebase.
