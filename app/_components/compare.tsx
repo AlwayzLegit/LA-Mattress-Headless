@@ -128,7 +128,7 @@ export function CompareTray() {
           Compare {items.length > 1 ? `(${items.length})` : ''} <Icon name="arrow-right" size={14} />
         </Link>
         <button type="button" className="compare-tray-clear" onClick={clear} aria-label="Clear compare list">
-          <Icon name="close" size={14} />
+          Clear
         </button>
       </div>
     </div>
