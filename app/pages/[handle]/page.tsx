@@ -154,11 +154,18 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
           ))}
         </section>
 
-        {page.body ? (
-          <section className="locations-page-body" style={{ marginTop: 'var(--s-8)', maxWidth: 760, marginLeft: 'auto', marginRight: 'auto' }}>
-            <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
-          </section>
-        ) : null}
+        {/*
+         * NOT rendering page.body here — the merchant's CMS body for
+         * /pages/mattress-store-locations is ~31KB of HTML using ~91
+         * Hydrogen-theme CSS classes (.loc-card, .compare-grid,
+         * .brand-tile, .delivery-feature, .faq-trigger, etc.) that
+         * don't exist in this storefront's CSS, so the body renders
+         * as completely unstyled markup. Our own <section class="locations-grid">
+         * above replaces the directory portion of that body. If the
+         * merchant wants the comparison / brands / FAQ sections back,
+         * they need to be rewritten as components or the relevant
+         * theme CSS ported over.
+         */}
       </article>
       <script id="ld-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
       <script id="ld-breadcrumb-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
