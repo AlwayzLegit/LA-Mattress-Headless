@@ -1499,12 +1499,12 @@
     },
     {
       "source": "/pages/santa-monica",
-      "destination": "/pages/santa-monica-mattress-store",
+      "destination": "/pages/mattress-store-locations",
       "permanent": true
     },
     {
       "source": "/pages/santa-monica-mattress",
-      "destination": "/pages/santa-monica-mattress-store",
+      "destination": "/pages/mattress-store-locations",
       "permanent": true
     },
     {

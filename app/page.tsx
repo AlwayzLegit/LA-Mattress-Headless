@@ -14,6 +14,7 @@ import { Showrooms } from './_components/sections/showrooms';
 import { FAQ } from './_components/sections/faq';
 import { RecentlyViewedRail } from './_components/recently-viewed';
 import { faqJsonLd } from '@/lib/faq';
+import { LOCAL_BUSINESS_LD } from '@/lib/structured-data';
 
 export const metadata: Metadata = {
   title: 'LA Mattress — Sleep, engineered in Los Angeles.',
@@ -44,6 +45,11 @@ export default function Home() {
         id="ld-faq-home"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }}
+      />
+      <script
+        id="ld-localbusiness-home"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_LD) }}
       />
     </>
   );

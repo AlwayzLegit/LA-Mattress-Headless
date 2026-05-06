@@ -20,7 +20,11 @@ export function NewsletterForm() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get('email') ?? '').trim();
-    if (!email) return;
+    if (!email) {
+      setStatus('error');
+      setError('Email is required.');
+      return;
+    }
     setStatus('submitting');
     setError(null);
     try {
@@ -51,7 +55,7 @@ export function NewsletterForm() {
   }
 
   return (
-    <form className="footer-form" action="/api/newsletter" method="post" onSubmit={onSubmit}>
+    <form className="footer-form" action="/api/newsletter" method="post" onSubmit={onSubmit} noValidate>
       <input
         className="footer-input"
         type="email"

@@ -24,7 +24,7 @@ import { Footer } from './_components/footer';
 import { CartProvider } from './_components/cart-context';
 import { CartDrawer } from './_components/cart-drawer';
 import { CompareTray } from './_components/compare';
-import { ORGANIZATION_LD, LOCAL_BUSINESS_LD, WEBSITE_LD } from '@/lib/structured-data';
+import { ORGANIZATION_LD, WEBSITE_LD } from '@/lib/structured-data';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mattressstoreslosangeles.com'),
@@ -77,8 +77,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </CartProvider>
         <script id="ld-organization" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }} />
-        <script id="ld-localbusiness" type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_LD) }} />
         <script id="ld-website" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }} />
       </body>
