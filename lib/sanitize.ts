@@ -32,5 +32,9 @@ export function sanitizeShopifyHtml(html: string | null | undefined): string {
   if (!html) return '';
   let out = html;
   for (const re of HOSTS_TO_REWRITE) out = out.replace(re, '');
+  // Some legacy article bodies were imported with bad encoding and contain
+  // U+FFFD (the � replacement char). Drop them — they only ever render as
+  // visible glyphs that look broken.
+  out = out.replace(/�/g, '');
   return out;
 }
