@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { getArticleByHandle } from '@/lib/shopify';
 import type { Article } from '@/lib/shopify';
 import { blogs as inventoryBlogs, findBlog } from '@/lib/inventory';
-import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
+import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
@@ -134,20 +134,23 @@ function ArticleView({ article }: { article: Article }) {
     ],
   };
 
+  const articleDisplayTitle = stripBrandSuffix(article.title);
+  const blogDisplayTitle = stripBrandSuffix(article.blog.title);
+
   return (
     <main className="container">
       <article className="article" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
         <nav className="lp-breadcrumbs">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
-          <Link href={`/blogs/${article.blog.handle}`}>{article.blog.title}</Link>
+          <Link href={`/blogs/${article.blog.handle}`}>{blogDisplayTitle}</Link>
           <span className="sep">/</span>
-          <span>{article.title}</span>
+          <span>{articleDisplayTitle}</span>
         </nav>
 
         <header className="article-header" style={{ maxWidth: 760, margin: '0 auto' }}>
-          <div className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>{article.blog.title}</div>
-          <h1 className="h1" style={{ margin: 'var(--s-3) 0 var(--s-4)' }}>{article.title}</h1>
+          <div className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>{blogDisplayTitle}</div>
+          <h1 className="h1" style={{ margin: 'var(--s-3) 0 var(--s-4)' }}>{articleDisplayTitle}</h1>
           <div className="article-meta muted">
             <time dateTime={article.publishedAt}>
               {new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}

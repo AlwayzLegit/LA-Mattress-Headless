@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { getBlogByHandle } from '@/lib/shopify';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
-import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
+import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 
 type Params = {
@@ -52,6 +52,7 @@ export default async function BlogIndexPage(props: Params) {
   if (!blog) notFound();
 
   const articles = blog.articles.nodes;
+  const displayTitle = stripBrandSuffix(blog.title);
   const nextHref =
     blog.articles.pageInfo.hasNextPage && blog.articles.pageInfo.endCursor
       ? `/blogs/${blog.handle}?${new URLSearchParams({ after: blog.articles.pageInfo.endCursor }).toString()}`
@@ -80,12 +81,12 @@ export default async function BlogIndexPage(props: Params) {
         <nav className="lp-breadcrumbs">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
-          <span>{blog.title}</span>
+          <span>{displayTitle}</span>
         </nav>
         <div className="lp-hero-inner" style={{ marginTop: 'var(--s-5)' }}>
           <div className="lp-hero-copy">
-            <div className="eyebrow">{blog.title}</div>
-            <h1 className="h1">{blog.title}</h1>
+            <div className="eyebrow">{displayTitle}</div>
+            <h1 className="h1">{displayTitle}</h1>
           </div>
         </div>
       </header>
