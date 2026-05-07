@@ -180,6 +180,14 @@ a { color: inherit; text-decoration: none; }
 /* Section spacing */
 .section { padding: var(--s-9) 0; }
 .section-tight { padding: var(--s-7) 0; }
+/* When two .section blocks stack back-to-back (common on the homepage,
+   /search, and blog index), their vertical paddings would otherwise sum to
+   2× var(--s-9). Drop the top padding on the second-and-onward section so
+   the gap collapses to a single var(--s-9) — and likewise for tight. */
+.section + .section { padding-top: 0; }
+.section-tight + .section-tight { padding-top: 0; }
+.section + .section-tight,
+.section-tight + .section { padding-top: 0; }
 .section-dark { background: var(--surface-inv); color: var(--text-on-inv); }
 .section-dark .muted { color: var(--text-on-inv-2); }
 
