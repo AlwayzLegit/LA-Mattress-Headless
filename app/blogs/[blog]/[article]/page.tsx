@@ -35,7 +35,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Article' };
   const article = await getArticleByHandle(params.blog, params.article).catch(() => null);
-  if (!article) return { title: 'Article not found' };
+  if (!article) return { title: 'Article not found', robots: { index: false, follow: false } };
   const title = capTitle(firstNonEmpty(article.seo.title, article.title));
   const description = truncDescription(
     firstNonEmpty(

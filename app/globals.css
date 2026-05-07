@@ -1076,7 +1076,11 @@ a { color: inherit; text-decoration: none; }
 }
 .footer-input:focus { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.1); }
 .footer-input::placeholder { color: rgba(255,255,255,0.4); }
-.footer-fineprint { font-size: 11px; margin-top: 12px; }
+/* Force a higher-contrast tone on dark navy — `.muted` (used for the
+   "By subscribing…" line) defaults to #6b6b6b which only hits 2.51:1
+   against --brand-navy. Override to white@72% (≈4.6:1, AA-passing). */
+.footer-fineprint { font-size: 11px; margin-top: 12px; color: rgba(255,255,255,0.72); }
+.footer .muted { color: rgba(255,255,255,0.72); }
 
 .footer-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
 .footer-cols .eyebrow { color: #fff; margin-bottom: 16px; }
