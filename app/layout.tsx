@@ -49,7 +49,10 @@ export const metadata: Metadata = {
       'Five LA showrooms. Premium mattress brands, same-day delivery, 0% APR financing. Family-owned since 2012.',
   },
   twitter: { card: 'summary_large_image', title: 'LA Mattress', description: 'Family-owned mattress store with 5 showrooms across Los Angeles.' },
-  robots: { index: true, follow: true },
+  // No `robots:` declaration here — search engines index by default. An
+  // explicit `{ index:true, follow:true }` was leaking through to 404
+  // responses as a second `<meta name="robots" content="index, follow">`
+  // alongside Next.js's automatic `noindex` injection.
 };
 
 export const viewport: Viewport = {

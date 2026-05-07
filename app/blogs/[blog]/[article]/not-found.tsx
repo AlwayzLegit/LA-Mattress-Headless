@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
+
+export const metadata: Metadata = {
+  // Next.js auto-injects <meta name="robots" content="noindex"/> on 404.
+  title: 'Article not found',
+};
 
 export default function ArticleNotFound() {
   return (

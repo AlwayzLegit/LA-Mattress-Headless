@@ -1,6 +1,24 @@
-# Session handoff — 2026-05-05 (Phase 57 — clean GO)
+# Session handoff — 2026-05-07 (Phase 81 — B-block fixes for Phase 62-80 audit)
 
-# Session handoff — 2026-05-06 (Phase 59 — clean GO)
+## Status
+
+Testing agent re-tested `claude/resume-fix-error-9jYGI` against the deep visual audit's 19-fix list (Phases 62-80). 18/19 PASS — single hard blocker (B1) was a missing noindex on the `/pages/[handle]` not-found path. Three soft items (B2 contrast, B3 missing analytics scripts, B4 revalidate 503) were flagged.
+
+### Phase 81 fixes (this commit)
+
+| ID | Severity | Fix |
+|----|----------|-----|
+| B1 | hard blocker | Added `robots: { index: false, follow: false }` to the metadata return for the not-found branch in `/pages/[handle]`, `/products/[handle]`, `/collections/[handle]`, `/blogs/[blog]`, `/blogs/[blog]/[article]`. The route's `generateMetadata` runs before `notFound()` and its metadata wins over the global `not-found.tsx` — so each route had to inject its own noindex. |
+| B2 | soft | `.footer-fineprint` and `.footer .muted` now use `rgba(255,255,255,0.72)` to override the global `.muted` `#6b6b6b`. Hits ~4.6:1 against `--brand-navy` (was 2.51:1, AA-failing). |
+
+### B3 / B4 — preview env config, not code regressions
+
+- **B3 (Vercel Analytics + Speed Insights + Sentry absent on preview):** The components are wired in `app/layout.tsx` and `instrumentation.ts`. By design, `<Analytics />` and `<SpeedInsights />` only inject scripts when `VERCEL_ENV=production` (Vercel doesn't bill insights from preview deploys). Sentry is gated on `NEXT_PUBLIC_SENTRY_DSN`/`SENTRY_DSN`. All three will load on prod once DNS cuts over and the DSN env var is set.
+- **B4 (`/api/revalidate` returns 503 instead of 401):** Route returns 503 when `SHOPIFY_WEBHOOK_SECRET` is unset (intentional — see `route.ts:62-64`). The 401 path only triggers when the secret IS set and HMAC fails. Set the env var on preview to exercise the 401 path; otherwise expected behavior.
+
+---
+
+
 
 ## Status
 
@@ -66,11 +84,11 @@ All 7 launch gates remain merchant-side (see below).
 
 ### Launch gates still on the merchant side
 
-1. Enable **Shop Pay** in Shopify Admin → Settings → Payments.
+1. ~~Enable **Shop Pay** in Shopify Admin → Settings → Payments.~~ **DONE** — confirmed active in Admin, will surface at checkout automatically.
 2. **Webhook for instant cache busts** — Shopify Admin → Settings → Notifications → Webhooks. Add `products/update`, `products/create`, `collections/update`, `articles/update`, format JSON, point at `https://<vercel-url>/api/revalidate`. Set the same secret as `SHOPIFY_WEBHOOK_SECRET` in Vercel env vars (the route HMAC-verifies it).
 3. **`SHOPIFY_ADMIN_TOKEN`** env var in Vercel — turns on automatic Shopify customer creation from `/api/newsletter`. Without it, signups fall back to Vercel logs (no emails dropped).
 4. **DNS cutover** when ready — point `mattressstoreslosangeles.com` apex + `www` to Vercel; keep `checkout.mattressstoreslosangeles.com` pointed at Shopify.
-5. **Publish** the existing DRAFT mattress protectors in Shopify Admin so they surface in cross-sell rails (no code change needed once published).
+5. ~~**Publish** the existing DRAFT mattress protectors in Shopify Admin so they surface in cross-sell rails (no code change needed once published).~~ **DONE** — Ultra-Soft Mattress Protector (`gid://shopify/Product/9218346090749`) is now ACTIVE with 60 units across 5 sizes; will surface in complementary rails on next ISR refresh.
 
 ---
 

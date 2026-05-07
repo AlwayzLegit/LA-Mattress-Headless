@@ -1,6 +1,12 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
+
+export const metadata: Metadata = {
+  // Next.js auto-injects <meta name="robots" content="noindex"/> on 404.
+  title: 'Collection not found',
+};
 
 export default function CollectionNotFound() {
   return (

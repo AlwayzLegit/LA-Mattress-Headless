@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Icon } from './icon';
 
 const KEY = 'la-mattress.compare.v1';
@@ -98,6 +99,9 @@ export function CompareToggle({ handle, title }: { handle: string; title: string
 export function CompareTray() {
   const [items, setItems] = useState<Snapshot[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const [nearFooter, setNearFooter] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const sync = () => setItems(readSet());
@@ -111,11 +115,33 @@ export function CompareTray() {
     };
   }, []);
 
+  // Auto-hide when the footer is in view so the tray doesn't cover the
+  // legal links / copyright row.
+  useEffect(() => {
+    const footer = document.querySelector('footer');
+    if (!footer || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(
+      ([entry]) => setNearFooter(entry.isIntersecting),
+      { rootMargin: '0px 0px -40px 0px', threshold: 0 },
+    );
+    io.observe(footer);
+    return () => io.disconnect();
+  }, [hydrated]);
+
+  // Reset dismissed state when path changes — different page, give it
+  // another chance to surface.
+  useEffect(() => { setDismissed(false); }, [pathname]);
+
   if (!hydrated || items.length === 0) return null;
+  // Don't show on /compare itself — redundant with the page they're on.
+  if (pathname === '/compare') return null;
+  if (dismissed) return null;
+  if (nearFooter) return null;
 
   const ids = items.map((i) => i.handle).join(',');
 
   const clear = () => writeSet([]);
+  const dismiss = () => setDismissed(true);
 
   return (
     <div className="compare-tray" role="region" aria-label="Compare products">
@@ -129,6 +155,9 @@ export function CompareTray() {
         </Link>
         <button type="button" className="compare-tray-clear" onClick={clear} aria-label="Clear compare list">
           Clear
+        </button>
+        <button type="button" className="compare-tray-dismiss" onClick={dismiss} aria-label="Hide compare bar (selection kept)">
+          <Icon name="close" size={14} />
         </button>
       </div>
     </div>

@@ -21,3 +21,10 @@ export function firstNonEmpty(...candidates: (string | null | undefined)[]): str
   }
   return '';
 }
+
+// Merchant CMS titles often carry a brand suffix (" | LA Mattress",
+// " - Los Angeles") that's fine in <title> but reads as junk in an H1.
+// Strip everything from the first pipe / em-dash separator onwards.
+export function stripBrandSuffix(s: string): string {
+  return s.split(/\s+[|–—]\s+/)[0].trim();
+}

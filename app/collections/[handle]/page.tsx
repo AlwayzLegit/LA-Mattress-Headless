@@ -178,8 +178,12 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
         <nav className="lp-breadcrumbs">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
-          <Link href="/collections/mattresses">Shop</Link>
-          <span className="sep">/</span>
+          {collection.handle !== 'mattresses' ? (
+            <>
+              <Link href="/collections/mattresses">Mattresses</Link>
+              <span className="sep">/</span>
+            </>
+          ) : null}
           <span>{collection.title}</span>
         </nav>
         <div className="lp-hero-inner" style={{ marginTop: 'var(--s-5)' }}>

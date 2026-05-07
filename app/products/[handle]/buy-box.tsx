@@ -135,9 +135,9 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
         )}
       </div>
 
-      {options.length > 0 ? (
+      {options.filter((o) => o.values.length > 1).length > 0 ? (
         <div className="pdp-options">
-          {options.map((opt) => (
+          {options.filter((o) => o.values.length > 1).map((opt) => (
             <div key={opt.id} className="pdp-option">
               <div className="pdp-option-label">
                 <span className="eyebrow">{opt.name}</span>

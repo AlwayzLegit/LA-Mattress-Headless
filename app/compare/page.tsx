@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getProductByHandle } from '@/lib/shopify';
 import type { Product } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
+import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { Icon } from '@/app/_components/icon';
 import { CompareRemove } from './compare-remove';
 
@@ -155,12 +156,13 @@ export default async function ComparePage({ searchParams }: Search) {
         </div>
       )}
 
-      <p className="muted compare-fineprint">
-        Spec data is populated from each product&rsquo;s Shopify metafields (Firmness, Height,
-        Material, Warranty, Trial). Where a row reads &ldquo;—&rdquo;, the merchant hasn&rsquo;t
-        set that field yet — fill it in Shopify Admin → Products → [product] → Custom data
-        and it&rsquo;ll appear here on the next page render.
-      </p>
+      {products.length > 0 ? (
+        <p className="muted compare-fineprint">
+          A &ldquo;—&rdquo; means that detail isn&rsquo;t published for that mattress yet.
+          Call us at <a href={`tel:${SITE_PHONE_TEL}`}>{SITE_PHONE_DISPLAY}</a> or stop by a
+          showroom and we&rsquo;ll walk you through the differences in person.
+        </p>
+      ) : null}
     </main>
   );
 }
