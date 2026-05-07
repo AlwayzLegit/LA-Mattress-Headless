@@ -801,6 +801,10 @@ a { color: inherit; text-decoration: none; }
   gap: 20px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  /* `safe center` keeps content centered on wide viewports when there are
+     only a few cards, but falls back to start-aligned (no clipping) when
+     content overflows — important for mobile swipe. */
+  justify-content: safe center;
   padding: 4px var(--gutter) 32px;
   max-width: var(--container);
   margin: 0 auto;
