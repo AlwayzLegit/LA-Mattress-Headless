@@ -87,7 +87,7 @@ export function SleepQuiz() {
         </button>
       </div>
 
-      <fieldset className="quiz-step">
+      <fieldset key={q.id} className="quiz-step">
         <legend className="h2 quiz-step-title" id="quiz-question-title" tabIndex={-1}>
           {q.title}
         </legend>

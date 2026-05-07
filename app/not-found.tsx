@@ -1,7 +1,13 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Icon } from './_components/icon';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { RecentlyViewedRail } from './_components/recently-viewed';
+
+export const metadata: Metadata = {
+  title: 'Page not found',
+  robots: { index: false, follow: false },
+};
 
 const CATEGORIES: { label: string; href: string; sub?: string }[] = [
   { label: 'Mattresses',         href: '/collections/mattresses',           sub: 'All sizes & brands' },
