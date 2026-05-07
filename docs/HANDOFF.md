@@ -1,4 +1,60 @@
-# Session handoff — 2026-05-07 (Phase 81 — B-block fixes for Phase 62-80 audit)
+# Session handoff — 2026-05-07 (Pre-DNS retest — clean GO)
+
+## Status
+
+**Pre-DNS launch retest: clean GO.** Branch `main` HEAD `dce7b76`. All
+Phases 62-83 visual fixes verified intact, plus the new merchant-side
+plumbing (`SHOPIFY_WEBHOOK_SECRET`, `SHOPIFY_ADMIN_TOKEN`) confirmed
+working end-to-end on production.
+
+### Confirmed live and working
+
+- **Webhook revalidation pipeline.** Shopify product edit → webhook
+  (HMAC-verified) → `/api/revalidate` → `revalidateTag` → fresh SSR.
+  Round-trip 2.165s on `/products/ultra-soft-mattress-protector`,
+  measured with a sentinel-string injection via Admin MCP.
+- **Newsletter → Shopify customer creation.** Submitting a fresh email
+  via the footer form on the live site creates a Shopify customer with
+  tags `[newsletter, storefront-signup]` and
+  `emailMarketingConsent.marketingState = SUBSCRIBED` (SINGLE_OPT_IN).
+  Idempotent on duplicate submit.
+- **Visual sanity sweep.** 8/8 spot-checks PASS across compare flow,
+  PLP card alignment + filter sort, PDP buybox + gallery, locations
+  grid 5th-card row span, showroom 16:9 aspect, mega-menu z-index,
+  cart trust dedup.
+- **A11y / 404 SEO.** Zero serious axe-core violations on Home, PLP,
+  PDP, Cart, Compare, Locations, Article. Every 404 emits exactly one
+  `<meta name="robots" content="noindex">`; public pages emit none;
+  `/cart`, `/search`, `/compare` keep their explicit declarations.
+- **Cart → checkout.** Drawer + `/cart` + checkout subdomain hand-off
+  works; Shop Pay button renders on the Shopify checkout.
+- **Sitemap.** `/sitemap.xml` lists 1,184 URLs (195 products + 61
+  collections + 33 pages + 893 blog URLs).
+
+### Webhooks registered (API version 2026-04)
+
+`products/create`, `products/update`, `products/delete`,
+`collections/create`, `collections/update`, `collections/delete`.
+
+`articles/*` and `pages/*` are not exposed in the Shopify Admin UI
+dropdown — registering them requires the Admin GraphQL
+`webhookSubscriptionCreate` mutation. Deferred. Articles + CMS pages
+still refresh at the natural 10-min ISR TTL, which is acceptable.
+
+### Remaining merchant-side gates (deferred to launch day)
+
+1. **Sentry DSN** (optional) — set `NEXT_PUBLIC_SENTRY_DSN` and
+   `SENTRY_DSN` in Vercel (Production), redeploy. The SDK is wired in
+   `app/layout.tsx` + `instrumentation.ts`; init is gated on the env
+   var so it's a no-op until set.
+2. **DNS cutover.** Point `mattressstoreslosangeles.com` apex + `www`
+   at Vercel; keep `checkout.mattressstoreslosangeles.com` on Shopify.
+   After propagation, edit the 6 webhook URLs in Shopify Admin →
+   Notifications to use the canonical domain.
+
+---
+
+# Earlier — Session handoff — 2026-05-07 (Phase 81 — B-block fixes for Phase 62-80 audit)
 
 ## Status
 
