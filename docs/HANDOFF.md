@@ -66,11 +66,11 @@ All 7 launch gates remain merchant-side (see below).
 
 ### Launch gates still on the merchant side
 
-1. Enable **Shop Pay** in Shopify Admin → Settings → Payments.
+1. ~~Enable **Shop Pay** in Shopify Admin → Settings → Payments.~~ **DONE** — confirmed active in Admin, will surface at checkout automatically.
 2. **Webhook for instant cache busts** — Shopify Admin → Settings → Notifications → Webhooks. Add `products/update`, `products/create`, `collections/update`, `articles/update`, format JSON, point at `https://<vercel-url>/api/revalidate`. Set the same secret as `SHOPIFY_WEBHOOK_SECRET` in Vercel env vars (the route HMAC-verifies it).
 3. **`SHOPIFY_ADMIN_TOKEN`** env var in Vercel — turns on automatic Shopify customer creation from `/api/newsletter`. Without it, signups fall back to Vercel logs (no emails dropped).
 4. **DNS cutover** when ready — point `mattressstoreslosangeles.com` apex + `www` to Vercel; keep `checkout.mattressstoreslosangeles.com` pointed at Shopify.
-5. **Publish** the existing DRAFT mattress protectors in Shopify Admin so they surface in cross-sell rails (no code change needed once published).
+5. ~~**Publish** the existing DRAFT mattress protectors in Shopify Admin so they surface in cross-sell rails (no code change needed once published).~~ **DONE** — Ultra-Soft Mattress Protector (`gid://shopify/Product/9218346090749`) is now ACTIVE with 60 units across 5 sizes; will surface in complementary rails on next ISR refresh.
 
 ---
 
