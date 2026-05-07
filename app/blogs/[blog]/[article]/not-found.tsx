@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
+
+export const metadata: Metadata = {
+  title: 'Article not found',
+  robots: { index: false, follow: false },
+};
 
 export default function ArticleNotFound() {
   return (
