@@ -262,7 +262,7 @@ function ShowroomPage({
               height={900}
               sizes="(max-width: 1024px) 100vw, 1080px"
               priority
-              style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
         ) : null}

@@ -684,6 +684,10 @@ a { color: inherit; text-decoration: none; }
 /* Mega menu */
 .mega {
   position: absolute; left: 0; right: 0; top: 100%;
+  /* Explicit z-index above the nav itself — the parent .nav has z-index:50,
+     so a child without one sits at the same stacking level as siblings.
+     Force the mega menu above the trust-strip + page content. */
+  z-index: 51;
   background: #fff;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -2021,6 +2025,9 @@ a { color: inherit; text-decoration: none; }
   display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-5);
   margin-bottom: var(--s-7);
 }
+/* When the 5th showroom card is the last in a 2-col grid, it sits alone
+   at half width — let it span the full row instead. */
+.locations-grid > .location-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
 @media (max-width: 760px) { .locations-grid { grid-template-columns: 1fr; } }
 .location-card {
   display: block; padding: var(--s-5);

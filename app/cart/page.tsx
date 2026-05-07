@@ -126,8 +126,6 @@ export default async function CartPage() {
           </a>
           <ul className="pdp-trust" style={{ marginTop: 'var(--s-4)', borderTop: '1px solid var(--line)', paddingTop: 'var(--s-4)' }}>
             <li><Icon name="lock" size={16} /> Secure checkout on checkout.mattressstoreslosangeles.com</li>
-            <li><Icon name="truck" size={16} /> Free white glove delivery</li>
-            <li><Icon name="shield" size={16} /> 120-night comfort exchange</li>
           </ul>
         </aside>
       </div>
