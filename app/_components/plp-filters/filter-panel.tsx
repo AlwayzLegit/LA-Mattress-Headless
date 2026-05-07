@@ -15,6 +15,33 @@ import {
 } from './filters';
 import { useFilterShell } from './filter-shell';
 import { Icon } from '@/app/_components/icon';
+import type { AvailableFilterValue } from '@/lib/shopify';
+
+// Shopify returns filter values in metafield-definition order, which is
+// alphabetical for text values (e.g. "10-12 inches", "12-14 inches" ok,
+// but "8-10" sorts AFTER "12-14" because of leading-digit alphabetic
+// compare). Sort numerically when the param is height-bucketed; size
+// follows mattress-size order; everything else stays as Shopify returned
+// (which preserves count or relevance).
+const SIZE_ORDER = ['Twin', 'Twin XL', 'Full', 'Full XL', 'Queen', 'King', 'California King', 'Cal King', 'Split King', 'Split Cal King'];
+
+function sortValuesForParam(param: string, values: AvailableFilterValue[]): AvailableFilterValue[] {
+  if (param === 'heightRange') {
+    return [...values].sort((a, b) => {
+      const an = parseFloat(a.label) || 0;
+      const bn = parseFloat(b.label) || 0;
+      return an - bn;
+    });
+  }
+  if (param === 'size') {
+    return [...values].sort((a, b) => {
+      const ai = SIZE_ORDER.indexOf(a.label);
+      const bi = SIZE_ORDER.indexOf(b.label);
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
+  }
+  return values;
+}
 
 type Props = {
   availableFilters: AvailableFilter[];
@@ -126,7 +153,7 @@ export function FilterPanel({ availableFilters, resultCount }: Props) {
                 <PriceFilter sel={sel} onSubmit={onPriceSubmit} />
               ) : (
                 <ul className="plp-filter-values">
-                  {filter.values.map((v) => (
+                  {sortValuesForParam(param, filter.values).map((v) => (
                     <li key={v.id}>
                       <label className="plp-filter-row">
                         <input
