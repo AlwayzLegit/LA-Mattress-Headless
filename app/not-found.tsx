@@ -5,8 +5,10 @@ import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { RecentlyViewedRail } from './_components/recently-viewed';
 
 export const metadata: Metadata = {
+  // Next.js automatically emits <meta name="robots" content="noindex"/> on
+  // any 404 response. Don't declare a second robots field here — that
+  // would render a duplicate meta tag.
   title: 'Page not found',
-  robots: { index: false, follow: false },
 };
 
 const CATEGORIES: { label: string; href: string; sub?: string }[] = [

@@ -29,7 +29,7 @@ export async function generateMetadata(props: { params: Promise<Params['params']
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Blog' };
   const blog = await getBlogByHandle({ handle: params.blog, first: 1 }).catch(() => null);
-  if (!blog) return { title: 'Blog not found', robots: { index: false, follow: false } };
+  if (!blog) return { title: 'Blog not found' };
   const title = capTitle(firstNonEmpty(blog.seo.title, `${blog.title} — LA Mattress Store`));
   const description = truncDescription(
     firstNonEmpty(blog.seo.description, `Articles from ${blog.title} — LA Mattress Store.`),

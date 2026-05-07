@@ -62,7 +62,7 @@ export async function generateMetadata(props: { params: Promise<Params['params']
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Collection' };
   const collection = await getCollectionByHandle({ handle: params.handle, first: 1 }).catch(() => null);
-  if (!collection) return { title: 'Collection not found', robots: { index: false, follow: false } };
+  if (!collection) return { title: 'Collection not found' };
   const title = capTitle(firstNonEmpty(collection.seo.title, `${collection.title} | LA Mattress Store`));
   const description = truncDescription(
     firstNonEmpty(

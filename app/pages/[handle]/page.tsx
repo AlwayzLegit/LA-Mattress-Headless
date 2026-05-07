@@ -29,7 +29,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
   const page = await getPageByHandle(params.handle).catch(() => null);
-  if (!page) return { title: 'Page not found', robots: { index: false, follow: false } };
+  if (!page) return { title: 'Page not found' };
   const title = capTitle(firstNonEmpty(page.seo.title, page.title));
   const description = truncDescription(
     firstNonEmpty(page.seo.description, page.bodySummary, `${page.title} — LA Mattress Store`),
