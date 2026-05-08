@@ -101,15 +101,13 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
 
   return (
     <>
-      <div className="pdp-price">
+      <div className="pdp-price-row">
         {matchingVariant ? (
           variantOnSale ? (
             <>
-              <span className="pcard-was tnum">{formatMoney(matchingVariant.compareAtPrice!)}</span>
-              <span className="pcard-now tnum" style={{ color: 'var(--sale)' }}>
-                {formatMoney(matchingVariant.price)}
-              </span>
-              <span className="pdp-save tnum" style={{ color: 'var(--sale)', marginLeft: 'var(--s-2)', fontWeight: 600 }}>
+              <span className="pdp-was tnum">{formatMoney(matchingVariant.compareAtPrice!)}</span>
+              <span className="pdp-now tnum">{formatMoney(matchingVariant.price)}</span>
+              <span className="pdp-save tnum">
                 Save{' '}
                 {formatMoney({
                   amount: (
@@ -121,17 +119,15 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
               </span>
             </>
           ) : (
-            <span className="pcard-now tnum">{formatMoney(matchingVariant.price)}</span>
+            <span className="pdp-now tnum">{formatMoney(matchingVariant.price)}</span>
           )
         ) : rangeOnSale ? (
           <>
-            <span className="pcard-was tnum">{formatPriceRange(compareAtPriceRange.minVariantPrice, compareAtPriceRange.maxVariantPrice)}</span>
-            <span className="pcard-now tnum" style={{ color: 'var(--sale)' }}>
-              {formatPriceRange(priceRange.minVariantPrice, priceRange.maxVariantPrice)}
-            </span>
+            <span className="pdp-was tnum">{formatPriceRange(compareAtPriceRange.minVariantPrice, compareAtPriceRange.maxVariantPrice)}</span>
+            <span className="pdp-now tnum">{formatPriceRange(priceRange.minVariantPrice, priceRange.maxVariantPrice)}</span>
           </>
         ) : (
-          <span className="pcard-now tnum">{formatPriceRange(priceRange.minVariantPrice, priceRange.maxVariantPrice)}</span>
+          <span className="pdp-now tnum">{formatPriceRange(priceRange.minVariantPrice, priceRange.maxVariantPrice)}</span>
         )}
       </div>
 

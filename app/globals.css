@@ -1402,74 +1402,113 @@ a { color: inherit; text-decoration: none; }
    Phase 1 routes — PDP, PLP, breadcrumbs, RTE, CMS pages
    =========================================================================== */
 
-/* PDP layout */
-.pdp { padding-top: var(--s-5); }
+/* PDP layout — design handoff (pdp-showroom.css §PDP grid).
+   Gallery on left in 1fr, sticky buybox on right at 440px. */
+.pdp { padding-top: 0; }
 .pdp-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: var(--s-7);
+  grid-template-columns: minmax(0, 1fr) 440px;
+  gap: var(--s-8);
   align-items: start;
-  margin-top: var(--s-5);
+  padding-bottom: var(--s-9);
 }
-@media (max-width: 880px) { .pdp-grid { grid-template-columns: 1fr; gap: var(--s-5); } }
+@media (max-width: 1024px) { .pdp-grid { grid-template-columns: 1fr; gap: var(--s-6); } }
 
-/* Phase 23: gallery + description live in the left column so the buy box
-   in the right column stays sticky through the entire content. The grid's
-   align-items: start keeps both columns top-aligned; the buy box sticks
-   while the user scrolls through gallery → description. */
-.pdp-left { display: flex; flex-direction: column; gap: var(--s-7); }
-@media (max-width: 880px) { .pdp-left { gap: var(--s-5); } }
+/* Gallery + description + spec table all live in the left column so the
+   buy box sticks through the whole scroll. */
+.pdp-left { display: flex; flex-direction: column; gap: var(--s-7); min-width: 0; }
+@media (max-width: 1024px) { .pdp-left { gap: var(--s-5); } }
 
-.pdp-gallery { display: flex; flex-direction: column; gap: var(--s-3); }
-.pdp-hero-img {
+/* PDP Gallery — design handoff §Gallery.
+   .pdp-gallery > .pdp-gallery-main (1:1 r-4 with counter overlay) +
+   .pdp-thumbs (5-col grid, 12px gap, on-state inset border via ::after). */
+.pdp-gallery { display: flex; flex-direction: column; gap: var(--s-4); }
+.pdp-gallery-main { position: relative; }
+.pdp-main-img {
+  position: relative;
   width: 100%;
   aspect-ratio: 1;
-  border-radius: var(--r-3);
+  border-radius: var(--r-4);
   background: var(--surface-2);
-  object-fit: contain;
+  overflow: hidden;
+}
+.pdp-gallery-controls {
+  position: absolute;
+  bottom: var(--s-4); left: var(--s-4);
+}
+.pdp-gallery-counter {
+  font-size: 11px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  border-radius: var(--r-pill);
+  color: var(--text);
 }
 .pdp-thumbs {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: var(--s-2);
-  /* spacing from hero handled by .pdp-gallery flex gap — no margin-top */
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--s-3);
 }
-.pdp-thumb-btn {
-  appearance: none; padding: 0; border: 0; background: transparent; cursor: pointer;
-  border-radius: var(--r-2);
-  outline: 2px solid transparent; outline-offset: -1px;
-  transition: outline-color var(--d-fast);
-}
-.pdp-thumb-btn:hover { outline-color: var(--line-strong); }
-.pdp-thumb-btn.is-selected { outline-color: var(--accent); }
-.pdp-thumb-btn:focus-visible { outline-color: var(--accent); }
 .pdp-thumb {
-  display: block; width: 100%;
+  position: relative;
   aspect-ratio: 1;
-  border-radius: var(--r-2);
-  background: var(--surface-2);
-  object-fit: contain;
-  border: 1px solid var(--line);
+  appearance: none; padding: 0; border: 0; background: var(--surface-2); cursor: pointer;
+  border-radius: var(--r-3);
+  overflow: hidden;
 }
+.pdp-thumb::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: var(--r-3);
+  border: 2px solid transparent;
+  transition: border-color var(--d-fast);
+  pointer-events: none;
+}
+.pdp-thumb:hover::after { border-color: var(--line-strong); }
+.pdp-thumb.on::after { border-color: var(--text); }
+.pdp-thumb:focus-visible::after { border-color: var(--accent); }
 
-.pdp-buybox {
-  position: sticky; top: calc(var(--nav-h) + var(--s-4));
-  align-self: start;
-  /* Clamp to viewport so a tall buybox (lots of variants) on a short
-     laptop screen still shows the ATC button. Scrolls inside if needed. */
-  /* Reserve 88px at the bottom so the floating compare tray (~72px tall +
-     padding) doesn't overlap the trust list when the buybox sticky scrolls. */
+/* PDP rail — design handoff §Buy box. The aside is the column shell; the
+   inner is what actually sticks. No card border / radius / padding around
+   the inner — content sits naturally in the column. */
+.pdp-rail { position: relative; }
+.pdp-rail-inner {
+  position: sticky;
+  top: calc(var(--nav-h) + var(--s-5));
+  display: flex; flex-direction: column; gap: var(--s-4);
+  /* Clamp to viewport so a tall buybox doesn't push the ATC out of view on
+     short laptop screens. Reserves 88px for the floating compare tray. */
   max-height: calc(100vh - var(--nav-h) - var(--s-5) - 88px);
   overflow-y: auto;
+}
+@media (max-width: 1024px) {
+  .pdp-rail-inner { position: static; max-height: none; overflow: visible; }
+}
+.pdp-brand-mark {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.pdp-name {
+  font-size: 32px; font-weight: 600;
+  letter-spacing: -0.02em; line-height: 1.1;
+  margin: 0;
+}
+@media (max-width: 768px) { .pdp-name { font-size: 26px; } }
+
+/* Delivery info card — design handoff §Buy box. Replaces the old
+   .pdp-trust simple list inside the rail. */
+.pdp-delivery {
+  display: flex; flex-direction: column; gap: var(--s-4);
   padding: var(--s-5);
-  border: 1px solid var(--line);
+  background: var(--surface-2);
   border-radius: var(--r-3);
-  background: var(--surface);
-  display: flex; flex-direction: column; gap: var(--s-3);
+  margin-top: var(--s-2);
 }
-@media (max-width: 880px) {
-  .pdp-buybox { position: static; max-height: none; overflow: visible; }
-}
+.pdp-delivery-row { display: flex; gap: var(--s-3); }
+.pdp-delivery-row svg { flex-shrink: 0; margin-top: 2px; color: var(--text); }
+.pdp-delivery-title { font-size: 13px; font-weight: 600; line-height: 1.3; }
+.pdp-delivery-sub { font-size: 12px; line-height: 1.4; margin-top: 2px; }
 
 /* Sticky mobile add-to-cart bar — fixed to viewport bottom on small screens
    only. Hidden by default; shown when the in-page ATC button leaves the
@@ -1502,9 +1541,24 @@ a { color: inherit; text-decoration: none; }
 }
 .pdp-sticky-bar__price { font-size: 15px; font-weight: 600; color: var(--text); }
 .pdp-sticky-bar .btn { flex: none; padding: 10px 18px; font-size: 14px; }
-.pdp-title { margin: 0; }
-.pdp-price { display: flex; align-items: baseline; gap: var(--s-3); margin-top: var(--s-2); }
-.pdp-price .pcard-was, .pdp-price .pcard-now { font-size: 24px; }
+/* PDP price row — design handoff §Buy box.
+   was = 16px strikethrough, now = 32px bold, save = pill badge in
+   --sale tint. Sits above a thin top border to separate from rating. */
+.pdp-price-row {
+  display: flex; align-items: baseline; gap: var(--s-3); flex-wrap: wrap;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+}
+.pdp-was { font-size: 16px; color: var(--text-3); text-decoration: line-through; }
+.pdp-now { font-size: 32px; font-weight: 600; letter-spacing: -0.02em; }
+.pdp-save {
+  font-size: 12px; font-weight: 600;
+  background: rgba(216, 35, 42, 0.08);
+  color: var(--sale);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+}
+@media (max-width: 768px) { .pdp-now { font-size: 26px; } }
 
 .pdp-options { display: flex; flex-direction: column; gap: var(--s-4); margin: var(--s-3) 0; }
 .pdp-option-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--s-2); }
@@ -1531,29 +1585,38 @@ a { color: inherit; text-decoration: none; }
   border-top: 1px solid var(--text-4); transform: rotate(-12deg); pointer-events: none;
 }
 
-/* PDP "At a glance" spec table — clean two-column dt/dd grid.
-   Inline within the left column of pdp-grid, so no .section padding —
-   the parent pdp-left's flex `gap` handles spacing between sections. */
-.pdp-spec-table-section { /* margin handled by pdp-left gap */ }
-.pdp-spec-table {
-  margin: var(--s-4) 0 0;
+/* PDP below-the-fold sections — design handoff (pdp-showroom.css §Sections).
+   Each .pdp-section has a section-head (eyebrow + h2 left, optional lede
+   right) and section-specific content underneath. Sections sit inside
+   pdp-left so the buybox stays sticky next to them. */
+.pdp-section { padding: var(--s-7) 0 0; }
+.pdp-section-head {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-7);
+  margin-bottom: var(--s-6);
+  align-items: end;
+}
+.pdp-section-head h2 { margin: var(--s-2) 0 0; }
+.pdp-section-lede { margin: 0; max-width: 480px; font-size: 16px; line-height: 1.5; }
+@media (max-width: 1024px) {
+  .pdp-section-head { grid-template-columns: 1fr; gap: var(--s-3); margin-bottom: var(--s-5); }
+}
+
+/* PDP §Specs grid — design handoff: 4-col on desktop, 2 on tablet, 1 on mobile. */
+.pdp-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-6) var(--s-7);
   border-top: 1px solid var(--line);
+  padding-top: var(--s-6);
+  margin: 0;
 }
-.pdp-spec-row {
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  gap: var(--s-4);
-  padding: var(--s-3) 0;
-  border-bottom: 1px solid var(--line);
-}
-.pdp-spec-row dt { font-size: 13px; color: var(--text-3); margin: 0; }
-.pdp-spec-row dd { font-size: 14px; color: var(--text); margin: 0; font-weight: 500; }
-@media (max-width: 480px) {
-  .pdp-spec-row { grid-template-columns: 110px 1fr; gap: var(--s-3); }
-}
+.pdp-spec { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.pdp-spec-k { font-size: 12px; margin: 0; }
+.pdp-spec-v { font-size: 16px; font-weight: 500; margin: 0; }
+@media (max-width: 1024px) { .pdp-specs-grid { grid-template-columns: repeat(2, 1fr); gap: var(--s-5); } }
+@media (max-width: 640px)  { .pdp-specs-grid { grid-template-columns: 1fr; } }
 
 /* PDP buybox spec strip — Material · Firmness · Height shown as plain
    inline text so visitors don't mistake it for clickable chips like the
