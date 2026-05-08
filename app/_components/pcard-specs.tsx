@@ -1,19 +1,23 @@
 import type { ProductSummary } from '@/lib/shopify';
 
 /**
- * Tight one-line spec strip rendered on PLP / search result cards. Shows
- * Material · Firmness · Height when populated. Returns null when the
- * product has no specs (non-mattress products in mixed PLPs, or items
- * the merchant hasn't yet annotated).
+ * Type / Firmness pill row rendered on PLP + search result cards. Mirrors
+ * the design handoff's `.plp-card-tags` — two small grey pills for the
+ * primary buying-decision filters (material type + firmness). Height
+ * intentionally not surfaced here; it lives in the spec table on the PDP.
+ *
+ * Returns null when neither tag is populated (non-mattress products in
+ * mixed PLPs, or merchant hasn't annotated yet).
  */
 export function PcardSpecs({ specs }: { specs?: ProductSummary['specs'] }) {
   if (!specs) return null;
-  const items: string[] = [];
-  if (specs.materialType) items.push(specs.materialType);
-  if (specs.firmness)     items.push(specs.firmness);
-  if (specs.heightInches !== null && specs.heightInches !== undefined) {
-    items.push(`${specs.heightInches}"`);
-  }
-  if (items.length === 0) return null;
-  return <div className="pcard-specs">{items.join(' · ')}</div>;
+  const tags: string[] = [];
+  if (specs.materialType) tags.push(specs.materialType);
+  if (specs.firmness)     tags.push(specs.firmness);
+  if (tags.length === 0) return null;
+  return (
+    <div className="plp-card-tags">
+      {tags.map((t) => <span key={t} className="plp-tag">{t}</span>)}
+    </div>
+  );
 }
