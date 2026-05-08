@@ -12,6 +12,7 @@ import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { injectHeadingIds } from '@/lib/article-toc';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
+import { ArticleToc } from './article-toc';
 
 type Params = { params: Promise<{ blog: string; article: string }> };
 
@@ -197,22 +198,8 @@ function ArticleView({ article }: { article: Article }) {
 
       <div className="container">
         <div className="gd-article">
-          {headings.length > 0 ? (
-            <aside className="gd-toc" aria-label="Article contents">
-              <div className="gd-toc-eyebrow">Contents</div>
-              <ul>
-                {headings.map((h, i) => (
-                  <li key={h.id}>
-                    <a href={`#${h.id}`} className={i === 0 ? 'on' : undefined}>{h.text}</a>
-                  </li>
-                ))}
-              </ul>
-            </aside>
-          ) : (
-            // Reserve the column so the body stays centered across articles
-            // even when an article has no H2s (very short posts).
-            <aside aria-hidden="true" />
-          )}
+          <ArticleToc headings={headings} />
+
 
           <article className="gd-body" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
 
