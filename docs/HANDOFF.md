@@ -1,4 +1,84 @@
-# Session handoff — 2026-05-07 (Phase 85-89 — clean GO)
+# Session handoff — 2026-05-08 (Phase 90-95 — design realignment complete)
+
+## Status
+
+**Design-realignment track complete.** Branch `main` HEAD `6955078`.
+Surfaced the original chat-design bundle (la-mattress-redesign), then
+ported six phases of homepage / PLP / PDP work to bring the storefront
+back to design fidelity after polish drift in Phases 85-89.
+
+### Phases shipped this round
+
+- **Phase 90** — Homepage chrome realigned with the design handoff.
+  Removed the duplicate `<TrustStrip />` from layout (the "double
+  announcement bar" the user flagged). Restored topbar trust trio,
+  the section-head + hero-copy eyebrow `::before` red bar, hero
+  "01 / 03" counter, hero cross-fade duration.
+- **Phase 91** — PLP redesigned: split hero (1.2fr/1fr eyebrow + h1
+  + lede + 16:10 lifestyle image), sticky toolbar with backdrop-blur,
+  PcardSpecs → type+firmness pill row, branded empty state, body
+  grid 280/48px, 1-up grid at <=640px.
+- **Phase 92** — PDP visual: gallery rebuilt (1:1 main + counter
+  overlay + 5-col thumbs with `::after` ring), grid 1fr/440px,
+  `.pdp-rail` borderless sticky, 32px h1 product name, design's
+  price row (16/32/Save pill), `.pdp-delivery` card, 4-col
+  `.pdp-specs-grid`.
+- **Phase 93** — PDP buybox UI: 3-col `.pdp-size-grid` (label /
+  dimension / per-variant price), 2-col `.pdp-firm-grid`, quantity
+  stepper, ATC label includes running total (price × qty).
+- **Phase 94** — PDP editorial sections from new Shopify metafields.
+  Created 8 metafield definitions (`custom.tagline`, `lede`,
+  `best_for`, `not_ideal_for`, `highlights`, `firmness_score`,
+  `position_fit`, `layers`) all storefront PUBLIC_READ. New
+  components `PdpOverview`, `PdpFirmness`, `PdpMaterials` render
+  only when their data is populated (graceful no-op).
+- **Phase 95** — PDP rail extras: `PdpCtaRow` with Save +
+  Compare ghost-button row below ATC. Save uses
+  `la-mattress.wishlist.v1` localStorage (heart fills red on save).
+  Compare reuses `la-mattress.compare.v1` so it integrates with the
+  floating tray + /compare page. Both hydrate on mount and listen
+  to storage events for cross-tab sync. Showroom availability
+  section was scoped out per merchant request.
+
+### Editorial data seeded (Shopify Admin via MCP)
+
+12 priority mattresses now have full editorial metafield data
+populated — Overview / Firmness / Materials sections render
+end-to-end on each. Affected handles:
+
+- the-luxe-estate-firm-by-stearns-foster
+- englander-amsbury-pillow-top-mattress
+- tempur-pedic-mattress-clearance-tempur-proadapt-medium-12
+- eastman-house-avalon-late-firm
+- spruce-firm-innerspring-by-eclipse-mattress (Eastman House Spruce)
+- diamond-dreamstage-2-0-collection-glory-firm-cool-gel-swirl-memory-foam-12-mattress
+- rock-extra-firm-mattress-diamond-mattress
+- diamond-dreamstage-2-0-medium-gel-swirl-memory-foam-12-mattress (Grace Quilted Medium)
+- tempur-pedic-tempur-proadapt-medium-hybrid
+- tempur-pedic-tempur-luxeadapt-firm-mattress
+- lismore-luxury-firm-mattress-palace-collection-by-chattam-wells
+- harvest-green-original-firm-natural-latex-by-diamond-mattress
+
+Merchant populates the remaining ~180 mattresses at their own pace
+via Shopify Admin → Products → [product] → Custom data. The 8
+metafield definitions are pinned so they appear at the top of the
+product editor. Sections render the moment data is added — no
+code deploy needed.
+
+### Remaining merchant-side gates
+
+1. **Sentry DSN** (optional) — set `NEXT_PUBLIC_SENTRY_DSN` and
+   `SENTRY_DSN` in Vercel (Production env), redeploy.
+2. **DNS cutover** — point `mattressstoreslosangeles.com` apex +
+   `www` at Vercel; keep `checkout.mattressstoreslosangeles.com`
+   on Shopify. After propagation, edit the 6 webhook URLs in
+   Shopify Admin → Notifications to use the canonical domain.
+3. **Editorial data on remaining mattresses** — merchant operation,
+   no code work needed. 12 of ~195 done.
+
+---
+
+# Earlier — Session handoff — 2026-05-07 (Phase 85-89 — clean GO)
 
 ## Status
 
