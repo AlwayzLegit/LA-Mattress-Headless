@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -8,6 +8,56 @@ import { Icon } from './icon';
 import type { Predictive } from '@/lib/shopify';
 import { formatMoney } from '@/lib/format';
 import { searchShowrooms, type Showroom } from '@/lib/showrooms';
+
+/**
+ * Curated trending pills shown above-the-fold in the empty search panel
+ * (design handoff §search-overlay · Trending). The list is hand-picked
+ * by merchandising — analytics-driven trending is a separate workstream.
+ * Each entry submits as a real query; the matching results page is what
+ * the visitor lands on.
+ */
+const TRENDING: string[] = [
+  'Tempur-Pedic',
+  'Queen mattress',
+  'Cooling',
+  'Adjustable bed',
+  'Memory foam',
+  'Hybrid',
+  'Stearns & Foster',
+  'On sale',
+];
+
+const RECENT_KEY = 'la-mattress.recent-search.v1';
+const RECENT_MAX = 5;
+
+function readRecent(): string[] {
+  try {
+    const raw = window.localStorage.getItem(RECENT_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return [];
+    return arr.filter((s): s is string => typeof s === 'string').slice(0, RECENT_MAX);
+  } catch {
+    return [];
+  }
+}
+
+function writeRecent(items: string[]) {
+  try {
+    window.localStorage.setItem(RECENT_KEY, JSON.stringify(items.slice(0, RECENT_MAX)));
+  } catch {
+    // ignore quota / private mode
+  }
+}
+
+function pushRecent(query: string): string[] {
+  const q = query.trim();
+  if (!q) return readRecent();
+  const cur = readRecent().filter((s) => s.toLowerCase() !== q.toLowerCase());
+  const next = [q, ...cur].slice(0, RECENT_MAX);
+  writeRecent(next);
+  return next;
+}
 
 /**
  * Click-to-expand header search with debounced predictive autocomplete.
@@ -26,10 +76,19 @@ export function HeaderSearch() {
   const [results, setResults] = useState<Predictive | null>(null);
   const [loading, setLoading] = useState(false);
   const [highlight, setHighlight] = useState(-1);
+  const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const reqIdRef = useRef(0);
   const listboxId = useId();
+
+  // Hydrate recent searches once when the panel first opens. Reading
+  // localStorage on mount would run on every page that includes the nav,
+  // so we defer it until the user actually engages with search.
+  useEffect(() => {
+    if (!open) return;
+    setRecent(readRecent());
+  }, [open]);
 
   // Debounced fetch on query change.
   useEffect(() => {
@@ -118,12 +177,20 @@ export function HeaderSearch() {
     }
   };
 
+  const goToSearch = useCallback(
+    (term: string) => {
+      const q = term.trim();
+      if (!q) return;
+      setRecent(pushRecent(q));
+      setOpen(false);
+      router.push(`/search?${new URLSearchParams({ q }).toString()}`);
+    },
+    [router],
+  );
+
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const q = query.trim();
-    if (!q) return;
-    setOpen(false);
-    router.push(`/search?${new URLSearchParams({ q }).toString()}`);
+    goToSearch(query);
   };
 
   if (!open) {
@@ -169,14 +236,75 @@ export function HeaderSearch() {
           <Icon name="close" size={18} />
         </button>
       </form>
-      {query.trim().length >= 2 ? (
-        <div ref={panelRef} className="header-search-panel" role="listbox" id={listboxId}>
-          {loading && flat.length === 0 ? (
-            <div className="header-search-empty">Searching…</div>
-          ) : flat.length === 0 ? (
-            <div className="header-search-empty">No matches. Press Enter to search anyway.</div>
-          ) : (
-            <>
+      <div ref={panelRef} className="header-search-panel" role="listbox" id={listboxId}>
+        {query.trim().length < 2 ? (
+          <div className="header-search-prequery">
+            <div className="search-section">
+              <div className="search-section-label">Trending</div>
+              <div className="search-trending">
+                {TRENDING.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    className="search-trending-pill"
+                    onClick={() => goToSearch(t)}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {recent.length > 0 ? (
+              <div className="search-section">
+                <div className="search-section-label">Recent</div>
+                <ul className="search-recent">
+                  {recent.map((r) => (
+                    <li key={r}>
+                      <button
+                        type="button"
+                        className="search-recent-row"
+                        onClick={() => goToSearch(r)}
+                      >
+                        <span className="search-recent-icon" aria-hidden="true">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                        </span>
+                        <span>{r}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            <div className="search-section">
+              <div className="search-section-label">Quick links</div>
+              <div className="search-quick-grid">
+                {[
+                  { label: 'Take the sleep quiz', href: '/sleep-quiz', body: '8 questions, 2 minutes' },
+                  { label: 'Compare mattresses',  href: '/compare',    body: 'Side-by-side specs' },
+                  { label: 'Find a showroom',     href: '/pages/mattress-store-locations', body: '5 across LA' },
+                  { label: 'Browse on sale',      href: '/collections/on-sale',            body: 'Current markdowns' },
+                ].map((q) => (
+                  <Link
+                    key={q.label}
+                    href={q.href}
+                    className="search-quick"
+                    onClick={() => setOpen(false)}
+                  >
+                    <div className="search-quick-label">{q.label}</div>
+                    <div className="search-quick-body muted">{q.body}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : loading && flat.length === 0 ? (
+          <div className="header-search-empty">Searching…</div>
+        ) : flat.length === 0 ? (
+          <div className="header-search-empty">No matches. Press Enter to search anyway.</div>
+        ) : (
+          <>
               {results && results.products.length > 0 ? (
                 <div className="header-search-group">
                   <div className="eyebrow header-search-group-label">Products</div>
@@ -300,8 +428,7 @@ export function HeaderSearch() {
               ) : null}
             </>
           )}
-        </div>
-      ) : null}
+      </div>
     </div>
   );
 }
