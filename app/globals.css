@@ -923,11 +923,14 @@ a { color: inherit; text-decoration: none; }
 .hero-content { position: relative; height: 100%; display: flex; align-items: center; color: #fff; }
 .hero-copy { max-width: 640px; }
 /* Per the design system handoff: a small red rule before every section-head
-   and hero eyebrow, echoing the LA Mattress logo's red accent bar. Scoped
-   to these two contexts only — eyebrows used elsewhere (cart, FAQ, search,
-   sleep quiz, account, location cards) intentionally don't carry the bar. */
-.hero-copy .eyebrow { margin-bottom: 24px; display: inline-flex; align-items: center; }
-.hero-copy .eyebrow::before {
+   and page-hero eyebrow, echoing the LA Mattress logo's red accent bar.
+   Scoped to those page-hero / section-head contexts only — eyebrows used
+   elsewhere (cart, FAQ, search, sleep quiz, account, location cards)
+   intentionally don't carry the bar. */
+.hero-copy .eyebrow,
+.plp-hero-copy .eyebrow { margin-bottom: 24px; display: inline-flex; align-items: center; }
+.hero-copy .eyebrow::before,
+.plp-hero-copy .eyebrow::before {
   content: '';
   display: inline-block;
   width: 24px; height: 2px;
@@ -1068,6 +1071,17 @@ a { color: inherit; text-decoration: none; }
   min-height: 2.7em;
 }
 .pcard-specs { font-size: 12px; color: var(--text-3); line-height: 1.3; }
+/* PLP card type/firmness pill row — per design handoff plp.css §Card */
+.plp-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
+.plp-tag {
+  display: inline-flex; align-items: center;
+  padding: 3px 8px;
+  background: var(--surface-2);
+  border-radius: var(--r-1);
+  font-size: 11px; font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
 .pcard-rating { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-2); }
 .pcard-rating svg { color: var(--text); }
 .pcard-reviews { font-size: 12px; }
@@ -1594,6 +1608,8 @@ a { color: inherit; text-decoration: none; }
   gap: var(--s-5);
 }
 @media (max-width: 1024px) { .plp-grid { grid-template-columns: repeat(2, 1fr); } }
+/* Design plp.css §Mobile: drop to 1-up at <=640px. */
+@media (max-width: 640px)  { .plp-grid { grid-template-columns: 1fr; gap: var(--s-5); } }
 @media (max-width: 480px)  { .plp-grid { gap: 12px; } }
 .plp-card { flex: initial; }
 @media (max-width: 480px) {
@@ -1771,26 +1787,49 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 880px) { .cart-summary { position: static; } }
 
-/* PLP pagination + sort */
+/* PLP hero — split layout with lifestyle image. Per design handoff
+   (plp.css §Hero band): grid 1.2fr / 1fr, eyebrow + h-display title +
+   lede on the left, 16:10 lifestyle image on the right. */
+.plp-hero {
+  border-bottom: 1px solid var(--line);
+  padding: var(--s-5) 0 var(--s-7);
+}
+.plp-hero-inner {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--s-7);
+  align-items: end;
+  margin-top: var(--s-5);
+}
+.plp-hero-copy { display: flex; flex-direction: column; gap: var(--s-3); }
+.plp-hero-title { margin: var(--s-1) 0 var(--s-4); }
+.plp-hero-lede { font-size: 17px; line-height: 1.55; max-width: 56ch; }
+.plp-hero-img {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--r-4);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+@media (max-width: 900px) {
+  .plp-hero-inner { grid-template-columns: 1fr; gap: var(--s-5); }
+  .plp-hero-img { aspect-ratio: 16 / 9; }
+}
+
+/* PLP toolbar — sticky to nav, with backdrop-blur on scroll. Filter
+   button + result count on the left, sort dropdown on the right. */
 .plp-toolbar {
   display: flex; justify-content: space-between; align-items: center;
   gap: var(--s-4); flex-wrap: wrap;
-  margin-bottom: var(--s-5);
-  padding-bottom: var(--s-4); border-bottom: 1px solid var(--line);
+  position: sticky; top: var(--nav-h);
+  z-index: 20;
+  height: 64px;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  margin-left: calc(var(--gutter) * -1);
+  margin-right: calc(var(--gutter) * -1);
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--line);
 }
-@media (max-width: 880px) {
-  .plp-toolbar {
-    position: sticky; top: 0;
-    z-index: 30;
-    margin-bottom: var(--s-4);
-    padding: var(--s-3) var(--gutter);
-    margin-left: calc(var(--gutter) * -1);
-    margin-right: calc(var(--gutter) * -1);
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  }
-}
+@media (max-width: 640px) { .plp-toolbar { height: 56px; gap: var(--s-2); } }
 .plp-toolbar-count { font-size: 13px; color: var(--text-3); }
 .plp-toolbar-sort {
   display: inline-flex; align-items: center; gap: var(--s-2);
@@ -1802,6 +1841,26 @@ a { color: inherit; text-decoration: none; }
   background: var(--surface); font: inherit;
   cursor: pointer;
 }
+/* PLP no-results empty state — per design handoff plp.css §Empty. */
+.plp-empty {
+  text-align: center;
+  padding: var(--s-9) var(--s-5);
+  display: flex; flex-direction: column; align-items: center; gap: var(--s-3);
+  background: var(--surface-2);
+  border-radius: var(--r-4);
+  margin: var(--s-5) 0;
+}
+.plp-empty-mark {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-3);
+  margin-bottom: var(--s-2);
+}
+.plp-empty .muted { max-width: 40ch; }
+.plp-empty .btn { margin-top: var(--s-2); }
+
 .plp-pagination {
   display: flex; justify-content: center; gap: var(--s-3);
   margin-top: var(--s-7);
@@ -1923,14 +1982,17 @@ a { color: inherit; text-decoration: none; }
 .skel-block { width: 100%; aspect-ratio: 1; }
 @media (prefers-reduced-motion: reduce) { .skel { animation: none; } }
 
-/* PLP layout w/ filter sidebar */
-.plp-section { padding-top: 0; }
+/* PLP layout w/ filter sidebar — design handoff §Body uses 280px rail
+   + 1fr grid with var(--s-7)=48px gap, top padding 32px after the
+   sticky toolbar. */
+.plp-section { padding: 0; }
 .plp-layout {
-  display: grid; grid-template-columns: 240px 1fr;
-  gap: var(--s-6);
+  display: grid; grid-template-columns: 280px 1fr;
+  gap: var(--s-7);
   align-items: start;
+  padding-top: var(--s-6);
 }
-@media (max-width: 880px) { .plp-layout { grid-template-columns: 1fr; gap: var(--s-4); } }
+@media (max-width: 880px) { .plp-layout { grid-template-columns: 1fr; gap: var(--s-4); padding-top: var(--s-4); } }
 .plp-main { min-width: 0; }
 
 .plp-filters {

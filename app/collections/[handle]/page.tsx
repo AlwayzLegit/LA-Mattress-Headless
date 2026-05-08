@@ -174,7 +174,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
 
   return (
     <main className="container plp">
-      <header className="lp-hero">
+      <header className="plp-hero">
         <nav className="lp-breadcrumbs">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
@@ -186,13 +186,32 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
           ) : null}
           <span>{collection.title}</span>
         </nav>
-        <div className="lp-hero-inner" style={{ marginTop: 'var(--s-5)' }}>
-          <div className="lp-hero-copy">
-            <h1 className="h1">{collection.title}</h1>
+        <div className="plp-hero-inner">
+          <div className="plp-hero-copy">
+            <div className="eyebrow">All mattresses</div>
+            <h1 className="h-display plp-hero-title">{collection.title}.</h1>
             {collection.descriptionHtml ? (
-              <div className="lp-hero-lede rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(collection.descriptionHtml) }} />
-            ) : null}
+              <div className="plp-hero-lede muted rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(collection.descriptionHtml) }} />
+            ) : (
+              <p className="plp-hero-lede muted">
+                Every model on this page is on the floor at one of our 5 LA showrooms — try before you buy.
+                Free white-glove delivery, 120-night exchange, 0% APR financing.
+              </p>
+            )}
           </div>
+          {collection.image ? (
+            <div className="plp-hero-img">
+              <Image
+                src={collection.image.url}
+                alt={collection.image.altText ?? collection.title}
+                width={800}
+                height={500}
+                sizes="(max-width: 900px) 100vw, 600px"
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                priority
+              />
+            </div>
+          ) : null}
         </div>
       </header>
 
@@ -285,13 +304,14 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                 </div>
               </>
             ) : (
-              <p className="muted" style={{ marginTop: 'var(--s-5)' }}>
-                Try removing a filter, or{' '}
-                <Link href={`/collections/${collection.handle}`} className="link-arrow">
-                  reset filters <Icon name="arrow-right" size={14} />
+              <div className="plp-empty">
+                <div className="plp-empty-mark"><Icon name="search" size={28} /></div>
+                <h3 className="h3">No mattresses match these filters.</h3>
+                <p className="muted">Try removing a filter or clearing them all to see more results.</p>
+                <Link href={`/collections/${collection.handle}`} className="btn btn-primary">
+                  Clear all filters
                 </Link>
-                .
-              </p>
+              </div>
             )}
             </div>
           </div>
