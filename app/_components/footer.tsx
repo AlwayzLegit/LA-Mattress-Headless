@@ -46,7 +46,10 @@ export function Footer() {
           <div className="h2 footer-h" role="presentation">Sleep on it.</div>
           <p className="muted footer-lede">First dibs on floor-model markdowns, plus our quarterly mattress-care guide. No spam.</p>
           <NewsletterForm />
-          <div className="footer-fineprint muted">By subscribing you agree to our Privacy Policy.</div>
+          <div className="footer-fineprint muted">
+            By subscribing you agree to our{' '}
+            <Link href="/pages/privacy-policy" className="footer-fineprint-link">Privacy Policy</Link>.
+          </div>
         </div>
         <div className="footer-cols">
           {COLS.map((c) => (
