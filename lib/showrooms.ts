@@ -107,6 +107,24 @@ export function findShowroom(handle: string): Showroom | undefined {
 }
 
 /**
+ * Showroom search — case-insensitive substring match across the fields
+ * a visitor might type ("west la", "koreatown", "studio city",
+ * "glendale", a street name, a zip). Cheap (the catalog is 5 entries)
+ * so it runs in-process for both the header dropdown and the /search
+ * Showrooms tab; no API call.
+ */
+export function searchShowrooms(query: string): Showroom[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  return SHOWROOMS.filter((s) => {
+    const hay = [s.name, s.area, s.street, s.city, s.region, s.postalCode]
+      .join(' ')
+      .toLowerCase();
+    return hay.includes(q);
+  });
+}
+
+/**
  * Computes whether the showroom is open at the given time and returns a
  * human-readable status. All five showrooms operate on America/Los_Angeles
  * time, so we ignore the server's zone and read the LA wall-clock instead

@@ -4,6 +4,7 @@ import Image from 'next/image';
 
 import { searchProducts, searchArticles } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
+import { searchShowrooms } from '@/lib/showrooms';
 import { Icon } from '@/app/_components/icon';
 import { CompareToggle } from '@/app/_components/compare';
 import { PcardSpecs } from '@/app/_components/pcard-specs';
@@ -27,14 +28,17 @@ const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.e
 
 const PER_PAGE = 24;
 
-type Tab = 'mattresses' | 'articles';
+type Tab = 'mattresses' | 'showrooms' | 'articles';
 const TABS: { id: Tab; label: string }[] = [
   { id: 'mattresses', label: 'Mattresses' },
+  { id: 'showrooms',  label: 'Showrooms' },
   { id: 'articles',   label: 'Articles' },
 ];
 
 function parseTab(raw: string | undefined): Tab {
-  return raw === 'articles' ? 'articles' : 'mattresses';
+  if (raw === 'articles') return 'articles';
+  if (raw === 'showrooms') return 'showrooms';
+  return 'mattresses';
 }
 
 export const metadata: Metadata = {
@@ -75,8 +79,13 @@ export default async function SearchPage(props: Params) {
       ? await searchArticles(q, { first: PER_PAGE, after }).catch(() => null)
       : null;
 
-  // Lightweight tab counters (totalCount only). Run when on the *other*
-  // tab so each tab knows how many results live in the sibling.
+  // Showrooms catalog is 5 entries — search is in-process. Same matches
+  // power both the tab counter and the tab body.
+  const showroomMatches = q ? searchShowrooms(q) : [];
+
+  // Lightweight tab counters (totalCount only). Run for the *other*
+  // tab(s) so each tab badge shows a real number without a duplicate
+  // full fetch when we're already on that tab.
   const [otherProductCount, otherArticleCount] = q && SHOPIFY_CONFIGURED
     ? await Promise.all([
         tab === 'mattresses'
@@ -90,6 +99,7 @@ export default async function SearchPage(props: Params) {
 
   const tabCounts: Record<Tab, number> = {
     mattresses: otherProductCount,
+    showrooms:  showroomMatches.length,
     articles:   otherArticleCount,
   };
 
@@ -256,6 +266,65 @@ export default async function SearchPage(props: Params) {
                 </div>
               </div>
             </FilterShell>
+          ) : tab === 'showrooms' ? (
+            <div className="plp-main" style={{ paddingTop: 'var(--s-5)' }}>
+              <div className="plp-toolbar">
+                <div className="plp-toolbar-left">
+                  <span className="plp-toolbar-count">
+                    {showroomMatches.length > 0
+                      ? `${showroomMatches.length} showroom${showroomMatches.length === 1 ? '' : 's'}`
+                      : 'No showrooms match'}
+                  </span>
+                </div>
+              </div>
+
+              {showroomMatches.length > 0 ? (
+                <div className="search-showroom-grid">
+                  {showroomMatches.map((s) => (
+                    <Link key={s.handle} href={`/pages/${s.handle}`} className="search-showroom-card">
+                      {s.imageUrl ? (
+                        <div className="search-showroom-img">
+                          <Image
+                            src={s.imageUrl}
+                            alt={s.name}
+                            fill
+                            sizes="(max-width: 760px) 100vw, 50vw"
+                            style={{ objectFit: 'cover' }}
+                          />
+                        </div>
+                      ) : <div className="search-showroom-img" aria-hidden="true" />}
+                      <div className="search-showroom-body">
+                        <div className="eyebrow">{s.area}</div>
+                        <h3 className="search-showroom-name">{s.name}</h3>
+                        <address className="search-showroom-addr muted">
+                          {s.street}<br />
+                          {s.city}, {s.region} {s.postalCode}
+                        </address>
+                        <div className="search-showroom-foot">
+                          <span className="muted">{s.phone}</span>
+                          <span className="link-arrow">View <Icon name="arrow-right" size={14} /></span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="search-empty">
+                  <p className="muted" style={{ fontSize: 16, lineHeight: 1.55, maxWidth: '60ch' }}>
+                    No showrooms match &ldquo;{q}&rdquo;. Try a neighborhood (Koreatown, West LA,
+                    Hancock Park, Studio City, Glendale) or a zip code.
+                    {otherProductCount > 0 ? (
+                      <> See <Link className="link-arrow" href={buildTabHref('mattresses')}>{otherProductCount} mattress result{otherProductCount === 1 ? '' : 's'}</Link> instead.</>
+                    ) : null}
+                  </p>
+                  <p style={{ marginTop: 'var(--s-4)' }}>
+                    <Link href="/pages/mattress-store-locations" className="link-arrow">
+                      All five LA showrooms <Icon name="arrow-right" size={14} />
+                    </Link>
+                  </p>
+                </div>
+              )}
+            </div>
           ) : (
             <div className="plp-main" style={{ paddingTop: 'var(--s-5)' }}>
               <div className="plp-toolbar">

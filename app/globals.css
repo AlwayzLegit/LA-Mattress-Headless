@@ -697,9 +697,54 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* /search results tabs — design page-inventory: All / Mattresses /
-   Showrooms / Articles. We ship Mattresses + Articles for now; Showrooms
-   needs structured showroom indexing first. Each tab shows a count
-   badge so the user knows which bucket has matches before clicking. */
+   Showrooms / Articles. We ship Mattresses + Showrooms + Articles
+   (showrooms search runs over the static SHOWROOMS catalog client-side,
+   no API call). Each tab shows a count badge so the user knows which
+   bucket has matches before clicking. */
+.search-showroom-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-4);
+}
+@media (max-width: 760px) { .search-showroom-grid { grid-template-columns: 1fr; } }
+.search-showroom-card {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: var(--s-4);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  text-decoration: none; color: inherit;
+  transition: border-color var(--d-fast) var(--ease), transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease);
+}
+.search-showroom-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--sh-2);
+}
+.search-showroom-img {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-2);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.search-showroom-body { display: flex; flex-direction: column; gap: var(--s-2); }
+.search-showroom-name { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.015em; }
+.search-showroom-addr { font-style: normal; line-height: 1.5; font-size: 14px; }
+.search-showroom-foot {
+  margin-top: auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+@media (max-width: 480px) {
+  .search-showroom-card { grid-template-columns: 1fr; }
+  .search-showroom-img { aspect-ratio: 16 / 10; }
+}
+
 .search-tabs {
   display: flex;
   gap: var(--s-5);
