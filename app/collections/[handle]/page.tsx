@@ -192,11 +192,6 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
             {collection.descriptionHtml ? (
               <div className="lp-hero-lede rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(collection.descriptionHtml) }} />
             ) : null}
-            <div className="lp-hero-meta">
-              <span><Icon name="truck" size={14} /> Free delivery</span>
-              <span><Icon name="shield" size={14} /> 120-night exchange</span>
-              <span><Icon name="card" size={14} /> 0% APR financing</span>
-            </div>
           </div>
         </div>
       </header>
@@ -237,9 +232,17 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
             {hasResults ? (
               <>
                 <div className="plp-grid">
-                  {collection.products.nodes.map((p, idx) => (
+                  {collection.products.nodes.map((p, idx) => {
+                    const minPrice = Number.parseFloat(p.priceRange.minVariantPrice.amount);
+                    const minCompare = Number.parseFloat(p.compareAtPriceRange.minVariantPrice.amount);
+                    const onSale = minCompare > 0 && minCompare > minPrice;
+                    const pctOff = onSale ? Math.round((1 - minPrice / minCompare) * 100) : 0;
+                    return (
                     <Link key={p.id} href={`/products/${p.handle}`} className="pcard plp-card">
                       <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
+                        {onSale ? (
+                          <span className="pcard-tag pcard-tag-sale">−{pctOff}%</span>
+                        ) : null}
                         {p.featuredImage ? (
                           <Image
                             src={p.featuredImage.url}
@@ -258,6 +261,11 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                         <div className="pcard-name">{p.title}</div>
                         <PcardSpecs specs={p.specs} />
                         <div className="pcard-price">
+                          {onSale ? (
+                            <span className="pcard-was tnum">
+                              {formatPriceRange(p.compareAtPriceRange.minVariantPrice, p.compareAtPriceRange.maxVariantPrice)}
+                            </span>
+                          ) : null}
                           <span className="pcard-now tnum">
                             {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
                           </span>
@@ -265,7 +273,8 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                         <CompareToggle handle={p.handle} title={p.title} />
                       </div>
                     </Link>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="plp-pagination">
                   {nextHref ? (

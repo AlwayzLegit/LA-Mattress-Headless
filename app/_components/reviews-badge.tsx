@@ -24,6 +24,16 @@ export function ReviewsBadge({ reviews, size = 'inline' }: Props) {
   const fontSize = size === 'block' ? 14 : 13;
   const iconSize = size === 'block' ? 14 : 12;
 
+  // Below 3 reviews, the numeric average reads as artificially clean
+  // ("5.0 (1)") and erodes trust. Show the count alone instead.
+  if (count < 3) {
+    return (
+      <span className="reviews-badge muted" style={{ fontSize }}>
+        {count} review{count === 1 ? '' : 's'}
+      </span>
+    );
+  }
+
   return (
     <div
       className="reviews-badge"

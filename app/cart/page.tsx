@@ -79,9 +79,6 @@ export default async function CartPage() {
                   </Link>
                   <div className="cart-page-line-meta">
                     <Link href={`/products/${v.product.handle}`} className="cart-page-line-title">
-                      <span className="eyebrow" style={{ display: 'block', marginBottom: 4 }}>
-                        {v.selectedOptions.find((o) => o.name === 'Size')?.value ?? v.title}
-                      </span>
                       {v.product.title}
                     </Link>
                     <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
@@ -125,7 +122,7 @@ export default async function CartPage() {
             Checkout <Icon name="arrow-right" size={16} />
           </a>
           <ul className="pdp-trust" style={{ marginTop: 'var(--s-4)', borderTop: '1px solid var(--line)', paddingTop: 'var(--s-4)' }}>
-            <li><Icon name="lock" size={16} /> Secure checkout on checkout.mattressstoreslosangeles.com</li>
+            <li><Icon name="lock" size={16} /> Secure checkout — encrypted by Shopify</li>
           </ul>
         </aside>
       </div>
