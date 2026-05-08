@@ -14,6 +14,9 @@ import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
 import { BuyBox } from './buy-box';
 import { PdpGallery } from './gallery';
+import { PdpOverview } from './pdp-overview';
+import { PdpFirmness } from './pdp-firmness';
+import { PdpMaterials } from './pdp-materials';
 import { RelatedRail } from './related-rail';
 import { ProductSkeleton } from './skeleton';
 
@@ -233,6 +236,9 @@ function ProductView({ product, related }: { product: Product; related: ProductS
           images={product.images}
         />
 
+        <PdpOverview product={product} />
+        <PdpFirmness product={product} />
+        <PdpMaterials product={product} />
         <SpecTable product={product} />
 
         {product.descriptionHtml ? (
@@ -248,6 +254,9 @@ function ProductView({ product, related }: { product: Product; related: ProductS
           <div className="pdp-rail-inner">
             <div className="pdp-brand-mark">{product.vendor}</div>
             <h1 className="pdp-name">{product.title}</h1>
+            {product.editorial.tagline ? (
+              <p className="pdp-tagline muted">{product.editorial.tagline}</p>
+            ) : null}
             <ReviewsBadge reviews={product.reviews} size="block" />
 
             <BuyBox

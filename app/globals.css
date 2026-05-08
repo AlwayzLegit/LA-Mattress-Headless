@@ -1687,6 +1687,175 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 1024px) { .pdp-specs-grid { grid-template-columns: repeat(2, 1fr); gap: var(--s-5); } }
 @media (max-width: 640px)  { .pdp-specs-grid { grid-template-columns: 1fr; } }
 
+/* PDP §Overview — design handoff (pdp-showroom.css §Overview).
+   Best for / Not ideal for fits column + 2-col highlight cards. */
+.pdp-overview-body {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--s-8);
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .pdp-overview-body { grid-template-columns: 1fr; gap: var(--s-6); }
+}
+.pdp-overview-prose { max-width: 640px; }
+.pdp-overview-fits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+}
+@media (max-width: 640px) { .pdp-overview-fits { grid-template-columns: 1fr; } }
+.pdp-overview-fit {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  padding: var(--s-4);
+}
+.pdp-overview-fit-head {
+  display: flex; align-items: center; gap: var(--s-2);
+  margin-bottom: var(--s-3);
+  color: var(--accent);
+}
+.pdp-overview-fit-not .pdp-overview-fit-head { color: var(--text-3); }
+.pdp-overview-fit-head .mono {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.pdp-overview-fit-list {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pdp-overview-fit-list li {
+  font-size: 14px; line-height: 1.4;
+  padding-left: 14px; position: relative;
+}
+.pdp-overview-fit-list li::before {
+  content: ''; position: absolute;
+  left: 0; top: 8px;
+  width: 6px; height: 1px;
+  background: var(--text-4);
+}
+.pdp-overview-highlights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+@media (max-width: 640px) { .pdp-overview-highlights { grid-template-columns: 1fr; } }
+.pdp-overview-highlight {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  padding: var(--s-5) var(--s-4);
+}
+.pdp-overview-highlight-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-fg);
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-bottom: var(--s-3);
+}
+.pdp-overview-highlight-title {
+  font-weight: 600; font-size: 15px; margin-bottom: 6px;
+}
+.pdp-overview-highlight-body {
+  margin: 0; font-size: 13px; line-height: 1.45;
+  color: var(--text-3);
+}
+
+/* PDP §Firmness — design handoff (pdp-showroom.css §Firmness).
+   Gradient track with a accent dot at score position + sleep-position
+   fit bars below. */
+.firmness-scale { max-width: 720px; margin-bottom: var(--s-7); }
+.firmness-track {
+  height: 6px;
+  background: linear-gradient(90deg, var(--surface-2) 0%, var(--line-strong) 50%, var(--text-2) 100%);
+  border-radius: 3px;
+  position: relative;
+  margin-bottom: var(--s-6);
+}
+.firmness-marker { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+.firmness-marker-dot {
+  display: block;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.firmness-marker-val {
+  position: absolute;
+  top: -32px; left: 50%; transform: translateX(-50%);
+  font-size: 11px;
+  background: var(--text);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: var(--r-1);
+  white-space: nowrap;
+}
+.firmness-labels {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--text-3);
+}
+.pdp-positions {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-5);
+}
+@media (max-width: 1024px) { .pdp-positions { grid-template-columns: 1fr; } }
+.pdp-position { display: flex; flex-direction: column; gap: var(--s-2); }
+.pdp-position-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.pdp-position-name { font-size: 14px; font-weight: 600; }
+.pdp-fit {
+  font-size: 11px; font-weight: 500;
+  padding: 3px 8px; border-radius: var(--r-pill);
+}
+.pdp-fit-great { background: rgba(26,127,78,0.1); color: var(--trust); }
+.pdp-fit-good  { background: var(--surface-2); color: var(--text-2); }
+.pdp-fit-poor  { background: rgba(216,35,42,0.08); color: var(--sale); }
+.pdp-position-bar {
+  height: 4px; background: var(--surface-3); border-radius: 2px;
+  overflow: hidden;
+}
+.pdp-position-fill {
+  height: 100%; background: var(--text); border-radius: 2px;
+  transition: width var(--d-slow) var(--ease);
+}
+
+/* PDP §Materials — design handoff. Dark navy section, numbered layer
+   list (L01, L02, ...). The cross-section image column is omitted in
+   our render until the merchant uploads per-product cross-sections. */
+.pdp-materials.section-dark {
+  background: var(--surface-inv);
+  color: var(--text-on-inv);
+  padding: var(--s-8) 0;
+  margin-left: calc(var(--gutter) * -1);
+  margin-right: calc(var(--gutter) * -1);
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+.pdp-materials .pdp-section-head h2 { color: #fff; }
+.pdp-materials .pdp-section-lede { color: var(--text-on-inv-2); }
+.pdp-layers {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column;
+}
+.pdp-layers li {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: var(--s-4);
+  padding: var(--s-5) 0;
+  border-bottom: 1px solid var(--line-inv);
+}
+.pdp-layers li:first-child { padding-top: 0; }
+.pdp-layers li:last-child  { border-bottom: 0; }
+.pdp-layer-n { font-size: 11px; color: rgba(255,255,255,0.4); padding-top: 4px; }
+.pdp-layer-name { font-size: 16px; font-weight: 600; color: #fff; }
+.pdp-layer-desc { font-size: 13px; color: var(--text-on-inv-2); margin-top: 4px; }
+
+/* PDP buybox tagline — design handoff §Buy box. Sits between the
+   product name and the reviews badge / price. */
+.pdp-tagline { font-size: 15px; line-height: 1.5; margin: 0; }
+
 /* PDP buybox spec strip — Material · Firmness · Height shown as plain
    inline text so visitors don't mistake it for clickable chips like the
    variant selector below it. */

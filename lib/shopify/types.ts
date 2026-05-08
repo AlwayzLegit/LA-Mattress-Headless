@@ -67,6 +67,38 @@ export type ProductSpecs = {
   trialNights: number | null;
 };
 
+export type ProductHighlight = {
+  icon: 'sparkle' | 'shield' | 'truck' | 'check' | 'card' | string;
+  title: string;
+  body: string;
+};
+
+export type SleepPositionFit = 'great' | 'good' | 'poor';
+
+export type ProductLayer = {
+  name: string;
+  desc: string;
+};
+
+/**
+ * PDP editorial data parsed from `custom.*` metafields (Phase 94). All
+ * fields independently optional — each section renders only when its data
+ * is populated, so partial onboarding is fine.
+ *
+ * tagline / lede / firmnessScore / positionFit / layers / highlights are
+ * defined under `custom.*` with storefront PUBLIC_READ access.
+ */
+export type ProductEditorial = {
+  tagline: string | null;
+  lede: string | null;
+  bestFor: string[];
+  notIdealFor: string[];
+  highlights: ProductHighlight[];
+  firmnessScore: number | null;          // 1-10
+  positionFit: { back?: SleepPositionFit; side?: SleepPositionFit; stomach?: SleepPositionFit } | null;
+  layers: ProductLayer[];
+};
+
 export type Product = {
   id: string;
   handle: string;
@@ -88,6 +120,7 @@ export type Product = {
   seo: Seo;
   reviews: ProductReviews | null;
   specs: ProductSpecs;
+  editorial: ProductEditorial;
 };
 
 export type ProductSummary = {

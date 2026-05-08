@@ -98,6 +98,32 @@ export const SPEC_METAFIELDS = /* GraphQL */ `
   trialMetafield:    metafield(namespace: "custom", key: "trial_nights")    { value type }
 `;
 
+/**
+ * PDP editorial metafields (Phase 94). All under `custom` namespace with
+ * storefront PUBLIC_READ. Each renders a section on the PDP only when its
+ * metafield is populated — graceful no-op until the merchant fills in via
+ * Shopify Admin → Products → [product] → Custom data.
+ *
+ *   custom.tagline          single_line_text — one-sentence positioning
+ *   custom.lede             multi_line_text  — 2-3 sentence overview lead
+ *   custom.best_for         list.single_line_text — sleeper profile bullets
+ *   custom.not_ideal_for    list.single_line_text — counter-list bullets
+ *   custom.highlights       json — [{icon, title, body}] up to 4 cards
+ *   custom.firmness_score   number_integer (1-10) — for the firmness scale viz
+ *   custom.position_fit     json — {back, side, stomach: "great"|"good"|"poor"}
+ *   custom.layers           json — [{name, desc}] construction layers
+ */
+export const EDITORIAL_METAFIELDS = /* GraphQL */ `
+  taglineMetafield:        metafield(namespace: "custom", key: "tagline")         { value type }
+  ledeMetafield:           metafield(namespace: "custom", key: "lede")            { value type }
+  bestForMetafield:        metafield(namespace: "custom", key: "best_for")        { value type }
+  notIdealForMetafield:    metafield(namespace: "custom", key: "not_ideal_for")   { value type }
+  highlightsMetafield:     metafield(namespace: "custom", key: "highlights")      { value type }
+  firmnessScoreMetafield:  metafield(namespace: "custom", key: "firmness_score")  { value type }
+  positionFitMetafield:    metafield(namespace: "custom", key: "position_fit")    { value type }
+  layersMetafield:         metafield(namespace: "custom", key: "layers")          { value type }
+`;
+
 export const PRODUCT_FRAGMENT = /* GraphQL */ `
   fragment ProductFields on Product {
     id
@@ -126,5 +152,6 @@ export const PRODUCT_FRAGMENT = /* GraphQL */ `
     seo { ...SeoFields }
     ${REVIEWS_METAFIELDS}
     ${SPEC_METAFIELDS}
+    ${EDITORIAL_METAFIELDS}
   }
 `;
