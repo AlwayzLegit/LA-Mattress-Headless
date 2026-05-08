@@ -9,6 +9,7 @@ import type { Article } from '@/lib/shopify';
 import { blogs as inventoryBlogs, findBlog } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { injectHeadingIds } from '@/lib/article-toc';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
 
@@ -93,15 +94,26 @@ async function ArticleBody({ blog, article }: { blog: string; article: string })
   return <ArticleView article={a} />;
 }
 
+/**
+ * Article — design handoff §Guide detail. Renders as:
+ *
+ *   <section .gd-head>           breadcrumbs + meta + h1 + lede
+ *   <div .container>
+ *     <div .gd-article>          3-col grid (220 / fluid / 220)
+ *       <aside .gd-toc>          sticky TOC built from the article's H2s
+ *       <article .gd-body>       sanitized Shopify HTML, with IDs on H2s
+ *       <aside .gd-side>         "Skip the reading" + "Read these next"
+ *   <section .gd-cta-band>       footer band linking back to the index
+ *
+ * On <=980px the side rails collapse and the article is single-column.
+ */
 function ArticleView({ article }: { article: Article }) {
   const url = `${SITE}/blogs/${article.blog.handle}/${article.handle}`;
+  const sanitized = sanitizeShopifyHtml(article.contentHtml);
+  const { html: bodyHtml, headings } = injectHeadingIds(sanitized);
   const readMinutes = estimateReadMinutes(article.contentHtml);
   const related = findRelatedArticles(article);
 
-  // BlogPosting description prefers Shopify's SEO field (the merchant's
-  // deliberate description_tag metafield, surfaced via Storefront `seo`)
-  // over the article excerpt, falling back to the article title. Same
-  // priority order as the page's <meta name="description">.
   const ldDescription = firstNonEmpty(
     article.seo.description,
     article.excerpt,
@@ -136,32 +148,40 @@ function ArticleView({ article }: { article: Article }) {
 
   const articleDisplayTitle = toSentenceCase(stripBrandSuffix(article.title));
   const blogDisplayTitle = toSentenceCase(stripBrandSuffix(article.blog.title));
+  const updatedLabel = new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
   return (
-    <main className="container">
-      <article className="article" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
-        <nav className="lp-breadcrumbs">
-          <Link href="/">Home</Link>
-          <span className="sep">/</span>
-          <Link href={`/blogs/${article.blog.handle}`}>{blogDisplayTitle}</Link>
-          <span className="sep">/</span>
-          <span>{articleDisplayTitle}</span>
-        </nav>
-
-        <header className="article-header" style={{ maxWidth: 760, margin: '0 auto' }}>
-          <div className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>{blogDisplayTitle}</div>
-          <h1 className="h1" style={{ margin: 'var(--s-3) 0 var(--s-4)' }}>{articleDisplayTitle}</h1>
-          <div className="article-meta muted">
-            <time dateTime={article.publishedAt}>
-              {new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </time>
-            {article.author?.name ? <> · <span>By {article.author.name}</span></> : null}
-            {readMinutes > 0 ? <> · <span>{readMinutes} min read</span></> : null}
+    <>
+      <section className="gd-head">
+        <div className="container">
+          <nav className="lp-breadcrumbs">
+            <Link href="/">Home</Link>
+            <span className="sep">/</span>
+            <Link href={`/blogs/${article.blog.handle}`}>{blogDisplayTitle}</Link>
+            <span className="sep">/</span>
+            <span>{articleDisplayTitle}</span>
+          </nav>
+          <div className="gd-head-inner">
+            <div className="gd-head-meta">
+              <span>{blogDisplayTitle}</span>
+              {readMinutes > 0 ? (
+                <>
+                  <span className="gd-head-meta-sep" aria-hidden="true">·</span>
+                  <span>{readMinutes} min read</span>
+                </>
+              ) : null}
+              <span className="gd-head-meta-sep" aria-hidden="true">·</span>
+              <span>Updated {updatedLabel}</span>
+            </div>
+            <h1>{articleDisplayTitle}</h1>
+            {article.excerpt ? <p className="gd-head-lede">{article.excerpt}</p> : null}
           </div>
-        </header>
+        </div>
+      </section>
 
-        {article.image ? (
-          <figure className="article-cover" style={{ maxWidth: 1080, margin: 'var(--s-6) auto 0' }}>
+      {article.image ? (
+        <div className="container" style={{ marginTop: 'var(--s-7)' }}>
+          <figure style={{ maxWidth: 1080, margin: '0 auto' }}>
             <Image
               src={article.image.url}
               alt={article.image.altText ?? article.title}
@@ -172,46 +192,71 @@ function ArticleView({ article }: { article: Article }) {
               priority
             />
           </figure>
-        ) : null}
+        </div>
+      ) : null}
 
-        <div
-          className="rte article-body"
-          style={{ maxWidth: 720, margin: 'var(--s-7) auto 0' }}
-          dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(article.contentHtml) }}
-        />
+      <div className="container">
+        <div className="gd-article">
+          {headings.length > 0 ? (
+            <aside className="gd-toc" aria-label="Article contents">
+              <div className="gd-toc-eyebrow">Contents</div>
+              <ul>
+                {headings.map((h, i) => (
+                  <li key={h.id}>
+                    <a href={`#${h.id}`} className={i === 0 ? 'on' : undefined}>{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          ) : (
+            // Reserve the column so the body stays centered across articles
+            // even when an article has no H2s (very short posts).
+            <aside aria-hidden="true" />
+          )}
 
-        <footer className="article-foot" style={{ maxWidth: 720, margin: 'var(--s-7) auto 0', paddingTop: 'var(--s-5)', borderTop: '1px solid var(--line)' }}>
-          <Link href={`/blogs/${article.blog.handle}`} className="link-arrow">
-            <Icon name="arrow-left" size={14} /> More from {article.blog.title}
-          </Link>
-        </footer>
+          <article className="gd-body" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
 
-        {related.length > 0 ? (
-          <section className="article-related" aria-labelledby="article-related-heading" style={{ maxWidth: 720, margin: 'var(--s-7) auto 0' }}>
-            <div className="eyebrow">Keep reading</div>
-            <h2 id="article-related-heading" className="h2" style={{ margin: 'var(--s-3) 0 var(--s-4)' }}>More from {article.blog.title}</h2>
-            <ul className="article-related-list">
-              {related.map((r) => (
-                <li key={r.handle}>
-                  <Link href={`/blogs/${article.blog.handle}/${r.handle}`} className="article-related-row">
-                    <span className="article-related-title">{r.title ?? r.handle.replace(/-/g, ' ')}</span>
-                    {r.publishedAt ? (
-                      <time dateTime={r.publishedAt} className="muted">
-                        {new Date(r.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                      </time>
-                    ) : null}
+          <aside className="gd-side" aria-label="Related actions">
+            <div className="gd-side-card">
+              <h4>Skip the reading</h4>
+              <Link href="/sleep-quiz">Take the sleep quiz <Icon name="arrow-right" size={14} /></Link>
+              <Link href="/pages/mattress-store-locations">Talk to a real human <Icon name="arrow-right" size={14} /></Link>
+              <Link href="/compare">Compare 2-3 mattresses <Icon name="arrow-right" size={14} /></Link>
+            </div>
+            {related.length > 0 ? (
+              <div className="gd-side-card gd-side-card-dark gd-side-card-stack">
+                <h4>Read these next</h4>
+                <p>More from {article.blog.title}.</p>
+                {related.slice(0, 3).map((r) => (
+                  <Link key={r.handle} href={`/blogs/${article.blog.handle}/${r.handle}`}>
+                    <span>{r.title ?? r.handle.replace(/-/g, ' ')}</span>
                     <Icon name="arrow-right" size={14} />
                   </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-      </article>
+                ))}
+              </div>
+            ) : null}
+          </aside>
+        </div>
+      </div>
+
+      <section className="gd-cta-band">
+        <div className="container gd-cta-band-inner">
+          <div>
+            <h3>Read more from {article.blog.title}.</h3>
+            <p>Buying guides and sleep advice — no email signup required.</p>
+          </div>
+          <div className="gd-cta-actions">
+            <Link href={`/blogs/${article.blog.handle}`} className="btn btn-primary btn-lg">
+              All articles <Icon name="arrow-right" size={16} />
+            </Link>
+            <Link href="/sleep-quiz" className="btn btn-ghost btn-lg">Take the quiz instead</Link>
+          </div>
+        </div>
+      </section>
 
       <script id="ld-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
       <script id="ld-breadcrumb-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-    </main>
+    </>
   );
 }
 
