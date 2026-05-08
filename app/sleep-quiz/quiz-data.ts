@@ -28,10 +28,10 @@ export const QUESTIONS: Question[] = [
     title: 'Roughly how much do you weigh?',
     helper: 'Body weight changes how much support and pushback a mattress needs to give back.',
     options: [
-      { id: 'light', label: 'Under 130 lbs' },
-      { id: 'mid',   label: '130 – 230 lbs' },
-      { id: 'heavy', label: 'Over 230 lbs' },
-      { id: 'skip',  label: 'Prefer not to say' },
+      { id: 'light', label: 'Under 130 lbs',     sublabel: 'Wants a softer feel for pressure relief' },
+      { id: 'mid',   label: '130 – 230 lbs',     sublabel: 'Most mattresses balance well here' },
+      { id: 'heavy', label: 'Over 230 lbs',      sublabel: 'Needs stronger support and edge stability' },
+      { id: 'skip',  label: 'Prefer not to say', sublabel: "We'll use a balanced default" },
     ],
   },
   {

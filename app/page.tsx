@@ -19,7 +19,7 @@ import { LOCAL_BUSINESS_LD } from '@/lib/structured-data';
 export const metadata: Metadata = {
   title: 'LA Mattress — Sleep, engineered in Los Angeles.',
   description:
-    'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white glove delivery & 0% APR financing.',
+    'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white-glove delivery & 0% APR financing.',
   alternates: { canonical: 'https://mattressstoreslosangeles.com/' },
 };
 

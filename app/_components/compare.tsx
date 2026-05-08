@@ -9,6 +9,21 @@ const KEY = 'la-mattress.compare.v1';
 const MAX = 4;
 const EVENT = 'la-mattress:compare-change';
 
+/**
+ * Routes where the floating compare tray is contextually meaningful (the
+ * visitor is in shopping mode). Hide everywhere else — quiz, blog, account,
+ * locations, cart, /compare itself, 404, etc. — to avoid covering content
+ * the visitor is actually trying to read.
+ */
+function isShoppingRoute(pathname: string | null): boolean {
+  if (!pathname) return false;
+  if (pathname === '/') return true;
+  if (pathname.startsWith('/collections/')) return true;
+  if (pathname.startsWith('/products/')) return true;
+  if (pathname === '/search') return true;
+  return false;
+}
+
 type Snapshot = { handle: string; title: string };
 
 function readSet(): Snapshot[] {
@@ -133,8 +148,10 @@ export function CompareTray() {
   useEffect(() => { setDismissed(false); }, [pathname]);
 
   if (!hydrated || items.length === 0) return null;
-  // Don't show on /compare itself — redundant with the page they're on.
-  if (pathname === '/compare') return null;
+  // Tray is contextually relevant only on shopping templates. On reading /
+  // utility / non-shop pages, hide it — the localStorage selection persists
+  // so the tray reappears the moment the visitor returns to a PLP/PDP/home/search.
+  if (!isShoppingRoute(pathname)) return null;
   if (dismissed) return null;
   if (nearFooter) return null;
 

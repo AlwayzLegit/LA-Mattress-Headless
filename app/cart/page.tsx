@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { readCart } from '@/app/_actions/cart';
 import { CartLineEditor } from './cart-line-editor';
 import { Icon } from '@/app/_components/icon';
+import { RecentlyViewedRail } from '@/app/_components/recently-viewed';
 import { formatMoney } from '@/lib/format';
 
 export const metadata: Metadata = {
@@ -21,25 +22,27 @@ export default async function CartPage() {
 
   if (!cart || lines.length === 0) {
     return (
-      <main className="container" style={{ padding: 'var(--s-9) 0', minHeight: '60vh' }}>
-        <div style={{ maxWidth: 640 }}>
-          <div className="eyebrow">Cart</div>
-          <h1 className="h1" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>Your cart is empty.</h1>
-          <p className="muted" style={{ marginBottom: 'var(--s-5)', maxWidth: '50ch' }}>
-            Browse mattresses, adjustable beds, and bedding — or come visit us in person at one of our 5 LA showrooms.
-          </p>
-          <div style={{ display: 'flex', gap: 'var(--s-3)', flexWrap: 'wrap', marginBottom: 'var(--s-7)' }}>
-            <Link href="/collections/mattresses" className="btn btn-primary">Shop mattresses</Link>
-            <Link href="/sleep-quiz" className="btn btn-ghost">Take the sleep quiz</Link>
-            <Link href="/pages/mattress-store-locations" className="btn btn-ghost">Find a store</Link>
+      <>
+        <main className="container" style={{ padding: 'var(--s-9) 0' }}>
+          <div style={{ maxWidth: 640 }}>
+            <div className="eyebrow">Cart</div>
+            <h1 className="h1" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>Your cart is empty.</h1>
+            <p className="muted" style={{ marginBottom: 'var(--s-5)', maxWidth: '50ch' }}>
+              Browse mattresses, adjustable beds, and bedding — or come visit us in person at one of our 5 LA showrooms.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--s-3)', flexWrap: 'wrap' }}>
+              <Link href="/collections/mattresses" className="btn btn-primary">Shop mattresses</Link>
+              <Link href="/sleep-quiz" className="btn btn-ghost">Take the sleep quiz</Link>
+              <Link href="/pages/mattress-store-locations" className="btn btn-ghost">Find a store</Link>
+            </div>
           </div>
-          <ul className="pdp-trust" style={{ borderTop: '1px solid var(--line)', paddingTop: 'var(--s-5)', maxWidth: 480 }}>
-            <li><Icon name="truck" size={16} /> Free white glove delivery</li>
-            <li><Icon name="shield" size={16} /> 120-night comfort exchange</li>
-            <li><Icon name="card" size={16} /> 0% APR financing available</li>
-          </ul>
-        </div>
-      </main>
+        </main>
+        {/* Empty-cart recovery: surface the visitor's recently-viewed
+            products so the lower half of the page has shopping context
+            instead of dead whitespace. Renders nothing if the visitor
+            hasn't viewed any products yet. */}
+        <RecentlyViewedRail heading="Pick up where you left off" eyebrow="Recently viewed" />
+      </>
     );
   }
 
@@ -79,9 +82,6 @@ export default async function CartPage() {
                   </Link>
                   <div className="cart-page-line-meta">
                     <Link href={`/products/${v.product.handle}`} className="cart-page-line-title">
-                      <span className="eyebrow" style={{ display: 'block', marginBottom: 4 }}>
-                        {v.selectedOptions.find((o) => o.name === 'Size')?.value ?? v.title}
-                      </span>
                       {v.product.title}
                     </Link>
                     <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
@@ -125,7 +125,7 @@ export default async function CartPage() {
             Checkout <Icon name="arrow-right" size={16} />
           </a>
           <ul className="pdp-trust" style={{ marginTop: 'var(--s-4)', borderTop: '1px solid var(--line)', paddingTop: 'var(--s-4)' }}>
-            <li><Icon name="lock" size={16} /> Secure checkout on checkout.mattressstoreslosangeles.com</li>
+            <li><Icon name="lock" size={16} /> Secure checkout — encrypted by Shopify</li>
           </ul>
         </aside>
       </div>

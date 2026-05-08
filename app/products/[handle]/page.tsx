@@ -255,7 +255,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
           />
 
           <ul className="pdp-trust">
-            <li><Icon name="truck" size={16} /> Free white glove delivery</li>
+            <li><Icon name="truck" size={16} /> Free white-glove delivery</li>
             <li><Icon name="shield" size={16} /> 120-night comfort exchange</li>
             <li><Icon name="card" size={16} /> 0% APR financing available</li>
           </ul>

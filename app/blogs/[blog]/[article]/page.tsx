@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { getArticleByHandle } from '@/lib/shopify';
 import type { Article } from '@/lib/shopify';
 import { blogs as inventoryBlogs, findBlog } from '@/lib/inventory';
-import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
+import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
@@ -134,8 +134,8 @@ function ArticleView({ article }: { article: Article }) {
     ],
   };
 
-  const articleDisplayTitle = stripBrandSuffix(article.title);
-  const blogDisplayTitle = stripBrandSuffix(article.blog.title);
+  const articleDisplayTitle = toSentenceCase(stripBrandSuffix(article.title));
+  const blogDisplayTitle = toSentenceCase(stripBrandSuffix(article.blog.title));
 
   return (
     <main className="container">

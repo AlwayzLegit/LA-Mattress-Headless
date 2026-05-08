@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { getBlogByHandle } from '@/lib/shopify';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
-import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
+import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { Icon } from '@/app/_components/icon';
 
 type Params = {
@@ -52,7 +52,7 @@ export default async function BlogIndexPage(props: Params) {
   if (!blog) notFound();
 
   const articles = blog.articles.nodes;
-  const displayTitle = stripBrandSuffix(blog.title);
+  const displayTitle = toSentenceCase(stripBrandSuffix(blog.title));
   const nextHref =
     blog.articles.pageInfo.hasNextPage && blog.articles.pageInfo.endCursor
       ? `/blogs/${blog.handle}?${new URLSearchParams({ after: blog.articles.pageInfo.endCursor }).toString()}`

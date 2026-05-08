@@ -14,7 +14,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'LA Mattress Store',
     short_name: 'LA Mattress',
     description:
-      'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white glove delivery & 0% APR financing.',
+      'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white-glove delivery & 0% APR financing.',
     start_url: '/',
     display: 'standalone',
     theme_color: '#1B2C5E',

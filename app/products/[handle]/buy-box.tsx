@@ -141,7 +141,8 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
             <div key={opt.id} className="pdp-option">
               <div className="pdp-option-label">
                 <span className="eyebrow">{opt.name}</span>
-                <span className="pdp-option-value">{selection[opt.name]}</span>
+                {/* The current selection is already shown in the active chip
+                    below (e.g. "Twin $799"). Don't repeat it here. */}
               </div>
               <div className="pdp-option-values">
                 {opt.values.map((v) => {
