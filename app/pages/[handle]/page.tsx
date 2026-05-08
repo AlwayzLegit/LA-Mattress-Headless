@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { getPageByHandle } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, getOpenStatus, type Showroom } from '@/lib/showrooms';
-import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
+import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { SITE_PHONE_SCHEMA } from '@/lib/site-config';
 import { Icon } from '@/app/_components/icon';
@@ -65,9 +65,9 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
         <nav className="lp-breadcrumbs">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
-          <span>{stripBrandSuffix(page.title)}</span>
+          <span>{toSentenceCase(stripBrandSuffix(page.title))}</span>
         </nav>
-        <h1 className="h1" style={{ marginTop: 'var(--s-4)' }}>{stripBrandSuffix(page.title)}</h1>
+        <h1 className="h1" style={{ marginTop: 'var(--s-4)' }}>{toSentenceCase(stripBrandSuffix(page.title))}</h1>
         {page.body ? (
           <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
         ) : (
@@ -129,7 +129,7 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
 
         <header className="locations-page-hero">
           <div className="eyebrow">Five LA showrooms</div>
-          <h1 className="h1">{stripBrandSuffix(page.title)}</h1>
+          <h1 className="h1">{toSentenceCase(stripBrandSuffix(page.title))}</h1>
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
             Visit any of our showrooms across Los Angeles to try every mattress in person. Open daily — no appointment needed.
           </p>
@@ -244,7 +244,7 @@ function ShowroomPage({
 
         <header className="showroom-page-hero">
           <div className="eyebrow">{showroom.area} · Los Angeles</div>
-          <h1 className="h1">{stripBrandSuffix(page.title)}</h1>
+          <h1 className="h1">{toSentenceCase(stripBrandSuffix(page.title))}</h1>
           <div className={`showroom-open-status${openStatus.isOpen ? ' is-open' : ''}`}>
             <span className="showroom-open-dot" aria-hidden /> {openStatus.message}
           </div>

@@ -11,6 +11,7 @@ import { CompareRemove } from './compare-remove';
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
 const MAX = 4;
+const SIZE_ORDER = ['Twin', 'Twin XL', 'Full', 'Full XL', 'Queen', 'King', 'California King', 'Cal King', 'Split King', 'Split Cal King', 'Split California King'];
 
 export const metadata: Metadata = {
   title: 'Compare mattresses',
@@ -67,15 +68,14 @@ export default async function ComparePage({ searchParams }: Search) {
                 <th scope="col" className="compare-row-label">&nbsp;</th>
                 {products.map((p) => (
                   <th key={p.id} scope="col" className="compare-product-cell">
-                    <div className="compare-product-img">
+                    <div className="compare-product-img" style={{ position: 'relative' }}>
                       {p.featuredImage ? (
                         <Image
                           src={p.featuredImage.url}
                           alt={p.featuredImage.altText ?? p.title}
-                          width={400}
-                          height={400}
+                          fill
                           sizes="(max-width: 640px) 50vw, 200px"
-                          style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                          style={{ objectFit: 'contain' }}
                           loading="lazy"
                         />
                       ) : null}
@@ -114,7 +114,16 @@ export default async function ComparePage({ searchParams }: Search) {
               <SpecRow label="Sizes">
                 {products.map((p) => {
                   const opt = p.options.find((o) => /size/i.test(o.name));
-                  return <td key={p.id}>{opt ? opt.values.join(', ') : '—'}</td>;
+                  if (!opt) return <td key={p.id}>—</td>;
+                  // Sort sizes in canonical mattress order so the row reads as
+                  // parallel across products (otherwise products list sizes in
+                  // whatever order they were added in Shopify Admin).
+                  const ordered = [...opt.values].sort((a, b) => {
+                    const ai = SIZE_ORDER.indexOf(a);
+                    const bi = SIZE_ORDER.indexOf(b);
+                    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+                  });
+                  return <td key={p.id}>{ordered.join(', ')}</td>;
                 })}
               </SpecRow>
               <SpecRow label="Comfort trial">

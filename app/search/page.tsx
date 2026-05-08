@@ -165,15 +165,40 @@ export default async function SearchPage(props: Params) {
                     </div>
                   </>
                 ) : (
-                  <p className="muted" style={{ marginTop: 'var(--s-5)' }}>
-                    No matches for &ldquo;{q}&rdquo;
-                    {filterSel ? ' with the current filters.' : '.'}{' '}
-                    Try a different keyword, remove a filter, or{' '}
-                    <Link href="/collections/mattresses" className="link-arrow">
-                      browse mattresses <Icon name="arrow-right" size={14} />
-                    </Link>
-                    .
-                  </p>
+                  <div className="search-empty">
+                    <p className="muted" style={{ fontSize: 16, lineHeight: 1.55, maxWidth: '60ch' }}>
+                      No matches for &ldquo;{q}&rdquo;
+                      {filterSel ? ' with the current filters.' : '.'}{' '}
+                      Try one of these instead:
+                    </p>
+                    <div className="search-empty-grid">
+                      <Link href="/collections/mattresses" className="search-empty-tile">
+                        <div className="search-empty-tile-label">All mattresses</div>
+                        <div className="search-empty-tile-sub muted">Every brand, every size</div>
+                        <Icon name="arrow-right" size={16} />
+                      </Link>
+                      <Link href="/collections/tempur-pedic-mattresses" className="search-empty-tile">
+                        <div className="search-empty-tile-label">Tempur-Pedic</div>
+                        <div className="search-empty-tile-sub muted">Memory foam, premium</div>
+                        <Icon name="arrow-right" size={16} />
+                      </Link>
+                      <Link href="/collections/stearns-foster-mattresses" className="search-empty-tile">
+                        <div className="search-empty-tile-label">Stearns &amp; Foster</div>
+                        <div className="search-empty-tile-sub muted">Luxury hybrids</div>
+                        <Icon name="arrow-right" size={16} />
+                      </Link>
+                      <Link href="/collections/on-sale" className="search-empty-tile">
+                        <div className="search-empty-tile-label">On sale</div>
+                        <div className="search-empty-tile-sub muted">Current markdowns</div>
+                        <Icon name="arrow-right" size={16} />
+                      </Link>
+                      <Link href="/sleep-quiz" className="search-empty-tile">
+                        <div className="search-empty-tile-label">Take the sleep quiz</div>
+                        <div className="search-empty-tile-sub muted">Get a personal match</div>
+                        <Icon name="arrow-right" size={16} />
+                      </Link>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
