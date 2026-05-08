@@ -27,7 +27,7 @@ const NAV_ITEMS: { label: string; mega: MegaKey | null; href: string; accent?: b
   { label: 'Stores',          mega: null,        href: '/pages/mattress-store-locations' },
   { label: 'Financing',       mega: null,        href: '/pages/mattress-store-financing' },
   { label: 'Deals',           mega: null,        href: '/collections/on-sale', accent: true },
-  { label: 'Guides',          mega: 'learn',     href: '/pages/mattress-guides' },
+  { label: 'Guides',          mega: 'learn',     href: '/pages/mattress-types' },
 ];
 
 const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {

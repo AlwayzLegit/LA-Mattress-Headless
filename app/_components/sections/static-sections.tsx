@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icon, type IconName } from '../icon';
 import { phImg } from '../images';
+import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
 
 /* ───── Trust bar ─────────────────────────────────────── */
 export function TrustBar() {
@@ -166,17 +167,54 @@ export function QuizTeaser() {
 
 /* ───── Reviews ──────────────────────────────────────────
  *
- * Hidden until a reviews vendor (Birdeye / Yotpo) is wired. The previous
- * version emitted a hardcoded "4.9 stars on Google, 3,300+ reviews"
- * aggregate plus six fabricated review quotes — both are FTC compliance
- * risks.
+ * Pulls the latest 6 verified 4★+ reviews from Judge.me's public API server-
+ * side. Renders nothing when:
+ *   - JUDGEME_API_TOKEN / JUDGEME_SHOP_DOMAIN env vars aren't set, or
+ *   - Judge.me has zero published reviews matching the filter.
  *
- * When the vendor is wired:
- *   - replace this `null` with the real reviews component
- *   - re-add the export to app/page.tsx (already imported there as `Reviews`)
- *   - emit AggregateRating in Product JSON-LD (lib/shopify/queries/product.ts)
- *     for SERP rich-result eligibility
+ * Both branches return null without rendering an empty section, so the page
+ * stays clean during onboarding. See lib/judgeme.ts.
  */
-export function Reviews() {
-  return null;
+export async function Reviews() {
+  const [aggregate, reviews] = await Promise.all([
+    getShopAggregate(),
+    getStorefrontReviews({ perPage: 6, minRating: 4 }),
+  ]);
+  if (!aggregate || reviews.length === 0) return null;
+
+  return (
+    <section className="section reviews-home">
+      <div className="container">
+        <div className="section-head">
+          <div>
+            <div className="eyebrow">Real customers, real beds</div>
+            <h2 className="h2">{aggregate.rating.toFixed(1)} stars from {aggregate.count.toLocaleString()} verified reviews</h2>
+          </div>
+          <div className="section-head-right">
+            <Link href="/pages/reviews" className="link-arrow">
+              Read all reviews <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+        </div>
+        <ul className="reviews-home-grid" aria-label="Recent customer reviews">
+          {reviews.slice(0, 6).map((r) => (
+            <li key={r.id} className="reviews-home-card">
+              <div className="reviews-home-card-rating" aria-label={`${r.rating} out of 5`}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <span key={i} className={i < r.rating ? 'review-star-on' : 'review-star-off'}>
+                    <Icon name="star" size={14} />
+                  </span>
+                ))}
+              </div>
+              {r.title ? <h3 className="reviews-home-card-title">{r.title}</h3> : null}
+              <p className="reviews-home-card-body">{r.body.length > 220 ? r.body.slice(0, 217) + '…' : r.body}</p>
+              <div className="reviews-home-card-meta muted">
+                {r.reviewer.name || 'Anonymous'} · {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
 }
