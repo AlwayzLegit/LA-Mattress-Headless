@@ -43,6 +43,13 @@ export async function generateMetadata(props: { params: Promise<Params['params']
   };
 }
 
+/**
+ * Blog index — design handoff §Guides Index. Lp-hero with eyebrow + h1 +
+ * lede + meta tiles, then a `.gd-grid` of `.gd-card`s. Each card is a
+ * 4:3 hero image, a mono category · read-time line, the article title,
+ * a 3-line excerpt clamp, and a foot row with the published date and a
+ * red "Read →" arrow. Pagination preserved with the design's button.
+ */
 export default async function BlogIndexPage(props: Params) {
   const searchParams = await props.searchParams;
   const params = await props.params;
@@ -76,72 +83,104 @@ export default async function BlogIndexPage(props: Params) {
   };
 
   return (
-    <main className="container">
-      <header className="lp-hero" style={{ paddingBottom: 'var(--s-5)' }}>
-        <nav className="lp-breadcrumbs">
-          <Link href="/">Home</Link>
-          <span className="sep">/</span>
-          <span>{displayTitle}</span>
-        </nav>
-        <div className="lp-hero-inner" style={{ marginTop: 'var(--s-5)' }}>
-          <div className="lp-hero-copy">
-            <div className="eyebrow">{displayTitle}</div>
-            <h1 className="h1">{displayTitle}</h1>
+    <>
+      <section className="lp-hero">
+        <div className="container">
+          <nav className="lp-breadcrumbs">
+            <Link href="/">Home</Link>
+            <span className="sep">/</span>
+            <span>{displayTitle}</span>
+          </nav>
+          <div className="lp-hero-inner lp-hero-inner-stacked">
+            <div className="lp-hero-copy">
+              <div className="eyebrow">Articles · {displayTitle}</div>
+              <h1 className="h-display">{displayTitle}</h1>
+              <p className="lp-hero-lede">
+                Buying guides and sleep advice from the team that fits mattresses for a living. No SEO fluff —
+                this is what we tell shoppers when they walk into the showroom.
+              </p>
+              <div className="lp-hero-meta">
+                <span><strong>{articles.length}</strong> articles on this page</span>
+                <span><strong>5</strong> LA showrooms</span>
+                <span><strong>No</strong> email signup required</span>
+              </div>
+            </div>
           </div>
         </div>
-      </header>
+      </section>
 
       <section className="section">
-        {articles.length === 0 ? (
-          <p className="muted" style={{ maxWidth: '60ch' }}>
-            No articles published yet. <Link href="/collections/mattresses" className="link-arrow">
-              Shop mattresses <Icon name="arrow-right" size={14} />
-            </Link>.
-          </p>
-        ) : (
-          <>
-            <ul className="blog-list" aria-label="Articles">
-              {articles.map((a, idx) => (
-                <li key={a.id} className="blog-list-item">
-                  <Link href={`/blogs/${blog.handle}/${a.handle}`} className="blog-card">
-                    <div className="ph blog-card-img" style={{ aspectRatio: '16 / 10' }}>
-                      {a.image ? (
-                        <Image
-                          src={a.image.url}
-                          alt={a.image.altText ?? a.title}
-                          width={800}
-                          height={500}
-                          sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                          priority={!after && idx < 3}
-                          loading={!after && idx < 3 ? 'eager' : 'lazy'}
-                        />
-                      ) : <span className="ph-label">[Article image]</span>}
-                    </div>
-                    <div className="blog-card-meta">
-                      <time className="muted blog-card-date" dateTime={a.publishedAt}>
-                        {new Date(a.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                      </time>
-                      <h2 className="blog-card-title">{a.title}</h2>
-                      {a.excerpt ? <p className="blog-card-excerpt muted">{a.excerpt}</p> : null}
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <div className="plp-pagination">
+        <div className="container">
+          {articles.length === 0 ? (
+            <p className="muted" style={{ maxWidth: '60ch' }}>
+              No articles published yet.{' '}
+              <Link href="/collections/mattresses" className="link-arrow">
+                Shop mattresses <Icon name="arrow-right" size={14} />
+              </Link>
+              .
+            </p>
+          ) : (
+            <>
+              <div className="gd-grid" aria-label="Articles">
+                {articles.map((a, idx) => {
+                  const cat = blog.title;
+                  const date = new Date(a.publishedAt);
+                  const dateLabel = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                  return (
+                    <Link
+                      key={a.id}
+                      href={`/blogs/${blog.handle}/${a.handle}`}
+                      className="gd-card"
+                    >
+                      <div className="gd-card-img">
+                        {a.image ? (
+                          <Image
+                            src={a.image.url}
+                            alt={a.image.altText ?? a.title}
+                            fill
+                            sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            style={{ objectFit: 'cover' }}
+                            priority={!after && idx < 3}
+                          />
+                        ) : (
+                          <span className="ph-label" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>[Article image]</span>
+                        )}
+                      </div>
+                      <div className="gd-card-body">
+                        <div className="gd-card-meta">
+                          <span>{cat}</span>
+                          <span aria-hidden="true">·</span>
+                          <time dateTime={a.publishedAt}>{dateLabel}</time>
+                        </div>
+                        <h3>{a.title}</h3>
+                        {a.excerpt ? <p className="gd-card-excerpt">{a.excerpt}</p> : null}
+                        <div className="gd-card-foot">
+                          <span className="muted">
+                            {a.author?.name ? `By ${a.author.name}` : 'LA Mattress'}
+                          </span>
+                          <span className="arrow">
+                            Read <Icon name="arrow-right" size={14} />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
               {nextHref ? (
-                <Link href={nextHref} className="btn btn-ghost btn-lg">
-                  Load more <Icon name="arrow-right" size={16} />
-                </Link>
+                <div className="plp-pagination" style={{ marginTop: 'var(--s-7)' }}>
+                  <Link href={nextHref} className="btn btn-ghost btn-lg">
+                    Load more <Icon name="arrow-right" size={16} />
+                  </Link>
+                </div>
               ) : null}
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </section>
 
       <script id="ld-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogLd) }} />
       <script id="ld-breadcrumb-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-    </main>
+    </>
   );
 }
