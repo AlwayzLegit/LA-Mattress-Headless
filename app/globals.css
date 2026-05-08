@@ -2924,7 +2924,6 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 980px) {
   .gd-article { grid-template-columns: 1fr; gap: var(--s-5); }
-  .gd-toc, .gd-side { display: none; }
 }
 
 .gd-toc {
@@ -3077,6 +3076,14 @@ a { color: inherit; text-decoration: none; }
 .gd-cta-band h3 { margin: 0 0 var(--s-2); font-size: 24px; font-weight: 600; }
 .gd-cta-band p { margin: 0; color: var(--text-3); }
 .gd-cta-actions { display: flex; gap: var(--s-3); flex-wrap: wrap; }
+
+/* Article body 3-col → single column on tablet/mobile. Placed AFTER
+   .gd-toc / .gd-side declarations so the display:none win against the
+   later display:flex / position:sticky rules at the same specificity. */
+@media (max-width: 980px) {
+  .gd-toc,
+  .gd-side { display: none; }
+}
 
 /* Locations index page */
 .locations-page-hero { margin: var(--s-5) 0 var(--s-7); }
