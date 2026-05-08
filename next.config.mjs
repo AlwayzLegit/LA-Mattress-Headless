@@ -26,6 +26,12 @@ function loadInventoryRedirects() {
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    // Route every <Image> through lib/image-loader.ts. Avoids Vercel's
+    // /_next/image optimizer (per-account quota → 402 Payment Required
+    // breaks every product photo when exhausted) and uses Shopify's
+    // built-in CDN transforms instead — already paid for + edge-cached.
+    loader: 'custom',
+    loaderFile: './lib/image-loader.ts',
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'cdn.shopify.com' },
