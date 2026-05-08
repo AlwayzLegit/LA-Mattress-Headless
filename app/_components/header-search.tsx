@@ -131,11 +131,27 @@ export function HeaderSearch() {
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [open]);
 
-  // Global "/" shortcut to open + focus the header search, like GitHub does.
-  // Ignored when the user is already typing in another input/textarea/select
-  // or in an editable area, so it doesn't hijack regular typing.
+  // Keyboard shortcuts to open + focus the header search:
+  //   "/"      — GitHub-style. Ignored when typing in an input/textarea
+  //              so it doesn't hijack regular typing.
+  //   Cmd+K    — Mac (also Ctrl+K on Windows/Linux). Spotlight/Command-
+  //              palette pattern from the design's search overlay; works
+  //              even when an input is focused.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const isCmdK =
+        e.key.toLowerCase() === 'k' &&
+        (e.metaKey || e.ctrlKey) &&
+        !e.altKey &&
+        !e.shiftKey;
+
+      if (isCmdK) {
+        e.preventDefault();
+        setOpen(true);
+        requestAnimationFrame(() => inputRef.current?.focus());
+        return;
+      }
+
       if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
       const tag = (t?.tagName ?? '').toLowerCase();

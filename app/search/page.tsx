@@ -3,8 +3,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { searchProducts, searchArticles } from '@/lib/shopify';
+import type { ProductSummary, PredictiveArticle } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
-import { searchShowrooms } from '@/lib/showrooms';
+import { searchShowrooms, type Showroom } from '@/lib/showrooms';
 import { Icon } from '@/app/_components/icon';
 import { CompareToggle } from '@/app/_components/compare';
 import { PcardSpecs } from '@/app/_components/pcard-specs';
@@ -28,17 +29,23 @@ const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.e
 
 const PER_PAGE = 24;
 
-type Tab = 'mattresses' | 'showrooms' | 'articles';
+type Tab = 'all' | 'mattresses' | 'showrooms' | 'articles';
 const TABS: { id: Tab; label: string }[] = [
+  { id: 'all',        label: 'All' },
   { id: 'mattresses', label: 'Mattresses' },
   { id: 'showrooms',  label: 'Showrooms' },
   { id: 'articles',   label: 'Articles' },
 ];
 
+const ALL_PREVIEW_PRODUCTS  = 6;
+const ALL_PREVIEW_ARTICLES  = 4;
+const ALL_PREVIEW_SHOWROOMS = 4;
+
 function parseTab(raw: string | undefined): Tab {
   if (raw === 'articles') return 'articles';
   if (raw === 'showrooms') return 'showrooms';
-  return 'mattresses';
+  if (raw === 'mattresses') return 'mattresses';
+  return 'all';
 }
 
 export const metadata: Metadata = {
@@ -49,12 +56,19 @@ export const metadata: Metadata = {
 
 /**
  * /search results page — design handoff §search results, with the
- * "All / Mattresses / Showrooms / Articles" tab pattern. We ship two
- * tabs (Mattresses + Articles); Showrooms search is deferred until we
- * have a structured showroom index. The mattresses tab keeps the
- * existing PLP-style filter rail; articles tab is a simple grid of
- * gd-cards (same component pattern as the blog index) since article
- * search doesn't expose facets.
+ * full "All / Mattresses / Showrooms / Articles" tab pattern.
+ *
+ * - All (default): preview of the top results from each bucket stacked
+ *   vertically with "View all N →" links to the dedicated tabs. Cheap —
+ *   each bucket fires a small (first: 4-6) parallel fetch.
+ * - Mattresses: the existing PLP-style filter rail + paginated grid.
+ * - Showrooms: the in-process matches against the SHOWROOMS catalog,
+ *   rendered as image-side cards (no API call).
+ * - Articles: a gd-grid of article matches paginated independently.
+ *
+ * Tab counts on each bucket badge are real, sourced from the same
+ * fetches that power the All-tab preview (so no duplicate cost on
+ * the All tab).
  */
 export default async function SearchPage(props: Params) {
   const searchParams = await props.searchParams;
@@ -64,40 +78,55 @@ export default async function SearchPage(props: Params) {
   const filterSel = parseFilterSelection(searchParams);
   const filters = selectionToProductFilters(filterSel);
 
-  // Always run a cheap mattresses count even on the articles tab so the
-  // tab badge can display a real number; the full product fetch with
-  // filters only runs when that tab is active.
+  // Mattresses tab — full fetch (with filters) only on that tab.
+  // All tab — small preview fetch (no filters) so each bucket has a
+  // few results to show without overspending.
   const productResult =
     q && SHOPIFY_CONFIGURED && tab === 'mattresses'
       ? await searchProducts(q, { first: PER_PAGE, after, filters }).catch(() => null)
       : null;
 
-  // For articles tab — full fetch. For mattresses tab — light count only,
-  // batched in parallel below.
+  const allProductPreview =
+    q && SHOPIFY_CONFIGURED && tab === 'all'
+      ? await searchProducts(q, { first: ALL_PREVIEW_PRODUCTS }).catch(() => null)
+      : null;
+
+  // Articles tab — full fetch. All tab — small preview.
   const articleResult =
     q && SHOPIFY_CONFIGURED && tab === 'articles'
       ? await searchArticles(q, { first: PER_PAGE, after }).catch(() => null)
       : null;
 
+  const allArticlePreview =
+    q && SHOPIFY_CONFIGURED && tab === 'all'
+      ? await searchArticles(q, { first: ALL_PREVIEW_ARTICLES }).catch(() => null)
+      : null;
+
   // Showrooms catalog is 5 entries — search is in-process. Same matches
-  // power both the tab counter and the tab body.
+  // power tab counters and both All-tab and Showrooms-tab bodies.
   const showroomMatches = q ? searchShowrooms(q) : [];
 
-  // Lightweight tab counters (totalCount only). Run for the *other*
-  // tab(s) so each tab badge shows a real number without a duplicate
-  // full fetch when we're already on that tab.
+  // Lightweight tab counters (totalCount only). When already on a
+  // bucket-specific tab, reuse that fetch's totalCount; otherwise run
+  // a 1-row count fetch in parallel so each tab badge is real without
+  // a duplicate full query.
   const [otherProductCount, otherArticleCount] = q && SHOPIFY_CONFIGURED
     ? await Promise.all([
         tab === 'mattresses'
           ? Promise.resolve(productResult?.totalCount ?? 0)
+          : tab === 'all'
+          ? Promise.resolve(allProductPreview?.totalCount ?? 0)
           : searchProducts(q, { first: 1 }).then((r) => r.totalCount).catch(() => 0),
         tab === 'articles'
           ? Promise.resolve(articleResult?.totalCount ?? 0)
+          : tab === 'all'
+          ? Promise.resolve(allArticlePreview?.totalCount ?? 0)
           : searchArticles(q, { first: 1 }).then((r) => r.totalCount).catch(() => 0),
       ])
     : [0, 0];
 
   const tabCounts: Record<Tab, number> = {
+    all:        otherProductCount + showroomMatches.length + otherArticleCount,
     mattresses: otherProductCount,
     showrooms:  showroomMatches.length,
     articles:   otherArticleCount,
@@ -201,7 +230,20 @@ export default async function SearchPage(props: Params) {
             })}
           </nav>
 
-          {tab === 'mattresses' ? (
+          {tab === 'all' ? (
+            <SearchAllTab
+              q={q}
+              products={allProductPreview?.products ?? []}
+              productTotal={allProductPreview?.totalCount ?? 0}
+              showrooms={showroomMatches.slice(0, ALL_PREVIEW_SHOWROOMS)}
+              showroomTotal={showroomMatches.length}
+              articles={allArticlePreview?.articles ?? []}
+              articleTotal={allArticlePreview?.totalCount ?? 0}
+              hrefMattresses={buildTabHref('mattresses')}
+              hrefShowrooms={buildTabHref('showrooms')}
+              hrefArticles={buildTabHref('articles')}
+            />
+          ) : tab === 'mattresses' ? (
             <FilterShell>
               <div className="plp-layout">
                 <FilterPanel availableFilters={availableFilters} resultCount={products.length} />
@@ -460,6 +502,208 @@ function NoMattressMatches({
           <Icon name="arrow-right" size={16} />
         </Link>
       </div>
+    </div>
+  );
+}
+
+/**
+ * "All" tab body — design handoff §search-results · default tab.
+ *
+ * Shows up to N from each bucket (Mattresses / Showrooms / Articles)
+ * stacked vertically. Each bucket has a head with a "View all N →"
+ * link to its dedicated tab. Empty buckets hide entirely. If every
+ * bucket is empty, the same recovery grid as the other tabs renders.
+ *
+ * The previews come from cheap counted fetches in the parent server
+ * component — `searchProducts(q, { first: 6 })` and
+ * `searchArticles(q, { first: 4 })` — so the All tab cost is a single
+ * extra round-trip per bucket, not a full page.
+ */
+function SearchAllTab({
+  q,
+  products,
+  productTotal,
+  showrooms,
+  showroomTotal,
+  articles,
+  articleTotal,
+  hrefMattresses,
+  hrefShowrooms,
+  hrefArticles,
+}: {
+  q: string;
+  products: ProductSummary[];
+  productTotal: number;
+  showrooms: Showroom[];
+  showroomTotal: number;
+  articles: PredictiveArticle[];
+  articleTotal: number;
+  hrefMattresses: string;
+  hrefShowrooms: string;
+  hrefArticles: string;
+}) {
+  const isEmpty = products.length === 0 && showrooms.length === 0 && articles.length === 0;
+
+  if (isEmpty) {
+    return (
+      <div className="search-empty">
+        <p className="muted" style={{ fontSize: 16, lineHeight: 1.55, maxWidth: '60ch' }}>
+          No matches for &ldquo;{q}&rdquo;. Try a brand (Tempur-Pedic, Helix), a feature (cooling, firm),
+          or a neighborhood.
+        </p>
+        <div className="search-empty-grid">
+          <Link href="/collections/mattresses" className="search-empty-tile">
+            <div className="search-empty-tile-label">All mattresses</div>
+            <div className="search-empty-tile-sub muted">Every brand, every size</div>
+            <Icon name="arrow-right" size={16} />
+          </Link>
+          <Link href="/sleep-quiz" className="search-empty-tile">
+            <div className="search-empty-tile-label">Take the sleep quiz</div>
+            <div className="search-empty-tile-sub muted">Get a personal match</div>
+            <Icon name="arrow-right" size={16} />
+          </Link>
+          <Link href="/pages/mattress-store-locations" className="search-empty-tile">
+            <div className="search-empty-tile-label">All five LA showrooms</div>
+            <div className="search-empty-tile-sub muted">Try in person</div>
+            <Icon name="arrow-right" size={16} />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="search-all">
+      {products.length > 0 ? (
+        <section className="search-all-bucket">
+          <div className="search-all-head">
+            <h2 className="h2">Mattresses</h2>
+            <Link href={hrefMattresses} className="link-arrow">
+              View all {productTotal} <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+          <div className="plp-grid">
+            {products.map((p, idx) => (
+              <Link key={p.id} href={`/products/${p.handle}`} className="pcard plp-card">
+                <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
+                  {p.featuredImage ? (
+                    <Image
+                      src={p.featuredImage.url}
+                      alt={p.featuredImage.altText ?? p.title}
+                      width={600}
+                      height={600}
+                      sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                      loading={idx < 3 ? 'eager' : 'lazy'}
+                    />
+                  ) : <span className="ph-label">[Image coming]</span>}
+                </div>
+                <div className="pcard-meta">
+                  <div className="pcard-brand">{p.vendor}</div>
+                  <div className="pcard-name">{p.title}</div>
+                  <PcardSpecs specs={p.specs} />
+                  <div className="pcard-price">
+                    <span className="pcard-now tnum">
+                      {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
+                    </span>
+                  </div>
+                  <CompareToggle handle={p.handle} title={p.title} />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {showrooms.length > 0 ? (
+        <section className="search-all-bucket">
+          <div className="search-all-head">
+            <h2 className="h2">Showrooms</h2>
+            <Link href={hrefShowrooms} className="link-arrow">
+              View all {showroomTotal} <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+          <div className="search-showroom-grid">
+            {showrooms.map((s) => (
+              <Link key={s.handle} href={`/pages/${s.handle}`} className="search-showroom-card">
+                {s.imageUrl ? (
+                  <div className="search-showroom-img">
+                    <Image
+                      src={s.imageUrl}
+                      alt={s.name}
+                      fill
+                      sizes="(max-width: 760px) 100vw, 50vw"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                ) : <div className="search-showroom-img" aria-hidden="true" />}
+                <div className="search-showroom-body">
+                  <div className="eyebrow">{s.area}</div>
+                  <h3 className="search-showroom-name">{s.name}</h3>
+                  <address className="search-showroom-addr muted">
+                    {s.street}<br />
+                    {s.city}, {s.region} {s.postalCode}
+                  </address>
+                  <div className="search-showroom-foot">
+                    <span className="muted">{s.phone}</span>
+                    <span className="link-arrow">View <Icon name="arrow-right" size={14} /></span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {articles.length > 0 ? (
+        <section className="search-all-bucket">
+          <div className="search-all-head">
+            <h2 className="h2">Articles</h2>
+            <Link href={hrefArticles} className="link-arrow">
+              View all {articleTotal} <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+          <div className="gd-grid">
+            {articles.map((a) => {
+              const dateLabel = new Date(a.publishedAt).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric',
+              });
+              return (
+                <Link key={a.id} href={`/blogs/${a.blog.handle}/${a.handle}`} className="gd-card">
+                  <div className="gd-card-img">
+                    {a.image ? (
+                      <Image
+                        src={a.image.url}
+                        alt={a.image.altText ?? a.title}
+                        fill
+                        sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <span className="ph-label" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
+                        [Article image]
+                      </span>
+                    )}
+                  </div>
+                  <div className="gd-card-body">
+                    <div className="gd-card-meta">
+                      <span>{a.blog.title}</span>
+                      <span aria-hidden="true">·</span>
+                      <time dateTime={a.publishedAt}>{dateLabel}</time>
+                    </div>
+                    <h3>{a.title}</h3>
+                    {a.excerpt ? <p className="gd-card-excerpt">{a.excerpt}</p> : null}
+                    <div className="gd-card-foot">
+                      <span className="muted">LA Mattress</span>
+                      <span className="arrow">Read <Icon name="arrow-right" size={14} /></span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
