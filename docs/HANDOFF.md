@@ -1,4 +1,69 @@
-# Session handoff — 2026-05-07 (Pre-DNS retest — clean GO)
+# Session handoff — 2026-05-07 (Phase 85-89 — clean GO)
+
+## Status
+
+**Phase 85-89 polish round: clean GO.** Branch `main` HEAD `9191181`.
+Deep visual audit returned 40 findings; Phases 85-89 closed 37 of them
+(remaining 3 are merchant content shoots — lifestyle photo direction
+across categories / search / blog / cross-firmness mattress photos).
+
+### Phases shipped this session
+
+- **Phase 85** — sitewide foundations: 16 "white-glove" canonicalized,
+  eyebrow unified (red bar + blue + pin variants dropped), hero
+  transition 700ms → 240ms + dedup "01/03" counter. Shopify Admin
+  content drift via MCP: 5 SEO titles + 11 image alts.
+- **Phase 86** — PLP / PDP / Cart: compare-tray scoped to shopping
+  routes, PLP trust dedup (3→1), PLP card sale parity, PDP spec strip
+  → plain text, sparse reviews hide numeric average, cart eyebrow
+  dedup, cart secure-checkout copy.
+- **Phase 87** — Compare image normalization, compare sizes canonical
+  sort, quiz Q2 sublabels, search 5-tile recovery grid, locations +
+  showroom + blog H1 → sentence case (toSentenceCase helper preserves
+  brand + place names; SEO titles keep canonical Title Case).
+- **Phase 88** — P2 polish: real breadcrumb styling, footer privacy
+  underline, footer subscribe focus ring, quiz disabled-Next contrast,
+  empty cart → recently-viewed rail, PLP compare-toggle 32px tap.
+- **Phase 89** — retest follow-ups: hero-copy eyebrow + location-card
+  eyebrow color override stripped (Phase 85b missed these scoped rules);
+  compare-table table-layout: fixed so unequal title lengths don't
+  blow up image cell widths.
+
+### Shopify Admin content corrections (this session)
+
+Via MCP, fixed 9 SEO titles + 13 image alts:
+- Diamond ProGel 10" Medium ("Align" → "ProGel" / "8 Firm" → "10 Medium")
+- Englander Cambridge Firm + Plush Hybrid ("Beckford" → "Cambridge")
+- Englander Amesbury Firm + Pillow Top ("Amsbury" typo → "Amesbury")
+- Diamond Azusa Queen Firm 18" ("King" → "Queen")
+- Eclipse Ice Tufted Plush ("Glacier" → "Ice")
+- Englander Everest Extra Firm + O'Conner Firm (cross-product alts)
+
+### Deferred — merchant content cleanup followup
+
+The audit revealed the merchant reuses single product photos across
+firmness variants (Firm / Medium / Plush share images). Fixing alt
+text on shared images would break parallel for the other variants.
+Affects ~10 product clusters: Diamond ProGel 8/10, Diamond Dreamstage
+Clarity / Grace / Snowbird, Englander Amesbury / Everest / O'Conner,
+Spring Air Lexi, S&F Estate / Lux Estate. **Merchant fix:** upload
+separate per-firmness photos OR accept firmness-neutral alts (e.g.
+"Diamond ProGel Memory Foam mattress" without specifying firmness).
+Not blocking launch.
+
+### Remaining merchant-side gates
+
+1. **Sentry DSN** (optional) — set `NEXT_PUBLIC_SENTRY_DSN` and
+   `SENTRY_DSN` in Vercel (Production), redeploy. SDK is wired in
+   `app/layout.tsx` + `instrumentation.ts`; gated on the env var.
+2. **DNS cutover.** Point `mattressstoreslosangeles.com` apex + `www`
+   at Vercel; keep `checkout.mattressstoreslosangeles.com` on Shopify.
+   After propagation, edit the 6 webhook URLs in Shopify Admin →
+   Notifications to use the canonical domain.
+
+---
+
+# Earlier — Session handoff — 2026-05-07 (Pre-DNS retest — clean GO)
 
 ## Status
 
