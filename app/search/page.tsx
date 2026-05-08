@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 
-import { searchProducts } from '@/lib/shopify';
+import { searchProducts, searchArticles } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
 import { Icon } from '@/app/_components/icon';
 import { CompareToggle } from '@/app/_components/compare';
@@ -27,42 +27,108 @@ const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.e
 
 const PER_PAGE = 24;
 
+type Tab = 'mattresses' | 'articles';
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'mattresses', label: 'Mattresses' },
+  { id: 'articles',   label: 'Articles' },
+];
+
+function parseTab(raw: string | undefined): Tab {
+  return raw === 'articles' ? 'articles' : 'mattresses';
+}
+
 export const metadata: Metadata = {
   title: 'Search — LA Mattress Store',
   description: 'Search mattresses, adjustable beds, bedding, and more at LA Mattress Store.',
   robots: { index: false, follow: true },
 };
 
+/**
+ * /search results page — design handoff §search results, with the
+ * "All / Mattresses / Showrooms / Articles" tab pattern. We ship two
+ * tabs (Mattresses + Articles); Showrooms search is deferred until we
+ * have a structured showroom index. The mattresses tab keeps the
+ * existing PLP-style filter rail; articles tab is a simple grid of
+ * gd-cards (same component pattern as the blog index) since article
+ * search doesn't expose facets.
+ */
 export default async function SearchPage(props: Params) {
   const searchParams = await props.searchParams;
   const q = (searchParams.q ?? '').trim();
+  const tab = parseTab(searchParams.tab);
   const after = searchParams.after ?? null;
   const filterSel = parseFilterSelection(searchParams);
   const filters = selectionToProductFilters(filterSel);
 
-  const result = q && SHOPIFY_CONFIGURED
-    ? await searchProducts(q, { first: PER_PAGE, after, filters }).catch(() => null)
-    : null;
+  // Always run a cheap mattresses count even on the articles tab so the
+  // tab badge can display a real number; the full product fetch with
+  // filters only runs when that tab is active.
+  const productResult =
+    q && SHOPIFY_CONFIGURED && tab === 'mattresses'
+      ? await searchProducts(q, { first: PER_PAGE, after, filters }).catch(() => null)
+      : null;
 
-  const products = result?.products ?? [];
-  const totalCount = result?.totalCount ?? 0;
-  const availableFilters = result?.filters ?? [];
+  // For articles tab — full fetch. For mattresses tab — light count only,
+  // batched in parallel below.
+  const articleResult =
+    q && SHOPIFY_CONFIGURED && tab === 'articles'
+      ? await searchArticles(q, { first: PER_PAGE, after }).catch(() => null)
+      : null;
 
-  // Preserve q + filter params on pagination; only `after` advances.
+  // Lightweight tab counters (totalCount only). Run when on the *other*
+  // tab so each tab knows how many results live in the sibling.
+  const [otherProductCount, otherArticleCount] = q && SHOPIFY_CONFIGURED
+    ? await Promise.all([
+        tab === 'mattresses'
+          ? Promise.resolve(productResult?.totalCount ?? 0)
+          : searchProducts(q, { first: 1 }).then((r) => r.totalCount).catch(() => 0),
+        tab === 'articles'
+          ? Promise.resolve(articleResult?.totalCount ?? 0)
+          : searchArticles(q, { first: 1 }).then((r) => r.totalCount).catch(() => 0),
+      ])
+    : [0, 0];
+
+  const tabCounts: Record<Tab, number> = {
+    mattresses: otherProductCount,
+    articles:   otherArticleCount,
+  };
+
+  const products = productResult?.products ?? [];
+  const totalCount = productResult?.totalCount ?? 0;
+  const availableFilters = productResult?.filters ?? [];
+
+  const articles = articleResult?.articles ?? [];
+
+  const buildTabHref = (next: Tab) => {
+    const sp = new URLSearchParams();
+    sp.set('q', q);
+    if (next !== 'mattresses') sp.set('tab', next);
+    return `/search?${sp.toString()}`;
+  };
+
   const buildNextHref = (cursor: string) => {
     const next = new URLSearchParams();
     next.set('q', q);
-    for (const p of FILTER_PARAMS) {
-      const v = searchParams[p];
-      if (v) next.set(p, v);
+    if (tab !== 'mattresses') next.set('tab', tab);
+    if (tab === 'mattresses') {
+      for (const p of FILTER_PARAMS) {
+        const v = searchParams[p];
+        if (v) next.set(p, v);
+      }
     }
     next.set('after', cursor);
     return `/search?${next.toString()}`;
   };
 
-  const nextHref = result?.pageInfo.hasNextPage && result.pageInfo.endCursor
-    ? buildNextHref(result.pageInfo.endCursor)
-    : null;
+  const productNextHref =
+    tab === 'mattresses' && productResult?.pageInfo.hasNextPage && productResult.pageInfo.endCursor
+      ? buildNextHref(productResult.pageInfo.endCursor)
+      : null;
+
+  const articleNextHref =
+    tab === 'articles' && articleResult?.pageInfo.hasNextPage && articleResult.pageInfo.endCursor
+      ? buildNextHref(articleResult.pageInfo.endCursor)
+      : null;
 
   return (
     <main className="container plp">
@@ -72,7 +138,7 @@ export default async function SearchPage(props: Params) {
           <span className="sep">/</span>
           <span>Search</span>
         </nav>
-        <div className="lp-hero-inner" style={{ marginTop: 'var(--s-5)' }}>
+        <div className="lp-hero-inner lp-hero-inner-stacked" style={{ marginTop: 'var(--s-5)' }}>
           <div className="lp-hero-copy">
             <div className="eyebrow">Search</div>
             <h1 className="h1">{q ? `Results for "${q}"` : 'What are you looking for?'}</h1>
@@ -106,105 +172,225 @@ export default async function SearchPage(props: Params) {
         </section>
       ) : (
         <section className="section plp-section">
-          <FilterShell>
-            <div className="plp-layout">
-              <FilterPanel availableFilters={availableFilters} resultCount={products.length} />
-              <div className="plp-main">
-                <div className="plp-toolbar">
-                  <div className="plp-toolbar-left">
-                    <FilterMobileTrigger sel={filterSel} />
-                    <span className="plp-toolbar-count">
-                      {products.length > 0
-                        ? `${totalCount} result${totalCount === 1 ? '' : 's'}`
-                        : 'No products match your filters'}
-                    </span>
+          <nav className="search-tabs" aria-label="Search categories" role="tablist">
+            {TABS.map((t) => {
+              const count = tabCounts[t.id];
+              const isOn = tab === t.id;
+              return (
+                <Link
+                  key={t.id}
+                  href={buildTabHref(t.id)}
+                  className={`search-tab${isOn ? ' is-on' : ''}`}
+                  role="tab"
+                  aria-selected={isOn}
+                >
+                  <span>{t.label}</span>
+                  <span className="search-tab-count tnum">{count}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {tab === 'mattresses' ? (
+            <FilterShell>
+              <div className="plp-layout">
+                <FilterPanel availableFilters={availableFilters} resultCount={products.length} />
+                <div className="plp-main">
+                  <div className="plp-toolbar">
+                    <div className="plp-toolbar-left">
+                      <FilterMobileTrigger sel={filterSel} />
+                      <span className="plp-toolbar-count">
+                        {products.length > 0
+                          ? `${totalCount} result${totalCount === 1 ? '' : 's'}`
+                          : 'No products match your filters'}
+                      </span>
+                    </div>
                   </div>
+
+                  <ActiveFilters sel={filterSel} />
+
+                  {products.length > 0 ? (
+                    <>
+                      <div className="plp-grid">
+                        {products.map((p, idx) => (
+                          <Link key={p.id} href={`/products/${p.handle}`} className="pcard plp-card">
+                            <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
+                              {p.featuredImage ? (
+                                <Image
+                                  src={p.featuredImage.url}
+                                  alt={p.featuredImage.altText ?? p.title}
+                                  width={600}
+                                  height={600}
+                                  sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                  style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                                  priority={!after && idx < 3}
+                                  loading={!after && idx < 3 ? 'eager' : 'lazy'}
+                                />
+                              ) : <span className="ph-label">[Image coming]</span>}
+                            </div>
+                            <div className="pcard-meta">
+                              <div className="pcard-brand">{p.vendor}</div>
+                              <div className="pcard-name">{p.title}</div>
+                              <PcardSpecs specs={p.specs} />
+                              <div className="pcard-price">
+                                <span className="pcard-now tnum">
+                                  {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
+                                </span>
+                              </div>
+                              <CompareToggle handle={p.handle} title={p.title} />
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                      <div className="plp-pagination">
+                        {productNextHref ? (
+                          <Link href={productNextHref} className="btn btn-ghost btn-lg">
+                            Load more <Icon name="arrow-right" size={16} />
+                          </Link>
+                        ) : null}
+                      </div>
+                    </>
+                  ) : (
+                    <NoMattressMatches q={q} hasFilters={Boolean(filterSel)} otherTab={otherArticleCount} qHref={buildTabHref('articles')} />
+                  )}
                 </div>
+              </div>
+            </FilterShell>
+          ) : (
+            <div className="plp-main" style={{ paddingTop: 'var(--s-5)' }}>
+              <div className="plp-toolbar">
+                <div className="plp-toolbar-left">
+                  <span className="plp-toolbar-count">
+                    {articles.length > 0
+                      ? `${articleResult?.totalCount ?? articles.length} article${articleResult?.totalCount === 1 ? '' : 's'}`
+                      : 'No articles match'}
+                  </span>
+                </div>
+              </div>
 
-                <ActiveFilters sel={filterSel} />
-
-                {products.length > 0 ? (
-                  <>
-                    <div className="plp-grid">
-                      {products.map((p, idx) => (
-                        <Link key={p.id} href={`/products/${p.handle}`} className="pcard plp-card">
-                          <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
-                            {p.featuredImage ? (
+              {articles.length > 0 ? (
+                <>
+                  <div className="gd-grid">
+                    {articles.map((a, idx) => {
+                      const dateLabel = new Date(a.publishedAt).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'short', day: 'numeric',
+                      });
+                      return (
+                        <Link
+                          key={a.id}
+                          href={`/blogs/${a.blog.handle}/${a.handle}`}
+                          className="gd-card"
+                        >
+                          <div className="gd-card-img">
+                            {a.image ? (
                               <Image
-                                src={p.featuredImage.url}
-                                alt={p.featuredImage.altText ?? p.title}
-                                width={600}
-                                height={600}
+                                src={a.image.url}
+                                alt={a.image.altText ?? a.title}
+                                fill
                                 sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                                style={{ objectFit: 'cover' }}
                                 priority={!after && idx < 3}
-                                loading={!after && idx < 3 ? 'eager' : 'lazy'}
                               />
-                            ) : <span className="ph-label">[Image coming]</span>}
+                            ) : (
+                              <span className="ph-label" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
+                                [Article image]
+                              </span>
+                            )}
                           </div>
-                          <div className="pcard-meta">
-                            <div className="pcard-brand">{p.vendor}</div>
-                            <div className="pcard-name">{p.title}</div>
-                            <PcardSpecs specs={p.specs} />
-                            <div className="pcard-price">
-                              <span className="pcard-now tnum">
-                                {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
+                          <div className="gd-card-body">
+                            <div className="gd-card-meta">
+                              <span>{a.blog.title}</span>
+                              <span aria-hidden="true">·</span>
+                              <time dateTime={a.publishedAt}>{dateLabel}</time>
+                            </div>
+                            <h3>{a.title}</h3>
+                            {a.excerpt ? <p className="gd-card-excerpt">{a.excerpt}</p> : null}
+                            <div className="gd-card-foot">
+                              <span className="muted">LA Mattress</span>
+                              <span className="arrow">
+                                Read <Icon name="arrow-right" size={14} />
                               </span>
                             </div>
-                            <CompareToggle handle={p.handle} title={p.title} />
                           </div>
                         </Link>
-                      ))}
-                    </div>
-                    <div className="plp-pagination">
-                      {nextHref ? (
-                        <Link href={nextHref} className="btn btn-ghost btn-lg">
-                          Load more <Icon name="arrow-right" size={16} />
-                        </Link>
-                      ) : null}
-                    </div>
-                  </>
-                ) : (
-                  <div className="search-empty">
-                    <p className="muted" style={{ fontSize: 16, lineHeight: 1.55, maxWidth: '60ch' }}>
-                      No matches for &ldquo;{q}&rdquo;
-                      {filterSel ? ' with the current filters.' : '.'}{' '}
-                      Try one of these instead:
-                    </p>
-                    <div className="search-empty-grid">
-                      <Link href="/collections/mattresses" className="search-empty-tile">
-                        <div className="search-empty-tile-label">All mattresses</div>
-                        <div className="search-empty-tile-sub muted">Every brand, every size</div>
-                        <Icon name="arrow-right" size={16} />
-                      </Link>
-                      <Link href="/collections/tempur-pedic-mattresses" className="search-empty-tile">
-                        <div className="search-empty-tile-label">Tempur-Pedic</div>
-                        <div className="search-empty-tile-sub muted">Memory foam, premium</div>
-                        <Icon name="arrow-right" size={16} />
-                      </Link>
-                      <Link href="/collections/stearns-foster-mattresses" className="search-empty-tile">
-                        <div className="search-empty-tile-label">Stearns &amp; Foster</div>
-                        <div className="search-empty-tile-sub muted">Luxury hybrids</div>
-                        <Icon name="arrow-right" size={16} />
-                      </Link>
-                      <Link href="/collections/on-sale" className="search-empty-tile">
-                        <div className="search-empty-tile-label">On sale</div>
-                        <div className="search-empty-tile-sub muted">Current markdowns</div>
-                        <Icon name="arrow-right" size={16} />
-                      </Link>
-                      <Link href="/sleep-quiz" className="search-empty-tile">
-                        <div className="search-empty-tile-label">Take the sleep quiz</div>
-                        <div className="search-empty-tile-sub muted">Get a personal match</div>
-                        <Icon name="arrow-right" size={16} />
-                      </Link>
-                    </div>
+                      );
+                    })}
                   </div>
-                )}
-              </div>
+                  {articleNextHref ? (
+                    <div className="plp-pagination" style={{ marginTop: 'var(--s-7)' }}>
+                      <Link href={articleNextHref} className="btn btn-ghost btn-lg">
+                        Load more <Icon name="arrow-right" size={16} />
+                      </Link>
+                    </div>
+                  ) : null}
+                </>
+              ) : (
+                <div className="search-empty">
+                  <p className="muted" style={{ fontSize: 16, lineHeight: 1.55, maxWidth: '60ch' }}>
+                    No articles match &ldquo;{q}&rdquo;.
+                    {otherProductCount > 0 ? (
+                      <> See <Link className="link-arrow" href={buildTabHref('mattresses')}>{otherProductCount} mattress result{otherProductCount === 1 ? '' : 's'}</Link> instead.</>
+                    ) : null}
+                  </p>
+                </div>
+              )}
             </div>
-          </FilterShell>
+          )}
         </section>
       )}
     </main>
+  );
+}
+
+function NoMattressMatches({
+  q,
+  hasFilters,
+  otherTab,
+  qHref,
+}: {
+  q: string;
+  hasFilters: boolean;
+  otherTab: number;
+  qHref: string;
+}) {
+  return (
+    <div className="search-empty">
+      <p className="muted" style={{ fontSize: 16, lineHeight: 1.55, maxWidth: '60ch' }}>
+        No mattresses match &ldquo;{q}&rdquo;
+        {hasFilters ? ' with the current filters.' : '.'}{' '}
+        {otherTab > 0 ? (
+          <>See <Link className="link-arrow" href={qHref}>{otherTab} article result{otherTab === 1 ? '' : 's'}</Link>, or try one of these:</>
+        ) : (
+          'Try one of these instead:'
+        )}
+      </p>
+      <div className="search-empty-grid">
+        <Link href="/collections/mattresses" className="search-empty-tile">
+          <div className="search-empty-tile-label">All mattresses</div>
+          <div className="search-empty-tile-sub muted">Every brand, every size</div>
+          <Icon name="arrow-right" size={16} />
+        </Link>
+        <Link href="/collections/tempur-pedic-mattresses" className="search-empty-tile">
+          <div className="search-empty-tile-label">Tempur-Pedic</div>
+          <div className="search-empty-tile-sub muted">Memory foam, premium</div>
+          <Icon name="arrow-right" size={16} />
+        </Link>
+        <Link href="/collections/stearns-foster-mattresses" className="search-empty-tile">
+          <div className="search-empty-tile-label">Stearns &amp; Foster</div>
+          <div className="search-empty-tile-sub muted">Luxury hybrids</div>
+          <Icon name="arrow-right" size={16} />
+        </Link>
+        <Link href="/collections/on-sale" className="search-empty-tile">
+          <div className="search-empty-tile-label">On sale</div>
+          <div className="search-empty-tile-sub muted">Current markdowns</div>
+          <Icon name="arrow-right" size={16} />
+        </Link>
+        <Link href="/sleep-quiz" className="search-empty-tile">
+          <div className="search-empty-tile-label">Take the sleep quiz</div>
+          <div className="search-empty-tile-sub muted">Get a personal match</div>
+          <Icon name="arrow-right" size={16} />
+        </Link>
+      </div>
+    </div>
   );
 }

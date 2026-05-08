@@ -1,5 +1,5 @@
 import { shopifyFetch } from '../client';
-import type { AvailableFilter, ProductFilter, ProductSummary } from '../types';
+import type { AvailableFilter, ArticleSummary, ProductFilter, ProductSummary } from '../types';
 import { IMAGE_FRAGMENT, MONEY_FRAGMENT, PRODUCT_SUMMARY_FRAGMENT } from './fragments';
 
 const SEARCH_PRODUCTS = /* GraphQL */ `
@@ -94,19 +94,45 @@ const PREDICTIVE_SEARCH = /* GraphQL */ `
   ${MONEY_FRAGMENT}
   ${PRODUCT_SUMMARY_FRAGMENT}
   query PredictiveSearch($query: String!) {
-    predictiveSearch(query: $query, limit: 8, types: [PRODUCT, COLLECTION, PAGE], unavailableProducts: HIDE) {
+    predictiveSearch(query: $query, limit: 8, types: [PRODUCT, COLLECTION, PAGE, ARTICLE], unavailableProducts: HIDE) {
       products { ...ProductSummaryFields }
       collections { handle title }
       pages { handle title }
+      articles {
+        id
+        handle
+        title
+        excerpt
+        publishedAt
+        image { ...ImageFields }
+        blog { handle title }
+      }
       queries { text }
     }
   }
 `;
 
+/**
+ * Subset of ArticleSummary the predictive search returns. Adds `blog`
+ * (which we need to build the /blogs/{blog}/{article} URL) and drops
+ * the author field (predictive doesn't return it). Kept separate from
+ * ArticleSummary so the strict shape is documented at the call site.
+ */
+export type PredictiveArticle = {
+  id: string;
+  handle: string;
+  title: string;
+  excerpt: string | null;
+  publishedAt: string;
+  image: ArticleSummary['image'];
+  blog: { handle: string; title: string };
+};
+
 export type Predictive = {
   products: ProductSummary[];
   collections: { handle: string; title: string }[];
   pages: { handle: string; title: string }[];
+  articles: PredictiveArticle[];
   queries: { text: string }[];
 };
 
@@ -117,5 +143,78 @@ export async function predictiveSearch(query: string): Promise<Predictive> {
   return {
     ...data.predictiveSearch,
     products: data.predictiveSearch.products.map(liftSummarySpecs),
+    // Defensive default — the field is non-optional in the type so we
+    // never blow up downstream consumers if Shopify returns null.
+    articles: data.predictiveSearch.articles ?? [],
+  };
+}
+
+/**
+ * Full search for articles (the "Articles" tab on /search?q=&tab=articles).
+ *
+ * Storefront's `search()` query supports types: [ARTICLE], so we run a
+ * separate request from the products tab and paginate independently.
+ * Article search doesn't support productFilters, so the URL filter
+ * params from the products tab are ignored here.
+ */
+const SEARCH_ARTICLES = /* GraphQL */ `
+  ${IMAGE_FRAGMENT}
+  query SearchArticles(
+    $query: String!,
+    $first: Int!,
+    $after: String,
+  ) {
+    search(
+      query: $query,
+      first: $first,
+      after: $after,
+      types: [ARTICLE]
+    ) {
+      totalCount
+      edges {
+        node {
+          ... on Article {
+            id
+            handle
+            title
+            excerpt
+            publishedAt
+            image { ...ImageFields }
+            blog { handle title }
+          }
+        }
+      }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+`;
+
+export type ArticleSearchResult = {
+  totalCount: number;
+  articles: PredictiveArticle[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+};
+
+type RawArticleSearch = {
+  search: {
+    totalCount: number;
+    edges: { node: PredictiveArticle }[];
+    pageInfo: { hasNextPage: boolean; endCursor: string | null };
+  };
+};
+
+export async function searchArticles(
+  query: string,
+  opts: { first?: number; after?: string | null } = {},
+): Promise<ArticleSearchResult> {
+  const data = await shopifyFetch<RawArticleSearch>(SEARCH_ARTICLES, {
+    query,
+    first: opts.first ?? 24,
+    after: opts.after ?? null,
+  });
+  return {
+    totalCount: data.search.totalCount,
+    articles: data.search.edges.map((e) => e.node),
+    pageInfo: data.search.pageInfo,
   };
 }
