@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { Icon } from './icon';
 import type { Predictive } from '@/lib/shopify';
 import { formatMoney } from '@/lib/format';
+import { searchShowrooms, type Showroom } from '@/lib/showrooms';
 
 /**
  * Click-to-expand header search with debounced predictive autocomplete.
@@ -89,8 +90,11 @@ export function HeaderSearch() {
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
+  // Showrooms catalog is 5 entries — filter client-side, no API call.
+  const showroomMatches = query.trim().length >= 2 ? searchShowrooms(query) : [];
+
   // Esc to close, ↑/↓ to navigate suggestions, Enter to commit highlight.
-  const flat = flatten(results);
+  const flat = flatten(results, showroomMatches);
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {
       setOpen(false);
@@ -167,13 +171,13 @@ export function HeaderSearch() {
       </form>
       {query.trim().length >= 2 ? (
         <div ref={panelRef} className="header-search-panel" role="listbox" id={listboxId}>
-          {loading ? (
+          {loading && flat.length === 0 ? (
             <div className="header-search-empty">Searching…</div>
-          ) : !results || flat.length === 0 ? (
+          ) : flat.length === 0 ? (
             <div className="header-search-empty">No matches. Press Enter to search anyway.</div>
           ) : (
             <>
-              {results.products.length > 0 ? (
+              {results && results.products.length > 0 ? (
                 <div className="header-search-group">
                   <div className="eyebrow header-search-group-label">Products</div>
                   <ul>
@@ -214,7 +218,7 @@ export function HeaderSearch() {
                   </ul>
                 </div>
               ) : null}
-              {results.collections.length > 0 ? (
+              {results && results.collections.length > 0 ? (
                 <div className="header-search-group">
                   <div className="eyebrow header-search-group-label">Collections</div>
                   <ul>
@@ -238,7 +242,34 @@ export function HeaderSearch() {
                   </ul>
                 </div>
               ) : null}
-              {results.articles.length > 0 ? (
+              {showroomMatches.length > 0 ? (
+                <div className="header-search-group">
+                  <div className="eyebrow header-search-group-label">Showrooms</div>
+                  <ul>
+                    {showroomMatches.slice(0, 4).map((s, i) => {
+                      const productCount = Math.min(results?.products.length ?? 0, 6);
+                      const collectionCount = Math.min(results?.collections.length ?? 0, 4);
+                      const idx = productCount + collectionCount + i;
+                      return (
+                        <li key={s.handle}>
+                          <Link
+                            href={`/pages/${s.handle}`}
+                            className={`header-search-link header-search-article${highlight === idx ? ' is-highlighted' : ''}`}
+                            id={`${listboxId}-${idx}`}
+                            role="option"
+                            aria-selected={highlight === idx}
+                            onClick={() => setOpen(false)}
+                          >
+                            <span className="header-search-article-title">{s.name}</span>
+                            <span className="muted header-search-article-blog">{s.area}</span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : null}
+              {results && results.articles.length > 0 ? (
                 <div className="header-search-group">
                   <div className="eyebrow header-search-group-label">Articles</div>
                   <ul>
@@ -246,6 +277,7 @@ export function HeaderSearch() {
                       const idx =
                         Math.min(results.products.length, 6) +
                         Math.min(results.collections.length, 4) +
+                        Math.min(showroomMatches.length, 4) +
                         i;
                       return (
                         <li key={a.id}>
@@ -276,11 +308,15 @@ export function HeaderSearch() {
 
 type Flat = { href: string };
 
-function flatten(r: Predictive | null): Flat[] {
-  if (!r) return [];
+function flatten(r: Predictive | null, showrooms: Showroom[] = []): Flat[] {
   const out: Flat[] = [];
-  for (const p of r.products.slice(0, 6)) out.push({ href: `/products/${p.handle}` });
-  for (const c of r.collections.slice(0, 4)) out.push({ href: `/collections/${c.handle}` });
-  for (const a of r.articles.slice(0, 4)) out.push({ href: `/blogs/${a.blog.handle}/${a.handle}` });
+  if (r) {
+    for (const p of r.products.slice(0, 6)) out.push({ href: `/products/${p.handle}` });
+    for (const c of r.collections.slice(0, 4)) out.push({ href: `/collections/${c.handle}` });
+  }
+  for (const s of showrooms.slice(0, 4)) out.push({ href: `/pages/${s.handle}` });
+  if (r) {
+    for (const a of r.articles.slice(0, 4)) out.push({ href: `/blogs/${a.blog.handle}/${a.handle}` });
+  }
   return out;
 }
