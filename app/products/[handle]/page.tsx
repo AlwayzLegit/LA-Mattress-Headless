@@ -115,26 +115,31 @@ async function ProductBody({ handle }: { handle: string }) {
 function SpecTable({ product }: { product: Product }) {
   const { specs } = product;
   const sizeOpt = product.options.find((o) => /size/i.test(o.name));
+  // Order matches the design handoff §Specs (pdp-showroom.css).
   const rows: { label: string; value: string }[] = [];
-  if (specs.materialType)              rows.push({ label: 'Material',       value: specs.materialType });
-  else if (product.productType)        rows.push({ label: 'Type',           value: product.productType });
-  if (specs.firmness)                  rows.push({ label: 'Firmness',       value: specs.firmness });
-  if (specs.heightInches !== null)     rows.push({ label: 'Height',         value: `${specs.heightInches}"` });
-  if (sizeOpt && sizeOpt.values.length) rows.push({ label: 'Sizes',         value: sizeOpt.values.join(', ') });
-  if (specs.trialNights !== null)      rows.push({ label: 'Comfort trial',  value: `${specs.trialNights} nights` });
-  if (specs.warrantyYears !== null)    rows.push({ label: 'Warranty',       value: `${specs.warrantyYears} years` });
+  if (specs.heightInches !== null)     rows.push({ label: 'Height',     value: `${specs.heightInches}"` });
+  if (specs.firmness)                  rows.push({ label: 'Firmness',   value: specs.firmness });
+  if (specs.materialType)              rows.push({ label: 'Materials',  value: specs.materialType });
+  else if (product.productType)        rows.push({ label: 'Type',       value: product.productType });
+  if (sizeOpt && sizeOpt.values.length) rows.push({ label: 'Sizes',     value: sizeOpt.values.join(', ') });
+  if (specs.trialNights !== null)      rows.push({ label: 'Trial',      value: `${specs.trialNights} nights` });
+  if (specs.warrantyYears !== null)    rows.push({ label: 'Warranty',   value: `${specs.warrantyYears} years` });
   rows.push({ label: 'Brand', value: product.vendor });
 
   if (rows.length === 0) return null;
   return (
-    <section className="pdp-spec-table-section">
-      <div className="eyebrow">Specs</div>
-      <h2 className="h2">At a glance</h2>
-      <dl className="pdp-spec-table">
+    <section className="pdp-section pdp-specs">
+      <div className="pdp-section-head">
+        <div>
+          <div className="eyebrow">Specifications</div>
+          <h2 className="h2">The details.</h2>
+        </div>
+      </div>
+      <dl className="pdp-specs-grid">
         {rows.map((r) => (
-          <div key={r.label} className="pdp-spec-row">
-            <dt>{r.label}</dt>
-            <dd>{r.value}</dd>
+          <div key={r.label} className="pdp-spec">
+            <dt className="muted pdp-spec-k">{r.label}</dt>
+            <dd className="pdp-spec-v">{r.value}</dd>
           </div>
         ))}
       </dl>
@@ -239,26 +244,45 @@ function ProductView({ product, related }: { product: Product; related: ProductS
         ) : null}
         </div>
 
-        <aside className="pdp-buybox">
-          <div className="eyebrow">{product.vendor}</div>
-          <h1 className="h2 pdp-title">{product.title}</h1>
-          <ReviewsBadge reviews={product.reviews} size="block" />
-          <SpecStrip specs={product.specs} />
+        <aside className="pdp-rail">
+          <div className="pdp-rail-inner">
+            <div className="pdp-brand-mark">{product.vendor}</div>
+            <h1 className="pdp-name">{product.title}</h1>
+            <ReviewsBadge reviews={product.reviews} size="block" />
 
-          <BuyBox
-            options={product.options}
-            variants={product.variants}
-            priceRange={product.priceRange}
-            compareAtPriceRange={product.compareAtPriceRange}
-            productTitle={product.title}
-            productImage={product.featuredImage}
-          />
+            <BuyBox
+              options={product.options}
+              variants={product.variants}
+              priceRange={product.priceRange}
+              compareAtPriceRange={product.compareAtPriceRange}
+              productTitle={product.title}
+              productImage={product.featuredImage}
+            />
 
-          <ul className="pdp-trust">
-            <li><Icon name="truck" size={16} /> Free white-glove delivery</li>
-            <li><Icon name="shield" size={16} /> 120-night comfort exchange</li>
-            <li><Icon name="card" size={16} /> 0% APR financing available</li>
-          </ul>
+            <div className="pdp-delivery">
+              <div className="pdp-delivery-row">
+                <Icon name="truck" size={18} />
+                <div>
+                  <div className="pdp-delivery-title">Free white-glove delivery</div>
+                  <div className="muted pdp-delivery-sub">Free setup &amp; old mattress haul-away · Same-day to 90% of LA</div>
+                </div>
+              </div>
+              <div className="pdp-delivery-row">
+                <Icon name="shield" size={18} />
+                <div>
+                  <div className="pdp-delivery-title">120-night comfort exchange</div>
+                  <div className="muted pdp-delivery-sub">Sleep on it for 4 months — exchange free if it isn&rsquo;t right</div>
+                </div>
+              </div>
+              <div className="pdp-delivery-row">
+                <Icon name="card" size={18} />
+                <div>
+                  <div className="pdp-delivery-title">0% APR financing</div>
+                  <div className="muted pdp-delivery-sub">Up to 60 months on approved credit · Synchrony or Acima</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </aside>
       </div>
 

@@ -11,13 +11,22 @@ type Props = {
 };
 
 /**
- * PDP gallery: click any thumb to swap the hero image. The featured image
- * leads off, followed by the rest of product.images (deduped). Selecting a
- * thumb is purely visual — it doesn't change the variant or the URL.
+ * PDP gallery — matches the design system handoff (pdp-showroom.css §Gallery).
+ *
+ * Structure:
+ *   .pdp-gallery
+ *     .pdp-gallery-main
+ *       img.pdp-main-img    1:1 aspect, r-4 radius, object-fit: contain
+ *       .pdp-gallery-controls (counter overlay "01 / 05")
+ *     .pdp-thumbs
+ *       button.pdp-thumb (× up to 5)   1:1 aspect, r-3 radius
+ *
+ * The thumbs use absolutely-positioned <Image fill /> so the wrapper's
+ * aspect-ratio:1 is the source of truth (avoids the previous Image
+ * width/height + style:100% mismatch that produced uneven sizing).
  *
  * Server-side fallback (no JS) still shows the featured image at full
- * resolution since the initial `selected` index is 0; thumbs gracefully
- * stay non-interactive without breaking layout.
+ * resolution since the initial `selected` index is 0.
  */
 export function PdpGallery({ productTitle, featured, images }: Props) {
   // Build the unique image list. Featured image first, then images[] minus
@@ -36,8 +45,10 @@ export function PdpGallery({ productTitle, featured, images }: Props) {
   if (all.length === 0) {
     return (
       <section className="pdp-gallery">
-        <div className="ph pdp-hero-img">
-          <span className="ph-label">[Image coming]</span>
+        <div className="pdp-gallery-main">
+          <div className="ph pdp-main-img">
+            <span className="ph-label">[Image coming]</span>
+          </div>
         </div>
       </section>
     );
@@ -47,16 +58,26 @@ export function PdpGallery({ productTitle, featured, images }: Props) {
 
   return (
     <section className="pdp-gallery">
-      <Image
-        src={hero.url}
-        alt={hero.altText ?? productTitle}
-        width={1200}
-        height={1200}
-        className="pdp-hero-img"
-        sizes="(max-width: 880px) 100vw, 60vw"
-        priority={selected === 0}
-        key={hero.url}
-      />
+      <div className="pdp-gallery-main">
+        <div className="pdp-main-img">
+          <Image
+            src={hero.url}
+            alt={hero.altText ?? productTitle}
+            fill
+            sizes="(max-width: 1024px) 100vw, 60vw"
+            style={{ objectFit: 'contain' }}
+            priority={selected === 0}
+            key={hero.url}
+          />
+        </div>
+        {all.length > 1 ? (
+          <div className="pdp-gallery-controls">
+            <span className="mono pdp-gallery-counter">
+              {String(selected + 1).padStart(2, '0')} / {String(all.length).padStart(2, '0')}
+            </span>
+          </div>
+        ) : null}
+      </div>
       {all.length > 1 ? (
         <div className="pdp-thumbs" role="tablist" aria-label="Product images">
           {all.map((img, i) => (
@@ -66,15 +87,15 @@ export function PdpGallery({ productTitle, featured, images }: Props) {
               role="tab"
               aria-selected={selected === i}
               aria-label={`View image ${i + 1} of ${all.length}`}
-              className={`pdp-thumb-btn${selected === i ? ' is-selected' : ''}`}
+              className={`pdp-thumb${selected === i ? ' on' : ''}`}
               onClick={() => setSelected(i)}
             >
               <Image
                 src={img.url}
                 alt={img.altText ?? `${productTitle} view ${i + 1}`}
-                width={200}
-                height={200}
-                className="pdp-thumb"
+                fill
+                sizes="120px"
+                style={{ objectFit: 'contain' }}
               />
             </button>
           ))}
