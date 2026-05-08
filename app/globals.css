@@ -429,6 +429,12 @@ a { color: inherit; text-decoration: none; }
 }
 .compare-table {
   width: 100%;
+  /* table-layout: fixed forces all product columns to share the remaining
+     width equally after the row-label column claims its 140px. Without
+     this, column widths track content length and a longer product title
+     blows up its image cell — observed before the fix as one card 890px
+     wide and the other 410px. */
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 14px;
   min-width: 720px;
@@ -916,8 +922,7 @@ a { color: inherit; text-decoration: none; }
 .hero-slide-accent .hero-grad { background: linear-gradient(90deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 60%, transparent) 50%, rgba(0,0,0,0.2) 100%); }
 .hero-content { position: relative; height: 100%; display: flex; align-items: center; color: #fff; }
 .hero-copy { max-width: 640px; }
-.hero-copy .eyebrow { margin-bottom: 24px; display: inline-flex; align-items: center; gap: 0; padding-left: 0; position: relative; }
-.hero-copy .eyebrow::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--brand-red); margin-right: 12px; vertical-align: middle; }
+.hero-copy .eyebrow { margin-bottom: 24px; }
 .hero-title { font-size: var(--t-display); font-weight: 700; line-height: 0.94; letter-spacing: -0.04em; margin: 0 0 24px; display: flex; flex-direction: column; }
 .hero-line { display: block; }
 .hero-body { font-size: 18px; line-height: 1.5; color: rgba(255,255,255,0.78); margin: 0 0 36px; max-width: 520px; }
@@ -2242,7 +2247,7 @@ a { color: inherit; text-decoration: none; }
   transition: transform var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease);
 }
 .location-card:hover { transform: translateY(-2px); border-color: var(--line-strong); box-shadow: var(--sh-2); }
-.location-card .eyebrow { color: var(--accent); margin-bottom: var(--s-2); }
+.location-card .eyebrow { margin-bottom: var(--s-2); }
 .location-card-name { margin: 0 0 var(--s-3); font-size: 24px; letter-spacing: -0.02em; }
 .location-card-addr { font-style: normal; line-height: 1.5; font-size: 15px; color: var(--text-2); margin-bottom: var(--s-4); }
 .location-card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3); padding-top: var(--s-3); border-top: 1px solid var(--line); font-size: 14px; }
