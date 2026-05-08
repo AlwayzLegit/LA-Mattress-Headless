@@ -1560,30 +1560,99 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 768px) { .pdp-now { font-size: 26px; } }
 
-.pdp-options { display: flex; flex-direction: column; gap: var(--s-4); margin: var(--s-3) 0; }
-.pdp-option-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--s-2); }
-.pdp-option-value { font-size: 14px; font-weight: 500; }
-.pdp-option-values { display: flex; flex-wrap: wrap; gap: var(--s-2); }
-.pdp-option-chip {
-  appearance: none; padding: 8px 14px;
-  border: 1px solid var(--line-strong);
+/* Variant pickers — design handoff §Buy box.
+   Size options use a 3-col grid where each card stacks: label, dimension
+   sublabel ("38" × 75""), per-variant price. Other options (firmness,
+   color) use a 2-col grid with label + sub. Selected state is a thicker
+   border that doesn't shift layout (compensated padding). */
+.pdp-options { display: flex; flex-direction: column; gap: var(--s-5); margin: 0; }
+.pdp-picker { display: flex; flex-direction: column; gap: var(--s-3); }
+.pdp-picker-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.pdp-picker-head .eyebrow { color: var(--text); font-size: 12px; }
+.pdp-size-guide { font-size: 12px; color: var(--text-3); text-decoration: underline; text-underline-offset: 2px; }
+.pdp-size-guide:hover { color: var(--text); }
+
+.pdp-size-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); }
+.pdp-size {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  padding: var(--s-3);
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--r-2);
-  cursor: pointer; font: inherit; font-size: 14px;
+  cursor: pointer; text-align: left;
   transition: border-color var(--d-fast), background var(--d-fast);
-  display: inline-flex; align-items: center; gap: 8px;
-  line-height: 1.2;
+  font: inherit;
 }
-.pdp-option-chip-label { font-weight: 500; }
-.pdp-option-chip-price { font-size: 13px; color: var(--text-3); }
-.pdp-option-chip.on .pdp-option-chip-price { color: rgba(255,255,255,0.85); }
-.pdp-option-chip:hover { border-color: var(--text); }
-.pdp-option-chip.on { border-color: var(--accent); background: var(--accent); color: var(--accent-fg); }
-.pdp-option-chip.unavailable { color: var(--text-4); position: relative; }
-.pdp-option-chip.unavailable::after {
-  content: ''; position: absolute; left: 8%; right: 8%; top: 50%;
-  border-top: 1px solid var(--text-4); transform: rotate(-12deg); pointer-events: none;
+.pdp-size:hover { border-color: var(--text); }
+.pdp-size.on {
+  border-color: var(--text); background: var(--surface-2);
+  border-width: 1.5px; padding: 11.5px;
 }
+.pdp-size-label { font-size: 13px; font-weight: 600; }
+.pdp-size-sub { font-size: 11px; color: var(--text-3); }
+.pdp-size-price { font-size: 12px; font-weight: 500; margin-top: 2px; }
+.pdp-size.unavailable { color: var(--text-4); position: relative; }
+.pdp-size.unavailable::after {
+  content: ''; position: absolute; left: 10%; right: 10%; top: 50%;
+  border-top: 1px solid var(--text-4); transform: rotate(-8deg);
+  pointer-events: none;
+}
+
+.pdp-firm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
+.pdp-firm {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  cursor: pointer; text-align: left;
+  transition: border-color var(--d-fast), background var(--d-fast);
+  font: inherit;
+}
+.pdp-firm:hover { border-color: var(--text); }
+.pdp-firm.on { border-color: var(--text); background: var(--surface-2); }
+.pdp-firm-label { font-size: 14px; font-weight: 600; }
+.pdp-firm-sub { font-size: 11px; }
+.pdp-firm.unavailable { color: var(--text-4); position: relative; }
+.pdp-firm.unavailable::after {
+  content: ''; position: absolute; left: 10%; right: 10%; top: 50%;
+  border-top: 1px solid var(--text-4); transform: rotate(-8deg);
+  pointer-events: none;
+}
+@media (max-width: 768px) {
+  .pdp-size-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Quantity stepper — design handoff §Buy box. Pill-shaped row with
+   −/+ buttons flanking a 36px-wide qty number. */
+.pdp-qty-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: var(--s-2);
+}
+.pdp-stepper {
+  display: inline-flex; align-items: center; gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+}
+.pdp-stepper button {
+  width: 36px; height: 36px;
+  background: none; border: 0; cursor: pointer; color: var(--text);
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--r-pill);
+  transition: background var(--d-fast);
+}
+.pdp-stepper button:hover:not(:disabled) { background: var(--surface-2); }
+.pdp-stepper button:disabled { color: var(--text-4); cursor: not-allowed; }
+.pdp-stepper > span {
+  width: 32px; text-align: center;
+  font-size: 14px; font-weight: 600;
+}
+
+/* Add-to-cart CTA — full-width, includes total beside the label. */
+.pdp-cta { width: 100%; margin-top: var(--s-2); }
 
 /* PDP below-the-fold sections — design handoff (pdp-showroom.css §Sections).
    Each .pdp-section has a section-head (eyebrow + h2 left, optional lede

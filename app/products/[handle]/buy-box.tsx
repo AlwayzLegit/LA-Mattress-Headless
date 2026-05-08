@@ -1,11 +1,29 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Image, Money, ProductOption, ProductVariant } from '@/lib/shopify';
 import { useCart } from '@/app/_components/cart-context';
 import { Icon } from '@/app/_components/icon';
 import { formatMoney, formatPriceRange } from '@/lib/format';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
+
+// Standard mattress size dimensions for the per-size sublabel in the
+// design's `.pdp-size` cards. Independent of brand — these are industry-
+// standard sizes. Falls back to no sublabel for unrecognized values.
+const SIZE_DIMENSIONS: Record<string, string> = {
+  'Twin':                 '38" × 75"',
+  'Twin XL':              '38" × 80"',
+  'Full':                 '54" × 75"',
+  'Full XL':              '54" × 80"',
+  'Queen':                '60" × 80"',
+  'King':                 '76" × 80"',
+  'California King':      '72" × 84"',
+  'Cal King':             '72" × 84"',
+  'Split King':           'Two 38" × 80"',
+  'Split California King': 'Two 36" × 84"',
+  'Split Cal King':       'Two 36" × 84"',
+};
 
 type Props = {
   options: ProductOption[];
@@ -28,7 +46,12 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
   }, [variants]);
 
   const [selection, setSelection] = useState<Record<string, string>>(initial);
+  const [qty, setQty] = useState(1);
   const { addLine, pending } = useCart();
+
+  // Reset quantity to 1 whenever the user changes the variant — total
+  // shouldn't carry across selections.
+  useEffect(() => { setQty(1); }, [selection]);
 
   const matchingVariant = useMemo(
     () => variants.find((v) => v.selectedOptions.every((o) => selection[o.name] === o.value)),
@@ -133,50 +156,80 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
 
       {options.filter((o) => o.values.length > 1).length > 0 ? (
         <div className="pdp-options">
-          {options.filter((o) => o.values.length > 1).map((opt) => (
-            <div key={opt.id} className="pdp-option">
-              <div className="pdp-option-label">
-                <span className="eyebrow">{opt.name}</span>
-                {/* The current selection is already shown in the active chip
-                    below (e.g. "Twin $799"). Don't repeat it here. */}
+          {options.filter((o) => o.values.length > 1).map((opt) => {
+            const isSize = /size/i.test(opt.name);
+            return (
+              <div key={opt.id} className="pdp-picker">
+                <div className="pdp-picker-head">
+                  <span className="eyebrow">{opt.name}</span>
+                  {isSize ? (
+                    <Link href="/pages/mattress-sizes" className="pdp-size-guide">Size guide</Link>
+                  ) : null}
+                </div>
+                <div className={isSize ? 'pdp-size-grid' : 'pdp-firm-grid'}>
+                  {opt.values.map((v) => {
+                    const available = isAvailable(opt.name, v);
+                    const active = selection[opt.name] === v;
+                    const showPrice = isSize || shouldShowPriceForOption(opt.name);
+                    const variantForThisChip = showPrice ? variantForChip(opt.name, v) : undefined;
+                    const sub = isSize ? SIZE_DIMENSIONS[v] : null;
+                    return (
+                      <button
+                        key={v}
+                        type="button"
+                        className={`${isSize ? 'pdp-size' : 'pdp-firm'} ${active ? 'on' : ''} ${available ? '' : 'unavailable'}`}
+                        onClick={() => setSelection((s) => ({ ...s, [opt.name]: v }))}
+                        aria-pressed={active}
+                        aria-label={available ? undefined : `${v} (unavailable)`}
+                      >
+                        <span className={isSize ? 'pdp-size-label' : 'pdp-firm-label'}>{v}</span>
+                        {sub ? <span className="pdp-size-sub">{sub}</span> : null}
+                        {variantForThisChip ? (
+                          <span className={isSize ? 'pdp-size-price tnum' : 'pdp-firm-sub muted tnum'}>
+                            {formatMoney(variantForThisChip.price)}
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="pdp-option-values">
-                {opt.values.map((v) => {
-                  const available = isAvailable(opt.name, v);
-                  const active = selection[opt.name] === v;
-                  const showPrice = shouldShowPriceForOption(opt.name);
-                  const variantForThisChip = showPrice ? variantForChip(opt.name, v) : undefined;
-                  return (
-                    <button
-                      key={v}
-                      type="button"
-                      className={`pdp-option-chip ${active ? 'on' : ''} ${available ? '' : 'unavailable'}`}
-                      onClick={() => setSelection((s) => ({ ...s, [opt.name]: v }))}
-                      aria-pressed={active}
-                      aria-label={available ? undefined : `${v}${variantForThisChip ? ` ${formatMoney(variantForThisChip.price)}` : ''} (unavailable)`}
-                    >
-                      <span className="pdp-option-chip-label">{v}</span>
-                      {variantForThisChip ? (
-                        <span className="pdp-option-chip-price tnum">{formatMoney(variantForThisChip.price)}</span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : null}
+
+      <div className="pdp-qty-row">
+        <span className="eyebrow">Quantity</span>
+        <div className="pdp-stepper">
+          <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease quantity" disabled={qty <= 1}>
+            <Icon name="minus" size={14} />
+          </button>
+          <span className="tnum" aria-live="polite">{qty}</span>
+          <button type="button" onClick={() => setQty((q) => Math.min(10, q + 1))} aria-label="Increase quantity" disabled={qty >= 10}>
+            <Icon name="plus" size={14} />
+          </button>
+        </div>
+      </div>
 
       <button
         ref={atcRef}
         type="button"
-        className="btn btn-primary btn-lg"
-        style={{ width: '100%', marginTop: 'var(--s-5)' }}
+        className="btn btn-primary btn-lg pdp-cta"
         disabled={!canBuy}
-        onClick={() => matchingVariant && addLine(matchingVariant.id, 1)}
+        onClick={() => matchingVariant && addLine(matchingVariant.id, qty)}
       >
-        {pending ? 'Adding…' : matchingVariant?.availableForSale ? 'Add to cart' : 'Out of stock'}
+        {pending ? 'Adding…' : matchingVariant?.availableForSale ? (
+          <>
+            Add to cart{' '}
+            <span className="tnum" style={{ opacity: 0.85 }}>
+              · {formatMoney({
+                amount: (Number.parseFloat(matchingVariant.price.amount) * qty).toFixed(2),
+                currencyCode: matchingVariant.price.currencyCode,
+              })}
+            </span>
+          </>
+        ) : 'Out of stock'}
         {canBuy ? <Icon name="cart" size={16} /> : null}
       </button>
 
