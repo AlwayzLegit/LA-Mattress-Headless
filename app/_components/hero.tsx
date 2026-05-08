@@ -120,7 +120,6 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
           ))}
         </div>
         <div className="hero-meta">
-          <span className="mono hero-counter">{String(i + 1).padStart(2, '0')} / {String(HERO_SLIDES.length).padStart(2, '0')}</span>
           <button
             type="button"
             className="hero-pause"

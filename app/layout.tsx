@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: '%s · LA Mattress',
   },
   description:
-    'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white glove delivery & 0% APR financing.',
+    'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white-glove delivery & 0% APR financing.',
   applicationName: 'LA Mattress Store',
   authors: [{ name: 'LA Mattress Store' }],
   category: 'shopping',

@@ -7,7 +7,7 @@ export function TopBar() {
     <div className="topbar">
       <div className="container topbar-inner">
         <div className="topbar-marquee">
-          <span><Icon name="truck" size={14} /> Free white glove delivery</span>
+          <span><Icon name="truck" size={14} /> Free white-glove delivery</span>
           <span className="topbar-dot">·</span>
           <span><Icon name="card" size={14} /> 0% APR financing available</span>
           <span className="topbar-dot">·</span>

@@ -7,7 +7,7 @@ import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
 export function TrustBar() {
   const items: { icon: IconName; label: string; sub: string }[] = [
     { icon: 'shield', label: '120-night comfort exchange', sub: 'Sleep on it for 4 months' },
-    { icon: 'truck',  label: 'Free white glove delivery',   sub: 'Setup & old mattress haul-away' },
+    { icon: 'truck',  label: 'Free white-glove delivery',   sub: 'Setup & old mattress haul-away' },
     { icon: 'home',   label: 'Family-owned since 2012',     sub: '5 showrooms across LA' },
     { icon: 'card',   label: '0% APR financing',             sub: 'Up to 60 months, no fees' },
   ];

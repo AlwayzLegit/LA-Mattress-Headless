@@ -862,8 +862,11 @@ a { color: inherit; text-decoration: none; }
 /* ───── Hero ───── */
 .hero { position: relative; height: clamp(560px, 85vh, 880px); background: var(--brand-navy); overflow: hidden; }
 .hero-stack { position: absolute; inset: 0; }
-.hero-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 700ms var(--ease); }
+.hero-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 240ms var(--ease); }
 .hero-slide.on { opacity: 1; pointer-events: auto; }
+/* Hide outgoing slide content immediately so the cross-fade only crosses
+   the bg image — text doesn't double-render mid-transition. */
+.hero-slide:not(.on) .hero-content { visibility: hidden; }
 .hero-bg { position: absolute; inset: 0; overflow: hidden; background: var(--surface-inv); }
 .hero-bg-img { object-fit: cover; object-position: center; }
 .hero-grad { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.1) 80%); }
@@ -915,8 +918,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ───── Section heads ───── */
 .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 48px; }
-.section-head .eyebrow { margin-bottom: 12px; display: inline-flex; align-items: center; }
-.section-head .eyebrow::before { content: ''; display: inline-block; width: 18px; height: 2px; background: var(--brand-red); margin-right: 10px; }
+.section-head .eyebrow { margin-bottom: 12px; }
 .section-head-right { display: flex; align-items: center; gap: 24px; }
 .link-arrow { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--text); transition: gap var(--d-fast); }
 .link-arrow:hover { gap: 10px; }
@@ -2097,7 +2099,6 @@ a { color: inherit; text-decoration: none; }
 
 /* Result */
 .quiz-result-head { margin-bottom: var(--s-7); }
-.quiz-result-head .eyebrow { color: var(--accent); }
 .quiz-result-cta { display: flex; flex-wrap: wrap; gap: var(--s-3); }
 .quiz-result-rationale,
 .quiz-result-alts { margin-top: var(--s-6); padding-top: var(--s-5); border-top: 1px solid var(--line); }

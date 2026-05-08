@@ -128,7 +128,7 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
         </nav>
 
         <header className="locations-page-hero">
-          <div className="eyebrow"><Icon name="pin" size={14} /> Five LA showrooms</div>
+          <div className="eyebrow">Five LA showrooms</div>
           <h1 className="h1">{stripBrandSuffix(page.title)}</h1>
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
             Visit any of our showrooms across Los Angeles to try every mattress in person. Open daily — no appointment needed.
@@ -243,7 +243,7 @@ function ShowroomPage({
         </nav>
 
         <header className="showroom-page-hero">
-          <div className="eyebrow"><Icon name="pin" size={14} /> {showroom.area} · Los Angeles</div>
+          <div className="eyebrow">{showroom.area} · Los Angeles</div>
           <h1 className="h1">{stripBrandSuffix(page.title)}</h1>
           <div className={`showroom-open-status${openStatus.isOpen ? ' is-open' : ''}`}>
             <span className="showroom-open-dot" aria-hidden /> {openStatus.message}

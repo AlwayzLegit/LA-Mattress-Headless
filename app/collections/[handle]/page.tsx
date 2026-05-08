@@ -68,7 +68,7 @@ export async function generateMetadata(props: { params: Promise<Params['params']
     firstNonEmpty(
       collection.seo.description,
       collection.description,
-      `Shop ${collection.title.toLowerCase()} at LA Mattress Store. Free white glove delivery in Los Angeles.`,
+      `Shop ${collection.title.toLowerCase()} at LA Mattress Store. Free white-glove delivery in Los Angeles.`,
     ),
   );
   const url = `/collections/${collection.handle}`;
