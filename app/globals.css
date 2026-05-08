@@ -1660,13 +1660,17 @@ a { color: inherit; text-decoration: none; }
    the brand red for fill so it's distinct from "press me" hover. */
 .pdp-cta-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
 .pdp-cta-row .btn { width: 100%; }
-.pdp-wishlist.is-on,
-.pdp-cta-row .btn.is-on {
+/* on-state visual — bumped specificity to win cleanly over .btn-ghost
+   defaults regardless of cascade order. Border thickens 1.5px so the
+   active state reads as deliberate, not a hover artefact. */
+.pdp-cta-row .btn-ghost.is-on,
+.pdp-cta-row .pdp-wishlist.is-on {
   border-color: var(--text);
+  border-width: 1.5px;
   background: var(--surface-2);
   color: var(--text);
 }
-.pdp-wishlist.is-on svg { color: var(--sale); }
+.pdp-cta-row .pdp-wishlist.is-on svg { color: var(--sale); }
 
 /* PDP below-the-fold sections — design handoff (pdp-showroom.css §Sections).
    Each .pdp-section has a section-head (eyebrow + h2 left, optional lede
