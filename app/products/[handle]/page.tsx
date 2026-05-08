@@ -269,7 +269,15 @@ function ProductView({ product, related }: { product: Product; related: ProductS
               productImage={product.featuredImage}
             />
 
-            <PdpCtaRow handle={product.handle} title={product.title} />
+            <PdpCtaRow
+              handle={product.handle}
+              title={product.title}
+              vendor={product.vendor}
+              imageUrl={product.featuredImage?.url ?? null}
+              imageAlt={product.featuredImage?.altText ?? null}
+              priceAmount={product.priceRange.minVariantPrice.amount}
+              priceCurrency={product.priceRange.minVariantPrice.currencyCode}
+            />
 
             <div className="pdp-delivery">
               <div className="pdp-delivery-row">
