@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const q = (searchParams.get('q') ?? '').trim();
   if (q.length < 2) {
-    return NextResponse.json({ products: [], collections: [], pages: [], queries: [] });
+    return NextResponse.json({ products: [], collections: [], pages: [], articles: [], queries: [] });
   }
   try {
     const data = await predictiveSearch(q);
@@ -23,6 +23,6 @@ export async function GET(request: Request) {
       headers: { 'cache-control': 'public, max-age=30, s-maxage=60, stale-while-revalidate=300' },
     });
   } catch {
-    return NextResponse.json({ products: [], collections: [], pages: [], queries: [] }, { status: 200 });
+    return NextResponse.json({ products: [], collections: [], pages: [], articles: [], queries: [] }, { status: 200 });
   }
 }

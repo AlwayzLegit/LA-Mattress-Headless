@@ -238,6 +238,34 @@ export function HeaderSearch() {
                   </ul>
                 </div>
               ) : null}
+              {results.articles.length > 0 ? (
+                <div className="header-search-group">
+                  <div className="eyebrow header-search-group-label">Articles</div>
+                  <ul>
+                    {results.articles.slice(0, 4).map((a, i) => {
+                      const idx =
+                        Math.min(results.products.length, 6) +
+                        Math.min(results.collections.length, 4) +
+                        i;
+                      return (
+                        <li key={a.id}>
+                          <Link
+                            href={`/blogs/${a.blog.handle}/${a.handle}`}
+                            className={`header-search-link header-search-article${highlight === idx ? ' is-highlighted' : ''}`}
+                            id={`${listboxId}-${idx}`}
+                            role="option"
+                            aria-selected={highlight === idx}
+                            onClick={() => setOpen(false)}
+                          >
+                            <span className="header-search-article-title">{a.title}</span>
+                            <span className="muted header-search-article-blog">{a.blog.title}</span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : null}
             </>
           )}
         </div>
@@ -253,5 +281,6 @@ function flatten(r: Predictive | null): Flat[] {
   const out: Flat[] = [];
   for (const p of r.products.slice(0, 6)) out.push({ href: `/products/${p.handle}` });
   for (const c of r.collections.slice(0, 4)) out.push({ href: `/collections/${c.handle}` });
+  for (const a of r.articles.slice(0, 4)) out.push({ href: `/blogs/${a.blog.handle}/${a.handle}` });
   return out;
 }
