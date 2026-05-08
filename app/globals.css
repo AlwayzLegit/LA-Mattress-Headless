@@ -923,11 +923,14 @@ a { color: inherit; text-decoration: none; }
 .hero-content { position: relative; height: 100%; display: flex; align-items: center; color: #fff; }
 .hero-copy { max-width: 640px; }
 /* Per the design system handoff: a small red rule before every section-head
-   and hero eyebrow, echoing the LA Mattress logo's red accent bar. Scoped
-   to these two contexts only — eyebrows used elsewhere (cart, FAQ, search,
-   sleep quiz, account, location cards) intentionally don't carry the bar. */
-.hero-copy .eyebrow { margin-bottom: 24px; display: inline-flex; align-items: center; }
-.hero-copy .eyebrow::before {
+   and page-hero eyebrow, echoing the LA Mattress logo's red accent bar.
+   Scoped to those page-hero / section-head contexts only — eyebrows used
+   elsewhere (cart, FAQ, search, sleep quiz, account, location cards)
+   intentionally don't carry the bar. */
+.hero-copy .eyebrow,
+.plp-hero-copy .eyebrow { margin-bottom: 24px; display: inline-flex; align-items: center; }
+.hero-copy .eyebrow::before,
+.plp-hero-copy .eyebrow::before {
   content: '';
   display: inline-block;
   width: 24px; height: 2px;
@@ -1605,6 +1608,8 @@ a { color: inherit; text-decoration: none; }
   gap: var(--s-5);
 }
 @media (max-width: 1024px) { .plp-grid { grid-template-columns: repeat(2, 1fr); } }
+/* Design plp.css §Mobile: drop to 1-up at <=640px. */
+@media (max-width: 640px)  { .plp-grid { grid-template-columns: 1fr; gap: var(--s-5); } }
 @media (max-width: 480px)  { .plp-grid { gap: 12px; } }
 .plp-card { flex: initial; }
 @media (max-width: 480px) {
