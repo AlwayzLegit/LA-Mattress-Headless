@@ -1,5 +1,8 @@
 import { shopifyFetch } from '../client';
-import type { Product, ProductReviews, ProductSpecs } from '../types';
+import type {
+  Product, ProductReviews, ProductSpecs,
+  ProductEditorial, ProductHighlight, ProductLayer, SleepPositionFit,
+} from '../types';
 import {
   IMAGE_FRAGMENT, MONEY_FRAGMENT, SEO_FRAGMENT,
   VARIANT_FRAGMENT, PRODUCT_FRAGMENT,
@@ -22,7 +25,7 @@ type RawMetafield = { value: string; type: string } | null;
 
 type Raw = {
   product:
-    | (Omit<Product, 'images' | 'variants' | 'reviews' | 'specs'> & {
+    | (Omit<Product, 'images' | 'variants' | 'reviews' | 'specs' | 'editorial'> & {
         images: { nodes: Product['images'] };
         variants: { nodes: Product['variants'] };
         ratingMetafield?: RawMetafield;
@@ -32,6 +35,14 @@ type Raw = {
         materialMetafield?: RawMetafield;
         warrantyMetafield?: RawMetafield;
         trialMetafield?: RawMetafield;
+        taglineMetafield?: RawMetafield;
+        ledeMetafield?: RawMetafield;
+        bestForMetafield?: RawMetafield;
+        notIdealForMetafield?: RawMetafield;
+        highlightsMetafield?: RawMetafield;
+        firmnessScoreMetafield?: RawMetafield;
+        positionFitMetafield?: RawMetafield;
+        layersMetafield?: RawMetafield;
       })
     | null;
 };
@@ -92,6 +103,101 @@ export function parseSpecMetafields(raw: {
   };
 }
 
+/**
+ * Parse the eight `custom.*` editorial metafields (Phase 94). Each is
+ * independently optional — sections render only when their metafield has
+ * a populated value. Unknown / malformed JSON returns to safe defaults
+ * (empty array, null) instead of throwing — the merchant typing JSON in
+ * the Admin shouldn't bring the PDP down.
+ */
+function parseStringList(raw: RawMetafield | undefined): string[] {
+  if (!raw?.value) return [];
+  try {
+    const parsed = JSON.parse(raw.value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((s): s is string => typeof s === 'string' && s.trim().length > 0);
+  } catch {
+    return [];
+  }
+}
+
+const VALID_FIT: ReadonlySet<SleepPositionFit> = new Set(['great', 'good', 'poor']);
+
+function parseEditorialMetafields(raw: {
+  taglineMetafield?: RawMetafield;
+  ledeMetafield?: RawMetafield;
+  bestForMetafield?: RawMetafield;
+  notIdealForMetafield?: RawMetafield;
+  highlightsMetafield?: RawMetafield;
+  firmnessScoreMetafield?: RawMetafield;
+  positionFitMetafield?: RawMetafield;
+  layersMetafield?: RawMetafield;
+}): ProductEditorial {
+  let highlights: ProductHighlight[] = [];
+  if (raw.highlightsMetafield?.value) {
+    try {
+      const parsed = JSON.parse(raw.highlightsMetafield.value) as unknown;
+      if (Array.isArray(parsed)) {
+        highlights = parsed
+          .filter((h): h is ProductHighlight =>
+            typeof h === 'object' && h !== null &&
+            typeof (h as ProductHighlight).title === 'string' &&
+            typeof (h as ProductHighlight).body === 'string',
+          )
+          .slice(0, 4);
+      }
+    } catch { /* malformed JSON — fall back to empty list */ }
+  }
+
+  let layers: ProductLayer[] = [];
+  if (raw.layersMetafield?.value) {
+    try {
+      const parsed = JSON.parse(raw.layersMetafield.value) as unknown;
+      if (Array.isArray(parsed)) {
+        layers = parsed.filter((l): l is ProductLayer =>
+          typeof l === 'object' && l !== null &&
+          typeof (l as ProductLayer).name === 'string' &&
+          typeof (l as ProductLayer).desc === 'string',
+        );
+      }
+    } catch { /* fall back */ }
+  }
+
+  let positionFit: ProductEditorial['positionFit'] = null;
+  if (raw.positionFitMetafield?.value) {
+    try {
+      const parsed = JSON.parse(raw.positionFitMetafield.value) as Record<string, unknown>;
+      const safe = (k: string): SleepPositionFit | undefined => {
+        const v = parsed[k];
+        return typeof v === 'string' && VALID_FIT.has(v as SleepPositionFit)
+          ? (v as SleepPositionFit)
+          : undefined;
+      };
+      const out = { back: safe('back'), side: safe('side'), stomach: safe('stomach') };
+      if (out.back || out.side || out.stomach) positionFit = out;
+    } catch { /* fall back */ }
+  }
+
+  let firmnessScore: number | null = null;
+  if (raw.firmnessScoreMetafield?.value) {
+    const n = Number.parseInt(raw.firmnessScoreMetafield.value, 10);
+    if (Number.isFinite(n) && n >= 1 && n <= 10) firmnessScore = n;
+  }
+
+  // Lists of single-line strings come back as JSON-encoded arrays even
+  // though the metafield type is list.single_line_text_field.
+  return {
+    tagline:       raw.taglineMetafield?.value || null,
+    lede:          raw.ledeMetafield?.value || null,
+    bestFor:       parseStringList(raw.bestForMetafield),
+    notIdealFor:   parseStringList(raw.notIdealForMetafield),
+    highlights,
+    firmnessScore,
+    positionFit,
+    layers,
+  };
+}
+
 export async function getProductByHandle(handle: string): Promise<Product | null> {
   const data = await shopifyFetch<Raw, { handle: string }>(
     GET_PRODUCT_BY_HANDLE,
@@ -102,6 +208,8 @@ export async function getProductByHandle(handle: string): Promise<Product | null
   const {
     ratingMetafield, ratingCountMetafield,
     firmnessMetafield, heightMetafield, materialMetafield, warrantyMetafield, trialMetafield,
+    taglineMetafield, ledeMetafield, bestForMetafield, notIdealForMetafield,
+    highlightsMetafield, firmnessScoreMetafield, positionFitMetafield, layersMetafield,
     ...rest
   } = data.product;
   return {
@@ -111,6 +219,10 @@ export async function getProductByHandle(handle: string): Promise<Product | null
     reviews: parseReviewsMetafields(ratingMetafield, ratingCountMetafield),
     specs: parseSpecMetafields({
       firmnessMetafield, heightMetafield, materialMetafield, warrantyMetafield, trialMetafield,
+    }),
+    editorial: parseEditorialMetafields({
+      taglineMetafield, ledeMetafield, bestForMetafield, notIdealForMetafield,
+      highlightsMetafield, firmnessScoreMetafield, positionFitMetafield, layersMetafield,
     }),
   };
 }
