@@ -10,7 +10,25 @@ const COMPARE_MAX = 4;
 const WISHLIST_KEY = 'la-mattress.wishlist.v1';
 const WISHLIST_EVENT = 'la-mattress:wishlist-change';
 
-type Snapshot = { handle: string; title: string };
+/**
+ * Snapshot persisted to localStorage when a visitor saves or compares a
+ * mattress. handle + title are the only required fields (kept stable for
+ * v1-era saves that pre-date image/price capture). Newer saves enrich
+ * with vendor + image + price so the /wishlist and /compare pages can
+ * render a real card without a server roundtrip.
+ *
+ * Anyone reading this set should treat the optional fields as truly
+ * optional and fall back to the handle+title minimum for older entries.
+ */
+type Snapshot = {
+  handle: string;
+  title: string;
+  vendor?: string | null;
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+  priceAmount?: string | null;
+  priceCurrency?: string | null;
+};
 
 function readSet(key: string): Snapshot[] {
   try {
@@ -33,6 +51,16 @@ function writeSet(key: string, eventName: string, items: Snapshot[]) {
   }
 }
 
+type Props = {
+  handle: string;
+  title: string;
+  vendor?: string | null;
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+  priceAmount?: string | null;
+  priceCurrency?: string | null;
+};
+
 /**
  * Save + Compare buttons rendered just below the Add-to-cart in the PDP
  * rail. Both are localStorage-backed so the state survives across sessions
@@ -42,8 +70,21 @@ function writeSet(key: string, eventName: string, items: Snapshot[]) {
  * Each button toggles its own state independently. Saved state persists
  * across page navigations via the storage event; if the visitor opens this
  * PDP in a second tab and saves there, the heart fills here too.
+ *
+ * The save snapshot now captures vendor / image / price so the /wishlist
+ * page renders a real card per saved mattress without a server fetch.
+ * Older v1 saves missing those fields still toggle correctly — the
+ * wishlist renderer falls back to title-only display.
  */
-export function PdpCtaRow({ handle, title }: { handle: string; title: string }) {
+export function PdpCtaRow({
+  handle,
+  title,
+  vendor,
+  imageUrl,
+  imageAlt,
+  priceAmount,
+  priceCurrency,
+}: Props) {
   const [saved, setSaved] = useState(false);
   const [comparing, setComparing] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -65,11 +106,21 @@ export function PdpCtaRow({ handle, title }: { handle: string; title: string }) 
     };
   }, [handle]);
 
+  const snapshot = (): Snapshot => ({
+    handle,
+    title,
+    vendor: vendor ?? null,
+    imageUrl: imageUrl ?? null,
+    imageAlt: imageAlt ?? null,
+    priceAmount: priceAmount ?? null,
+    priceCurrency: priceCurrency ?? null,
+  });
+
   const toggleSave = () => {
     const cur = readSet(WISHLIST_KEY);
     const idx = cur.findIndex((p) => p.handle === handle);
     if (idx >= 0) cur.splice(idx, 1);
-    else cur.push({ handle, title });
+    else cur.push(snapshot());
     writeSet(WISHLIST_KEY, WISHLIST_EVENT, cur);
   };
 
@@ -79,7 +130,7 @@ export function PdpCtaRow({ handle, title }: { handle: string; title: string }) 
     if (idx >= 0) {
       cur.splice(idx, 1);
     } else if (cur.length < COMPARE_MAX) {
-      cur.push({ handle, title });
+      cur.push(snapshot());
     } else {
       // Cap reached — silent no-op (visitor sees the floating tray with 4).
       return;
