@@ -13,6 +13,7 @@ import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
 import { BuyBox } from './buy-box';
+import { PdpCtaRow } from './pdp-cta-row';
 import { PdpGallery } from './gallery';
 import { PdpOverview } from './pdp-overview';
 import { PdpFirmness } from './pdp-firmness';
@@ -267,6 +268,8 @@ function ProductView({ product, related }: { product: Product; related: ProductS
               productTitle={product.title}
               productImage={product.featuredImage}
             />
+
+            <PdpCtaRow handle={product.handle} title={product.title} />
 
             <div className="pdp-delivery">
               <div className="pdp-delivery-row">
