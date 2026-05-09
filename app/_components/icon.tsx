@@ -24,6 +24,15 @@ export function Icon({ name, size = 20, stroke = 1.5, ...rest }: Props) {
     strokeWidth: stroke,
     strokeLinecap: 'round',
     strokeLinejoin: 'round',
+    // Defense-in-depth: every icon in this codebase sits next to
+    // visible text or inside a button/link with its own aria-label.
+    // Defaulting to aria-hidden + focusable=false guarantees the
+    // SVG is never read as a confusing standalone glyph by SR, and
+    // never lands a Tab focus on Edge/IE-legacy paths. Callers that
+    // really want the icon to carry meaning can override via ...rest
+    // (e.g., role="img" + aria-label).
+    'aria-hidden': true,
+    focusable: false,
     ...rest,
   };
   switch (name) {
