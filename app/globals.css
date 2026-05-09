@@ -1319,6 +1319,16 @@ summary:focus-visible,
   padding: 16px 16px 20px;
   transition: transform var(--d-base) var(--ease), box-shadow var(--d-base) var(--ease), border-color var(--d-base) var(--ease);
 }
+/* Phase 156: cards on PLP and search results wrap with <article
+   className="pcard plp-card"> + an inner Link with this class so the
+   CompareToggle button can be a sibling of the Link rather than
+   nested inside it (HTML5 invalid). The inner link inherits text
+   color from the article and stacks image + meta vertically. */
+.pcard-link {
+  display: flex; flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
 .pcard:hover {
   transform: translateY(-2px) scale(1.005);
   box-shadow: var(--sh-card-hover);

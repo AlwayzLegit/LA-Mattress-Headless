@@ -257,41 +257,51 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                     const onSale = minCompare > 0 && minCompare > minPrice;
                     const pctOff = onSale ? Math.round((1 - minPrice / minCompare) * 100) : 0;
                     return (
-                    <Link key={p.id} href={`/products/${p.handle}`} className="pcard plp-card">
-                      <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
-                        {onSale ? (
-                          <span className="pcard-tag pcard-tag-sale">−{pctOff}%</span>
-                        ) : null}
-                        {p.featuredImage ? (
-                          <Image
-                            src={p.featuredImage.url}
-                            alt={p.featuredImage.altText ?? p.title}
-                            width={600}
-                            height={600}
-                            sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                            priority={!after && idx < 3}
-                            loading={!after && idx < 3 ? 'eager' : 'lazy'}
-                          />
-                        ) : <span className="ph-label">[Image coming]</span>}
-                      </div>
-                      <div className="pcard-meta">
-                        <div className="pcard-brand">{p.vendor}</div>
-                        <div className="pcard-name">{p.title}</div>
-                        <PcardSpecs specs={p.specs} />
-                        <div className="pcard-price">
+                    // Article wraps the link + the CompareToggle as
+                    // siblings. Previously the Compare <button> sat
+                    // inside the <Link>, which is HTML5-invalid (a >
+                    // button) and creates ergonomics weirdness even
+                    // when stopPropagation cancels the bubble. The
+                    // article now carries the .pcard / .plp-card
+                    // visual styles; the inner .pcard-link is a flat
+                    // flex-column for image + meta only.
+                    <article key={p.id} className="pcard plp-card">
+                      <Link href={`/products/${p.handle}`} className="pcard-link">
+                        <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
                           {onSale ? (
-                            <span className="pcard-was tnum">
-                              {formatPriceRange(p.compareAtPriceRange.minVariantPrice, p.compareAtPriceRange.maxVariantPrice)}
-                            </span>
+                            <span className="pcard-tag pcard-tag-sale">−{pctOff}%</span>
                           ) : null}
-                          <span className="pcard-now tnum">
-                            {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
-                          </span>
+                          {p.featuredImage ? (
+                            <Image
+                              src={p.featuredImage.url}
+                              alt={p.featuredImage.altText ?? p.title}
+                              width={600}
+                              height={600}
+                              sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                              priority={!after && idx < 3}
+                              loading={!after && idx < 3 ? 'eager' : 'lazy'}
+                            />
+                          ) : <span className="ph-label">[Image coming]</span>}
                         </div>
-                        <CompareToggle handle={p.handle} title={p.title} />
-                      </div>
-                    </Link>
+                        <div className="pcard-meta">
+                          <div className="pcard-brand">{p.vendor}</div>
+                          <div className="pcard-name">{p.title}</div>
+                          <PcardSpecs specs={p.specs} />
+                          <div className="pcard-price">
+                            {onSale ? (
+                              <span className="pcard-was tnum">
+                                {formatPriceRange(p.compareAtPriceRange.minVariantPrice, p.compareAtPriceRange.maxVariantPrice)}
+                              </span>
+                            ) : null}
+                            <span className="pcard-now tnum">
+                              {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                      <CompareToggle handle={p.handle} title={p.title} />
+                    </article>
                     );
                   })}
                 </div>

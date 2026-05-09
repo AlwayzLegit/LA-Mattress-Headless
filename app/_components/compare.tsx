@@ -162,7 +162,10 @@ export function CompareTray() {
 
   const ids = items.map((i) => i.handle).join(',');
 
-  const clear = () => writeSet([]);
+  const clear = () => {
+    writeSet([]);
+    announce('Cleared compare list');
+  };
   const dismiss = () => setDismissed(true);
 
   return (

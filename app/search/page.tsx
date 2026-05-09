@@ -264,33 +264,37 @@ export default async function SearchPage(props: Params) {
                     <>
                       <div className="plp-grid">
                         {products.map((p, idx) => (
-                          <Link key={p.id} href={`/products/${p.handle}`} className="pcard plp-card">
-                            <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
-                              {p.featuredImage ? (
-                                <Image
-                                  src={p.featuredImage.url}
-                                  alt={p.featuredImage.altText ?? p.title}
-                                  width={600}
-                                  height={600}
-                                  sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                  style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                                  priority={!after && idx < 3}
-                                  loading={!after && idx < 3 ? 'eager' : 'lazy'}
-                                />
-                              ) : <span className="ph-label">[Image coming]</span>}
-                            </div>
-                            <div className="pcard-meta">
-                              <div className="pcard-brand">{p.vendor}</div>
-                              <div className="pcard-name">{p.title}</div>
-                              <PcardSpecs specs={p.specs} />
-                              <div className="pcard-price">
-                                <span className="pcard-now tnum">
-                                  {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
-                                </span>
+                          // Article + sibling CompareToggle, see Phase 156
+                          // comment in app/collections/[handle]/page.tsx.
+                          <article key={p.id} className="pcard plp-card">
+                            <Link href={`/products/${p.handle}`} className="pcard-link">
+                              <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
+                                {p.featuredImage ? (
+                                  <Image
+                                    src={p.featuredImage.url}
+                                    alt={p.featuredImage.altText ?? p.title}
+                                    width={600}
+                                    height={600}
+                                    sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                    style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                                    priority={!after && idx < 3}
+                                    loading={!after && idx < 3 ? 'eager' : 'lazy'}
+                                  />
+                                ) : <span className="ph-label">[Image coming]</span>}
                               </div>
-                              <CompareToggle handle={p.handle} title={p.title} />
-                            </div>
-                          </Link>
+                              <div className="pcard-meta">
+                                <div className="pcard-brand">{p.vendor}</div>
+                                <div className="pcard-name">{p.title}</div>
+                                <PcardSpecs specs={p.specs} />
+                                <div className="pcard-price">
+                                  <span className="pcard-now tnum">
+                                    {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
+                                  </span>
+                                </div>
+                              </div>
+                            </Link>
+                            <CompareToggle handle={p.handle} title={p.title} />
+                          </article>
                         ))}
                       </div>
                       <div className="plp-pagination">
@@ -583,32 +587,36 @@ function SearchAllTab({
           </div>
           <div className="plp-grid">
             {products.map((p, idx) => (
-              <Link key={p.id} href={`/products/${p.handle}`} className="pcard plp-card">
-                <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
-                  {p.featuredImage ? (
-                    <Image
-                      src={p.featuredImage.url}
-                      alt={p.featuredImage.altText ?? p.title}
-                      width={600}
-                      height={600}
-                      sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                      loading={idx < 3 ? 'eager' : 'lazy'}
-                    />
-                  ) : <span className="ph-label">[Image coming]</span>}
-                </div>
-                <div className="pcard-meta">
-                  <div className="pcard-brand">{p.vendor}</div>
-                  <div className="pcard-name">{p.title}</div>
-                  <PcardSpecs specs={p.specs} />
-                  <div className="pcard-price">
-                    <span className="pcard-now tnum">
-                      {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
-                    </span>
+              // Article + sibling CompareToggle, see Phase 156 comment
+              // in app/collections/[handle]/page.tsx.
+              <article key={p.id} className="pcard plp-card">
+                <Link href={`/products/${p.handle}`} className="pcard-link">
+                  <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
+                    {p.featuredImage ? (
+                      <Image
+                        src={p.featuredImage.url}
+                        alt={p.featuredImage.altText ?? p.title}
+                        width={600}
+                        height={600}
+                        sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                        loading={idx < 3 ? 'eager' : 'lazy'}
+                      />
+                    ) : <span className="ph-label">[Image coming]</span>}
                   </div>
-                  <CompareToggle handle={p.handle} title={p.title} />
-                </div>
-              </Link>
+                  <div className="pcard-meta">
+                    <div className="pcard-brand">{p.vendor}</div>
+                    <div className="pcard-name">{p.title}</div>
+                    <PcardSpecs specs={p.specs} />
+                    <div className="pcard-price">
+                      <span className="pcard-now tnum">
+                        {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+                <CompareToggle handle={p.handle} title={p.title} />
+              </article>
             ))}
           </div>
         </section>
