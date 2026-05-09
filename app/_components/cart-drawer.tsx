@@ -99,21 +99,23 @@ export function CartDrawer() {
                         {v.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(' · ')}
                       </div>
                       <div className="cart-line-row">
-                        <div className="cart-qty">
+                        <div className="cart-qty" role="group" aria-label={`Quantity for ${v.product.title}`}>
                           <button
                             className="cart-qty-btn"
                             type="button"
                             onClick={() => updateLine(line.id, line.quantity - 1)}
                             disabled={pending}
-                            aria-label="Decrease quantity"
+                            aria-label={`Decrease quantity of ${v.product.title}`}
                           >−</button>
-                          <span className="tnum cart-qty-val">{line.quantity}</span>
+                          <span className="tnum cart-qty-val" aria-live="polite" aria-label={`${line.quantity} in cart`}>
+                            {line.quantity}
+                          </span>
                           <button
                             className="cart-qty-btn"
                             type="button"
                             onClick={() => updateLine(line.id, line.quantity + 1)}
                             disabled={pending}
-                            aria-label="Increase quantity"
+                            aria-label={`Increase quantity of ${v.product.title}`}
                           >+</button>
                         </div>
                         <span className="tnum cart-line-price">{formatMoney(line.cost.totalAmount)}</span>
@@ -123,6 +125,7 @@ export function CartDrawer() {
                         type="button"
                         onClick={() => removeLine(line.id)}
                         disabled={pending}
+                        aria-label={`Remove ${v.product.title} from cart`}
                       >
                         Remove
                       </button>
