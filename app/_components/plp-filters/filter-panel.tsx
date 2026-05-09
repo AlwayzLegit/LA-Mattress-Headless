@@ -1,9 +1,10 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useRef, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useTransition } from 'react';
 import type { AvailableFilter } from '@/lib/shopify';
 import { useFocusTrap } from '../use-focus-trap';
+import { announce } from '../announcer';
 import {
   FILTER_PARAMS,
   clearAllFilters,
@@ -57,10 +58,30 @@ export function FilterPanel({ availableFilters, resultCount }: Props) {
   const [pending, startTransition] = useTransition();
   const { open: mobileOpen, setOpen: setMobileOpen } = useFilterShell();
   const asideRef = useRef<HTMLElement>(null);
+  const didMountRef = useRef(false);
 
   // Tab cycles within the filter drawer when it's open on mobile;
   // close (X / scrim / Esc / matchMedia widen) restores focus.
   useFocusTrap(mobileOpen, asideRef);
+
+  // Announce result count after each filter change (URL-driven, so a
+  // change re-renders the page server-side and this component remounts
+  // with a new resultCount). Skip the initial render so we don't
+  // announce on first arrival to /collections/{handle}. SR users
+  // toggling a filter checkbox now hear "Now showing N mattresses"
+  // instead of waiting silently for the table of products to update.
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    if (typeof resultCount !== 'number') return;
+    announce(
+      resultCount === 0
+        ? 'No mattresses match those filters'
+        : `Now showing ${resultCount} mattress${resultCount === 1 ? '' : 'es'}`,
+    );
+  }, [resultCount]);
 
   const sel = useMemo<FilterSelection>(() => {
     const obj: Record<string, string | undefined> = {};
