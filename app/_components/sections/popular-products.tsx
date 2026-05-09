@@ -1,9 +1,12 @@
-'use client';
+// Phase 163: server component. Only the scroll buttons need client
+// hydration — the product cards and section chrome are static. The
+// scroll button island uses document.getElementById to locate the
+// rail rather than sharing a ref, so the cards can stay server-only.
 
-import { useRef } from 'react';
 import Link from 'next/link';
 import { Icon } from '../icon';
 import { phImg } from '../images';
+import { PopularProductsScrollButtons } from './popular-products-scroll-buttons';
 
 type Product = {
   brand: string;
@@ -47,9 +50,6 @@ function ProductCard({ p }: { p: Product }) {
         {p.tag ? (
           <span className={`pcard-tag ${p.tagKind === 'sale' ? 'pcard-tag-sale' : ''}`}>{p.tag}</span>
         ) : null}
-        <button className="pcard-fav" aria-label="Save" type="button" onClick={(e) => e.preventDefault()}>
-          <Icon name="heart" size={16} />
-        </button>
       </div>
       <div className="pcard-meta">
         <div className="pcard-brand">{p.brand}</div>
@@ -66,10 +66,9 @@ function ProductCard({ p }: { p: Product }) {
   );
 }
 
-export function PopularProducts() {
-  const scroller = useRef<HTMLDivElement>(null);
-  const scroll = (dir: -1 | 1) => scroller.current?.scrollBy({ left: dir * 600, behavior: 'smooth' });
+const RAIL_ID = 'popular-products-rail';
 
+export function PopularProducts() {
   return (
     <section className="section">
       <div className="container">
@@ -80,19 +79,12 @@ export function PopularProducts() {
           </div>
           <div className="section-head-right">
             <Link href="/collections/popular" className="link-arrow">Shop all <Icon name="arrow-right" size={14} /></Link>
-            <div className="scroll-controls">
-              <button className="round-btn" type="button" onClick={() => scroll(-1)} aria-label="Scroll popular mattresses left">
-                <Icon name="arrow-left" size={16} />
-              </button>
-              <button className="round-btn" type="button" onClick={() => scroll(1)} aria-label="Scroll popular mattresses right">
-                <Icon name="arrow-right" size={16} />
-              </button>
-            </div>
+            <PopularProductsScrollButtons railId={RAIL_ID} />
           </div>
         </div>
       </div>
       <div className="pcard-scroll-wrap">
-        <div ref={scroller} className="pcard-scroll no-scrollbar">
+        <div id={RAIL_ID} className="pcard-scroll no-scrollbar">
           {PRODUCTS.map((p, i) => <ProductCard key={i} p={p} />)}
         </div>
       </div>
