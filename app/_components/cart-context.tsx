@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useOptimist
 import type { ReactNode } from 'react';
 import type { Cart } from '@/lib/shopify';
 import { addToCart as addAction, updateCartLine, removeCartLine, readCart } from '@/app/_actions/cart';
-import { announce } from './announcer';
+import { announce, announceAssertive } from './announcer';
 
 type CartContextValue = {
   cart: Cart | null;
@@ -59,7 +59,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : `${quantity} added to your cart`,
       );
     } else {
-      announce('Could not add to cart. Please try again.');
+      announceAssertive('Could not add to cart. Please try again.');
     }
   }, [setOptimisticCount]);
 
@@ -73,7 +73,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setCart(res.cart);
       announce(`Cart updated. ${quantity} ${quantity === 1 ? 'item' : 'items'} of this product.`);
     } else {
-      announce('Could not update cart.');
+      announceAssertive('Could not update cart.');
     }
   }, [cart, setOptimisticCount]);
 
@@ -87,7 +87,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setCart(res.cart);
       announce(removedTitle ? `Removed ${removedTitle} from cart` : 'Removed from cart');
     } else {
-      announce('Could not remove from cart.');
+      announceAssertive('Could not remove from cart.');
     }
   }, [cart, setOptimisticCount]);
 
