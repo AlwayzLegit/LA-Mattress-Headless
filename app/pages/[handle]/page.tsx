@@ -81,6 +81,15 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
   // beyond the generic site-wide Organization/WebSite from layout.tsx.
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
   const url = `${SITE}/pages/${page.handle}`;
+  // "Last updated" feels like clutter on most marketing copy but it's
+  // load-bearing on warranty / policy / returns pages where freshness
+  // matters legally and for SEO. Show it on all cms pages — it's a
+  // small muted line, hard to perceive as noise. The JSON-LD also gets
+  // dateModified + datePublished so crawlers can surface it in rich
+  // results (Google's Article + WebPage carousels both use it).
+  const updatedLabel = page.updatedAt
+    ? new Date(page.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : null;
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -97,6 +106,8 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
     description: firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined,
     isPartOf: { '@type': 'WebSite', url: SITE },
     inLanguage: 'en-US',
+    datePublished: page.createdAt || undefined,
+    dateModified: page.updatedAt || undefined,
   };
 
   return (
@@ -107,7 +118,12 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
           <span className="sep" aria-hidden="true">/</span>
           <span>{toSentenceCase(stripBrandSuffix(page.title))}</span>
         </nav>
-        <h1 className="h1" style={{ marginTop: 'var(--s-4)' }}>{toSentenceCase(stripBrandSuffix(page.title))}</h1>
+        <h1 className="h1" style={{ marginTop: 'var(--s-4)' }}>{cleanTitle}</h1>
+        {updatedLabel ? (
+          <p className="muted" style={{ fontSize: 13, marginTop: 'var(--s-2)' }}>
+            <time dateTime={page.updatedAt}>Last updated {updatedLabel}</time>
+          </p>
+        ) : null}
         {page.body ? (
           <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
         ) : (
