@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
+import { announce } from '@/app/_components/announcer';
 import { formatMoney } from '@/lib/format';
 
 const WISHLIST_KEY = 'la-mattress.wishlist.v1';
@@ -74,11 +75,17 @@ export function WishlistView() {
   }, []);
 
   const remove = (handle: string) => {
-    const next = readSet().filter((p) => p.handle !== handle);
+    const current = readSet();
+    const target = current.find((p) => p.handle === handle);
+    const next = current.filter((p) => p.handle !== handle);
     writeSet(next);
+    announce(target ? `Removed ${target.title} from saved` : 'Removed from saved');
   };
 
-  const clearAll = () => writeSet([]);
+  const clearAll = () => {
+    writeSet([]);
+    announce('Cleared saved mattresses');
+  };
 
   if (!hydrated) {
     return (
