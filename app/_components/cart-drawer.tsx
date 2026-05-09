@@ -12,6 +12,7 @@ import { formatMoney } from '@/lib/format';
 export function CartDrawer() {
   const { cart, drawerOpen, closeDrawer, updateLine, removeLine, pending } = useCart();
   const drawerRef = useRef<HTMLDivElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   // Close on Escape
   useEffect(() => {
@@ -29,6 +30,15 @@ export function CartDrawer() {
   // icon button (or wherever was focused at open time).
   useFocusTrap(drawerOpen, drawerRef);
 
+  // Auto-focus the close button on open. Lands keyboard / SR users
+  // somewhere predictable. Wrapped in rAF so the drawer is in the
+  // DOM and not stuck in mid-transition before .focus() runs.
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const id = requestAnimationFrame(() => closeBtnRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [drawerOpen]);
+
   if (!drawerOpen) return null;
 
   const lines = cart?.lines.nodes ?? [];
@@ -45,7 +55,7 @@ export function CartDrawer() {
               {cart?.totalQuantity ?? 0} item{(cart?.totalQuantity ?? 0) === 1 ? '' : 's'}
             </h2>
           </div>
-          <button className="icon-btn" type="button" onClick={closeDrawer} aria-label="Close">
+          <button ref={closeBtnRef} className="icon-btn" type="button" onClick={closeDrawer} aria-label="Close">
             <Icon name="close" size={22} />
           </button>
         </header>
