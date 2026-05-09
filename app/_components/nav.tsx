@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from './icon';
@@ -128,9 +128,36 @@ export function Nav() {
   const mobileDrawerRef = useRef<HTMLDivElement>(null);
   useFocusTrap(mobileOpen, mobileDrawerRef);
 
+  // Toggle .nav-scrolled when the visitor has scrolled past the very
+  // top — adds a subtle box-shadow so the nav reads as elevated above
+  // the page content. RAF-throttled. Threshold of 4px (not 0)
+  // because momentum scrolling can leave the page at -1 / +1 pixels
+  // briefly and we don't want the shadow to flicker at the top.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    let raf: number | null = null;
+    const compute = () => {
+      raf = null;
+      setScrolled((prev) => {
+        const next = window.scrollY > 4;
+        return prev === next ? prev : next;
+      });
+    };
+    const onScroll = () => {
+      if (raf !== null) return;
+      raf = requestAnimationFrame(compute);
+    };
+    compute();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (raf !== null) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
     <>
-      <header className="nav" onMouseLeave={() => setMega(null)}>
+      <header className={`nav${scrolled ? ' nav-scrolled' : ''}`} onMouseLeave={() => setMega(null)}>
         <div className="container nav-inner">
           <Link href="/" className="logo" aria-label="LA Mattress">
             <Image
