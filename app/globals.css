@@ -3215,6 +3215,44 @@ summary:focus-visible,
   .gd-side { display: none; }
 }
 
+/* /account tiles — pre-customer-account placeholder grid (Saved /
+   Compare / Cart / Sleep quiz). 2-col on desktop, 1-col on mobile. */
+.account-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-3);
+  margin: var(--s-5) 0 var(--s-6);
+}
+@media (max-width: 600px) { .account-tiles { grid-template-columns: 1fr; } }
+.account-tile {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--s-4);
+  align-items: center;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  text-decoration: none; color: inherit;
+  transition: border-color var(--d-fast) var(--ease), transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease);
+}
+.account-tile:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--sh-2);
+}
+.account-tile-icon {
+  width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface-2);
+  border-radius: var(--r-2);
+  color: var(--text);
+  flex-shrink: 0;
+}
+.account-tile-body { min-width: 0; }
+.account-tile-label { font-size: 15px; font-weight: 600; color: var(--text); }
+.account-tile-sub { font-size: 13px; line-height: 1.45; margin-top: 2px; }
+
 /* Locations index page */
 .locations-page-hero { margin: var(--s-5) 0 var(--s-7); }
 .locations-page-hero h1 { margin: var(--s-3) 0 var(--s-4); }
