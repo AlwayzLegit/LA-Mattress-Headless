@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -60,27 +61,40 @@ function pushRecent(query: string): string[] {
 }
 
 /**
- * Click-to-expand header search with debounced predictive autocomplete.
+ * Header search overlay (design handoff §search-overlay).
  *
- * Calls /api/predictive-search server endpoint (which proxies to Storefront
- * predictiveSearch) so the public token doesn't leak into the client bundle.
- * Renders a panel below the input with up to 8 product matches plus
- * collections + pages. Esc / outside-click / blur close the panel.
+ * Click the search icon (or hit `/` from a non-input or Cmd+K from
+ * anywhere) to open a full-screen modal. The modal contains:
  *
- * Submission falls through to /search?q={query} for the full results page.
+ *   .search-overlay        backdrop (fixed inset 0, click to close)
+ *     .search-panel        centered card (max-w 720)
+ *       .search-head       icon + input + Esc kbd
+ *       .search-body       pre-query state (Trending / Recent /
+ *                          Quick links) OR result groups
+ *       .search-foot       keyboard hints (↑↓ navigate · ↵ select ·
+ *                          esc close · LA Mattress brand mark)
+ *
+ * Body scroll is locked while the overlay is open. Render is gated
+ * behind a `mounted` flag so the createPortal call doesn't run during
+ * SSR (document is undefined there).
  */
 export function HeaderSearch() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Predictive | null>(null);
   const [loading, setLoading] = useState(false);
   const [highlight, setHighlight] = useState(-1);
   const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
   const reqIdRef = useRef(0);
   const listboxId = useId();
+
+  // Portal needs document; flag it after hydration.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Hydrate recent searches once when the panel first opens. Reading
   // localStorage on mount would run on every page that includes the nav,
@@ -90,7 +104,27 @@ export function HeaderSearch() {
     setRecent(readRecent());
   }, [open]);
 
-  // Debounced fetch on query change.
+  // Body scroll lock while open. Restores the previous overflow value
+  // on close so we don't fight other modal-style components that also
+  // touch overflow (cart drawer, mobile menu, etc.).
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  // Auto-focus the input on open. Wait one frame so the portal has
+  // mounted and the input ref is wired.
+  useEffect(() => {
+    if (!open) return;
+    const id = requestAnimationFrame(() => inputRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [open]);
+
+  // Debounced predictive fetch on query change.
   useEffect(() => {
     const q = query.trim();
     if (!open || q.length < 2) {
@@ -118,17 +152,14 @@ export function HeaderSearch() {
     return () => window.clearTimeout(t);
   }, [query, open]);
 
-  // Close on outside click.
+  // Reset query when the overlay closes so a re-open starts from the
+  // empty state (Trending / Recent / Quick links) rather than the last
+  // query's results.
   useEffect(() => {
-    if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (panelRef.current?.contains(target)) return;
-      if (inputRef.current?.contains(target)) return;
-      setOpen(false);
-    };
-    document.addEventListener('mousedown', onDocClick);
-    return () => document.removeEventListener('mousedown', onDocClick);
+    if (open) return;
+    setQuery('');
+    setResults(null);
+    setHighlight(-1);
   }, [open]);
 
   // Keyboard shortcuts to open + focus the header search:
@@ -148,7 +179,6 @@ export function HeaderSearch() {
       if (isCmdK) {
         e.preventDefault();
         setOpen(true);
-        requestAnimationFrame(() => inputRef.current?.focus());
         return;
       }
 
@@ -159,7 +189,6 @@ export function HeaderSearch() {
       if (editable) return;
       e.preventDefault();
       setOpen(true);
-      requestAnimationFrame(() => inputRef.current?.focus());
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -173,7 +202,6 @@ export function HeaderSearch() {
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {
       setOpen(false);
-      inputRef.current?.blur();
       return;
     }
     if (!flat.length) return;
@@ -209,243 +237,268 @@ export function HeaderSearch() {
     goToSearch(query);
   };
 
-  if (!open) {
-    return (
+  // Trigger button always renders. The overlay is mounted into a
+  // portal when `open` flips true.
+  return (
+    <>
       <button
         type="button"
         className="icon-btn"
         aria-label="Search (press / to focus)"
-        title="Search (/)"
-        onClick={() => {
-          setOpen(true);
-          requestAnimationFrame(() => inputRef.current?.focus());
-        }}
+        title="Search ( / )"
+        onClick={() => setOpen(true)}
       >
         <Icon name="search" size={18} />
       </button>
-    );
-  }
 
-  return (
-    <div className="header-search">
-      <form className="header-search-form" onSubmit={submit} role="search">
-        <Icon name="search" size={18} />
-        <input
-          ref={inputRef}
-          type="search"
-          autoComplete="off"
-          placeholder="Search mattresses, brands, sizes…"
-          value={query}
-          onChange={(e) => setQuery(e.currentTarget.value)}
-          onKeyDown={onKeyDown}
-          aria-label="Search products"
-          aria-autocomplete="list"
-          aria-controls={listboxId}
-          aria-activedescendant={highlight >= 0 ? `${listboxId}-${highlight}` : undefined}
-        />
-        <button
-          type="button"
-          className="icon-btn"
-          aria-label="Close search"
-          onClick={() => setOpen(false)}
-        >
-          <Icon name="close" size={18} />
-        </button>
-      </form>
-      <div ref={panelRef} className="header-search-panel" role="listbox" id={listboxId}>
-        {query.trim().length < 2 ? (
-          <div className="header-search-prequery">
-            <div className="search-section">
-              <div className="search-section-label">Trending</div>
-              <div className="search-trending">
-                {TRENDING.map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    className="search-trending-pill"
-                    onClick={() => goToSearch(t)}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
+      {mounted && open
+        ? createPortal(
+            <div
+              className="search-overlay"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Search"
+              onClick={(e) => {
+                // Backdrop click closes; clicks inside the panel
+                // bubble to here too, but only the backdrop element
+                // itself should close.
+                if (e.target === e.currentTarget) setOpen(false);
+              }}
+            >
+              <div className="search-panel">
+                <form className="search-head" onSubmit={submit} role="search">
+                  <span className="search-icon" aria-hidden="true">
+                    <Icon name="search" size={18} />
+                  </span>
+                  <input
+                    ref={inputRef}
+                    type="search"
+                    autoComplete="off"
+                    placeholder="Search mattresses, brands, showrooms…"
+                    value={query}
+                    onChange={(e) => setQuery(e.currentTarget.value)}
+                    onKeyDown={onKeyDown}
+                    className="search-input"
+                    aria-label="Search products"
+                    aria-autocomplete="list"
+                    aria-controls={listboxId}
+                    aria-activedescendant={highlight >= 0 ? `${listboxId}-${highlight}` : undefined}
+                  />
+                  <kbd className="search-kbd">esc</kbd>
+                </form>
 
-            {recent.length > 0 ? (
-              <div className="search-section">
-                <div className="search-section-label">Recent</div>
-                <ul className="search-recent">
-                  {recent.map((r) => (
-                    <li key={r}>
-                      <button
-                        type="button"
-                        className="search-recent-row"
-                        onClick={() => goToSearch(r)}
-                      >
-                        <span className="search-recent-icon" aria-hidden="true">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                        </span>
-                        <span>{r}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
+                <div className="search-body" role="listbox" id={listboxId}>
+                  {query.trim().length < 2 ? (
+                    <div className="search-prequery">
+                      <div className="search-section">
+                        <div className="search-section-label">Trending</div>
+                        <div className="search-trending">
+                          {TRENDING.map((t) => (
+                            <button
+                              key={t}
+                              type="button"
+                              className="search-trending-pill"
+                              onClick={() => goToSearch(t)}
+                            >
+                              {t}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-            <div className="search-section">
-              <div className="search-section-label">Quick links</div>
-              <div className="search-quick-grid">
-                {[
-                  { label: 'Take the sleep quiz', href: '/sleep-quiz', body: '8 questions, 2 minutes' },
-                  { label: 'Compare mattresses',  href: '/compare',    body: 'Side-by-side specs' },
-                  { label: 'Find a showroom',     href: '/pages/mattress-store-locations', body: '5 across LA' },
-                  { label: 'Browse on sale',      href: '/collections/on-sale',            body: 'Current markdowns' },
-                ].map((q) => (
-                  <Link
-                    key={q.label}
-                    href={q.href}
-                    className="search-quick"
-                    onClick={() => setOpen(false)}
-                  >
-                    <div className="search-quick-label">{q.label}</div>
-                    <div className="search-quick-body muted">{q.body}</div>
-                  </Link>
-                ))}
+                      {recent.length > 0 ? (
+                        <div className="search-section">
+                          <div className="search-section-label">Recent</div>
+                          <ul className="search-recent">
+                            {recent.map((r) => (
+                              <li key={r}>
+                                <button
+                                  type="button"
+                                  className="search-recent-row"
+                                  onClick={() => goToSearch(r)}
+                                >
+                                  <span className="search-recent-icon" aria-hidden="true">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <circle cx="12" cy="12" r="9" />
+                                      <path d="M12 7v5l3 2" />
+                                    </svg>
+                                  </span>
+                                  <span>{r}</span>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+
+                      <div className="search-section">
+                        <div className="search-section-label">Quick links</div>
+                        <div className="search-quick-grid">
+                          {[
+                            { label: 'Take the sleep quiz', href: '/sleep-quiz', body: '8 questions, 2 minutes' },
+                            { label: 'Compare mattresses',  href: '/compare',    body: 'Side-by-side specs' },
+                            { label: 'Find a showroom',     href: '/pages/mattress-store-locations', body: '5 across LA' },
+                            { label: 'Browse on sale',      href: '/collections/on-sale',            body: 'Current markdowns' },
+                          ].map((q) => (
+                            <Link
+                              key={q.label}
+                              href={q.href}
+                              className="search-quick"
+                              onClick={() => setOpen(false)}
+                            >
+                              <div className="search-quick-label">{q.label}</div>
+                              <div className="search-quick-body muted">{q.body}</div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : loading && flat.length === 0 ? (
+                    <div className="search-empty-msg">Searching…</div>
+                  ) : flat.length === 0 ? (
+                    <div className="search-empty-msg">
+                      No matches. Press Enter to search anyway.
+                    </div>
+                  ) : (
+                    <>
+                      {results && results.products.length > 0 ? (
+                        <div className="header-search-group">
+                          <div className="eyebrow header-search-group-label">Products</div>
+                          <ul>
+                            {results.products.slice(0, 6).map((p, i) => {
+                              const idx = i;
+                              return (
+                                <li key={p.id}>
+                                  <Link
+                                    href={`/products/${p.handle}`}
+                                    className={`header-search-result${highlight === idx ? ' is-highlighted' : ''}`}
+                                    id={`${listboxId}-${idx}`}
+                                    role="option"
+                                    aria-selected={highlight === idx}
+                                    onClick={() => setOpen(false)}
+                                  >
+                                    <div className="header-search-thumb">
+                                      {p.featuredImage ? (
+                                        <Image
+                                          src={p.featuredImage.url}
+                                          alt={p.featuredImage.altText ?? p.title}
+                                          width={48}
+                                          height={48}
+                                          style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                                        />
+                                      ) : null}
+                                    </div>
+                                    <div className="header-search-meta">
+                                      <div className="header-search-vendor">{p.vendor}</div>
+                                      <div className="header-search-title">{p.title}</div>
+                                    </div>
+                                    <div className="header-search-price tnum">
+                                      {formatMoney(p.priceRange.minVariantPrice)}
+                                    </div>
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ) : null}
+                      {results && results.collections.length > 0 ? (
+                        <div className="header-search-group">
+                          <div className="eyebrow header-search-group-label">Collections</div>
+                          <ul>
+                            {results.collections.slice(0, 4).map((c, i) => {
+                              const idx = Math.min(results.products.length, 6) + i;
+                              return (
+                                <li key={c.handle}>
+                                  <Link
+                                    href={`/collections/${c.handle}`}
+                                    className={`header-search-link${highlight === idx ? ' is-highlighted' : ''}`}
+                                    id={`${listboxId}-${idx}`}
+                                    role="option"
+                                    aria-selected={highlight === idx}
+                                    onClick={() => setOpen(false)}
+                                  >
+                                    {c.title}
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ) : null}
+                      {showroomMatches.length > 0 ? (
+                        <div className="header-search-group">
+                          <div className="eyebrow header-search-group-label">Showrooms</div>
+                          <ul>
+                            {showroomMatches.slice(0, 4).map((s, i) => {
+                              const productCount = Math.min(results?.products.length ?? 0, 6);
+                              const collectionCount = Math.min(results?.collections.length ?? 0, 4);
+                              const idx = productCount + collectionCount + i;
+                              return (
+                                <li key={s.handle}>
+                                  <Link
+                                    href={`/pages/${s.handle}`}
+                                    className={`header-search-link header-search-article${highlight === idx ? ' is-highlighted' : ''}`}
+                                    id={`${listboxId}-${idx}`}
+                                    role="option"
+                                    aria-selected={highlight === idx}
+                                    onClick={() => setOpen(false)}
+                                  >
+                                    <span className="header-search-article-title">{s.name}</span>
+                                    <span className="muted header-search-article-blog">{s.area}</span>
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ) : null}
+                      {results && results.articles.length > 0 ? (
+                        <div className="header-search-group">
+                          <div className="eyebrow header-search-group-label">Articles</div>
+                          <ul>
+                            {results.articles.slice(0, 4).map((a, i) => {
+                              const idx =
+                                Math.min(results.products.length, 6) +
+                                Math.min(results.collections.length, 4) +
+                                Math.min(showroomMatches.length, 4) +
+                                i;
+                              return (
+                                <li key={a.id}>
+                                  <Link
+                                    href={`/blogs/${a.blog.handle}/${a.handle}`}
+                                    className={`header-search-link header-search-article${highlight === idx ? ' is-highlighted' : ''}`}
+                                    id={`${listboxId}-${idx}`}
+                                    role="option"
+                                    aria-selected={highlight === idx}
+                                    onClick={() => setOpen(false)}
+                                  >
+                                    <span className="header-search-article-title">{a.title}</span>
+                                    <span className="muted header-search-article-blog">{a.blog.title}</span>
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+
+                <footer className="search-foot">
+                  <span className="search-foot-item"><kbd className="search-kbd">↑</kbd><kbd className="search-kbd">↓</kbd> navigate</span>
+                  <span className="search-foot-item"><kbd className="search-kbd">↵</kbd> select</span>
+                  <span className="search-foot-item"><kbd className="search-kbd">esc</kbd> close</span>
+                  <span className="search-foot-spacer" />
+                  <span className="search-foot-brand">LA Mattress</span>
+                </footer>
               </div>
-            </div>
-          </div>
-        ) : loading && flat.length === 0 ? (
-          <div className="header-search-empty">Searching…</div>
-        ) : flat.length === 0 ? (
-          <div className="header-search-empty">No matches. Press Enter to search anyway.</div>
-        ) : (
-          <>
-              {results && results.products.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Products</div>
-                  <ul>
-                    {results.products.slice(0, 6).map((p, i) => {
-                      const idx = i;
-                      return (
-                        <li key={p.id}>
-                          <Link
-                            href={`/products/${p.handle}`}
-                            className={`header-search-result${highlight === idx ? ' is-highlighted' : ''}`}
-                            id={`${listboxId}-${idx}`}
-                            role="option"
-                            aria-selected={highlight === idx}
-                            onClick={() => setOpen(false)}
-                          >
-                            <div className="header-search-thumb">
-                              {p.featuredImage ? (
-                                <Image
-                                  src={p.featuredImage.url}
-                                  alt={p.featuredImage.altText ?? p.title}
-                                  width={48}
-                                  height={48}
-                                  style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                                />
-                              ) : null}
-                            </div>
-                            <div className="header-search-meta">
-                              <div className="header-search-vendor">{p.vendor}</div>
-                              <div className="header-search-title">{p.title}</div>
-                            </div>
-                            <div className="header-search-price tnum">
-                              {formatMoney(p.priceRange.minVariantPrice)}
-                            </div>
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ) : null}
-              {results && results.collections.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Collections</div>
-                  <ul>
-                    {results.collections.slice(0, 4).map((c, i) => {
-                      const idx = Math.min(results.products.length, 6) + i;
-                      return (
-                        <li key={c.handle}>
-                          <Link
-                            href={`/collections/${c.handle}`}
-                            className={`header-search-link${highlight === idx ? ' is-highlighted' : ''}`}
-                            id={`${listboxId}-${idx}`}
-                            role="option"
-                            aria-selected={highlight === idx}
-                            onClick={() => setOpen(false)}
-                          >
-                            {c.title}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ) : null}
-              {showroomMatches.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Showrooms</div>
-                  <ul>
-                    {showroomMatches.slice(0, 4).map((s, i) => {
-                      const productCount = Math.min(results?.products.length ?? 0, 6);
-                      const collectionCount = Math.min(results?.collections.length ?? 0, 4);
-                      const idx = productCount + collectionCount + i;
-                      return (
-                        <li key={s.handle}>
-                          <Link
-                            href={`/pages/${s.handle}`}
-                            className={`header-search-link header-search-article${highlight === idx ? ' is-highlighted' : ''}`}
-                            id={`${listboxId}-${idx}`}
-                            role="option"
-                            aria-selected={highlight === idx}
-                            onClick={() => setOpen(false)}
-                          >
-                            <span className="header-search-article-title">{s.name}</span>
-                            <span className="muted header-search-article-blog">{s.area}</span>
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ) : null}
-              {results && results.articles.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Articles</div>
-                  <ul>
-                    {results.articles.slice(0, 4).map((a, i) => {
-                      const idx =
-                        Math.min(results.products.length, 6) +
-                        Math.min(results.collections.length, 4) +
-                        Math.min(showroomMatches.length, 4) +
-                        i;
-                      return (
-                        <li key={a.id}>
-                          <Link
-                            href={`/blogs/${a.blog.handle}/${a.handle}`}
-                            className={`header-search-link header-search-article${highlight === idx ? ' is-highlighted' : ''}`}
-                            id={`${listboxId}-${idx}`}
-                            role="option"
-                            aria-selected={highlight === idx}
-                            onClick={() => setOpen(false)}
-                          >
-                            <span className="header-search-article-title">{a.title}</span>
-                            <span className="muted header-search-article-blog">{a.blog.title}</span>
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ) : null}
-            </>
-          )}
-      </div>
-    </div>
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   );
 }
 
