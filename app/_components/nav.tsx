@@ -208,6 +208,7 @@ export function Nav() {
                 }}
                 aria-expanded={item.mega ? mega === item.mega : undefined}
                 aria-haspopup={item.mega ? 'true' : undefined}
+                aria-controls={item.mega ? `nav-mega-${item.mega}` : undefined}
               >
                 {item.label}
                 {item.mega ? <Icon name="chevron-down" size={14} /> : null}
@@ -246,6 +247,7 @@ export function Nav() {
           // is the right pattern for a navigation submenu; the label
           // surfaces because <nav> has implicit role="navigation".
           <nav
+            id={`nav-mega-${mega}`}
             className="mega"
             onMouseLeave={() => setMega(null)}
             onKeyDown={(e) => { if (e.key === 'Escape') setMega(null); }}
