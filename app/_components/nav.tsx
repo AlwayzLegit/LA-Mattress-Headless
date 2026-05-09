@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from './icon';
 import { phImg, type PhFit } from './images';
 import { useCart } from './cart-context';
+import { useFocusTrap } from './use-focus-trap';
 import { HeaderSearch } from './header-search';
 import { NavSaved } from './nav-saved';
 import { useBodyScrollLock } from './use-body-scroll-lock';
@@ -122,6 +123,11 @@ export function Nav() {
   // search overlay, and mobile filter shell.
   useBodyScrollLock(mobileOpen);
 
+  // Tab cycles within the mobile drawer; close restores focus to the
+  // hamburger menu button.
+  const mobileDrawerRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(mobileOpen, mobileDrawerRef);
+
   return (
     <>
       <header className="nav" onMouseLeave={() => setMega(null)}>
@@ -221,7 +227,7 @@ export function Nav() {
       </header>
 
       {mobileOpen ? (
-        <div className="mobile-drawer" role="dialog" aria-label="Site menu">
+        <div className="mobile-drawer" role="dialog" aria-label="Site menu" aria-modal="true" ref={mobileDrawerRef}>
           <div className="mobile-drawer-hd">
             <Image
               src="/assets/la-mattress-logo.png"

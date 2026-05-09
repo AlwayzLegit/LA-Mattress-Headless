@@ -1,8 +1,9 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useTransition } from 'react';
+import { useMemo, useRef, useTransition } from 'react';
 import type { AvailableFilter } from '@/lib/shopify';
+import { useFocusTrap } from '../use-focus-trap';
 import {
   FILTER_PARAMS,
   clearAllFilters,
@@ -55,6 +56,11 @@ export function FilterPanel({ availableFilters, resultCount }: Props) {
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
   const { open: mobileOpen, setOpen: setMobileOpen } = useFilterShell();
+  const asideRef = useRef<HTMLElement>(null);
+
+  // Tab cycles within the filter drawer when it's open on mobile;
+  // close (X / scrim / Esc / matchMedia widen) restores focus.
+  useFocusTrap(mobileOpen, asideRef);
 
   const sel = useMemo<FilterSelection>(() => {
     const obj: Record<string, string | undefined> = {};
@@ -121,7 +127,7 @@ export function FilterPanel({ availableFilters, resultCount }: Props) {
       {mobileOpen ? (
         <div className="plp-filters-scrim" onClick={() => setMobileOpen(false)} aria-hidden />
       ) : null}
-      <aside className={cls} aria-label="Filter products" role={mobileOpen ? 'dialog' : undefined} aria-modal={mobileOpen || undefined}>
+      <aside ref={asideRef} className={cls} aria-label="Filter products" role={mobileOpen ? 'dialog' : undefined} aria-modal={mobileOpen || undefined}>
       <div className="plp-filters-head">
         <span className="eyebrow">Filter</span>
         <div className="plp-filters-head-actions">
