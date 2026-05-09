@@ -943,8 +943,13 @@ summary:focus-visible,
 }
 /* Desktop shows the keyboard hint as a label; mobile swaps to the
    tappable close button. Both are present in markup so the focus
-   trap and Tab order stay stable across breakpoints. */
-.search-kbd-hint { display: inline-flex; }
+   trap and Tab order stay stable across breakpoints.
+
+   Specificity bump (.search-head .search-kbd-hint) keeps these rules
+   winning over the bare .search-kbd { display: inline-flex } rule
+   that follows later in the file — without this, the source-later
+   .search-kbd rule re-asserts inline-flex and the mobile hide breaks. */
+.search-head .search-kbd-hint { display: inline-flex; }
 .search-close {
   display: none;
   appearance: none;
@@ -955,7 +960,7 @@ summary:focus-visible,
 }
 .search-close:hover { color: var(--text); background: var(--surface-2); }
 @media (max-width: 760px) {
-  .search-kbd-hint { display: none; }
+  .search-head .search-kbd-hint { display: none; }
   .search-close { display: inline-flex; }
 }
 .search-icon { color: var(--text-3); display: inline-flex; }
