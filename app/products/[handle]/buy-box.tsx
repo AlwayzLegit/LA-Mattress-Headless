@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Image, Money, ProductOption, ProductVariant } from '@/lib/shopify';
 import { useCart } from '@/app/_components/cart-context';
 import { Icon } from '@/app/_components/icon';
+import { announce } from '@/app/_components/announcer';
 import { formatMoney, formatPriceRange } from '@/lib/format';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
@@ -57,6 +58,32 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
     () => variants.find((v) => v.selectedOptions.every((o) => selection[o.name] === o.value)),
     [variants, selection],
   );
+
+  // Announce the current variant + price after the visitor changes a
+  // size / firmness / etc. — sighted users see the price + ATC label
+  // update; SR users got nothing without this. Skip the initial mount
+  // (`isInitialRef`) so just landing on the PDP doesn't fire an
+  // announcement of the default selection.
+  const isInitialRef = useRef(true);
+  useEffect(() => {
+    if (isInitialRef.current) {
+      isInitialRef.current = false;
+      return;
+    }
+    if (!matchingVariant) {
+      announce('That combination is not available.');
+      return;
+    }
+    const sizeOpt = matchingVariant.selectedOptions.find((o) => /size/i.test(o.name));
+    const otherOpts = matchingVariant.selectedOptions.filter((o) => !/size/i.test(o.name));
+    const labelParts = [
+      sizeOpt ? `${sizeOpt.value} size` : null,
+      ...otherOpts.map((o) => o.value),
+      formatMoney(matchingVariant.price),
+      matchingVariant.availableForSale ? null : 'currently out of stock',
+    ].filter(Boolean);
+    announce(labelParts.join(', '));
+  }, [matchingVariant]);
 
   function isAvailable(name: string, value: string): boolean {
     return variants.some((v) => {
