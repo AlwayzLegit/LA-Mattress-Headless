@@ -31,7 +31,7 @@ export default function SleepQuizPage() {
         <div className="quiz-shell">
           <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
-            <span className="sep">/</span>
+            <span className="sep" aria-hidden="true">/</span>
             <span>Sleep Quiz</span>
           </nav>
           <header className="quiz-header">

@@ -223,9 +223,9 @@ function ProductView({ product, related }: { product: Product; related: ProductS
     <main className="container pdp">
       <nav className="lp-breadcrumbs" aria-label="Breadcrumb" style={{ paddingTop: 'var(--s-5)' }}>
         <Link href="/">Home</Link>
-        <span className="sep">/</span>
+        <span className="sep" aria-hidden="true">/</span>
         <Link href="/collections/mattresses">Mattresses</Link>
-        <span className="sep">/</span>
+        <span className="sep" aria-hidden="true">/</span>
         <span>{product.title}</span>
       </nav>
 

@@ -39,7 +39,7 @@ export default async function ComparePage({ searchParams }: Search) {
     <main className="container compare-page">
       <nav className="lp-breadcrumbs" aria-label="Breadcrumb" style={{ paddingTop: 'var(--s-5)' }}>
         <Link href="/">Home</Link>
-        <span className="sep">/</span>
+        <span className="sep" aria-hidden="true">/</span>
         <span>Compare</span>
       </nav>
 

@@ -26,7 +26,7 @@ export default function AccountPage() {
       <div style={{ maxWidth: 640 }}>
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
-          <span className="sep">/</span>
+          <span className="sep" aria-hidden="true">/</span>
           <span>Account</span>
         </nav>
         <div className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>Account</div>

@@ -88,7 +88,7 @@ export default async function BlogIndexPage(props: Params) {
         <div className="container">
           <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
-            <span className="sep">/</span>
+            <span className="sep" aria-hidden="true">/</span>
             <span>{displayTitle}</span>
           </nav>
           <div className="lp-hero-inner lp-hero-inner-stacked">

@@ -60,7 +60,7 @@ export default async function ReviewsPage() {
     <main className="container reviews-page">
       <nav className="lp-breadcrumbs" aria-label="Breadcrumb" style={{ paddingTop: 'var(--s-5)' }}>
         <Link href="/">Home</Link>
-        <span className="sep">/</span>
+        <span className="sep" aria-hidden="true">/</span>
         <span>Reviews</span>
       </nav>
 
