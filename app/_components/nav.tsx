@@ -226,7 +226,12 @@ export function Nav() {
               onClick={openDrawer}
             >
               <Icon name="cart" size={18} />
-              {count > 0 ? <span className="cart-count">{count}</span> : null}
+              {count > 0 ? (
+                // aria-hidden — the parent <button> already exposes
+                // the count via its dynamic aria-label, so the
+                // visible badge is just a visual cue.
+                <span className="cart-count" aria-hidden="true">{count}</span>
+              ) : null}
             </button>
             <button
               className="icon-btn mobile-only"

@@ -45,7 +45,15 @@ export function NavSaved() {
       href="/wishlist"
     >
       <Icon name="heart" size={18} />
-      {hydrated && count > 0 ? <span className="nav-saved-count">{count > 9 ? '9+' : count}</span> : null}
+      {hydrated && count > 0 ? (
+        // Decorative — the parent <Link> already exposes the count
+        // via its dynamic aria-label, so the visible badge is just a
+        // visual cue. aria-hidden so SR doesn't double-read "3 items"
+        // followed by "3".
+        <span className="nav-saved-count" aria-hidden="true">
+          {count > 9 ? '9+' : count}
+        </span>
+      ) : null}
     </Link>
   );
 }
