@@ -81,10 +81,10 @@ export function PopularProducts() {
           <div className="section-head-right">
             <Link href="/collections/popular" className="link-arrow">Shop all <Icon name="arrow-right" size={14} /></Link>
             <div className="scroll-controls">
-              <button className="round-btn" type="button" onClick={() => scroll(-1)} aria-label="Previous">
+              <button className="round-btn" type="button" onClick={() => scroll(-1)} aria-label="Scroll popular mattresses left">
                 <Icon name="arrow-left" size={16} />
               </button>
-              <button className="round-btn" type="button" onClick={() => scroll(1)} aria-label="Next">
+              <button className="round-btn" type="button" onClick={() => scroll(1)} aria-label="Scroll popular mattresses right">
                 <Icon name="arrow-right" size={16} />
               </button>
             </div>
