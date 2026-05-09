@@ -1582,7 +1582,9 @@ summary:focus-visible,
 .footer .muted { color: rgba(255,255,255,0.72); }
 
 .footer-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
-.footer-cols .eyebrow { color: #fff; margin-bottom: 16px; }
+/* Column heading: was a <div>, now an <h3> for SR landmark/heading nav.
+   The shorthand zeroes UA margin-top so the visual layout doesn't shift. */
+.footer-cols .eyebrow { color: #fff; margin: 0 0 16px; }
 .footer-cols ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
 .footer-cols li { transition: color var(--d-fast); cursor: pointer; }
 .footer-cols li:hover { color: #fff; }
