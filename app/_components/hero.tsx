@@ -54,12 +54,23 @@ const HERO_SLIDES: Slide[] = [
 export function Hero({ autoplay = true }: { autoplay?: boolean }) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
+  // Defer mounting <Image> for inactive slides until after hydration.
+  // SSR-rendered HTML otherwise includes 3 hero-sized images that the
+  // browser fetches on initial paint (lazy-loading doesn't help — the
+  // off-screen slides have layout and IntersectionObserver treats them
+  // as in-viewport even when opacity:0). LCP candidate is slide 0's
+  // image; deferring the other two saves ~400KB on slow networks.
+  // After mount, all slides render their images normally so the
+  // carousel transitions stay smooth.
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     if (!autoplay || paused) return;
     const t = setTimeout(() => setI((v) => (v + 1) % HERO_SLIDES.length), 7000);
     return () => clearTimeout(t);
   }, [i, autoplay, paused]);
+
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <section
@@ -91,16 +102,18 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
             inert={idx !== i}
           >
             <div className="hero-bg">
-              <Image
-                src={imgUrl(s.bgImg)}
-                alt=""
-                fill
-                priority={idx === 0}
-                fetchPriority={idx === 0 ? 'high' : 'auto'}
-                sizes="100vw"
-                quality={75}
-                className="hero-bg-img"
-              />
+              {(idx === 0 || mounted) ? (
+                <Image
+                  src={imgUrl(s.bgImg)}
+                  alt=""
+                  fill
+                  priority={idx === 0}
+                  fetchPriority={idx === 0 ? 'high' : 'auto'}
+                  sizes="100vw"
+                  quality={75}
+                  className="hero-bg-img"
+                />
+              ) : null}
             </div>
             <div className="hero-grad" />
             <div className="container hero-content">
