@@ -160,7 +160,20 @@ export function FilterPanel({ availableFilters, resultCount }: Props) {
       {mobileOpen ? (
         <div className="plp-filters-scrim" onClick={() => setMobileOpen(false)} aria-hidden />
       ) : null}
-      <aside ref={asideRef} className={cls} aria-label="Filter products" role={mobileOpen ? 'dialog' : undefined} aria-modal={mobileOpen || undefined}>
+      <aside
+        ref={asideRef}
+        className={cls}
+        aria-label="Filter products"
+        role={mobileOpen ? 'dialog' : undefined}
+        aria-modal={mobileOpen || undefined}
+        // aria-busy during the soft navigation between filter states
+        // tells SR users the panel + its results are in flight. Pairs
+        // with the post-transition resultCount announce (Phase 130 +
+        // 137) so SR users hear "loading…" then "Now showing N
+        // mattresses". The `is-pending` CSS class already handles the
+        // sighted-user feedback (filter panel dims).
+        aria-busy={pending || undefined}
+      >
       <div className="plp-filters-head">
         <span className="eyebrow">Filter</span>
         <div className="plp-filters-head-actions">
