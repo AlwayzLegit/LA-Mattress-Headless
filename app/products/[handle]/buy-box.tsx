@@ -244,6 +244,11 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
         type="button"
         className="btn btn-primary btn-lg pdp-cta"
         disabled={!canBuy}
+        // aria-busy explicitly signals the in-flight add. The visible
+        // "Adding…" label + disabled state already convey this, but
+        // aria-busy is the programmatic equivalent some AT use to
+        // suppress duplicate announcements while a control is working.
+        aria-busy={pending || undefined}
         onClick={() => matchingVariant && addLine(matchingVariant.id, qty)}
       >
         {pending ? 'Adding…' : matchingVariant?.availableForSale ? (
