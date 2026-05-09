@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
+import { announce } from '@/app/_components/announcer';
 import { QUESTIONS, recommend, type Answers, type Recommendation } from './quiz-data';
 
 const PERSIST_KEY = 'la-mattress.sleep-quiz.v1';
@@ -149,11 +150,32 @@ function Result({
   answers: Answers;
   onRestart: () => void;
 }) {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  // When the result page swaps in, focus has just been on a now-unmounted
+  // button (Next / See my match / Skip to results / auto-advance timer).
+  // Move it to the result heading so keyboard + SR users land on something
+  // meaningful instead of having focus dropped to <body>. Same pattern as
+  // newsletter-form and opt-out-form. The announce() also fires the polite
+  // live region so the transition isn't silent.
+  useEffect(() => {
+    announce(`Your match: ${result.type}. We'd shortlist ${result.primary.label} first.`);
+    const id = requestAnimationFrame(() => headingRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [result.type, result.primary.label]);
+
   return (
     <div className="quiz quiz-result">
       <div className="quiz-result-head">
         <div className="eyebrow">Your match</div>
-        <h2 className="h1" style={{ margin: 'var(--s-3) 0 var(--s-3)' }}>{result.type}</h2>
+        <h2
+          ref={headingRef}
+          className="h1"
+          style={{ margin: 'var(--s-3) 0 var(--s-3)' }}
+          tabIndex={-1}
+        >
+          {result.type}
+        </h2>
         <p className="lp-hero-lede" style={{ marginBottom: 'var(--s-5)' }}>
           Based on how you sleep, we&rsquo;d shortlist <strong>{result.primary.label.toLowerCase()}</strong> first. You can come try them at any LA showroom.
         </p>
