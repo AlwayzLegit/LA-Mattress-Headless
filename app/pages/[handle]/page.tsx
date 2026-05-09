@@ -75,6 +75,30 @@ export default async function ShopifyPage(props: Params) {
 function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle>> }) {
   if (!page) return null;
 
+  // BreadcrumbList + WebPage JSON-LD. The locations index and showroom
+  // templates already emit their own structured data; the default
+  // template was emitting none, so cms pages had no rich-result eligibility
+  // beyond the generic site-wide Organization/WebSite from layout.tsx.
+  const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
+  const url = `${SITE}/pages/${page.handle}`;
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
+      { '@type': 'ListItem', position: 2, name: cleanTitle, item: url },
+    ],
+  };
+  const webPageLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: cleanTitle,
+    url,
+    description: firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined,
+    isPartOf: { '@type': 'WebSite', url: SITE },
+    inLanguage: 'en-US',
+  };
+
   return (
     <main className="container">
       <article className="cms-page" style={{ padding: 'var(--s-8) 0' }}>
@@ -110,6 +134,8 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
           </div>
         )}
       </article>
+      <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
+      <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }
