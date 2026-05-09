@@ -137,12 +137,17 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
           role="group"
           aria-label="Choose hero slide"
           onKeyDown={(e) => {
-            const last = HERO_SLIDES.length - 1;
+            // Modulo form so left/right wrap symmetrically. The
+            // earlier ternary form (Phase 141) tested correct on
+            // paper but the Cowork retest caught ArrowLeft-from-0
+            // not wrapping to last. Rewriting as modulo eliminates
+            // any subtle branch asymmetry and is cheap.
+            const total = HERO_SLIDES.length;
             let next: number | null = null;
-            if (e.key === 'ArrowRight') next = i === last ? 0 : i + 1;
-            else if (e.key === 'ArrowLeft') next = i === 0 ? last : i - 1;
+            if (e.key === 'ArrowRight') next = (i + 1) % total;
+            else if (e.key === 'ArrowLeft') next = (i - 1 + total) % total;
             else if (e.key === 'Home') next = 0;
-            else if (e.key === 'End') next = last;
+            else if (e.key === 'End') next = total - 1;
             if (next === null) return;
             e.preventDefault();
             setI(next);
