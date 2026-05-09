@@ -54,15 +54,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const delta = line ? quantity - line.quantity : 0;
     startTransition(() => setOptimisticCount(delta));
     const res = await updateCartLine(lineId, quantity);
-    if (res.ok) setCart(res.cart);
+    if (res.ok) {
+      setCart(res.cart);
+      announce(`Cart updated. ${quantity} ${quantity === 1 ? 'item' : 'items'} of this product.`);
+    } else {
+      announce('Could not update cart.');
+    }
   }, [cart, setOptimisticCount]);
 
   const removeLine = useCallback(async (lineId: string) => {
     const previousCart = cart;
     const line = previousCart?.lines.nodes.find((l) => l.id === lineId);
+    const removedTitle = line?.merchandise.product.title;
     if (line) startTransition(() => setOptimisticCount(-line.quantity));
     const res = await removeCartLine(lineId);
-    if (res.ok) setCart(res.cart);
+    if (res.ok) {
+      setCart(res.cart);
+      announce(removedTitle ? `Removed ${removedTitle} from cart` : 'Removed from cart');
+    } else {
+      announce('Could not remove from cart.');
+    }
   }, [cart, setOptimisticCount]);
 
   const value = useMemo<CartContextValue>(() => ({
