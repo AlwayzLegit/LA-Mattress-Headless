@@ -7,6 +7,7 @@ import { useCart } from './cart-context';
 import { Icon } from './icon';
 import { useBodyScrollLock } from './use-body-scroll-lock';
 import { useFocusTrap } from './use-focus-trap';
+import { CartEmptyRecent } from './cart-empty-recent';
 import { formatMoney } from '@/lib/format';
 
 export function CartDrawer() {
@@ -67,6 +68,7 @@ export function CartDrawer() {
             <Link href="/collections/mattresses" className="btn btn-primary" onClick={closeDrawer} style={{ marginTop: 'var(--s-4)' }}>
               Shop mattresses
             </Link>
+            <CartEmptyRecent onNavigate={closeDrawer} />
           </div>
         ) : (
           <>
