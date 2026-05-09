@@ -64,11 +64,14 @@ export function NewsletterForm() {
         required
         autoComplete="email"
         disabled={status === 'submitting'}
+        aria-label="Email address for newsletter"
+        aria-invalid={status === 'error' || undefined}
+        aria-describedby={error ? 'newsletter-form-error' : undefined}
       />
       <button className="btn btn-secondary" type="submit" disabled={status === 'submitting'}>
         {status === 'submitting' ? 'Subscribing…' : 'Subscribe'}
       </button>
-      {error ? <div className="footer-form-error" role="alert">{error}</div> : null}
+      {error ? <div id="newsletter-form-error" className="footer-form-error" role="alert">{error}</div> : null}
     </form>
   );
 }
