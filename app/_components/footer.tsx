@@ -43,7 +43,10 @@ export function Footer() {
     <footer className="footer">
       <div className="container footer-top">
         <div className="footer-newsletter">
-          <div className="h2 footer-h" role="presentation">Sleep on it.</div>
+          {/* Marketing headline — visually heading-styled, but it labels
+              the newsletter form below so we promote it to a real <h2>
+              with aria-labelledby so the form region is named. */}
+          <h2 id="footer-newsletter-h" className="h2 footer-h">Sleep on it.</h2>
           <p className="muted footer-lede">First dibs on floor-model markdowns, plus our quarterly mattress-care guide. No spam.</p>
           <NewsletterForm />
           <div className="footer-fineprint muted">
@@ -52,16 +55,24 @@ export function Footer() {
           </div>
         </div>
         <div className="footer-cols">
-          {COLS.map((c) => (
-            <div key={c.title}>
-              <div className="eyebrow">{c.title}</div>
-              <ul>
-                {c.links.map((l) => (
-                  <li key={l.label}><Link href={l.href}>{l.label}</Link></li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {COLS.map((c) => {
+            const navId = `footer-col-${c.title.toLowerCase()}`;
+            return (
+              // Each column is a nav landmark for SR landmark-nav. The
+              // .eyebrow class is stylistic; the element is now a real
+              // <h3> so heading-jump (NVDA H / JAWS) can skim Shop / Help
+              // / Stores / Company. aria-labelledby ties the heading to
+              // the list so the column has a programmatic name.
+              <nav key={c.title} aria-labelledby={navId}>
+                <h3 id={navId} className="eyebrow">{c.title}</h3>
+                <ul>
+                  {c.links.map((l) => (
+                    <li key={l.label}><Link href={l.href}>{l.label}</Link></li>
+                  ))}
+                </ul>
+              </nav>
+            );
+          })}
         </div>
       </div>
       <div className="container footer-signature">

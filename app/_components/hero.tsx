@@ -68,6 +68,19 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
       aria-label="Featured highlights"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      // Keyboard equivalent of the hover-pause: when a CTA inside the
+      // active slide takes focus, freeze autoplay so the slide doesn't
+      // swap out from under a keyboard user mid-tab. relatedTarget is
+      // the element receiving focus — null when leaving the page
+      // entirely. The currentTarget.contains check makes blur fire only
+      // when focus exits the carousel subtree, not on intra-carousel
+      // tabs (otherwise pause would flicker on/off per Tab keystroke).
+      onFocus={() => setPaused(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          setPaused(false);
+        }
+      }}
     >
       <div className="hero-stack">
         {HERO_SLIDES.map((s, idx) => (

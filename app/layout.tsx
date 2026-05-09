@@ -74,7 +74,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <CartProvider>
           <TopBar />
           <Nav />
-          <div id="main-content">{children}</div>
+          {/*
+            Skip-link target. tabIndex={-1} is required: without it, the
+            browser scrolls to #main-content on activation but keyboard
+            focus stays on the skip link itself, so the next Tab starts
+            from the link/body rather than from inside the content. With
+            tabindex set, .focus() (browser-native on hash nav) actually
+            lands focus here. Pages then provide their own <main>.
+          */}
+          <div id="main-content" tabIndex={-1}>{children}</div>
           <Footer />
           <CartDrawer />
           <CompareTray />

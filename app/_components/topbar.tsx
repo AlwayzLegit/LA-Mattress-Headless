@@ -12,9 +12,9 @@ export function TopBar() {
       <div className="container topbar-inner">
         <div className="topbar-marquee">
           <span><Icon name="truck" size={14} /> Free white-glove delivery</span>
-          <span className="topbar-dot">·</span>
+          <span className="topbar-dot" aria-hidden="true">·</span>
           <span><Icon name="card" size={14} /> 0% APR financing available</span>
-          <span className="topbar-dot">·</span>
+          <span className="topbar-dot" aria-hidden="true">·</span>
           <span><Icon name="shield" size={14} /> 120-night comfort exchange</span>
         </div>
         <div className="topbar-right">

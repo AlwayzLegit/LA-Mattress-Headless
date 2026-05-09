@@ -227,12 +227,12 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
       ) : null}
 
       <div className="pdp-qty-row">
-        <span className="eyebrow">Quantity</span>
-        <div className="pdp-stepper">
+        <span className="eyebrow" id="pdp-qty-label">Quantity</span>
+        <div className="pdp-stepper" role="group" aria-labelledby="pdp-qty-label">
           <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease quantity" disabled={qty <= 1}>
             <Icon name="minus" size={14} />
           </button>
-          <span className="tnum" aria-live="polite">{qty}</span>
+          <span className="tnum" aria-live="polite" aria-label={`${qty} selected`}>{qty}</span>
           <button type="button" onClick={() => setQty((q) => Math.min(10, q + 1))} aria-label="Increase quantity" disabled={qty >= 10}>
             <Icon name="plus" size={14} />
           </button>

@@ -86,7 +86,7 @@ export default async function ComparePage({ searchParams }: Search) {
                     <Link href={`/products/${p.handle}`} className="compare-product-name">
                       {p.title}
                     </Link>
-                    <CompareRemove handle={p.handle} />
+                    <CompareRemove handle={p.handle} title={p.title} />
                   </th>
                 ))}
               </tr>

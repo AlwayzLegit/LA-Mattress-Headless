@@ -25,10 +25,13 @@ export function FilterMobileTrigger({ sel }: { sel: FilterSelection }) {
       className="plp-filters-mobile-trigger"
       onClick={() => setOpen(true)}
       aria-haspopup="dialog"
+      aria-label={count > 0 ? `Filter, ${count} active` : 'Filter'}
     >
       <Icon name="menu" size={14} />
-      Filter
-      {count > 0 ? <span className="plp-filters-mobile-count tnum">{count}</span> : null}
+      <span aria-hidden="true">Filter</span>
+      {count > 0 ? (
+        <span className="plp-filters-mobile-count tnum" aria-hidden="true">{count}</span>
+      ) : null}
     </button>
   );
 }

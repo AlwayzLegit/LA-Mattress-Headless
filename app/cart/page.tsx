@@ -87,7 +87,7 @@ export default async function CartPage() {
                     <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
                       {v.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(' · ')}
                     </div>
-                    <CartLineEditor lineId={line.id} initialQuantity={line.quantity} />
+                    <CartLineEditor lineId={line.id} initialQuantity={line.quantity} productTitle={v.product.title} />
                   </div>
                   <div className="cart-page-line-price">
                     <span className="tnum">{formatMoney(line.cost.totalAmount)}</span>
