@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Icon } from '@/app/_components/icon';
+import { announce } from '@/app/_components/announcer';
 
 const COMPARE_KEY = 'la-mattress.compare.v1';
 const COMPARE_EVENT = 'la-mattress:compare-change';
@@ -119,9 +120,11 @@ export function PdpCtaRow({
   const toggleSave = () => {
     const cur = readSet(WISHLIST_KEY);
     const idx = cur.findIndex((p) => p.handle === handle);
+    const adding = idx < 0;
     if (idx >= 0) cur.splice(idx, 1);
     else cur.push(snapshot());
     writeSet(WISHLIST_KEY, WISHLIST_EVENT, cur);
+    announce(adding ? `Saved ${title}` : `Removed ${title} from saved`);
   };
 
   const toggleCompare = () => {
@@ -129,13 +132,17 @@ export function PdpCtaRow({
     const idx = cur.findIndex((p) => p.handle === handle);
     if (idx >= 0) {
       cur.splice(idx, 1);
+      writeSet(COMPARE_KEY, COMPARE_EVENT, cur);
+      announce(`Removed ${title} from compare`);
     } else if (cur.length < COMPARE_MAX) {
       cur.push(snapshot());
+      writeSet(COMPARE_KEY, COMPARE_EVENT, cur);
+      announce(`Added ${title} to compare. ${cur.length} of ${COMPARE_MAX} selected.`);
     } else {
-      // Cap reached — silent no-op (visitor sees the floating tray with 4).
-      return;
+      // Cap reached — surface it audibly so SR users aren't met with
+      // a silent no-op when they try to add a 5th item.
+      announce(`Compare is full. Remove one of the ${COMPARE_MAX} selected mattresses first.`);
     }
-    writeSet(COMPARE_KEY, COMPARE_EVENT, cur);
   };
 
   // Don't render until hydrated so SSR matches first paint.

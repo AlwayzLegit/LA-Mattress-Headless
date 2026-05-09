@@ -23,6 +23,7 @@ import { Footer } from './_components/footer';
 import { CartProvider } from './_components/cart-context';
 import { CartDrawer } from './_components/cart-drawer';
 import { CompareTray } from './_components/compare';
+import { Announcer } from './_components/announcer';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ORGANIZATION_LD, WEBSITE_LD } from '@/lib/structured-data';
@@ -77,6 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <CartDrawer />
           <CompareTray />
+          <Announcer />
         </CartProvider>
         <Analytics />
         <SpeedInsights />
