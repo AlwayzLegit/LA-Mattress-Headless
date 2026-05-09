@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Icon } from '@/app/_components/icon';
 
 type RequestKind = 'opt_out_sale' | 'access' | 'delete' | 'correct';
@@ -34,6 +34,18 @@ export function OptOutForm() {
   const [state, setState] = useState<State>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [requests, setRequests] = useState<RequestKind[]>(['opt_out_sale']);
+  const successRef = useRef<HTMLDivElement>(null);
+
+  // After the form submits successfully, the form fields unmount and
+  // a confirmation block takes their place. Move focus to the
+  // confirmation so keyboard + SR users land on it instead of having
+  // focus dropped to <body>. Same pattern as the newsletter form.
+  useEffect(() => {
+    if (state === 'success') {
+      const id = requestAnimationFrame(() => successRef.current?.focus());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [state]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,7 +76,13 @@ export function OptOutForm() {
 
   if (state === 'success') {
     return (
-      <div className="ccpa-success" role="status">
+      <div
+        ref={successRef}
+        className="ccpa-success"
+        role="status"
+        aria-live="polite"
+        tabIndex={-1}
+      >
         <Icon name="check" size={20} />
         <h2 className="h3" style={{ margin: '8px 0' }}>Request received</h2>
         <p className="muted" style={{ fontSize: 15, lineHeight: 1.55 }}>
