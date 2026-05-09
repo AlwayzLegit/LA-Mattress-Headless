@@ -126,7 +126,27 @@ export function Nav() {
   // Tab cycles within the mobile drawer; close restores focus to the
   // hamburger menu button.
   const mobileDrawerRef = useRef<HTMLDivElement>(null);
+  const mobileCloseRef = useRef<HTMLButtonElement>(null);
   useFocusTrap(mobileOpen, mobileDrawerRef);
+
+  // Auto-focus the close button when the mobile drawer opens — same
+  // pattern as the cart drawer (Phase 109). Lands keyboard / SR users
+  // somewhere predictable instead of waiting for them to Tab in.
+  // Wrapped in rAF so the drawer is mounted before .focus() runs.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const id = requestAnimationFrame(() => mobileCloseRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [mobileOpen]);
+
+  // Escape closes the mobile drawer — completes the keyboard pattern
+  // shared with the cart drawer and search overlay.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMobileOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [mobileOpen]);
 
   // Toggle .nav-scrolled when the visitor has scrolled past the very
   // top — adds a subtle box-shadow so the nav reads as elevated above
@@ -187,7 +207,7 @@ export function Nav() {
                   }
                 }}
                 aria-expanded={item.mega ? mega === item.mega : undefined}
-                aria-haspopup={item.mega ? 'menu' : undefined}
+                aria-haspopup={item.mega ? 'true' : undefined}
               >
                 {item.label}
                 {item.mega ? <Icon name="chevron-down" size={14} /> : null}
@@ -218,11 +238,18 @@ export function Nav() {
           </div>
         </div>
         {mega && MEGA[mega] ? (
-          <div
+          // The mega panel is navigation links, not a menu widget. ARIA
+          // role="menu" implies arrow-key navigation between menuitems,
+          // which doesn't match real-world site nav behavior — and using
+          // it without proper menuitem children is incorrect per the
+          // WAI-ARIA Authoring Practices Guide. <nav> with aria-label
+          // is the right pattern for a navigation submenu; the label
+          // surfaces because <nav> has implicit role="navigation".
+          <nav
             className="mega"
             onMouseLeave={() => setMega(null)}
             onKeyDown={(e) => { if (e.key === 'Escape') setMega(null); }}
-            role="menu"
+            aria-label={`${mega.charAt(0).toUpperCase() + mega.slice(1)} submenu`}
           >
             <div className="container mega-inner">
               <div className="mega-cols">
@@ -249,7 +276,7 @@ export function Nav() {
                 ))}
               </div>
             </div>
-          </div>
+          </nav>
         ) : null}
       </header>
 
@@ -263,7 +290,7 @@ export function Nav() {
               width={400}
               height={224}
             />
-            <button className="icon-btn" type="button" onClick={() => setMobileOpen(false)} aria-label="Close menu">
+            <button ref={mobileCloseRef} className="icon-btn" type="button" onClick={() => setMobileOpen(false)} aria-label="Close menu">
               <Icon name="close" size={22} />
             </button>
           </div>
