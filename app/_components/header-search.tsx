@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from './icon';
+import { useBodyScrollLock } from './use-body-scroll-lock';
 import type { Predictive } from '@/lib/shopify';
 import { formatMoney } from '@/lib/format';
 import { searchShowrooms, type Showroom } from '@/lib/showrooms';
@@ -104,17 +105,10 @@ export function HeaderSearch() {
     setRecent(readRecent());
   }, [open]);
 
-  // Body scroll lock while open. Restores the previous overflow value
-  // on close so we don't fight other modal-style components that also
-  // touch overflow (cart drawer, mobile menu, etc.).
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
+  // Stack-aware body scroll lock — see use-body-scroll-lock.ts. Other
+  // overlays (cart drawer, filter shell, mobile nav) share the hook so
+  // concurrent modals don't strand body in overflow:hidden.
+  useBodyScrollLock(open);
 
   // Auto-focus the input on open. Wait one frame so the portal has
   // mounted and the input ref is wired.
