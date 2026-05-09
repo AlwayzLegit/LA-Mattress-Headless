@@ -61,9 +61,19 @@ export function ActiveFilters({ sel }: { sel: FilterSelection }) {
   };
 
   return (
-    <div className={`plp-active-filters ${pending ? 'is-pending' : ''}`} aria-label="Active filters">
+    <div
+      className={`plp-active-filters ${pending ? 'is-pending' : ''}`}
+      role="group"
+      aria-label="Active filters"
+    >
       {chips.map((c, i) => (
-        <button key={`${c.param}-${c.value ?? 'price'}-${i}`} type="button" className="plp-active-chip" onClick={() => onRemove(c)}>
+        <button
+          key={`${c.param}-${c.value ?? 'price'}-${i}`}
+          type="button"
+          className="plp-active-chip"
+          onClick={() => onRemove(c)}
+          aria-label={`Remove ${c.label} filter`}
+        >
           {c.label}
           <Icon name="close" size={12} />
         </button>
