@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useBodyScrollLock } from '../use-body-scroll-lock';
 
 type Ctx = { open: boolean; setOpen: (v: boolean) => void };
 const FilterShellContext = createContext<Ctx | null>(null);
@@ -14,13 +15,8 @@ export function useFilterShell(): Ctx {
 export function FilterShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
 
-  // Lock body scroll while the mobile drawer is open.
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [open]);
+  // Stack-aware body scroll lock for the mobile filter drawer.
+  useBodyScrollLock(open);
 
   // Close on Escape; close when viewport grows past the mobile breakpoint.
   useEffect(() => {

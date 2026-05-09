@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from './cart-context';
 import { Icon } from './icon';
+import { useBodyScrollLock } from './use-body-scroll-lock';
 import { formatMoney } from '@/lib/format';
 
 export function CartDrawer() {
@@ -18,13 +19,9 @@ export function CartDrawer() {
     return () => document.removeEventListener('keydown', onKey);
   }, [drawerOpen, closeDrawer]);
 
-  // Lock body scroll while open
-  useEffect(() => {
-    if (!drawerOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [drawerOpen]);
+  // Stack-aware body scroll lock — see use-body-scroll-lock.ts. Other
+  // overlays (search, filter shell, mobile nav) share the same hook.
+  useBodyScrollLock(drawerOpen);
 
   if (!drawerOpen) return null;
 

@@ -8,6 +8,7 @@ import { phImg, type PhFit } from './images';
 import { useCart } from './cart-context';
 import { HeaderSearch } from './header-search';
 import { NavSaved } from './nav-saved';
+import { useBodyScrollLock } from './use-body-scroll-lock';
 import { SITE_PHONE_TEL } from '@/lib/site-config';
 
 type MegaCol = { title: string; links: { label: string; href: string }[] };
@@ -115,6 +116,11 @@ export function Nav() {
   const [mega, setMega] = useState<MegaKey | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { count, openDrawer } = useCart();
+
+  // Lock background scroll while the mobile drawer is open. Stack-
+  // aware via the shared hook so it composes with the cart drawer,
+  // search overlay, and mobile filter shell.
+  useBodyScrollLock(mobileOpen);
 
   return (
     <>
