@@ -9,8 +9,24 @@ import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, getOpenStatus, type Showroom } from '@/lib/showrooms';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
-import { SITE_PHONE_SCHEMA } from '@/lib/site-config';
+import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_PHONE_SCHEMA } from '@/lib/site-config';
 import { Icon } from '@/app/_components/icon';
+
+/**
+ * Fallback for published pages that have no body content. The previous
+ * UX rendered "This page has no content yet" which is bad on real
+ * customer-facing URLs. Reuses the 404 page's category grid + secondary
+ * link pattern so the visitor lands somewhere useful regardless of which
+ * empty handle they hit.
+ */
+const EMPTY_FALLBACK_CATEGORIES: { label: string; href: string; sub: string }[] = [
+  { label: 'Mattresses',       href: '/collections/mattresses',                sub: 'All sizes & brands' },
+  { label: 'Tempur-Pedic',     href: '/collections/tempur-pedic-mattresses',   sub: 'Memory foam, premium' },
+  { label: 'Stearns & Foster', href: '/collections/stearns-foster-mattresses', sub: 'Luxury hybrids' },
+  { label: 'On Sale',          href: '/collections/on-sale',                   sub: 'Current markdowns' },
+  { label: 'Showrooms',        href: '/pages/mattress-store-locations',        sub: '5 across LA' },
+  { label: 'Sleep Quiz',       href: '/sleep-quiz',                            sub: '8 questions, 2 minutes' },
+];
 
 type Params = { params: Promise<{ handle: string }> };
 
@@ -71,7 +87,27 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
         {page.body ? (
           <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
         ) : (
-          <p className="muted">This page has no content yet.</p>
+          // Fallback for pages that exist + are published but have no
+          // body content yet. Reuses the 404 page's category-tile +
+          // secondary-link pattern so the visitor lands somewhere
+          // useful instead of a "no content yet" dead end. Better SEO
+          // signal too — the page now offers actual outbound link
+          // value rather than near-zero content.
+          <div style={{ marginTop: 'var(--s-5)' }}>
+            <p className="muted" style={{ fontSize: 17, lineHeight: 1.5, maxWidth: '52ch', marginBottom: 'var(--s-6)' }}>
+              We&rsquo;re still updating this page. In the meantime, here&rsquo;s where most folks were heading next, or call us at{' '}
+              <a href={`tel:${SITE_PHONE_TEL}`}>{SITE_PHONE_DISPLAY}</a>.
+            </p>
+            <div className="nf-grid">
+              {EMPTY_FALLBACK_CATEGORIES.map((c) => (
+                <Link key={c.href} href={c.href} className="nf-tile">
+                  <div className="nf-tile-label">{c.label}</div>
+                  <div className="nf-tile-sub muted">{c.sub}</div>
+                  <Icon name="arrow-right" size={16} />
+                </Link>
+              ))}
+            </div>
+          </div>
         )}
       </article>
     </main>
