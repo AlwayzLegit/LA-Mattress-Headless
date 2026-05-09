@@ -123,7 +123,33 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
       </div>
 
       <div className="hero-controls container">
-        <div className="hero-progress">
+        {/*
+          Carousel dot group. Per WAI-ARIA APG carousel pattern:
+          - role="group" + aria-label so the dots are programmatically
+            identified as the slide picker, not just a row of buttons.
+          - Roving tabindex: only the active dot is in the tab order;
+            ArrowLeft/Right move to the prev/next dot. So a keyboard
+            user can cycle slides without tabbing through three buttons.
+            Home/End jump to first/last slide.
+        */}
+        <div
+          className="hero-progress"
+          role="group"
+          aria-label="Choose hero slide"
+          onKeyDown={(e) => {
+            const last = HERO_SLIDES.length - 1;
+            let next: number | null = null;
+            if (e.key === 'ArrowRight') next = i === last ? 0 : i + 1;
+            else if (e.key === 'ArrowLeft') next = i === 0 ? last : i - 1;
+            else if (e.key === 'Home') next = 0;
+            else if (e.key === 'End') next = last;
+            if (next === null) return;
+            e.preventDefault();
+            setI(next);
+            const dots = e.currentTarget.querySelectorAll<HTMLButtonElement>('.hero-dot');
+            dots[next]?.focus();
+          }}
+        >
           {HERO_SLIDES.map((_, idx) => (
             <button
               key={idx}
@@ -132,6 +158,7 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
               onClick={() => setI(idx)}
               aria-label={`Slide ${idx + 1} of ${HERO_SLIDES.length}`}
               aria-current={idx === i ? 'true' : undefined}
+              tabIndex={idx === i ? 0 : -1}
             >
               <span className="hero-dot-bar">
                 <span className="hero-dot-fill" style={{ animationPlayState: paused ? 'paused' : 'running' }} />

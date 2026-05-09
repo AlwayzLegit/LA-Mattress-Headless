@@ -122,6 +122,17 @@ export function ArticleToc({ headings }: { headings: Heading[] }) {
       el.classList.remove('gd-heading-flash');
       flashTimerRef.current = null;
     }, FLASH_MS);
+    // Move keyboard focus to the destination heading. Default
+    // anchor-link behaviour scrolls but leaves focus on the TOC link,
+    // so a SR user who clicks "Memory foam pros" still hears the TOC,
+    // not the heading they jumped to. Headings aren't natively
+    // focusable; set tabIndex=-1 just in time so .focus() works. We
+    // don't strip it after — if the reader clicks the TOC again, the
+    // heading is still focusable, no harm done. preventScroll because
+    // the browser's hash-nav already scrolls to the right place via
+    // the href="#id" attribute and we don't want a double-jump.
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: true });
   };
 
   if (headings.length === 0) return <aside aria-hidden="true" />;
@@ -130,17 +141,25 @@ export function ArticleToc({ headings }: { headings: Heading[] }) {
     <aside className="gd-toc" aria-label="Article contents">
       <div className="gd-toc-eyebrow">Contents</div>
       <ul>
-        {headings.map((h) => (
-          <li key={h.id}>
-            <a
-              href={`#${h.id}`}
-              className={h.id === activeId ? 'on' : undefined}
-              onClick={onTocClick(h.id)}
-            >
-              {h.text}
-            </a>
-          </li>
-        ))}
+        {headings.map((h) => {
+          const isActive = h.id === activeId;
+          return (
+            <li key={h.id}>
+              <a
+                href={`#${h.id}`}
+                className={isActive ? 'on' : undefined}
+                onClick={onTocClick(h.id)}
+                // aria-current="location" is the WAI-ARIA-recommended
+                // value for in-page nav: tells SR users which section
+                // is currently in view. The visual .on class already
+                // conveys this to sighted users.
+                aria-current={isActive ? 'location' : undefined}
+              >
+                {h.text}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </aside>
   );

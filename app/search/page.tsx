@@ -172,7 +172,7 @@ export default async function SearchPage(props: Params) {
   return (
     <main className="container plp">
       <header className="lp-hero" style={{ paddingBottom: 'var(--s-5)' }}>
-        <nav className="lp-breadcrumbs">
+        <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
           <span>Search</span>

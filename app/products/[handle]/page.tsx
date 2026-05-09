@@ -221,7 +221,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
 
   return (
     <main className="container pdp">
-      <nav className="lp-breadcrumbs" style={{ paddingTop: 'var(--s-5)' }}>
+      <nav className="lp-breadcrumbs" aria-label="Breadcrumb" style={{ paddingTop: 'var(--s-5)' }}>
         <Link href="/">Home</Link>
         <span className="sep">/</span>
         <Link href="/collections/mattresses">Mattresses</Link>

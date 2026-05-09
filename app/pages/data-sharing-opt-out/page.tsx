@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function DataSharingOptOutPage() {
   return (
     <main className="container" style={{ paddingTop: 'var(--s-7)', paddingBottom: 'var(--s-9)' }}>
-      <nav className="lp-breadcrumbs" style={{ marginBottom: 'var(--s-5)' }}>
+      <nav className="lp-breadcrumbs" aria-label="Breadcrumb" style={{ marginBottom: 'var(--s-5)' }}>
         <Link href="/">Home</Link>
         <span className="sep">/</span>
         <span>Privacy choices</span>

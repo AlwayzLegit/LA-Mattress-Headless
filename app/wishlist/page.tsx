@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function WishlistPage() {
   return (
     <main className="container" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
-      <nav className="lp-breadcrumbs">
+      <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Home</Link>
         <span className="sep">/</span>
         <span>Saved</span>

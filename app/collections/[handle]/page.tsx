@@ -175,7 +175,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
   return (
     <main className="container plp">
       <header className="plp-hero">
-        <nav className="lp-breadcrumbs">
+        <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
           {collection.handle !== 'mattresses' ? (
