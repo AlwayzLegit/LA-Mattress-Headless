@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { Icon } from './icon';
 import { useBodyScrollLock } from './use-body-scroll-lock';
 import { useFocusTrap } from './use-focus-trap';
+import { announce } from './announcer';
 import type { Predictive } from '@/lib/shopify';
 import { formatMoney } from '@/lib/format';
 import { searchShowrooms, type Showroom } from '@/lib/showrooms';
@@ -143,6 +144,22 @@ export function HeaderSearch() {
         if (reqIdRef.current === myId) {
           setResults(data);
           setHighlight(-1);
+          // Announce result count for SR users so the listbox transition
+          // isn't silent. Showroom matches are searched client-side and
+          // counted alongside Shopify results. Fires once per debounced
+          // request (180ms after typing stops), not per keystroke.
+          const showroomCount = searchShowrooms(q).length;
+          const total =
+            data.products.length +
+            data.collections.length +
+            data.articles.length +
+            data.pages.length +
+            showroomCount;
+          announce(
+            total === 0
+              ? `No matches for ${q}. Press Enter to search anyway.`
+              : `${total} suggestion${total === 1 ? '' : 's'} for ${q}`,
+          );
         }
       } catch {
         if (reqIdRef.current === myId) setResults(null);
