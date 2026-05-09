@@ -1,16 +1,29 @@
-'use client';
-
-import { useId, useState } from 'react';
 import Link from 'next/link';
 import { Icon } from '../icon';
 import { HOMEPAGE_FAQ } from '@/lib/faq';
 
+/**
+ * Homepage FAQ — server component using native <details>/<summary>.
+ *
+ * Native disclosure semantics give us:
+ *   - aria-expanded on the summary, derived from the open attribute,
+ *     handled by the browser (no useState, no useId).
+ *   - hidden-when-collapsed: built into <details>; collapsed panel
+ *     is removed from the layout AND accessibility tree (same SR
+ *     correctness Phase 144 added via the `hidden` attribute).
+ *   - Native focus-visible on the summary with no ring shimming.
+ *
+ * Trade-off vs the Phase 144 button-based version: native <details>
+ * lets multiple panels stay open simultaneously, where the previous
+ * version was exclusive (one-open-at-a-time). The previous behavior
+ * was a UX choice but not a requirement — allowing multiple-open is
+ * arguably better when the visitor wants to skim a few answers.
+ *
+ * Visual: the +/- icon swap uses two stacked Icon SVGs, hidden via
+ * the .faq-item[open] / :not([open]) selectors in globals.css. No
+ * JS, no client component, no hydration cost on this section.
+ */
 export function FAQ() {
-  const [open, setOpen] = useState<number>(0);
-  // Stable id prefix so each FAQ button can reference its panel via
-  // aria-controls and the panel can reference its button via
-  // aria-labelledby. useId is per-component-instance.
-  const idPrefix = useId();
   return (
     <section className="section faq">
       <div className="container faq-inner">
@@ -22,44 +35,20 @@ export function FAQ() {
           </Link>
         </div>
         <div className="faq-list">
-          {HOMEPAGE_FAQ.map((it, i) => {
-            const isOpen = open === i;
-            const buttonId = `${idPrefix}-q-${i}`;
-            const panelId = `${idPrefix}-a-${i}`;
-            return (
-              <div key={i} className={`faq-item ${isOpen ? 'on' : ''}`}>
-                <button
-                  type="button"
-                  id={buttonId}
-                  className="faq-q"
-                  aria-expanded={isOpen}
-                  aria-controls={panelId}
-                  onClick={() => setOpen(isOpen ? -1 : i)}
-                >
-                  <span>{it.q}</span>
-                  <Icon name={isOpen ? 'minus' : 'plus'} size={18} />
-                </button>
-                {/* The hidden attribute removes the panel from the
-                    accessibility tree when collapsed, so SR users
-                    don't hear all answers regardless of state. The
-                    earlier max-height:0 visual collapse left the
-                    DOM content fully exposed to assistive tech.
-                    Trade-off: the smooth slide animation no longer
-                    runs. Reduced-motion users wouldn't have seen it
-                    anyway, and sighted users get an instant snap
-                    that's still recognisable as "opened/closed". */}
-                <div
-                  id={panelId}
-                  role="region"
-                  aria-labelledby={buttonId}
-                  className="faq-a"
-                  hidden={!isOpen}
-                >
-                  <p>{it.a}</p>
-                </div>
+          {HOMEPAGE_FAQ.map((it, i) => (
+            // Open first item by default (matches the previous
+            // useState(0) initial state).
+            <details key={i} className="faq-item" open={i === 0}>
+              <summary className="faq-q">
+                <span>{it.q}</span>
+                <span className="faq-icon faq-icon-closed"><Icon name="plus" size={18} /></span>
+                <span className="faq-icon faq-icon-open"><Icon name="minus" size={18} /></span>
+              </summary>
+              <div className="faq-a">
+                <p>{it.a}</p>
               </div>
-            );
-          })}
+            </details>
+          ))}
         </div>
       </div>
     </section>
