@@ -131,6 +131,30 @@ a { color: inherit; text-decoration: none; }
   padding: 0 var(--gutter);
 }
 
+/* WCAG 2.4.7 — every focusable element gets a visible focus indicator
+   when reached by keyboard. Components that already define their own
+   (.footer-input, .ccpa-field input, .search-head, the .pdp-thumb
+   ::after ring, etc.) win on specificity. Mouse focus stays visually
+   identical to the resting state via :focus-visible (only keyboard
+   tabbing gets the ring). */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Search overlay input — the .search-head row already conveys focus
+   via the underline border, but the input itself was outline:none
+   with no fallback. Promote the head's bottom-border to accent so
+   keyboard users have an unambiguous focus location. */
+.search-head:focus-within { border-bottom-color: var(--accent); }
+.search-head .search-input:focus-visible { outline: none; }
+
 /* Buttons */
 .btn {
   display: inline-flex;
