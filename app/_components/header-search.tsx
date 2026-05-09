@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from './icon';
 import { useBodyScrollLock } from './use-body-scroll-lock';
+import { useFocusTrap } from './use-focus-trap';
 import type { Predictive } from '@/lib/shopify';
 import { formatMoney } from '@/lib/format';
 import { searchShowrooms, type Showroom } from '@/lib/showrooms';
@@ -89,8 +90,14 @@ export function HeaderSearch() {
   const [highlight, setHighlight] = useState(-1);
   const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const reqIdRef = useRef(0);
   const listboxId = useId();
+
+  // Tab cycles within the open overlay; close restores focus to the
+  // trigger button (search icon) so keyboard users don't dump back to
+  // document.body.
+  useFocusTrap(open, panelRef);
 
   // Portal needs document; flag it after hydration.
   useEffect(() => {
@@ -259,7 +266,7 @@ export function HeaderSearch() {
                 if (e.target === e.currentTarget) setOpen(false);
               }}
             >
-              <div className="search-panel">
+              <div className="search-panel" ref={panelRef}>
                 <form className="search-head" onSubmit={submit} role="search">
                   <span className="search-icon" aria-hidden="true">
                     <Icon name="search" size={18} />

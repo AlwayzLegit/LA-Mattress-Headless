@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from './cart-context';
 import { Icon } from './icon';
 import { useBodyScrollLock } from './use-body-scroll-lock';
+import { useFocusTrap } from './use-focus-trap';
 import { formatMoney } from '@/lib/format';
 
 export function CartDrawer() {
   const { cart, drawerOpen, closeDrawer, updateLine, removeLine, pending } = useCart();
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   // Close on Escape
   useEffect(() => {
@@ -23,13 +25,17 @@ export function CartDrawer() {
   // overlays (search, filter shell, mobile nav) share the same hook.
   useBodyScrollLock(drawerOpen);
 
+  // Tab cycles within the drawer; close restores focus to the cart
+  // icon button (or wherever was focused at open time).
+  useFocusTrap(drawerOpen, drawerRef);
+
   if (!drawerOpen) return null;
 
   const lines = cart?.lines.nodes ?? [];
   const isEmpty = lines.length === 0;
 
   return (
-    <div className="cart-drawer-root" role="dialog" aria-label="Shopping cart" aria-modal="true">
+    <div className="cart-drawer-root" role="dialog" aria-label="Shopping cart" aria-modal="true" ref={drawerRef}>
       <button className="cart-drawer-scrim" type="button" onClick={closeDrawer} aria-label="Close cart" />
       <aside className="cart-drawer">
         <header className="cart-drawer-hd">
