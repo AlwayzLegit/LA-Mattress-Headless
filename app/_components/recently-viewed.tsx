@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Product, ProductSummary } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
+import { announce } from './announcer';
 
 const KEY = 'la-mattress.recently-viewed.v1';
 const MAX = 12;
@@ -98,6 +99,7 @@ export function RecentlyViewedRail({
   const onClear = () => {
     try { window.localStorage.removeItem(KEY); } catch { /* ignore */ }
     setItems([]);
+    announce('Cleared recently viewed history');
   };
 
   return (

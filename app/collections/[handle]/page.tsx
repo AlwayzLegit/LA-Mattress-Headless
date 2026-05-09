@@ -297,7 +297,11 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                 </div>
                 <div className="plp-pagination">
                   {nextHref ? (
-                    <Link href={nextHref} className="btn btn-ghost btn-lg">
+                    <Link
+                      href={nextHref}
+                      className="btn btn-ghost btn-lg"
+                      aria-label={`Load more ${collection.title.toLowerCase()}`}
+                    >
                       Load more <Icon name="arrow-right" size={16} />
                     </Link>
                   ) : null}
