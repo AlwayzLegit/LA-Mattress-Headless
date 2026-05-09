@@ -51,6 +51,18 @@ type Props = {
   resultCount?: number;
 };
 
+// Module-scoped flag for the filter result-count announcer. The
+// collections page wraps <CollectionBody> in <Suspense key={...}>
+// where the key includes every filter param, so toggling a filter
+// fully unmounts + remounts FilterPanel — a useRef would reset to
+// false on every remount and the "skip first render" guard would
+// swallow every announcement. Module state survives remounts, so
+// we use it instead. Reset on hard reload (full module reload),
+// preserved across soft nav. Initial hard load: this is false, the
+// first effect fires and flips it true (no announce). Subsequent
+// remounts (filter toggle): this is already true, announce fires.
+let hasMountedFilterPanelOnce = false;
+
 export function FilterPanel({ availableFilters, resultCount }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -58,21 +70,21 @@ export function FilterPanel({ availableFilters, resultCount }: Props) {
   const [pending, startTransition] = useTransition();
   const { open: mobileOpen, setOpen: setMobileOpen } = useFilterShell();
   const asideRef = useRef<HTMLElement>(null);
-  const didMountRef = useRef(false);
 
   // Tab cycles within the filter drawer when it's open on mobile;
   // close (X / scrim / Esc / matchMedia widen) restores focus.
   useFocusTrap(mobileOpen, asideRef);
 
-  // Announce result count after each filter change (URL-driven, so a
-  // change re-renders the page server-side and this component remounts
-  // with a new resultCount). Skip the initial render so we don't
-  // announce on first arrival to /collections/{handle}. SR users
-  // toggling a filter checkbox now hear "Now showing N mattresses"
-  // instead of waiting silently for the table of products to update.
+  // Announce result count after each filter change. SR users toggling
+  // a filter checkbox now hear "Now showing N mattresses" instead of
+  // waiting silently for the grid to update. See the module-scoped
+  // hasMountedFilterPanelOnce comment above for why useRef doesn't
+  // work here — Phase 130 used useRef and silently no-op'd because
+  // FilterPanel remounts on every filter change due to the Suspense
+  // key in app/collections/[handle]/page.tsx.
   useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
+    if (!hasMountedFilterPanelOnce) {
+      hasMountedFilterPanelOnce = true;
       return;
     }
     if (typeof resultCount !== 'number') return;
