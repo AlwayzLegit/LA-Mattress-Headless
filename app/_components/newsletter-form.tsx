@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -11,10 +11,26 @@ type Status = 'idle' | 'submitting' | 'success' | 'error';
  * for non-JS users — they get a JSON response on submission, which is
  * less polished but functional. JS-enabled users (the vast majority)
  * get the inline ack without losing their place on the page.
+ *
+ * On success, the input is unmounted and the success message takes
+ * its place. Focus is moved to the success element (tabindex=-1)
+ * so keyboard + SR users land on the confirmation instead of having
+ * focus dropped to <body>.
  */
 export function NewsletterForm() {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+
+  // After transitioning to success, send focus to the message so the
+  // SR re-announces it in addition to the live region fire — and the
+  // keyboard user's focus has somewhere meaningful to land.
+  useEffect(() => {
+    if (status === 'success') {
+      const id = requestAnimationFrame(() => successRef.current?.focus());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [status]);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,7 +64,13 @@ export function NewsletterForm() {
 
   if (status === 'success') {
     return (
-      <div className="footer-form footer-form-success" role="status" aria-live="polite">
+      <div
+        ref={successRef}
+        className="footer-form footer-form-success"
+        role="status"
+        aria-live="polite"
+        tabIndex={-1}
+      >
         Thanks — we&rsquo;ll be in touch when the next markdown drops.
       </div>
     );
