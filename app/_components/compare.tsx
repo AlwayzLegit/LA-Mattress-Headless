@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icon } from './icon';
+import { announce } from './announcer';
 
 const KEY = 'la-mattress.compare.v1';
 const MAX = 4;
@@ -78,13 +79,17 @@ export function CompareToggle({ handle, title }: { handle: string; title: string
     const idx = cur.findIndex((p) => p.handle === handle);
     if (idx >= 0) {
       cur.splice(idx, 1);
+      writeSet(cur);
+      announce(`Removed ${title} from compare`);
     } else if (cur.length < MAX) {
       cur.push({ handle, title });
+      writeSet(cur);
+      announce(`Added ${title} to compare. ${cur.length} of ${MAX} selected.`);
     } else {
-      // already 4 selected — flash a tiny visual cue but don't crash.
-      return;
+      // Already 4 selected — surface it audibly so SR users know why
+      // their click did nothing.
+      announce(`Compare is full. Remove one of the ${MAX} selected mattresses first.`);
     }
-    writeSet(cur);
   };
 
   // Don't render until hydrated so SSR matches first paint.
