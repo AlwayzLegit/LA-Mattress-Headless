@@ -62,7 +62,13 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
   }, [i, autoplay, paused]);
 
   return (
-    <section className="hero" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+    <section
+      className="hero"
+      aria-roledescription="carousel"
+      aria-label="Featured highlights"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <div className="hero-stack">
         {HERO_SLIDES.map((s, idx) => (
           <div
@@ -111,7 +117,8 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
               type="button"
               className={`hero-dot ${idx === i ? 'on' : ''}`}
               onClick={() => setI(idx)}
-              aria-label={`Slide ${idx + 1}`}
+              aria-label={`Slide ${idx + 1} of ${HERO_SLIDES.length}`}
+              aria-current={idx === i ? 'true' : undefined}
             >
               <span className="hero-dot-bar">
                 <span className="hero-dot-fill" style={{ animationPlayState: paused ? 'paused' : 'running' }} />
@@ -125,7 +132,8 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
             type="button"
             className="hero-pause"
             onClick={() => setPaused((p) => !p)}
-            aria-label={paused ? 'Play' : 'Pause'}
+            aria-label={paused ? 'Play hero carousel' : 'Pause hero carousel'}
+            aria-pressed={paused}
           >
             <Icon name={paused ? 'play' : 'pause'} size={14} />
           </button>
