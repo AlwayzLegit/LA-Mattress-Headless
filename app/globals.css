@@ -2954,7 +2954,27 @@ a { color: inherit; text-decoration: none; }
 /* Article body — sanitized Shopify HTML lives here. */
 .gd-body { max-width: 64ch; font-size: 17px; line-height: 1.65; color: var(--text-2); }
 .gd-body > :first-child { margin-top: 0; }
-.gd-body h2 { font-size: 32px; font-weight: 600; letter-spacing: -0.015em; color: var(--text); margin: var(--s-7) 0 var(--s-4); line-height: 1.2; scroll-margin-top: calc(var(--nav-h) + var(--s-3)); }
+.gd-body h2 { font-size: 32px; font-weight: 600; letter-spacing: -0.015em; color: var(--text); margin: var(--s-7) 0 var(--s-4); line-height: 1.2; scroll-margin-top: calc(var(--nav-h) + var(--s-3)); border-radius: 4px; }
+/* Brief pulse on the destination heading when a TOC link is clicked
+   so the reader's eye lands on the right section after the anchor
+   jump. The animation runs once and is layout-safe (background +
+   box-shadow halo only — no size or position changes). Toggled by
+   <ArticleToc/> on click via the .gd-heading-flash class.
+   prefers-reduced-motion drops the pulse entirely. */
+@keyframes gd-heading-flash {
+  0% {
+    background-color: rgba(20, 40, 160, 0.10);
+    box-shadow: 0 0 0 8px rgba(20, 40, 160, 0.10);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+.gd-heading-flash { animation: gd-heading-flash 1.2s ease-out forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .gd-heading-flash { animation: none; }
+}
 .gd-body h3 { font-size: 22px; font-weight: 600; color: var(--text); margin: var(--s-6) 0 var(--s-3); scroll-margin-top: calc(var(--nav-h) + var(--s-3)); }
 .gd-body h4 { font-size: 18px; font-weight: 600; color: var(--text); margin: var(--s-5) 0 var(--s-2); }
 .gd-body p { margin: 0 0 var(--s-4); text-wrap: pretty; }

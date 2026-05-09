@@ -14,6 +14,15 @@ import type { Heading } from '@/lib/article-toc';
 const ACTIVE_OFFSET_PX = 120;
 
 /**
+ * How long the pulse highlight stays on the destination heading after
+ * a TOC link is clicked. Matches the keyframe duration on
+ * .gd-heading-flash in globals.css. Tuned to be long enough that a
+ * reader who scrolls in slow can still notice the highlight when the
+ * jump completes.
+ */
+const FLASH_MS = 1200;
+
+/**
  * Sticky TOC for the article 3-col layout (design §Guide detail).
  *
  * Renders the same SSR markup as the design's GuidePage (eyebrow + ul
@@ -27,10 +36,17 @@ const ACTIVE_OFFSET_PX = 120;
  * relative to the viewport, and the active heading is the LAST one
  * whose top has scrolled above ACTIVE_OFFSET_PX. That's the section
  * the reader is currently inside.
+ *
+ * Click polish: clicking a TOC link fires a brief pulse highlight on
+ * the destination heading so the reader knows their click landed.
+ * Implemented by toggling .gd-heading-flash for FLASH_MS — the CSS
+ * keyframe handles the visual fade. Re-clicking the same link
+ * re-triggers (we strip + force-reflow + re-add the class).
  */
 export function ArticleToc({ headings }: { headings: Heading[] }) {
   const [activeId, setActiveId] = useState<string>(headings[0]?.id ?? '');
   const rafIdRef = useRef<number | null>(null);
+  const flashTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (headings.length === 0) return;
@@ -78,6 +94,36 @@ export function ArticleToc({ headings }: { headings: Heading[] }) {
     };
   }, [headings]);
 
+  // Strip any pending flash class on unmount so navigating between
+  // articles doesn't leave a stale glow on the old heading.
+  useEffect(() => {
+    return () => {
+      if (flashTimerRef.current !== null) {
+        window.clearTimeout(flashTimerRef.current);
+        flashTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  const onTocClick = (id: string) => () => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    // Cancel any in-flight flash so a rapid second click on a
+    // different anchor doesn't get cut short by the previous timer.
+    if (flashTimerRef.current !== null) {
+      window.clearTimeout(flashTimerRef.current);
+    }
+    // Strip + force reflow + re-add so re-clicking the same link
+    // re-runs the animation instead of doing nothing.
+    el.classList.remove('gd-heading-flash');
+    void el.offsetWidth;
+    el.classList.add('gd-heading-flash');
+    flashTimerRef.current = window.setTimeout(() => {
+      el.classList.remove('gd-heading-flash');
+      flashTimerRef.current = null;
+    }, FLASH_MS);
+  };
+
   if (headings.length === 0) return <aside aria-hidden="true" />;
 
   return (
@@ -86,7 +132,11 @@ export function ArticleToc({ headings }: { headings: Heading[] }) {
       <ul>
         {headings.map((h) => (
           <li key={h.id}>
-            <a href={`#${h.id}`} className={h.id === activeId ? 'on' : undefined}>
+            <a
+              href={`#${h.id}`}
+              className={h.id === activeId ? 'on' : undefined}
+              onClick={onTocClick(h.id)}
+            >
               {h.text}
             </a>
           </li>
