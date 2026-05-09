@@ -2258,6 +2258,61 @@ summary:focus-visible,
   text-align: center;
   color: var(--text-3);
 }
+/* "Last viewed" card surfaced in the cart-drawer empty state.
+   Pulls the visitor back to the PDP they were last on instead of
+   offering only a generic Browse CTA. Self-aligns within the empty
+   block so it doesn't disturb the centered layout above. */
+.cart-empty-recent {
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+  width: 100%;
+  max-width: 360px;
+  text-align: left;
+}
+.cart-empty-recent .eyebrow { margin-bottom: var(--s-3); }
+.cart-empty-recent-card {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: var(--s-3);
+  align-items: center;
+  padding: var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+}
+.cart-empty-recent-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-1px);
+}
+.cart-empty-recent-img {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  background: var(--surface-2);
+  border-radius: var(--r-2);
+  overflow: hidden;
+}
+.cart-empty-recent-meta { min-width: 0; }
+.cart-empty-recent-vendor {
+  font-size: 11px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.cart-empty-recent-title {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cart-empty-recent-price { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 2px; }
 
 .cart-line-list {
   list-style: none; padding: 0; margin: 0;
