@@ -1532,8 +1532,10 @@ summary:focus-visible,
   cursor: pointer;
   text-align: left;
 }
-.faq-a { max-height: 0; overflow: hidden; transition: max-height var(--d-base) var(--ease); }
-.faq-item.on .faq-a { max-height: 240px; }
+/* Collapse handled by the `hidden` attribute on the panel for SR
+   correctness; CSS just styles the open state. The earlier
+   max-height transition kept hidden answers in the accessibility
+   tree, so SR users heard every answer regardless of expansion. */
 .faq-a p { font-size: 15px; line-height: 1.6; color: var(--text-3); margin: 0 0 24px; max-width: 60ch; }
 
 /* ───── Footer ───── */
