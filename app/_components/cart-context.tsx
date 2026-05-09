@@ -42,7 +42,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const res = await addAction(variantId, quantity);
     if (res.ok) {
       setCart(res.cart);
-      announce(quantity === 1 ? 'Added to your cart' : `${quantity} added to your cart`);
+      // Look up the title from the post-add cart so the announcement
+      // names what was added: "Added Tempur ProAdapt to your cart"
+      // instead of generic "Added to your cart". Falls back to the
+      // generic copy if the line can't be located (defensive — should
+      // always be present right after a successful add).
+      const addedLine = res.cart?.lines.nodes.find((l) => l.merchandise.id === variantId);
+      const title = addedLine?.merchandise.product.title;
+      announce(
+        title
+          ? quantity === 1
+            ? `Added ${title} to your cart`
+            : `Added ${quantity} of ${title} to your cart`
+          : quantity === 1
+            ? 'Added to your cart'
+            : `${quantity} added to your cart`,
+      );
     } else {
       announce('Could not add to cart. Please try again.');
     }
