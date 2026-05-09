@@ -208,6 +208,7 @@ export function Nav() {
                 }}
                 aria-expanded={item.mega ? mega === item.mega : undefined}
                 aria-haspopup={item.mega ? 'true' : undefined}
+                aria-controls={item.mega ? `nav-mega-${item.mega}` : undefined}
               >
                 {item.label}
                 {item.mega ? <Icon name="chevron-down" size={14} /> : null}
@@ -225,7 +226,12 @@ export function Nav() {
               onClick={openDrawer}
             >
               <Icon name="cart" size={18} />
-              {count > 0 ? <span className="cart-count">{count}</span> : null}
+              {count > 0 ? (
+                // aria-hidden — the parent <button> already exposes
+                // the count via its dynamic aria-label, so the
+                // visible badge is just a visual cue.
+                <span className="cart-count" aria-hidden="true">{count}</span>
+              ) : null}
             </button>
             <button
               className="icon-btn mobile-only"
@@ -246,6 +252,7 @@ export function Nav() {
           // is the right pattern for a navigation submenu; the label
           // surfaces because <nav> has implicit role="navigation".
           <nav
+            id={`nav-mega-${mega}`}
             className="mega"
             onMouseLeave={() => setMega(null)}
             onKeyDown={(e) => { if (e.key === 'Escape') setMega(null); }}
