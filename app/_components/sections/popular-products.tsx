@@ -6,7 +6,7 @@
 import Link from 'next/link';
 import { Icon } from '../icon';
 import { phImg } from '../images';
-import { PopularProductsScrollButtons } from './popular-products-scroll-buttons';
+import { RailScrollButtons } from './rail-scroll-buttons';
 
 type Product = {
   brand: string;
@@ -79,7 +79,11 @@ export function PopularProducts() {
           </div>
           <div className="section-head-right">
             <Link href="/collections/popular" className="link-arrow">Shop all <Icon name="arrow-right" size={14} /></Link>
-            <PopularProductsScrollButtons railId={RAIL_ID} />
+            <RailScrollButtons
+              railId={RAIL_ID}
+              leftLabel="Scroll popular mattresses left"
+              rightLabel="Scroll popular mattresses right"
+            />
           </div>
         </div>
       </div>

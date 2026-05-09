@@ -1530,22 +1530,31 @@ summary:focus-visible,
 .faq-list { display: flex; flex-direction: column; }
 .faq-item { border-top: 1px solid var(--line); }
 .faq-item:last-child { border-bottom: 1px solid var(--line); }
+/* Phase 164: FAQ uses native <details>/<summary>. .faq-q is the
+   <summary> styled to match the previous button look. The default
+   browser disclosure marker is hidden in favour of the +/- icon
+   swap below. */
 .faq-q {
   width: 100%;
   display: flex; justify-content: space-between; align-items: center;
   background: none; border: 0; padding: 24px 0;
-  font: inherit;
   font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.01em;
   color: var(--text);
   cursor: pointer;
   text-align: left;
+  list-style: none; /* hide default disclosure triangle (Firefox + spec) */
 }
-/* Collapse handled by the `hidden` attribute on the panel for SR
-   correctness; CSS just styles the open state. The earlier
-   max-height transition kept hidden answers in the accessibility
-   tree, so SR users heard every answer regardless of expansion. */
+.faq-q::-webkit-details-marker { display: none; } /* Safari/Chrome */
+.faq-q::marker { display: none; } /* spec-compliant */
+
+/* +/- icon swap: only one of the two stacked Icon spans renders at a
+   time, gated by [open] on the parent <details>. No JS needed. */
+.faq-item .faq-icon-open   { display: none; }
+.faq-item[open] .faq-icon-closed { display: none; }
+.faq-item[open] .faq-icon-open   { display: inline-flex; }
+
 .faq-a p { font-size: 15px; line-height: 1.6; color: var(--text-3); margin: 0 0 24px; max-width: 60ch; }
 
 /* ───── Footer ───── */

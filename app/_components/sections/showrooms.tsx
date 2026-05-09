@@ -1,10 +1,13 @@
-'use client';
+// Phase 165: server component. Open-now status badges extracted to
+// ShowroomOpenNowBadge (client island) so the rest of the section —
+// including the cards themselves — render purely on the server. Scroll
+// buttons share the generic RailScrollButtons island from Phase 164.
 
-import { useRef } from 'react';
 import Link from 'next/link';
 import { Icon } from '../icon';
 import { phImg } from '../images';
-import { findShowroom, getOpenStatus } from '@/lib/showrooms';
+import { RailScrollButtons } from './rail-scroll-buttons';
+import { ShowroomOpenNowBadge } from './showroom-open-now-badge';
 
 type Showroom = {
   idx: string;
@@ -29,10 +32,9 @@ const SHOWROOMS: Showroom[] = [
   { idx: '05', name: 'Glendale',     area: 'Brand Blvd',         address: '230 N Brand Blvd',    hours: 'Open daily · 10–8', img: 'showroom-glendale',     label: '[Glendale exterior]',      href: '/pages/mattress-store-in-glendale',     canonicalHandle: 'mattress-store-in-glendale' },
 ];
 
-export function Showrooms() {
-  const scroller = useRef<HTMLDivElement>(null);
-  const scroll = (dir: -1 | 1) => scroller.current?.scrollBy({ left: dir * 720, behavior: 'smooth' });
+const RAIL_ID = 'showrooms-rail';
 
+export function Showrooms() {
   return (
     <section className="section showrooms section-dark" id="showrooms">
       <div className="container showrooms-head">
@@ -45,47 +47,37 @@ export function Showrooms() {
             Every mattress on this site is on the floor at one of our locations. Lie down for as long as
             you want — no appointments, no pressure.
           </p>
-          <div className="scroll-controls scroll-controls-dark">
-            <button className="round-btn round-btn-dark" type="button" onClick={() => scroll(-1)} aria-label="Scroll showrooms left">
-              <Icon name="arrow-left" size={16} />
-            </button>
-            <button className="round-btn round-btn-dark" type="button" onClick={() => scroll(1)} aria-label="Scroll showrooms right">
-              <Icon name="arrow-right" size={16} />
-            </button>
-          </div>
+          <RailScrollButtons
+            railId={RAIL_ID}
+            leftLabel="Scroll showrooms left"
+            rightLabel="Scroll showrooms right"
+            step={720}
+            variant="dark"
+          />
         </div>
       </div>
-      <div ref={scroller} className="showroom-scroll no-scrollbar">
+      <div id={RAIL_ID} className="showroom-scroll no-scrollbar">
         <div className="showroom-spacer" />
-        {SHOWROOMS.map((s) => {
-          const canonical = findShowroom(s.canonicalHandle);
-          const status = canonical ? getOpenStatus(canonical) : null;
-          return (
-            <Link href={s.href} key={s.idx} className="showroom-card">
-              <div className="ph ph-dark showroom-img" {...phImg(s.img)}>
-                <span className="ph-label">{s.label}</span>
+        {SHOWROOMS.map((s) => (
+          <Link href={s.href} key={s.idx} className="showroom-card">
+            <div className="ph ph-dark showroom-img" {...phImg(s.img)}>
+              <span className="ph-label">{s.label}</span>
+            </div>
+            <div className="showroom-meta">
+              <div className="showroom-meta-top">
+                <span className="mono showroom-idx">{s.idx} / 05</span>
+                <ShowroomOpenNowBadge canonicalHandle={s.canonicalHandle} />
               </div>
-              <div className="showroom-meta">
-                <div className="showroom-meta-top">
-                  <span className="mono showroom-idx">{s.idx} / 05</span>
-                  {status ? (
-                    <span className={`showroom-status${status.isOpen ? ' is-open' : ''}`}>
-                      <span className="showroom-status-dot" aria-hidden />
-                      {status.isOpen ? 'Open now' : 'Closed'}
-                    </span>
-                  ) : null}
-                </div>
-                <h3 className="showroom-name">{s.name}</h3>
-                <div className="showroom-area muted">{s.area}</div>
-                <div className="showroom-line">
-                  <span className="muted">{s.address}</span>
-                  <span className="muted">{s.hours}</span>
-                </div>
-                <div className="showroom-cta">View store <Icon name="arrow-up-right" size={14} /></div>
+              <h3 className="showroom-name">{s.name}</h3>
+              <div className="showroom-area muted">{s.area}</div>
+              <div className="showroom-line">
+                <span className="muted">{s.address}</span>
+                <span className="muted">{s.hours}</span>
               </div>
-            </Link>
-          );
-        })}
+              <div className="showroom-cta">View store <Icon name="arrow-up-right" size={14} /></div>
+            </div>
+          </Link>
+        ))}
         <div className="showroom-spacer" />
       </div>
     </section>
