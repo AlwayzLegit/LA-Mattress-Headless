@@ -64,7 +64,7 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
       <article className="cms-page" style={{ padding: 'var(--s-8) 0' }}>
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
-          <span className="sep">/</span>
+          <span className="sep" aria-hidden="true">/</span>
           <span>{toSentenceCase(stripBrandSuffix(page.title))}</span>
         </nav>
         <h1 className="h1" style={{ marginTop: 'var(--s-4)' }}>{toSentenceCase(stripBrandSuffix(page.title))}</h1>
@@ -123,7 +123,7 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
       <article className="locations-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
-          <span className="sep">/</span>
+          <span className="sep" aria-hidden="true">/</span>
           <span>Stores</span>
         </nav>
 
@@ -236,9 +236,9 @@ function ShowroomPage({
       <article className="showroom-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
-          <span className="sep">/</span>
+          <span className="sep" aria-hidden="true">/</span>
           <Link href="/pages/mattress-store-locations">Stores</Link>
-          <span className="sep">/</span>
+          <span className="sep" aria-hidden="true">/</span>
           <span>{showroom.area}</span>
         </nav>
 

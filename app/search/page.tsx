@@ -174,7 +174,7 @@ export default async function SearchPage(props: Params) {
       <header className="lp-hero" style={{ paddingBottom: 'var(--s-5)' }}>
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
-          <span className="sep">/</span>
+          <span className="sep" aria-hidden="true">/</span>
           <span>Search</span>
         </nav>
         <div className="lp-hero-inner lp-hero-inner-stacked" style={{ marginTop: 'var(--s-5)' }}>

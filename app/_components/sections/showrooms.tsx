@@ -46,10 +46,10 @@ export function Showrooms() {
             you want — no appointments, no pressure.
           </p>
           <div className="scroll-controls scroll-controls-dark">
-            <button className="round-btn round-btn-dark" type="button" onClick={() => scroll(-1)} aria-label="Previous">
+            <button className="round-btn round-btn-dark" type="button" onClick={() => scroll(-1)} aria-label="Scroll showrooms left">
               <Icon name="arrow-left" size={16} />
             </button>
-            <button className="round-btn round-btn-dark" type="button" onClick={() => scroll(1)} aria-label="Next">
+            <button className="round-btn round-btn-dark" type="button" onClick={() => scroll(1)} aria-label="Scroll showrooms right">
               <Icon name="arrow-right" size={16} />
             </button>
           </div>

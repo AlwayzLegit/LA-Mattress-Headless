@@ -157,9 +157,9 @@ function ArticleView({ article }: { article: Article }) {
         <div className="container">
           <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
-            <span className="sep">/</span>
+            <span className="sep" aria-hidden="true">/</span>
             <Link href={`/blogs/${article.blog.handle}`}>{blogDisplayTitle}</Link>
-            <span className="sep">/</span>
+            <span className="sep" aria-hidden="true">/</span>
             <span>{articleDisplayTitle}</span>
           </nav>
           <div className="gd-head-inner">
