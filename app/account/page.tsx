@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
+import { RecentlyViewedRail } from '@/app/_components/recently-viewed';
+import { AccountSavedCount } from './saved-count';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export const metadata: Metadata = {
@@ -10,6 +12,14 @@ export const metadata: Metadata = {
   alternates: { canonical: '/account' },
 };
 
+/**
+ * Pre-customer-account placeholder. Until the unified account
+ * experience lives natively in this storefront, /account serves as
+ * a landing for the localStorage surfaces a visitor already has
+ * — saved mattresses (wishlist), recently-viewed rail — plus
+ * order-help routing (call / contact / showroom). Order tracking
+ * is currently on the Shopify checkout subdomain.
+ */
 export default function AccountPage() {
   return (
     <main className="container" style={{ padding: 'var(--s-8) 0 var(--s-9)' }}>
@@ -21,12 +31,48 @@ export default function AccountPage() {
         </nav>
         <div className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>Account</div>
         <h1 className="h1" style={{ margin: 'var(--s-3) 0 var(--s-4)' }}>
-          Order lookup &amp; account.
+          Your shortlist &amp; order help.
         </h1>
-        <p className="muted" style={{ fontSize: 17, lineHeight: 1.55, maxWidth: '52ch', marginBottom: 'var(--s-5)' }}>
-          Order tracking and account management live on our secure checkout subdomain. We&rsquo;re
-          rolling out a unified account experience here soon.
+        <p className="muted" style={{ fontSize: 17, lineHeight: 1.55, maxWidth: '52ch', marginBottom: 'var(--s-6)' }}>
+          Order tracking and account management live on our secure checkout subdomain.
+          A unified account experience here is in the works — until then, your saved
+          mattresses and recently-viewed list live below.
         </p>
+
+        <div className="account-tiles">
+          <Link href="/wishlist" className="account-tile">
+            <div className="account-tile-icon"><Icon name="heart" size={22} /></div>
+            <div className="account-tile-body">
+              <div className="account-tile-label">Saved mattresses</div>
+              <AccountSavedCount />
+            </div>
+            <Icon name="arrow-right" size={16} />
+          </Link>
+          <Link href="/compare" className="account-tile">
+            <div className="account-tile-icon"><Icon name="check" size={22} /></div>
+            <div className="account-tile-body">
+              <div className="account-tile-label">Compare set</div>
+              <div className="account-tile-sub muted">Side-by-side specs for up to 4</div>
+            </div>
+            <Icon name="arrow-right" size={16} />
+          </Link>
+          <Link href="/cart" className="account-tile">
+            <div className="account-tile-icon"><Icon name="cart" size={22} /></div>
+            <div className="account-tile-body">
+              <div className="account-tile-label">Cart</div>
+              <div className="account-tile-sub muted">Review what you&rsquo;re buying</div>
+            </div>
+            <Icon name="arrow-right" size={16} />
+          </Link>
+          <Link href="/sleep-quiz" className="account-tile">
+            <div className="account-tile-icon"><Icon name="bed" size={22} /></div>
+            <div className="account-tile-body">
+              <div className="account-tile-label">Sleep quiz</div>
+              <div className="account-tile-sub muted">8 questions, get a match</div>
+            </div>
+            <Icon name="arrow-right" size={16} />
+          </Link>
+        </div>
 
         <div
           style={{
@@ -34,6 +80,7 @@ export default function AccountPage() {
             border: '1px solid var(--line)',
             borderRadius: 'var(--r-3)',
             background: 'var(--surface)',
+            marginTop: 'var(--s-6)',
             marginBottom: 'var(--s-6)',
           }}
         >
@@ -63,6 +110,14 @@ export default function AccountPage() {
           <li><Link href="/pages/mattress-store-financing" className="link-arrow">Financing options <Icon name="arrow-right" size={14} /></Link></li>
         </ul>
       </div>
+
+      {/* Pull the visitor back into shopping with whatever they were
+          last looking at. Renders nothing if there are <2 entries
+          (the rail's own gating). */}
+      <RecentlyViewedRail
+        heading="Pick up where you left off"
+        eyebrow="Recently viewed"
+      />
     </main>
   );
 }
