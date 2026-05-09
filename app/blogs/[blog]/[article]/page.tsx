@@ -155,7 +155,7 @@ function ArticleView({ article }: { article: Article }) {
     <>
       <section className="gd-head">
         <div className="container">
-          <nav className="lp-breadcrumbs">
+          <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
             <span className="sep">/</span>
             <Link href={`/blogs/${article.blog.handle}`}>{blogDisplayTitle}</Link>

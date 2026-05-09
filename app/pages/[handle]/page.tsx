@@ -62,7 +62,7 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
   return (
     <main className="container">
       <article className="cms-page" style={{ padding: 'var(--s-8) 0' }}>
-        <nav className="lp-breadcrumbs">
+        <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
           <span>{toSentenceCase(stripBrandSuffix(page.title))}</span>
@@ -121,7 +121,7 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
   return (
     <main className="container">
       <article className="locations-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
-        <nav className="lp-breadcrumbs">
+        <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
           <span>Stores</span>
@@ -234,7 +234,7 @@ function ShowroomPage({
   return (
     <main className="container">
       <article className="showroom-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
-        <nav className="lp-breadcrumbs">
+        <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
           <Link href="/pages/mattress-store-locations">Stores</Link>

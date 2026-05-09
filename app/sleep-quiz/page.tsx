@@ -29,7 +29,7 @@ export default function SleepQuizPage() {
     <main className="container">
       <section className="section quiz-section">
         <div className="quiz-shell">
-          <nav className="lp-breadcrumbs">
+          <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
             <span className="sep">/</span>
             <span>Sleep Quiz</span>

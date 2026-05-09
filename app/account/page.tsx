@@ -24,7 +24,7 @@ export default function AccountPage() {
   return (
     <main className="container" style={{ padding: 'var(--s-8) 0 var(--s-9)' }}>
       <div style={{ maxWidth: 640 }}>
-        <nav className="lp-breadcrumbs">
+        <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="sep">/</span>
           <span>Account</span>
