@@ -420,7 +420,21 @@ a { color: inherit; text-decoration: none; }
 .compare-header { margin: var(--s-5) 0 var(--s-6); max-width: 720px; }
 .compare-header h1 { margin: var(--s-3) 0 var(--s-3); }
 .compare-lede { font-size: 16px; line-height: 1.5; }
-.compare-empty-cta { margin: var(--s-5) 0; }
+.compare-empty-cta { margin: var(--s-5) 0; display: flex; flex-direction: column; gap: var(--s-4); align-items: flex-start; }
+/* Hint surfaced when the visitor lands on /compare without ?ids= but
+   their localStorage tray has entries (saved across sessions). Sits
+   above the generic Browse CTA so the recovery path takes priority. */
+.compare-tray-hint {
+  width: 100%;
+  max-width: 520px;
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface-2);
+  display: flex; flex-direction: column; gap: var(--s-3); align-items: flex-start;
+}
+.compare-tray-hint-lede { margin: 0; font-size: 15px; line-height: 1.45; }
+.compare-tray-hint-lede strong { color: var(--text); font-weight: 600; }
 .compare-table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;

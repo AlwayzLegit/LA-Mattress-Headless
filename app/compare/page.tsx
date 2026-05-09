@@ -8,6 +8,7 @@ import { formatPriceRange } from '@/lib/format';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { Icon } from '@/app/_components/icon';
 import { CompareRemove } from './compare-remove';
+import { CompareTrayHint } from './compare-tray-hint';
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
 const MAX = 4;
@@ -56,6 +57,7 @@ export default async function ComparePage({ searchParams }: Search) {
 
       {products.length === 0 ? (
         <div className="compare-empty-cta">
+          <CompareTrayHint />
           <Link href="/collections/mattresses" className="btn btn-primary btn-lg">
             Browse mattresses <Icon name="arrow-right" size={14} />
           </Link>
