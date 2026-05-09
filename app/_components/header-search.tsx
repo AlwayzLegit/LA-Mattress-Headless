@@ -313,7 +313,12 @@ export function HeaderSearch() {
                   </button>
                 </form>
 
-                <div className="search-body" role="listbox" id={listboxId}>
+                <div
+                  className="search-body"
+                  role="listbox"
+                  id={listboxId}
+                  aria-busy={loading || undefined}
+                >
                   {query.trim().length < 2 ? (
                     <div className="search-prequery">
                       <div className="search-section">
