@@ -211,7 +211,7 @@ export default async function SearchPage(props: Params) {
         </section>
       ) : (
         <section className="section plp-section">
-          <nav className="search-tabs" aria-label="Search categories" role="tablist">
+          <nav className="search-tabs" aria-label="Search categories">
             {TABS.map((t) => {
               const count = tabCounts[t.id];
               const isOn = tab === t.id;
@@ -220,8 +220,7 @@ export default async function SearchPage(props: Params) {
                   key={t.id}
                   href={buildTabHref(t.id)}
                   className={`search-tab${isOn ? ' is-on' : ''}`}
-                  role="tab"
-                  aria-selected={isOn}
+                  aria-current={isOn ? 'page' : undefined}
                 >
                   <span>{t.label}</span>
                   <span className="search-tab-count tnum">{count}</span>
