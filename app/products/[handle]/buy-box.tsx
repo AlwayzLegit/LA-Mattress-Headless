@@ -249,7 +249,12 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
         {pending ? 'Adding…' : matchingVariant?.availableForSale ? (
           <>
             Add to cart{' '}
-            <span className="tnum" style={{ opacity: 0.85 }}>
+            {/* The price echo is a sighted-user convenience. SR users
+                already hear the price when the variant selection
+                changes (Phase 114) and again post-add via cart-context
+                (Phase 142). Marking it aria-hidden avoids "Add to
+                cart, middle dot, $2,599" punctuation noise. */}
+            <span className="tnum" style={{ opacity: 0.85 }} aria-hidden="true">
               · {formatMoney({
                 amount: (Number.parseFloat(matchingVariant.price.amount) * qty).toFixed(2),
                 currencyCode: matchingVariant.price.currencyCode,
