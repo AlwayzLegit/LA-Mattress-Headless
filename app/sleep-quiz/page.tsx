@@ -15,6 +15,8 @@ export const metadata: Metadata = {
 };
 
 export default function SleepQuizPage() {
+  const SITE = 'https://mattressstoreslosangeles.com';
+  const url = `${SITE}/sleep-quiz`;
   const quizLd = {
     '@context': 'https://schema.org',
     '@type': 'Quiz',
@@ -22,7 +24,18 @@ export default function SleepQuizPage() {
     about: 'Mattress recommendation based on sleep position, body type, temperature, firmness, pain points, material preference, partner needs, and budget.',
     educationalUse: 'Recommendation',
     timeRequired: 'PT2M',
-    provider: { '@type': 'Organization', name: 'LA Mattress Store', url: 'https://mattressstoreslosangeles.com' },
+    provider: { '@type': 'Organization', name: 'LA Mattress Store', url: SITE },
+  };
+  // BreadcrumbList for the sleep-quiz route — every public top-level
+  // page should advertise its breadcrumb structure to crawlers, not
+  // just the cms / blog / collection / product templates.
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Sleep Quiz', item: url },
+    ],
   };
 
   return (
@@ -47,6 +60,7 @@ export default function SleepQuizPage() {
       </section>
 
       <script id="ld-sleep-quiz" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(quizLd) }} />
+      <script id="ld-breadcrumb-sleep-quiz" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }
