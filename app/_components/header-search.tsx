@@ -285,7 +285,15 @@ export function HeaderSearch() {
                     aria-controls={listboxId}
                     aria-activedescendant={highlight >= 0 ? `${listboxId}-${highlight}` : undefined}
                   />
-                  <kbd className="search-kbd">esc</kbd>
+                  <kbd className="search-kbd search-kbd-hint" aria-hidden="true">esc</kbd>
+                  <button
+                    type="button"
+                    className="search-close"
+                    onClick={() => setOpen(false)}
+                    aria-label="Close search"
+                  >
+                    <Icon name="close" size={18} />
+                  </button>
                 </form>
 
                 <div className="search-body" role="listbox" id={listboxId}>

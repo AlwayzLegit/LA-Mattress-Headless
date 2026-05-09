@@ -936,10 +936,27 @@ summary:focus-visible,
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .search-head {
-  display: grid; grid-template-columns: auto 1fr auto;
+  display: grid; grid-template-columns: auto 1fr auto auto;
   gap: 12px; align-items: center;
   padding: 18px 20px;
   border-bottom: 1px solid var(--line);
+}
+/* Desktop shows the keyboard hint as a label; mobile swaps to the
+   tappable close button. Both are present in markup so the focus
+   trap and Tab order stay stable across breakpoints. */
+.search-kbd-hint { display: inline-flex; }
+.search-close {
+  display: none;
+  appearance: none;
+  background: none; border: 0; cursor: pointer;
+  padding: 6px;
+  color: var(--text-3);
+  border-radius: var(--r-2);
+}
+.search-close:hover { color: var(--text); background: var(--surface-2); }
+@media (max-width: 760px) {
+  .search-kbd-hint { display: none; }
+  .search-close { display: inline-flex; }
 }
 .search-icon { color: var(--text-3); display: inline-flex; }
 .search-head .search-input {
