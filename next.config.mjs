@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -43,4 +44,25 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// withSentryConfig wraps the Next config to handle:
+//   - Source map upload during build (so prod stack traces show
+//     original-source filenames + line numbers, not minified output).
+//   - Tunnel route to bypass ad blockers blocking sentry.io directly.
+//   - Auto-instrumentation of API routes for trace context.
+//
+// All Sentry build features are gated on SENTRY_AUTH_TOKEN being set in
+// the build env (Vercel env vars). Without it, the wrapper is effectively
+// a no-op for the build but the runtime SDK still captures errors.
+export default withSentryConfig(nextConfig, {
+  // Org + project come from .sentryclirc or env. Sentry CLI auto-detects.
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  // Suppress source map upload logs in prod build output.
+  silent: !process.env.CI,
+  // Tunnel /monitoring requests through our domain to bypass ad blockers.
+  tunnelRoute: '/monitoring',
+  // Don't bundle Sentry's debug helpers in client code.
+  disableLogger: true,
+  // Hide source maps from prod public access (only Sentry can read them).
+  hideSourceMaps: true,
+});

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import { Icon } from './_components/icon';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
@@ -13,6 +14,10 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
+    // Always capture in prod; in dev surface to console too. Sentry's
+    // init no-ops when DSN isn't set, so this is safe in environments
+    // without telemetry configured (Phase pre-160 plumbing).
+    Sentry.captureException(error);
     if (process.env.NODE_ENV !== 'production') console.error(error);
   }, [error]);
 

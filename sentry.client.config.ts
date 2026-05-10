@@ -5,13 +5,16 @@ const DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 // No-op when DSN isn't set so dev/staging without a Sentry project just
 // runs without telemetry. Set NEXT_PUBLIC_SENTRY_DSN in Vercel env vars
 // (all 3 environments) to turn it on.
+//
+// Phase 166: Replay integration intentionally NOT included. Adds ~50KB
+// to every page's First Load JS. Error capture via Sentry.captureException
+// (in error.tsx + global-error.tsx) gives us the stack traces and
+// breadcrumbs we need for triage; replay sessions are nice-to-have but
+// not worth the bundle cost on a perf-sensitive commerce site.
 if (DSN) {
   Sentry.init({
     dsn: DSN,
     tracesSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-    replaysSessionSampleRate: 0,
     debug: false,
-    integrations: [Sentry.replayIntegration({ maskAllText: false, blockAllMedia: false })],
   });
 }
