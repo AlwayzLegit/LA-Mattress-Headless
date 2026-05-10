@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import * as Sentry from '@sentry/nextjs';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export default function GlobalError({
@@ -11,6 +12,10 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
+    // global-error catches root-layout errors too — these are the
+    // most-critical errors to capture (the full layout chrome failed
+    // to render). Sentry.init no-ops without DSN so safe in any env.
+    Sentry.captureException(error);
     if (process.env.NODE_ENV !== 'production') console.error(error);
   }, [error]);
 
