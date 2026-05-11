@@ -465,6 +465,21 @@ summary:focus-visible,
   -webkit-overflow-scrolling: touch;
   border: 1px solid var(--line);
   border-radius: var(--r-3);
+  /* `position: relative` so the absolutely-positioned sr-only scroll
+     hint span is anchored here instead of escaping to the document. */
+  position: relative;
+}
+/* Visible table caption — accessible name for the comparison table, also
+   a small subtitle for sighted users. Slightly muted so it doesn't
+   compete with the page h1 above. */
+.compare-table-caption {
+  caption-side: top;
+  text-align: left;
+  padding: var(--s-3) var(--s-4);
+  font-size: 13px;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
 }
 .compare-table {
   width: 100%;
@@ -2389,6 +2404,16 @@ summary:focus-visible,
 }
 .cart-qty-btn:hover:not(:disabled) { background: var(--surface-2); }
 .cart-qty-btn:disabled { opacity: 0.4; cursor: wait; }
+/* The parent `.cart-qty` (line ~2377) has `overflow: hidden` so the
+   default `:focus-visible` ring (outline-offset: 2px outside the
+   button) is clipped to the pill border and disappears. Use an inset
+   offset so the ring is drawn inside the 32x32 button, where it
+   survives the parent's clipping. */
+.cart-qty-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--r-pill);
+}
 .cart-qty-val {
   min-width: 32px; text-align: center;
   font-size: 14px; font-weight: 500;
@@ -2884,8 +2909,19 @@ summary:focus-visible,
   animation: quizStepIn 220ms var(--ease-out);
 }
 @keyframes quizStepIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-.quiz-step-title { margin: 0; outline: none; }
-.quiz-step-title:focus-visible { outline: none; }
+/* Heading is keyboard-focused via tabIndex={-1} on every step change
+   (sleep-quiz.tsx focuses #quiz-question-title in a useEffect). The
+   prior `outline: none` on `:focus-visible` made that focus shift
+   completely invisible to keyboard users — the heading would receive
+   focus, but the SR announcement was the only feedback. Restore the
+   default ring on keyboard focus and keep mouse focus silent. */
+.quiz-step-title { margin: 0; }
+.quiz-step-title:focus { outline: none; }
+.quiz-step-title:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
 .quiz-step-helper { margin: var(--s-3) 0 var(--s-5); max-width: 56ch; font-size: 14px; }
 
 .quiz-options { display: grid; gap: var(--s-3); margin: var(--s-4) 0 var(--s-5); }

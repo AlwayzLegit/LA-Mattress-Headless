@@ -63,8 +63,31 @@ export default async function ComparePage({ searchParams }: Search) {
           </Link>
         </div>
       ) : (
-        <div className="compare-table-wrap" role="region" aria-label="Comparison table" tabIndex={0}>
+        <div
+          className="compare-table-wrap"
+          role="region"
+          aria-label="Comparison table"
+          aria-describedby="compare-table-scroll-hint"
+          tabIndex={0}
+        >
+          {/* sr-only scroll affordance — the wrap is `tabIndex={0}` so AT
+              users can land on it; this hint tells them what to do once
+              they have. The wrap horizontally scrolls on mobile when more
+              than ~2 products are selected. */}
+          <span
+            id="compare-table-scroll-hint"
+            style={{
+              position: 'absolute', width: 1, height: 1, padding: 0,
+              margin: -1, overflow: 'hidden', clip: 'rect(0 0 0 0)',
+              whiteSpace: 'nowrap', borderWidth: 0,
+            }}
+          >
+            Use arrow keys to scroll horizontally between product columns.
+          </span>
           <table className="compare-table">
+            <caption className="compare-table-caption">
+              {`Side-by-side comparison of ${products.length} selected mattress${products.length === 1 ? '' : 'es'}. Row labels in the first column describe each spec; remaining columns are the products.`}
+            </caption>
             <thead>
               <tr>
                 <th scope="col" className="compare-row-label">&nbsp;</th>
