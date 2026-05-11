@@ -26,3 +26,12 @@ if (DSN) {
     debug: false,
   });
 }
+
+// Phase 187: required by @sentry/nextjs's client SDK for App Router
+// navigation instrumentation. Without this export the build emits an
+// ACTION REQUIRED notice ("To instrument navigations, the Sentry SDK
+// requires you to export an `onRouterTransitionStart` hook from your
+// `instrumentation-client.(js|ts)` file"). The hook is a no-op when
+// Sentry isn't initialized (DSN unset) — the SDK guards internally —
+// so it's safe to export unconditionally.
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
