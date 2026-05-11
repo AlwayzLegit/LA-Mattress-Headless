@@ -286,13 +286,8 @@ summary:focus-visible,
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 
-/* Reveal on scroll (driven by IntersectionObserver if added later) */
-.reveal { opacity: 0; transform: translateY(8px); transition: opacity 380ms var(--ease-out), transform 380ms var(--ease-out); }
-.reveal.in { opacity: 1; transform: none; }
-
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
-  .reveal { opacity: 1; transform: none; }
 }
 
 /* ===========================================================================
