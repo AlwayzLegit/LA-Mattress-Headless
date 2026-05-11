@@ -1,18 +1,22 @@
+'use client';
+
+import { createLocalStoreApi, useLocalStoreSync } from './use-local-store';
+
 /**
  * Compare-list state helpers — shared by `CompareToggle` (per-PLP-card
- * button) and `CompareTray` (floating bottom-center pill).
+ * button), `CompareTray` (floating bottom-center pill), and the PDP
+ * `PdpCtaRow` Compare button.
  *
- * Phase 196 extraction: previously inlined in `compare.tsx` alongside
- * both components. Hoisting to its own module sets up the Phase 197
- * file split — once each component lives in its own file, the layout
- * chunk (which only needs the tray) can tree-shake the toggle and
- * vice versa for PLP/search route chunks. Tree-shaking that elimination
- * is only possible when the components and their shared helpers come
- * from distinct ES modules.
+ * Phase 212 (cont. from Phase 196 extraction): the read/write/sync
+ * pattern is now provided by the generic `use-local-store.ts` API.
+ * The exported names (`COMPARE_STORAGE_KEY`, `COMPARE_MAX`,
+ * `COMPARE_EVENT`, `CompareSnapshot`, `readCompareSet`,
+ * `writeCompareSet`) are preserved verbatim so consumers don't have
+ * to change. A new `useCompareSet()` hook is exposed for consumers
+ * that previously open-coded the useEffect-with-listeners pattern.
  *
- * No behavior changes here — read/write logic, the localStorage key,
- * the cap, the cross-tab event name, and the shopping-route predicate
- * are all moved verbatim from `compare.tsx`.
+ * The `writeCompareSet` wrapper enforces the 4-item cap via the
+ * shared API's `max` field — same behavior as before.
  */
 
 export const COMPARE_STORAGE_KEY = 'la-mattress.compare.v1';
@@ -21,31 +25,24 @@ export const COMPARE_EVENT = 'la-mattress:compare-change';
 
 export type CompareSnapshot = { handle: string; title: string };
 
-export function readCompareSet(): CompareSnapshot[] {
-  try {
-    const raw = window.localStorage.getItem(COMPARE_STORAGE_KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw) as unknown;
-    if (!Array.isArray(arr)) return [];
-    return arr.filter(
-      (x): x is CompareSnapshot =>
-        typeof x === 'object' && x != null && 'handle' in x,
-    );
-  } catch {
-    return [];
-  }
-}
+const COMPARE_API = createLocalStoreApi<CompareSnapshot>({
+  key: COMPARE_STORAGE_KEY,
+  event: COMPARE_EVENT,
+  max: COMPARE_MAX,
+  isValid: (x): x is CompareSnapshot =>
+    typeof x === 'object' && x != null && 'handle' in x,
+});
 
-export function writeCompareSet(items: CompareSnapshot[]) {
-  try {
-    window.localStorage.setItem(
-      COMPARE_STORAGE_KEY,
-      JSON.stringify(items.slice(0, COMPARE_MAX)),
-    );
-    window.dispatchEvent(new Event(COMPARE_EVENT));
-  } catch {
-    // ignore quota / private mode
-  }
+export const readCompareSet = COMPARE_API.read;
+export const writeCompareSet = COMPARE_API.write;
+
+/**
+ * React hook: hydrates the current compare set and re-renders the
+ * caller when the set changes (this tab or another). Returns the same
+ * `{ items, hydrated }` shape every consumer was open-coding.
+ */
+export function useCompareSet() {
+  return useLocalStoreSync(COMPARE_API);
 }
 
 /**

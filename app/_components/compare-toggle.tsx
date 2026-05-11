@@ -1,12 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Icon } from './icon';
 import { announce } from './announcer';
 import {
-  COMPARE_EVENT,
   COMPARE_MAX,
   readCompareSet,
+  useCompareSet,
   writeCompareSet,
 } from './compare-store';
 
@@ -26,20 +25,10 @@ import {
  * lived in `compare.tsx` so any importer of either dragged in both.
  */
 export function CompareToggle({ handle, title }: { handle: string; title: string }) {
-  const [selected, setSelected] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    const sync = () => setSelected(readCompareSet().some((p) => p.handle === handle));
-    sync();
-    setHydrated(true);
-    window.addEventListener(COMPARE_EVENT, sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      window.removeEventListener(COMPARE_EVENT, sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, [handle]);
+  // Phase 212: store sync via shared hook. `selected` is derived from
+  // the live `items` instead of being mirrored into local state.
+  const { items, hydrated } = useCompareSet();
+  const selected = items.some((p) => p.handle === handle);
 
   const onToggle = (e: React.MouseEvent | React.ChangeEvent) => {
     e.preventDefault();

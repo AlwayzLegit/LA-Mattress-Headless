@@ -6,11 +6,9 @@ import { usePathname } from 'next/navigation';
 import { Icon } from './icon';
 import { announce } from './announcer';
 import {
-  COMPARE_EVENT,
   isShoppingRoute,
-  readCompareSet,
+  useCompareSet,
   writeCompareSet,
-  type CompareSnapshot,
 } from './compare-store';
 
 /**
@@ -27,23 +25,12 @@ import {
  * symbol from each consumer's chunk.
  */
 export function CompareTray() {
-  const [items, setItems] = useState<CompareSnapshot[]>([]);
-  const [hydrated, setHydrated] = useState(false);
+  // Phase 212: read+sync now via the shared hook (drops the open-coded
+  // useEffect-with-listeners pattern).
+  const { items, hydrated } = useCompareSet();
   const [dismissed, setDismissed] = useState(false);
   const [nearFooter, setNearFooter] = useState(false);
   const pathname = usePathname();
-
-  useEffect(() => {
-    const sync = () => setItems(readCompareSet());
-    sync();
-    setHydrated(true);
-    window.addEventListener(COMPARE_EVENT, sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      window.removeEventListener(COMPARE_EVENT, sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, []);
 
   // Auto-hide when the footer is in view so the tray doesn't cover the
   // legal links / copyright row.

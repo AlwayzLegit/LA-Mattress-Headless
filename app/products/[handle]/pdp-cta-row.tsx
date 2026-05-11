@@ -3,11 +3,16 @@
 import { useEffect, useState } from 'react';
 import { Icon } from '@/app/_components/icon';
 import { announce } from '@/app/_components/announcer';
+import {
+  COMPARE_EVENT,
+  COMPARE_MAX,
+  readCompareSet,
+  writeCompareSet,
+} from '@/app/_components/compare-store';
 
-const COMPARE_KEY = 'la-mattress.compare.v1';
-const COMPARE_EVENT = 'la-mattress:compare-change';
-const COMPARE_MAX = 4;
-
+// Phase 212: COMPARE_KEY/EVENT/MAX no longer duplicated here — single
+// source of truth is `compare-store.ts`. WISHLIST constants stay inline
+// until Phase 213 introduces `wishlist-store.ts`.
 const WISHLIST_KEY = 'la-mattress.wishlist.v1';
 const WISHLIST_EVENT = 'la-mattress:wishlist-change';
 
@@ -93,7 +98,7 @@ export function PdpCtaRow({
   useEffect(() => {
     const sync = () => {
       setSaved(readSet(WISHLIST_KEY).some((p) => p.handle === handle));
-      setComparing(readSet(COMPARE_KEY).some((p) => p.handle === handle));
+      setComparing(readCompareSet().some((p) => p.handle === handle));
     };
     sync();
     setHydrated(true);
@@ -128,15 +133,19 @@ export function PdpCtaRow({
   };
 
   const toggleCompare = () => {
-    const cur = readSet(COMPARE_KEY);
+    const cur = readCompareSet();
     const idx = cur.findIndex((p) => p.handle === handle);
     if (idx >= 0) {
       cur.splice(idx, 1);
-      writeSet(COMPARE_KEY, COMPARE_EVENT, cur);
+      writeCompareSet(cur);
       announce(`Removed ${title} from compare`);
     } else if (cur.length < COMPARE_MAX) {
-      cur.push(snapshot());
-      writeSet(COMPARE_KEY, COMPARE_EVENT, cur);
+      // Compare entries are minimal `{handle, title}` (CompareSnapshot
+      // type); the enriched vendor/image/price fields go to wishlist
+      // only. Matches the shape `compare-toggle.tsx` writes from the
+      // PLP cards.
+      cur.push({ handle, title });
+      writeCompareSet(cur);
       announce(`Added ${title} to compare. ${cur.length} of ${COMPARE_MAX} selected.`);
     } else {
       // Cap reached — surface it audibly so SR users aren't met with
