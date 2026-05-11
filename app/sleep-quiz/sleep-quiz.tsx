@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Icon } from '@/app/_components/icon';
 import { QUESTIONS, recommend, type Answers, type Recommendation } from './quiz-data';
@@ -60,6 +60,18 @@ export function SleepQuiz() {
     heading?.focus();
   }, [step]);
 
+  // Phase 235: track the auto-advance setTimeout so we can clear it on
+  // unmount (user navigates away mid-quiz) or on a rapid second click
+  // (prevents two pending advances racing). React 19 silently no-ops
+  // setState after unmount, but the leak is still cheap to avoid and
+  // the rapid-click race is a real UX risk.
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    };
+  }, []);
+
   if (step === 'result' && result) return <SleepQuizResult result={result} answers={answers} onRestart={() => { setStep(0); setAnswers({}); }} />;
 
   const idx = step as number;
@@ -73,7 +85,9 @@ export function SleepQuiz() {
     // the user came back to (Back button) does NOT auto-advance — that would
     // be hostile behaviour.
     if (!wasAnswered) {
-      setTimeout(() => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = setTimeout(() => {
+        advanceTimerRef.current = null;
         if (idx + 1 >= total) setStep('result');
         else setStep(idx + 1);
       }, 250);
