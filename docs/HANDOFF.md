@@ -1,3 +1,120 @@
+# Session handoff — 2026-05-11 (Phases 188–202 — four blocks merged, test infrastructure live)
+
+## Status
+
+Four PRs shipped this session, all merged into `main`:
+
+| PR | Phases | HEAD | Theme |
+|---|---|---|---|
+| #53 | 188–193 | `641e24c` | OG fallback hotfix + a11y deep-dive block |
+| #54 | 194–197 | `0577b81` | Bundle perf round 2 — Hero server-shell split + Compare module separation |
+| #55 | 198–202 | `d3d203b` | SSR test infrastructure + 20 regression assertions |
+
+`main` HEAD is `d3d203b`. typecheck + lint + build all clean. `npm test` exists and passes (20/20 assertions, ~14s local / ~63s CI).
+
+## What shipped, what's verified, what isn't
+
+### PR #53 — Phases 188–193 (OG fallback hotfix + a11y deep-dive)
+
+- **188** OG image fallback extended to coverless `/blogs/[blog]` (blog index), `/pages/[handle]` (CMS pages), `/sleep-quiz`. Same Phase 176/180 shape — explicit `images: [{ url: '/opengraph-image', width: 1200, height: 630 }]`. **Empirically verified** during PR-#54 prep against the preview deployment: `/blogs/sleep-blog`, `/pages/mattress-store-financing`, `/sleep-quiz` all emit `og:image=https://mattressstoreslosangeles.com/opengraph-image`.
+- **189** Restored visible `:focus-visible` ring on `.quiz-step-title` (was explicitly suppressed with `outline: none`, so JS-focus on each step transition was invisible to keyboard users). Added inset `outline-offset: -2px` for `.cart-qty-btn` so its `:focus-visible` ring survives the parent `.cart-qty` `overflow: hidden` clipping.
+- **190** Sleep-quiz fieldset gets `aria-describedby` linking to helper paragraph (when present). Result page section labels (`"Why this match"`, `"Worth comparing"`) promoted from `<div className="eyebrow">` to `<h3 className="eyebrow" style={{ margin: 0 }}>` for SR heading-rotor navigation.
+- **191** Mega menu keyboard entry: on ArrowDown / Space the panel now auto-focuses its first link (was leaving focus on the trigger). Esc restores focus to the originating trigger (tracked via `megaTriggerRef` captured at kbd-open time).
+- **192** `/compare` table: visible `<caption>` describing structure (dynamic with product count) + sr-only `aria-describedby` scroll hint on the `tabIndex={0}` wrap. Caption inline-styled `caption-side: top`.
+- **193** Search overlay result groups (Products / Collections / Showrooms / Articles) wrapped in `role="group"` + `aria-label`, visible eyebrow `aria-hidden`. Cart drawer announces "Shopping cart opened. N items." via the polite live region on `drawerOpen` transition (read inline so deps don't re-trigger on cart mutation).
+
+Verification: 188 empirically OK in production HTML. 189–193 are code-PASS, browser-PENDING — interactive a11y can't be HTTP-verified. SSR-shape attrs (190's `aria-describedby`, hero `aria-label` etc.) are now protected by Phase 202 tests.
+
+### PR #54 — Phases 194–197 (bundle perf round 2)
+
+- **194** Extract `HERO_SLIDES` + `HeroSlide` type to `app/_components/hero-slides.ts`. No-deps data module. Sets up 195.
+- **195** **Hero server-shell + client-island split.** Hero (`hero.tsx`) drops `'use client'` and becomes a server component that renders the static slide DOM (3 slides, slide 0 `.on`, slides 1+2 `aria-hidden`/`inert`, each tagged `data-hero-slide={idx}`). New `'use client' HeroController` (`hero-controller.tsx`) wraps the slide DOM as children, owns `i` / `paused` state, autoplay timer, dot picker with roving tabindex, counter, play/pause, pause-on-hover/focus. Slide DOM updated via `querySelectorAll('[data-hero-slide]')` on every `i` change. Wrapper uses `display: contents` so layout chain (`.hero` positioned ancestor → `.hero-stack` absolute) stays byte-identical. New `'use client' HeroSlideImage` (`hero-slide-image.tsx`) preserves Phase 162 image deferral: slide 0 SSRs `<Image>` with `priority`/`fetchPriority="high"`, slides 1+2 mount only after hydration.
+- **196** Extract Compare store helpers (`COMPARE_STORAGE_KEY` / `COMPARE_MAX` / `COMPARE_EVENT` / `CompareSnapshot` / `readCompareSet` / `writeCompareSet` / `isShoppingRoute`) to `app/_components/compare-store.ts`. Sets up 197.
+- **197** Split `CompareToggle` and `CompareTray` into separate files (`compare-toggle.tsx`, `compare-tray.tsx`). Imports updated in `layout.tsx`, `search/page.tsx`, `collections/[handle]/page.tsx`. `compare.tsx` deleted.
+
+Bundle impact (next build, local): `/` route-specific chunk dropped from **7.87 kB → 6.08 kB (-22.7%)**, First Load JS 199 → 197 kB. Shared chunk unchanged. Phase 197 was bundle-neutral in practice (webpack was already function-tree-shaking the single module) — kept for architectural clarity. Hero behavior preserved end-to-end: autoplay, dot picker, roving tabindex, Home/End jumps, pause-on-hover, pause-on-focus, blur re-resume only when focus exits subtree, counter, play/pause `aria-pressed`, image deferral / LCP priority.
+
+### PR #55 — Phases 198–202 (test infrastructure)
+
+- **198** First-ever test infrastructure. `tests/run.mjs` spawns `next dev` on port 3100, polls until ready, runs `node --test --test-reporter=spec 'tests/ssr/**/*.test.mjs'`, kills server. `cheerio` devDep. Smoke test (`/` and `/sleep-quiz` render 200 with `<title>`). `npm test` script. `.github/workflows/test.yml` runs on every PR + push to main (Node 22 + npm cache, ~63s CI wall-clock).
+- **199** OG meta assertions — homepage og:image inheritance, twitter card, og:title/og:url (Phase 169); `/sleep-quiz` explicit `/opengraph-image` fallback with width/height + matching twitter:image (Phase 188).
+- **200** Hero SSR shape — `<section.hero>` carousel a11y, 3 `[data-hero-slide]`, slide 0 `.on`/no-inert/no-aria-hidden, slides 1+2 inert+aria-hidden, **Phase 162 image deferral** (slide 0 SSRs `<img>`, slides 1+2 don't), 3 hero-dot buttons + counter "01 / 03".
+- **201** JSON-LD assertions — `ld-organization`, `ld-website`, `ld-localbusiness-home` with 5-entry `department[]` (Phase 171), `ld-sleep-quiz` Quiz `@type` + `inLanguage='en-US'` (Phase 179), BreadcrumbList final-item `item` URL (Phase 173).
+- **202** A11y SSR attrs — sleep-quiz fieldset `aria-describedby` + radiogroup `aria-labelledby` (Phase 190), hero h1 normalized `aria-label` (Phase 174 — no `\n`, no run-together words), `<nav.lp-breadcrumbs aria-label="Breadcrumb">` on /sleep-quiz.
+
+20 assertions across 5 test files. Local validation: 20/20 in 14.1s; CI validation: 20/20 in 63s.
+
+**Test surface is intentionally narrow.** SSR-only — the dev sandbox can't install Chromium (firewalled), so anything requiring a real browser (kbd shortcuts, focus shifts, autoplay rotation, fetched products, post-mount live regions) is NOT covered. Routes requiring Shopify env vars (`if (!SHOPIFY_CONFIGURED) notFound()`) — `/collections/*`, `/products/*`, `/blogs/*`, `/pages/*` — are not testable here either; their empirical verification stays manual until Shopify-enabled CI lands.
+
+## Branch state
+
+- `main` is at `d3d203b` — four squash merges this session.
+- `claude/determine-starting-point-zRYmC` is the working branch (currently equal to main after the post-#55 reset). Force-push allowed for reset-to-main between blocks.
+
+## What's NOT in scope / deferred per HANDOFF history
+
+Same as the 169–187 handoff — `/account` dashboard (Customer Account API), hero CMS metaobjects, review provider decision, Article `dateModified`, DNS cutover, Vercel env vars. See README pre-launch checklist.
+
+Two new deferrals from this session:
+
+- **Browser-level smoke tests** — Playwright was attempted in PR #55 prep, but the sandbox blocks Chromium binary downloads. Switched to SSR-only HTTP tests with cheerio. When a Chromium-capable CI environment is available, add `@playwright/test` and write the interactive tests (kbd shortcuts, focus management, autoplay rotation, post-mount live regions).
+- **Shopify-enabled CI** — test suite currently covers `/`, `/sleep-quiz`, and other non-Shopify routes only. With `SHOPIFY_STORE_DOMAIN` + `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` set in CI secrets, the suite could extend to `/collections/[handle]`, `/products/[handle]`, `/blogs/[blog]/[article]`, `/pages/[handle]`.
+
+## Suggested next directions
+
+1. **Extend the SSR test suite** — add coverage for routes already passing (cart structural, wishlist, /search empty state, /pages/data-sharing-opt-out, /pages/reviews, /compare empty state). Easy wins now that the harness exists; protects against silent regressions in template SEO/a11y attrs.
+2. **Code quality / hook extraction** — sweep for repeated patterns (drawer scaffolding across cart / nav / search, focus-trap consumers, stored-state hooks like `useFocusTrap`, `useBodyScrollLock`, the `wishlist` / `compare` local-storage hooks), tighten `as` casts, scan for dead code beyond Phase 184's `.reveal` removal.
+3. **Bundle perf round 3** — Sleep quiz is `'use client'` (~250 LOC of state machine + result rendering). PDP buybox is heavy. PLP filter shell is `'use client'`. Each is a candidate for a Phase-195-style split.
+4. **A11y deep dive round 2** — the SSR-shape gaps are protected by Phase 202 tests; remaining interactive gaps (mega menu arrow navigation through panel links, focus order audit on /compare, cart-drawer aria-live for quantity changes) are real-browser work.
+5. **Fresh open-ended audit** — read the codebase end-to-end and surface what catches your eye.
+
+## Verification toolkit available to the new session
+
+- **`npm test`** — 20 SSR assertions, 14s local / 63s CI. Run on every PR via `.github/workflows/test.yml`.
+- **Vercel MCP** — `list_deployments`, `get_deployment_build_logs`, `get_access_to_vercel_url`, `web_fetch_vercel_url`, `get_runtime_logs`. Used for empirical OG / structured-data verification on preview URLs.
+- **Sentry MCP** — `search_issues`, `search_events`, `analyze_issue_with_seer`. Use `firstSeen:-24h` on `jetnine` org for post-deploy regression sweep.
+- **Shopify MCP** — admin GraphQL for product / metafield checks.
+- **GitHub MCP** — PRs, comments, CI status, merge. `subscribe_pr_activity` for live event stream.
+- Static-content tooling — Read, Bash grep, Edit, WebFetch.
+- **Not available in this sandbox**: Claude in Chrome / Playwright browser MCP (Chromium binary download is firewalled). Anything requiring real-browser empirical verification needs a different environment.
+
+## Key files to know (additions from this session)
+
+- `tests/run.mjs` — `next dev` orchestration + test runner spawn (Phase 198)
+- `tests/ssr/_helpers.mjs` — shared `fetchHtml(path)` + `expect200(res, path)` (Phase 198)
+- `tests/ssr/smoke.test.mjs` — homepage / sleep-quiz render-200 baseline (Phase 198)
+- `tests/ssr/og-meta.test.mjs` — Phases 169 / 188 OG inheritance + fallback (Phase 199)
+- `tests/ssr/hero.test.mjs` — Phase 195 SSR shape + Phase 162 image deferral (Phase 200)
+- `tests/ssr/structured-data.test.mjs` — Phases 170 / 171 / 173 / 179 JSON-LD (Phase 201)
+- `tests/ssr/a11y.test.mjs` — Phases 190 / 174 / 173 SSR a11y attrs (Phase 202)
+- `.github/workflows/test.yml` — CI wiring (Phase 198)
+- `app/_components/hero-slides.ts` — slide data module (Phase 194)
+- `app/_components/hero.tsx` — server-rendered hero shell (Phase 195)
+- `app/_components/hero-controller.tsx` — client-side carousel state (Phase 195)
+- `app/_components/hero-slide-image.tsx` — per-slide image deferral wrapper (Phase 195)
+- `app/_components/compare-store.ts` — shared store helpers (Phase 196)
+- `app/_components/compare-toggle.tsx` — PLP/search card button (Phase 197)
+- `app/_components/compare-tray.tsx` — layout-rendered floating pill (Phase 197)
+
+Continuing from prior handoff:
+
+- `app/_components/header-search.tsx` — trigger + keyboard shortcuts + dynamic import (Phase 183/186)
+- `app/_components/header-search-overlay.tsx` — overlay with group labels (Phase 183/193)
+- `instrumentation-client.ts` — Sentry client init + onRouterTransitionStart export (Phase 185/187)
+- `app/products/[handle]/page.tsx` — Product LD with all the Phase 170/177/180 enrichments
+- `app/collections/[handle]/page.tsx` — CollectionPage LD + breadcrumb + OG fallback + inLanguage
+- `app/blogs/[blog]/page.tsx` — Blog index with Phase 188 OG fallback
+- `app/blogs/[blog]/[article]/page.tsx` — BlogPosting LD + OG fallback
+- `app/pages/[handle]/page.tsx` — CMS pages + showroom branch with Phase 188 OG fallback
+- `app/sleep-quiz/page.tsx` — Quiz LD + BreadcrumbList + Phase 188 OG fallback
+- `app/sleep-quiz/sleep-quiz.tsx` — quiz form with Phase 190 a11y
+- `app/compare/page.tsx` — comparison table with Phase 192 caption + scroll hint
+- `app/_components/cart-drawer.tsx` — cart drawer with Phase 193 open announcement
+- `lib/structured-data.ts` — sitewide ORGANIZATION_LD / LOCAL_BUSINESS_LD (Phase 171) / WEBSITE_LD
+- `app/globals.css` — Phase 184 `.reveal` removal + Phase 189 focus-visible foundation + Phase 192 caption styling
+
+---
+
 # Session handoff — 2026-05-11 (Phases 169–187 — three merged blocks, two phases pending verification)
 
 ## Status
