@@ -1,8 +1,10 @@
-# Session handoff — 2026-05-11 cont. (Phases 211–227 — code quality, PLP load-more, two Cowork rounds, favicon)
+# Session handoff — 2026-05-11 cont. (Phases 211–227 — code quality, PLP load-more, three Cowork rounds, favicon)
 
 ## Status
 
-Five more PRs shipped after the 203–210 wave, taking day-1 total to **11 PRs merged / Phases 188–227 (40 phases)**. Cowork rev-2 returned 🟢 **GO for DNS cutover** on commit `b3695f3` (now superseded by `6ebf4c1` with two more Cowork rev-2 fixes on top).
+> **Cowork rev-3 stamp (post-PR #63 + #64):** Cleared on `d34ba8b`. Both rev-2 carry-overs verified fixed — A.1 hero dots full keyboard nav (full transition log: ArrowRight/Left/Home/End all move slide + focus + aria-current in lockstep, both-direction wrap works), A.2 mega menu first-link focus (warm-open + cold-open paths both work across all three triggers). Sanity sweep on rev-2's confirmed-passing items: 0 regressions. Section D fresh sweep: nothing new at any severity. Deferred items (P1-2 real-cursor sanity, P2-4 PLP price sort, P2-6 Vercel preview widget) tracked in GitHub issue. **🟢 GO for DNS cutover; production target alias already serves `d34ba8b` so the cutover is effectively pre-staged.**
+
+Five more PRs shipped after the 203–210 wave, taking day-1 total to **12 PRs merged / Phases 188–227 (40 phases) + HANDOFF doc**. Cowork rev-2 returned 🟢 GO for DNS cutover on commit `b3695f3`; rev-3 reconfirmed on `d34ba8b` with all PR #63 fixes verified clean.
 
 | PR | Phases | HEAD | Theme |
 |---|---|---|---|
