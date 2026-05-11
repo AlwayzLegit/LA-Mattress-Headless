@@ -1,3 +1,106 @@
+# Session handoff — 2026-05-11 cont. (Phases 211–227 — code quality, PLP load-more, two Cowork rounds, favicon)
+
+## Status
+
+Five more PRs shipped after the 203–210 wave, taking day-1 total to **11 PRs merged / Phases 188–227 (40 phases)**. Cowork rev-2 returned 🟢 **GO for DNS cutover** on commit `b3695f3` (now superseded by `6ebf4c1` with two more Cowork rev-2 fixes on top).
+
+| PR | Phases | HEAD | Theme |
+|---|---|---|---|
+| #60 | 211–214 | `469eeb1` | Code quality — consolidate localStorage stores behind `use-local-store` |
+| #61 | 215–218 | `a66b090` | PLP "Load more" UX fix + pre-launch Cowork test plan |
+| #62 | 219–225 | `b3695f3` | Pre-launch Cowork fixes (5 a11y) + brand favicon |
+| #63 | 226–227 | `6ebf4c1` | Cowork rev-2 follow-ups — hero dots P1-1 + mega menu P2-2 |
+
+`main` HEAD is `6ebf4c1`. typecheck + lint + tests stayed green on every block.
+
+## What shipped
+
+### PR #60 — Phases 211–214 (code quality consolidation)
+
+Spotted during the open-ended audit suggested by the previous handoff: `wishlist-store.ts`, `compare-store.ts`, and `recently-viewed.ts` had near-identical localStorage-set / event-bus / cross-tab `storage` listener / `useSyncExternalStore` plumbing duplicated three times. Extracted to one hook + tightened the call sites.
+
+- **211** `app/_components/use-local-store.ts` — new shared hook. `useLocalStore<T>(key, parse, serialize, event)` returns `[value, setValue]` with cross-tab sync and same-tab event broadcast. Wishlist/compare/recently-viewed all switched to it.
+- **212** Deleted the per-store hook variants. Net −163 LOC across the three files. No behavior change; all three still emit their original events (`wishlist:update`, `compare:update`, `recently-viewed:update`) so any external consumers (header badges, drawer counts) keep working unchanged.
+- **213** Tightened five `as` casts in `cart-context.tsx` + `header-search.tsx` + `quiz-state.ts` to narrowed types or explicit guards. No runtime change.
+- **214** Dead-code scan past Phase 184: removed two unused exports and one unused param. Bundle parity.
+
+Net: −163 LOC, three files less to maintain, one well-tested abstraction for any future localStorage-backed UI state.
+
+### PR #61 — Phases 215–218 (PLP load-more + Cowork plan)
+
+PLP "Load more" was scrolling the page back to the first new product on each click — Phase 217 fixes that. Phase 218 stages the pre-launch a11y/UX testing plan for Cowork.
+
+- **215** PLP `useEffect` was re-anchoring `window.scrollTo` to the first newly-appended product node. Removed.
+- **216** Pulled product-card mount into a stable identity (`useMemo` keyed on cursor) so React doesn't unmount/remount cards on each fetch — also kills the visible flicker.
+- **217** Verified cumulative append semantics in `plp-grid.tsx`: items concat, no replace; URL query stays clean (load-more is in-memory pagination, no `?page=` mutation). Documented in commit body so the Shopify-paginated `endCursor` flow stays the source of truth.
+- **218** `docs/PRE-LAUNCH-COWORK-PLAN.md` — verbatim prompt for Cowork (preview URL, 9 test areas, P1/P2/P3 severity rubric, pass criteria per check). Plan covers PDP buy box, cart drawer, mega menu kbd nav, search overlay focus, quiz a11y, PLP filters/sort/load-more, footer signup, checkout handoff, baseline a11y sweep.
+
+### PR #62 — Phases 219–225 (Cowork rev-1 fixes + favicon)
+
+Cowork rev-1 returned with 2 P1s, 5 P2s, 1 nice-to-have (favicon). Real bugs were fixed; one was a Cowork tooling false-positive (P1-1 hero dots — addressed properly in PR #63 below); P2-3 and P2-6 were already correct in source. Three of the P2 fixes converged on the same root cause.
+
+- **219** Cart drawer Esc → focus restore. Belt-and-braces: capture `document.activeElement` on drawer open, restore to it one rAF after close. The `useFocusTrap` cleanup was supposed to do this but Cowork's repro caught it dropping focus to BODY. P1-2.
+- **220** Sleep-quiz Result heading focus on mount. Was `useEffect` + `requestAnimationFrame` (race against browser's own focus fallback). Switched to `useLayoutEffect` for synchronous post-commit focus. P2-1.
+- **221** Mega menu first-link focus on ArrowDown — converted Phase 191's rAF to `useLayoutEffect`. *Note: PR #63 later found this only fixed the cold-open path; the warm-open path (panel already opened by `onFocus`) needed an additional fix.* P2-2.
+- **222** PLP `?sort=PRICE` Shopify quirk — documented in a docstring on `plp-grid.tsx`. Shopify's `PRICE` sortKey doesn't sort by `priceRange.minVariantPrice` (the displayed FROM-price) for multi-variant mattresses. Client-side full re-sort would regress load-more semantics. Documenting > pretending to fix. P2-4.
+- **223** Search overlay input auto-focus on open — same rAF race as 220/221. `useLayoutEffect` lands focus deterministically after portal mount. P2-5.
+- **224** Favicon placeholder using existing logo (intermediate step toward 225).
+- **225** Replaced with `app/icon.svg` — hand-coded SVG matching the user's attached brand favicon (navy block left ~78%, red bar right ~22%, white serif "LA" baked as paths so cross-browser rendering is identical). Next.js metadata convention auto-emits the right `<link>` tags.
+
+The "fragile rAF focus pattern" appeared three times (220, 221, 223). Documented in commit bodies: when a `useEffect` + `requestAnimationFrame` + `ref.current?.focus()` doesn't reliably land focus on mount, `useLayoutEffect` is the right escape hatch.
+
+### PR #63 — Phases 226–227 (Cowork rev-2 follow-ups)
+
+Cowork rev-2 audit against `b3695f3` returned 🟢 **GO for DNS cutover**, with three previous P2s closed (P2-1, P2-3, P2-5 verified fixed), favicon green, and two items still failing:
+
+- **226** P1-1 hero dots Arrow/Home/End — Cowork reproduced cleanly across two audit runs. My prior false-positive call (attributing it to programmatic-`KeyboardEvent` not routing through React's synthetic event system) was wrong; the right move was defense-in-depth. Converted `onKeyDown` on the `.hero-progress` wrapper to a native `addEventListener` via `useEffect`. Same logic, same deps. Fires regardless of how the event was created.
+- **227** P2-2 mega menu first-link focus — found the actual bug. The trigger has `onFocus={() => setMega(item.mega)}` which opens the panel as soon as the user Tabs onto it. By the time ArrowDown fires, `mega` is already `item.mega`, so `setMega(item.mega)` in the keydown handler is a no-op state update; React bails on the re-render and the `useLayoutEffect([mega])` from Phase 221 never re-fires. Fix: branch in the keydown handler on `mega === item.mega`. If already open, imperatively focus the first link directly from the live panel ref. If not, fall back to the deferred-focus path (still works for the cold-open case).
+
+## Outstanding Cowork findings (none blocking)
+
+- **P1-2** (cart drawer real-cursor focus restoration) — Cowork explicitly noted "not strictly the spec'd behavior, but no longer dropping focus to BODY." Worst-case is closed; the unverified part is a JS-dispatched-click limitation in their test harness, not a bug. Recommended: one real-cursor sanity click before DNS cutover.
+- **P2-4** (PLP price sort) — documented Shopify-API quirk. No clean fix without regressing load-more or doing client-side full re-sort. Live with it.
+- **P2-6** (Vercel preview widget console errors) — preview-only artifact, not in production.
+
+## Branch state
+
+- `main` is at `6ebf4c1`.
+- `claude/determine-starting-point-zRYmC` is the working branch (reset to main after each merge).
+
+## Suggested next directions
+
+1. **Cowork rev-3** — confirm 226/227 land in a real browser preview. Same prompt from `docs/PRE-LAUNCH-COWORK-PLAN.md` against the new deploy. P2-4 not retestable (documented quirk).
+2. **SEO audit comparison** — side-by-side of headless deploy vs. the live custom-domain Hydrogen site (`mattressstoreslosangeles.com`). Find any meta/structured-data/sitemap gaps before the cutover. The `data/seo-audit/mattressstoreslosangeles.com_mega_export_20260504.csv` file already has a Hydrogen-side audit to compare against.
+3. **Browser-level tests** — Playwright is still blocked in this sandbox; first thing to unblock once Chromium is available. Would have caught both Cowork rev-1 P2-2 (warm-open mega menu) and rev-2 P1-1 (hero dots) without the round trips.
+4. **`useLayoutEffect` audit** — three uses converged from the rAF anti-pattern in PR #62. Worth a sweep for any remaining `useEffect` + `requestAnimationFrame` + `.focus()` triplets that should be `useLayoutEffect`. Quick grep, ~5 LOC of fixes each if any are found.
+5. **Bundle perf round 4** — diminishing returns acknowledged in the prior handoff. Skip unless a fresh audit surfaces a concrete target.
+
+## Verification toolkit
+
+Unchanged from prior handoff. Notable for this round:
+
+- **Vercel MCP** — `web_fetch_vercel_url` confirmed favicon `<link>` injection and PDP / collection assertions during 222 / 225 validation.
+- **GitHub MCP** — `subscribe_pr_activity` used for all 5 PRs; surfaces CI status, review comments, and merge events as `<github-webhook-activity>` messages.
+- **Cowork** — user-triggered (not invokable by Claude); cycles take ~30 min per round trip. Prompt and pass criteria live at `docs/PRE-LAUNCH-COWORK-PLAN.md`.
+
+## Key files added/touched this round
+
+Added:
+- `app/_components/use-local-store.ts` — Phase 211 (shared localStorage hook)
+- `app/icon.svg` — Phase 225 (brand favicon)
+- `docs/PRE-LAUNCH-COWORK-PLAN.md` — Phase 218 (Cowork test plan)
+
+Updated (Cowork a11y fixes touch the same handful of components):
+- `app/_components/cart-drawer.tsx` — Phase 219 (focus restore on Esc)
+- `app/_components/hero-controller.tsx` — Phase 226 (native keydown handler)
+- `app/_components/nav.tsx` — Phases 221 + 227 (useLayoutEffect for first-link focus + already-open branch)
+- `app/_components/header-search-overlay.tsx` — Phase 223 (useLayoutEffect for input focus)
+- `app/sleep-quiz/sleep-quiz-result.tsx` — Phase 220 (useLayoutEffect for Result heading focus)
+- `app/(catalog)/collections/[handle]/plp-grid.tsx` — Phases 215 / 216 / 217 / 222
+- `app/_components/wishlist-store.ts`, `compare-store.ts`, `recently-viewed.ts` — Phase 212 (use-local-store consolidation)
+
+---
+
 # Session handoff — 2026-05-11 cont. (Phases 203–210 — Shopify-aware tests + bundle perf round 3)
 
 ## Status
