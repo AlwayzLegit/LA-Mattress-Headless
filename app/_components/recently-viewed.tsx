@@ -6,9 +6,7 @@ import Image from 'next/image';
 import type { Product, ProductSummary } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
 import { announce } from './announcer';
-
-const KEY = 'la-mattress.recently-viewed.v1';
-const MAX = 12;
+import { createLocalStoreApi } from './use-local-store';
 
 type StoredItem = {
   handle: string;
@@ -21,25 +19,18 @@ type StoredItem = {
   ts: number;
 };
 
-function readStore(): StoredItem[] {
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw) as unknown;
-    if (!Array.isArray(arr)) return [];
-    return arr.filter((x): x is StoredItem => typeof x === 'object' && x != null && 'handle' in x);
-  } catch {
-    return [];
-  }
-}
-
-function writeStore(items: StoredItem[]) {
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX)));
-  } catch {
-    // localStorage quota or disabled — silently no-op.
-  }
-}
+// Phase 214: migrated to shared use-local-store helpers. Unlike
+// compare-store and wishlist-store, recently-viewed has no
+// cross-component reads (only PDP mount writes; only the rail reads
+// on its own mount), so the custom event below exists for symmetry +
+// future cross-tab updates rather than current need.
+const RECENTLY_VIEWED_API = createLocalStoreApi<StoredItem>({
+  key: 'la-mattress.recently-viewed.v1',
+  event: 'la-mattress:recently-viewed-change',
+  max: 12,
+  isValid: (x): x is StoredItem =>
+    typeof x === 'object' && x != null && 'handle' in x,
+});
 
 /**
  * Records the current PDP into recently-viewed localStorage on mount.
@@ -63,8 +54,8 @@ export function RecordRecentlyViewed({ product }: { product: Product }) {
       },
       ts: Date.now(),
     };
-    const existing = readStore().filter((p) => p.handle !== product.handle);
-    writeStore([item, ...existing]);
+    const existing = RECENTLY_VIEWED_API.read().filter((p) => p.handle !== product.handle);
+    RECENTLY_VIEWED_API.write([item, ...existing]);
   }, [product]);
   return null;
 }
@@ -88,7 +79,7 @@ export function RecentlyViewedRail({
   const [items, setItems] = useState<StoredItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
-    setItems(readStore());
+    setItems(RECENTLY_VIEWED_API.read());
     setHydrated(true);
   }, []);
 
@@ -97,7 +88,7 @@ export function RecentlyViewedRail({
   if (filtered.length < 2) return null;
 
   const onClear = () => {
-    try { window.localStorage.removeItem(KEY); } catch { /* ignore */ }
+    RECENTLY_VIEWED_API.write([]);
     setItems([]);
     announce('Cleared recently viewed history');
   };

@@ -1,56 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Icon } from '@/app/_components/icon';
 import { announce } from '@/app/_components/announcer';
-
-const COMPARE_KEY = 'la-mattress.compare.v1';
-const COMPARE_EVENT = 'la-mattress:compare-change';
-const COMPARE_MAX = 4;
-
-const WISHLIST_KEY = 'la-mattress.wishlist.v1';
-const WISHLIST_EVENT = 'la-mattress:wishlist-change';
-
-/**
- * Snapshot persisted to localStorage when a visitor saves or compares a
- * mattress. handle + title are the only required fields (kept stable for
- * v1-era saves that pre-date image/price capture). Newer saves enrich
- * with vendor + image + price so the /wishlist and /compare pages can
- * render a real card without a server roundtrip.
- *
- * Anyone reading this set should treat the optional fields as truly
- * optional and fall back to the handle+title minimum for older entries.
- */
-type Snapshot = {
-  handle: string;
-  title: string;
-  vendor?: string | null;
-  imageUrl?: string | null;
-  imageAlt?: string | null;
-  priceAmount?: string | null;
-  priceCurrency?: string | null;
-};
-
-function readSet(key: string): Snapshot[] {
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return [];
-    const arr = JSON.parse(raw) as unknown;
-    if (!Array.isArray(arr)) return [];
-    return arr.filter((x): x is Snapshot => typeof x === 'object' && x != null && 'handle' in x);
-  } catch {
-    return [];
-  }
-}
-
-function writeSet(key: string, eventName: string, items: Snapshot[]) {
-  try {
-    window.localStorage.setItem(key, JSON.stringify(items));
-    window.dispatchEvent(new Event(eventName));
-  } catch {
-    // ignore quota / private mode
-  }
-}
+import {
+  COMPARE_MAX,
+  readCompareSet,
+  useCompareSet,
+  writeCompareSet,
+} from '@/app/_components/compare-store';
+import {
+  readWishlistSet,
+  useWishlistSet,
+  writeWishlistSet,
+  type WishlistSnapshot,
+} from '@/app/_components/wishlist-store';
 
 type Props = {
   handle: string;
@@ -72,10 +35,15 @@ type Props = {
  * across page navigations via the storage event; if the visitor opens this
  * PDP in a second tab and saves there, the heart fills here too.
  *
- * The save snapshot now captures vendor / image / price so the /wishlist
+ * The save snapshot captures vendor / image / price so the /wishlist
  * page renders a real card per saved mattress without a server fetch.
  * Older v1 saves missing those fields still toggle correctly — the
  * wishlist renderer falls back to title-only display.
+ *
+ * Phase 213: store state managed by the shared `useCompareSet` /
+ * `useWishlistSet` hooks. The previous file had inline duplicates of
+ * the wishlist constants + a parameterized readSet/writeSet pair;
+ * those are gone now.
  */
 export function PdpCtaRow({
   handle,
@@ -86,28 +54,14 @@ export function PdpCtaRow({
   priceAmount,
   priceCurrency,
 }: Props) {
-  const [saved, setSaved] = useState(false);
-  const [comparing, setComparing] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
+  const { items: wishlistItems, hydrated: wishlistHydrated } = useWishlistSet();
+  const { items: compareItems, hydrated: compareHydrated } = useCompareSet();
 
-  useEffect(() => {
-    const sync = () => {
-      setSaved(readSet(WISHLIST_KEY).some((p) => p.handle === handle));
-      setComparing(readSet(COMPARE_KEY).some((p) => p.handle === handle));
-    };
-    sync();
-    setHydrated(true);
-    window.addEventListener(COMPARE_EVENT, sync);
-    window.addEventListener(WISHLIST_EVENT, sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      window.removeEventListener(COMPARE_EVENT, sync);
-      window.removeEventListener(WISHLIST_EVENT, sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, [handle]);
+  const hydrated = wishlistHydrated && compareHydrated;
+  const saved = wishlistItems.some((p) => p.handle === handle);
+  const comparing = compareItems.some((p) => p.handle === handle);
 
-  const snapshot = (): Snapshot => ({
+  const wishlistSnapshot = (): WishlistSnapshot => ({
     handle,
     title,
     vendor: vendor ?? null,
@@ -118,25 +72,29 @@ export function PdpCtaRow({
   });
 
   const toggleSave = () => {
-    const cur = readSet(WISHLIST_KEY);
+    const cur = readWishlistSet();
     const idx = cur.findIndex((p) => p.handle === handle);
     const adding = idx < 0;
     if (idx >= 0) cur.splice(idx, 1);
-    else cur.push(snapshot());
-    writeSet(WISHLIST_KEY, WISHLIST_EVENT, cur);
+    else cur.push(wishlistSnapshot());
+    writeWishlistSet(cur);
     announce(adding ? `Saved ${title}` : `Removed ${title} from saved`);
   };
 
   const toggleCompare = () => {
-    const cur = readSet(COMPARE_KEY);
+    const cur = readCompareSet();
     const idx = cur.findIndex((p) => p.handle === handle);
     if (idx >= 0) {
       cur.splice(idx, 1);
-      writeSet(COMPARE_KEY, COMPARE_EVENT, cur);
+      writeCompareSet(cur);
       announce(`Removed ${title} from compare`);
     } else if (cur.length < COMPARE_MAX) {
-      cur.push(snapshot());
-      writeSet(COMPARE_KEY, COMPARE_EVENT, cur);
+      // Compare entries are minimal `{handle, title}` (CompareSnapshot
+      // type); the enriched vendor/image/price fields go to wishlist
+      // only. Matches the shape `compare-toggle.tsx` writes from the
+      // PLP cards.
+      cur.push({ handle, title });
+      writeCompareSet(cur);
       announce(`Added ${title} to compare. ${cur.length} of ${COMPARE_MAX} selected.`);
     } else {
       // Cap reached — surface it audibly so SR users aren't met with
