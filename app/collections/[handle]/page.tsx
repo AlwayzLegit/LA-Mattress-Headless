@@ -130,7 +130,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://mattressstoreslosangeles.com/' },
-      { '@type': 'ListItem', position: 2, name: collection.title },
+      { '@type': 'ListItem', position: 2, name: collection.title, item: `https://mattressstoreslosangeles.com/collections/${collection.handle}` },
     ],
   };
 
