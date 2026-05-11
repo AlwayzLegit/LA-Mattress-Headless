@@ -327,8 +327,8 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
           ) : (
             <>
               {results && results.products.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Products</div>
+                <div className="header-search-group" role="group" aria-label="Products">
+                  <div className="eyebrow header-search-group-label" aria-hidden="true">Products</div>
                   <ul>
                     {results.products.slice(0, 6).map((p, i) => {
                       const idx = i;
@@ -369,8 +369,8 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
               {results && results.collections.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Collections</div>
+                <div className="header-search-group" role="group" aria-label="Collections">
+                  <div className="eyebrow header-search-group-label" aria-hidden="true">Collections</div>
                   <ul>
                     {results.collections.slice(0, 4).map((c, i) => {
                       const idx = Math.min(results.products.length, 6) + i;
@@ -393,8 +393,8 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
               {showroomMatches.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Showrooms</div>
+                <div className="header-search-group" role="group" aria-label="Showrooms">
+                  <div className="eyebrow header-search-group-label" aria-hidden="true">Showrooms</div>
                   <ul>
                     {showroomMatches.slice(0, 4).map((s, i) => {
                       const productCount = Math.min(results?.products.length ?? 0, 6);
@@ -420,8 +420,8 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
               {results && results.articles.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Articles</div>
+                <div className="header-search-group" role="group" aria-label="Articles">
+                  <div className="eyebrow header-search-group-label" aria-hidden="true">Articles</div>
                   <ul>
                     {results.articles.slice(0, 4).map((a, i) => {
                       const idx =

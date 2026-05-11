@@ -8,6 +8,7 @@ import { Icon } from './icon';
 import { useBodyScrollLock } from './use-body-scroll-lock';
 import { useFocusTrap } from './use-focus-trap';
 import { CartEmptyRecent } from './cart-empty-recent';
+import { announce } from './announcer';
 import { formatMoney } from '@/lib/format';
 
 export function CartDrawer() {
@@ -36,8 +37,16 @@ export function CartDrawer() {
   // DOM and not stuck in mid-transition before .focus() runs.
   useEffect(() => {
     if (!drawerOpen) return;
+    // Announce the open transition with the current item count so
+    // screen-reader users hear what just happened (the visual slide-in
+    // and focus shift to the close button is otherwise silent for AT).
+    // Read totalQuantity inline rather than as a hook dep so the effect
+    // doesn't re-fire (and re-announce) on every cart mutation.
+    const qty = cart?.totalQuantity ?? 0;
+    announce(`Shopping cart opened. ${qty} item${qty === 1 ? '' : 's'}.`);
     const id = requestAnimationFrame(() => closeBtnRef.current?.focus());
     return () => cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drawerOpen]);
 
   if (!drawerOpen) return null;
