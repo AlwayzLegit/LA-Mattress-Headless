@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Icon } from '@/app/_components/icon';
 import { announce } from '@/app/_components/announcer';
 import { QUESTIONS, type Answers, type Recommendation } from './quiz-data';
@@ -36,10 +36,26 @@ export function SleepQuizResult({
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
 
+  // Phase 220: focus the result heading synchronously after the DOM
+  // commits, before paint. The Phase 210 dynamic import means this
+  // component mounts asynchronously after `step === 'result'` (the
+  // dynamic chunk has to load + execute), so the previous
+  // `useEffect` + `requestAnimationFrame` chain was racing the
+  // browser's own focus fallback to BODY — the pre-launch Cowork
+  // audit caught the heading never receiving focus on mount.
+  // `useLayoutEffect` runs after refs are attached but before the
+  // user sees the page, which lands focus reliably for both
+  // keyboard and SR users. Safe inside this file because the parent
+  // dynamic-imports with `ssr: false`, so this component never runs
+  // on the server.
+  useLayoutEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+
+  // Announce in a separate post-paint effect — the polite live region
+  // doesn't need to fire synchronously with focus.
   useEffect(() => {
     announce(`Your match: ${result.type}. We'd shortlist ${result.primary.label} first.`);
-    const id = requestAnimationFrame(() => headingRef.current?.focus());
-    return () => cancelAnimationFrame(id);
   }, [result.type, result.primary.label]);
 
   return (
