@@ -143,7 +143,7 @@ function ArticleView({ article }: { article: Article }) {
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
       { '@type': 'ListItem', position: 2, name: article.blog.title, item: `${SITE}/blogs/${article.blog.handle}` },
-      { '@type': 'ListItem', position: 3, name: article.title },
+      { '@type': 'ListItem', position: 3, name: article.title, item: url },
     ],
   };
 

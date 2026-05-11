@@ -48,7 +48,12 @@ export const metadata: Metadata = {
     description:
       'Five LA showrooms. Premium mattress brands, same-day delivery, 0% APR financing. Family-owned since 2012.',
   },
-  twitter: { card: 'summary_large_image', title: 'LA Mattress', description: 'Family-owned mattress store with 5 showrooms across Los Angeles.' },
+  // Only set the card type globally. Title / description / images fall back
+  // automatically to each route's `openGraph.*` per Next.js metadata
+  // inheritance — so a PDP share renders the product copy, an article
+  // share renders the article copy, etc. Hardcoding them here would
+  // override that fallback with the global blurb on every route.
+  twitter: { card: 'summary_large_image' },
   // No `robots:` declaration here — search engines index by default. An
   // explicit `{ index:true, follow:true }` was leaking through to 404
   // responses as a second `<meta name="robots" content="index, follow">`

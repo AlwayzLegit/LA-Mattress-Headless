@@ -6,6 +6,7 @@
 // allows multiple of the same @type on a page so long as @id differs.
 
 import { SITE_BRAND, SITE_PHONE_SCHEMA } from './site-config';
+import { SHOWROOMS } from './showrooms';
 
 const SITE = 'https://mattressstoreslosangeles.com';
 
@@ -37,6 +38,25 @@ export const LOCAL_BUSINESS_LD = {
     addressCountry: 'US',
   },
   areaServed: { '@type': 'City', name: 'Los Angeles' },
+  // Each LA showroom emitted as a department branch. The locations-page
+  // template (`/pages/mattress-store-locations`) emits the same shape under
+  // its own @id; including it on the homepage too gives crawlers the full
+  // multi-location signal from the highest-authority page on the site.
+  department: SHOWROOMS.map((s) => ({
+    '@type': 'FurnitureStore',
+    name: s.name,
+    url: `${SITE}/pages/${s.handle}`,
+    telephone: s.phone,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: s.street,
+      addressLocality: s.city,
+      addressRegion: s.region,
+      postalCode: s.postalCode,
+      addressCountry: 'US',
+    },
+    ...(s.geo ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } } : {}),
+  })),
   parentOrganization: { '@id': `${SITE}/#organization` },
 };
 
