@@ -9,6 +9,7 @@ import { announce } from '@/app/_components/announcer';
 import { formatMoney, formatPriceRange } from '@/lib/format';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { SIZE_DIMENSIONS } from './pdp-data';
+import { PdpStickyAtcBar } from './pdp-sticky-atc-bar';
 
 type Props = {
   options: ProductOption[];
@@ -260,35 +261,25 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
         </p>
       ) : null}
 
-      <div className={`pdp-sticky-bar${showSticky ? ' on' : ''}`} aria-hidden={!showSticky}>
-        <div className="pdp-sticky-bar__inner">
-          {productImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={productImage.url}
-              alt={productImage.altText ?? productTitle}
-              className="pdp-sticky-bar__img"
-              width={48}
-              height={48}
-            />
-          ) : null}
-          <div className="pdp-sticky-bar__text">
-            <div className="pdp-sticky-bar__title">{productTitle}</div>
-            <div className="pdp-sticky-bar__price tnum">
-              {matchingVariant ? formatMoney(matchingVariant.price) : formatMoney(priceRange.minVariantPrice)}
-            </div>
-          </div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={!canBuy}
-            onClick={() => matchingVariant && addLine(matchingVariant.id, 1)}
-            tabIndex={showSticky ? 0 : -1}
-          >
-            {pending ? 'Adding…' : matchingVariant?.availableForSale ? 'Add' : 'Out of stock'}
-          </button>
-        </div>
-      </div>
+      <PdpStickyAtcBar
+        show={showSticky}
+        productTitle={productTitle}
+        productImage={productImage}
+        price={
+          matchingVariant
+            ? formatMoney(matchingVariant.price)
+            : formatMoney(priceRange.minVariantPrice)
+        }
+        ctaLabel={
+          pending
+            ? 'Adding…'
+            : matchingVariant?.availableForSale
+              ? 'Add'
+              : 'Out of stock'
+        }
+        disabled={!canBuy}
+        onAdd={() => matchingVariant && addLine(matchingVariant.id, 1)}
+      />
     </>
   );
 }
