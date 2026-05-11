@@ -1,15 +1,26 @@
 import type { CSSProperties, HTMLAttributes } from 'react';
 
+// Phase 234: lifestyle/section backgrounds dropped to q=65 + capped to
+// the actual displayed width. These are decorative photographic
+// backgrounds (page sections, mega-tile thumbnails, category cards)
+// rendered as CSS background-image — they don't pass through next/image,
+// so the URL params are what the browser actually fetches. Cowork rev-5
+// caught the previous `?w=1600&q=80` lifestyle photos coming in at
+// 454 KB on the homepage; q=65 + 1280w trims them roughly in half with
+// no perceptible quality loss for this content type. Hero/product
+// images that DO pass through next/image are unaffected — next/image
+// rewrites the q param on its own via the `quality` prop in
+// `hero-slide-image.tsx` (also lowered to 65 in this phase).
 const FALLBACK_BEDROOM =
-  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200&q=80&auto=format&fit=crop';
+  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1280&q=65&auto=format&fit=crop';
 const FALLBACK_PRODUCT =
-  'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&q=80&auto=format&fit=crop';
+  'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&q=65&auto=format&fit=crop';
 
 export const IMAGES: Record<string, string> = {
   // Hero
-  'hero-showroom':     'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=1600&q=80&auto=format&fit=crop',
-  'hero-engineered':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1600&q=80&auto=format&fit=crop',
-  'hero-sale':         'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=1600&q=80&auto=format&fit=crop',
+  'hero-showroom':     'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=1280&q=65&auto=format&fit=crop',
+  'hero-engineered':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1280&q=65&auto=format&fit=crop',
+  'hero-sale':         'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=1280&q=65&auto=format&fit=crop',
 
   // Product cutouts (LA Mattress Shopify CDN)
   'product-tempur-proadapt':   'https://cdn.shopify.com/s/files/1/0684/1759/files/pro-adapt-soft-cover.jpg?v=1739813427&width=800',
@@ -24,11 +35,11 @@ export const IMAGES: Record<string, string> = {
   'product-harvest-green':     'https://cdn.shopify.com/s/files/1/0684/1759/files/HarvestGreenEssentialGOTSCertified10Mattress.jpg?v=1739811316&width=800',
 
   // Categories
-  'cat-memory-foam':   'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80&auto=format&fit=crop',
-  'cat-hybrid':        'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80&auto=format&fit=crop',
-  'cat-innerspring':   'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80&auto=format&fit=crop',
-  'cat-latex':         'https://images.unsplash.com/photo-1592229505726-ca121723b8ef?w=800&q=80&auto=format&fit=crop',
-  'cat-cooling':       'https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=800&q=80&auto=format&fit=crop',
+  'cat-memory-foam':   'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=65&auto=format&fit=crop',
+  'cat-hybrid':        'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=65&auto=format&fit=crop',
+  'cat-innerspring':   'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=65&auto=format&fit=crop',
+  'cat-latex':         'https://images.unsplash.com/photo-1592229505726-ca121723b8ef?w=800&q=65&auto=format&fit=crop',
+  'cat-cooling':       'https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=800&q=65&auto=format&fit=crop',
   'cat-adjustable':    'https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Elite_-_Plus_-_05_csqszn.jpg?v=1772572000&width=800',
 
   // Showrooms
@@ -42,8 +53,8 @@ export const IMAGES: Record<string, string> = {
   // Original photo-1616627781901-92f81a36c4d6 was 404'd by Unsplash; reusing
   // the lifestyle-bedroom photo here until a real brand asset is supplied.
   // Confirmed 200 OK at time of Phase 22 commit.
-  'lifestyle-couple':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1600&q=80&auto=format&fit=crop',
-  'lifestyle-bedroom':  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1600&q=80&auto=format&fit=crop',
+  'lifestyle-couple':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1280&q=65&auto=format&fit=crop',
+  'lifestyle-bedroom':  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1280&q=65&auto=format&fit=crop',
 };
 
 export function imgUrl(name: string, fallbackKind: 'product' | 'bedroom' = 'bedroom'): string {
