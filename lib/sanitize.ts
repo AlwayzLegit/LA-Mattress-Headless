@@ -11,6 +11,15 @@
  *   - Absolute production URLs cause unnecessary cross-origin requests when
  *     the same content can resolve relative to whatever host the page is on.
  *
+ * Phase 229: also strips Google Maps `<iframe>` embeds. Merchants pasted
+ * map iframes into several showroom page bodies in Shopify, but the
+ * showroom template (`app/pages/[handle]/page.tsx`) already renders its
+ * own canonical map sourced from geo coordinates in `lib/showrooms.ts`.
+ * The result was 2-3 maps side-by-side on Studio City / West LA / La Brea.
+ * This pass removes the merchant-pasted iframes so only the canonical
+ * map renders. Other iframes (YouTube, Vimeo, future widgets) pass
+ * through untouched.
+ *
  * This helper rewrites both to root-relative URLs in `href` and `src`
  * attributes. Idempotent. Cheap (single regex pass).
  *
@@ -28,10 +37,17 @@ const HOSTS_TO_REWRITE = [
   /https?:\/\/la-mattress\.myshopify\.com/gi,
 ];
 
+// Matches an entire `<iframe …></iframe>` (and self-closing variants) when
+// the `src` attribute references Google Maps. Single-line `s` flag covers
+// merchant-pasted markup that often spans multiple lines with embedded
+// width / height / allowfullscreen attrs.
+const GOOGLE_MAPS_IFRAME = /<iframe\b[^>]*\bsrc=["'][^"']*(?:google\.com\/maps|maps\.google\.com)[^"']*["'][^>]*>[\s\S]*?<\/iframe>/gi;
+
 export function sanitizeShopifyHtml(html: string | null | undefined): string {
   if (!html) return '';
   let out = html;
   for (const re of HOSTS_TO_REWRITE) out = out.replace(re, '');
+  out = out.replace(GOOGLE_MAPS_IFRAME, '');
   // Some legacy article bodies were imported with bad encoding and contain
   // U+FFFD (the � replacement char). Drop them — they only ever render as
   // visible glyphs that look broken.
