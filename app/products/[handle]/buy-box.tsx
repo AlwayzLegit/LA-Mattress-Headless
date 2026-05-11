@@ -8,23 +8,7 @@ import { Icon } from '@/app/_components/icon';
 import { announce } from '@/app/_components/announcer';
 import { formatMoney, formatPriceRange } from '@/lib/format';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
-
-// Standard mattress size dimensions for the per-size sublabel in the
-// design's `.pdp-size` cards. Independent of brand — these are industry-
-// standard sizes. Falls back to no sublabel for unrecognized values.
-const SIZE_DIMENSIONS: Record<string, string> = {
-  'Twin':                 '38" × 75"',
-  'Twin XL':              '38" × 80"',
-  'Full':                 '54" × 75"',
-  'Full XL':              '54" × 80"',
-  'Queen':                '60" × 80"',
-  'King':                 '76" × 80"',
-  'California King':      '72" × 84"',
-  'Cal King':             '72" × 84"',
-  'Split King':           'Two 38" × 80"',
-  'Split California King': 'Two 36" × 84"',
-  'Split Cal King':       'Two 36" × 84"',
-};
+import { SIZE_DIMENSIONS } from './pdp-data';
 
 type Props = {
   options: ProductOption[];
