@@ -78,7 +78,12 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
       url,
       title,
       description,
-      images: product.featuredImage ? [{ url: product.featuredImage.url, alt: product.featuredImage.altText ?? product.title }] : [],
+      // Omit `images` entirely if the product has no featuredImage so
+      // Next.js's auto-fallback to app/opengraph-image.tsx applies. PDPs
+      // nearly always have featuredImage so this is mostly belt-and-braces.
+      ...(product.featuredImage
+        ? { images: [{ url: product.featuredImage.url, alt: product.featuredImage.altText ?? product.title }] }
+        : {}),
     },
   };
 }
