@@ -107,12 +107,55 @@ export type Recommendation = {
   alternates: { handle: string; label: string }[];
 };
 
+/**
+ * Phase 231: deterministic answer-keyed tie-break order.
+ *
+ * The original recommend() used a hard-coded preference order
+ * `['hybrid', 'foam', 'latex', 'innerspring']` for breaking score ties.
+ * Combined with hybrid being able to accumulate +2 points from position,
+ * weight, temperature, firmness, and pain (basically every signal),
+ * hybrid won ~60-70% of answer paths regardless of inputs. Three very
+ * different sleeper profiles all funneled into "Mid-tier hybrid /
+ * Helix," which made the quiz feel "completely bogus."
+ *
+ * Fix: pick the tie-break order from a small set of permutations,
+ * keyed on the answers themselves. Same answers → same order (UX is
+ * stable on retry) but different answers → different ties resolve
+ * differently, so no single material structurally dominates.
+ *
+ * Each permutation puts a different material at the front position so
+ * that a true tie between two materials no longer always resolves the
+ * same way globally.
+ */
+const TIE_BREAK_ORDERS: Material[][] = [
+  ['hybrid',      'foam',        'latex',       'innerspring'],
+  ['foam',        'hybrid',      'innerspring', 'latex'],
+  ['latex',       'foam',        'hybrid',      'innerspring'],
+  ['innerspring', 'hybrid',      'latex',       'foam'],
+];
+
+function tieBreakOrder(answers: Answers): Material[] {
+  const seed = Object.entries(answers)
+    .filter(([, v]) => v && v !== 'skip')
+    .map(([k, v]) => `${k}:${v}`)
+    .sort()
+    .join('|');
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = ((h << 5) - h + seed.charCodeAt(i)) | 0;
+  }
+  return TIE_BREAK_ORDERS[Math.abs(h) % TIE_BREAK_ORDERS.length];
+}
+
 export function recommend(answers: Answers): Recommendation {
   const score: Record<Material, number> = { foam: 0, hybrid: 0, innerspring: 0, latex: 0 };
 
-  // Strong preference dominates if expressed.
+  // Strong preference influences but no longer dominates. Phase 231:
+  // reduced from +5 to +3 — still meaningful (a user who picks latex
+  // gets latex if it's at all competitive) but no longer guaranteed to
+  // flatten the algorithm when a much-better fit exists.
   const matPref = answers.material as Material | 'any' | undefined;
-  if (matPref && matPref !== 'any') score[matPref] += 5;
+  if (matPref && matPref !== 'any') score[matPref] += 3;
 
   // Position
   if (answers.position === 'side')    { score.foam += 2; score.hybrid += 1; }
@@ -124,25 +167,33 @@ export function recommend(answers: Answers): Recommendation {
   if (answers.weight === 'heavy') { score.hybrid += 2; score.innerspring += 1; }
   if (answers.weight === 'light') { score.foam += 1; }
 
-  // Temperature — foam runs hotter without cooling tech; hybrids/innerspring/latex breathe better.
-  if (answers.temp === 'hot')  { score.hybrid += 2; score.innerspring += 1; score.latex += 1; score.foam -= 1; }
+  // Temperature — foam runs hotter without cooling tech; hybrids /
+  // innerspring / latex breathe better. Phase 231: bumped latex +1→+2
+  // on hot because latex is a legitimately strong fit for hot sleepers
+  // and was underweighted relative to its real-world performance.
+  if (answers.temp === 'hot')  { score.hybrid += 2; score.innerspring += 1; score.latex += 2; score.foam -= 1; }
   if (answers.temp === 'cold') { score.foam += 1; }
 
-  // Firmness
-  if (answers.firmness === 'soft') { score.foam += 1; }
-  if (answers.firmness === 'firm') { score.innerspring += 1; score.hybrid += 1; }
+  // Firmness. Phase 231: bumped from +1 to +2 each. The previous
+  // weighting let position (+2) outrank firmness (+1), so a side
+  // sleeper who picked "firm" still got contour-foam-leaning
+  // recommendations. Firmness is a stated preference and should
+  // weigh as much as position.
+  if (answers.firmness === 'soft') { score.foam += 2; }
+  if (answers.firmness === 'firm') { score.innerspring += 2; score.hybrid += 2; }
 
-  // Pain
-  if (answers.pain === 'back')  { score.hybrid += 1; score.innerspring += 1; }
-  if (answers.pain === 'joint') { score.foam += 2; }
+  // Pain. Phase 231: added latex +1 for back and joint pain — latex
+  // contours like foam without retaining heat, a real benefit for
+  // joint-pain sleepers that the original weighting ignored.
+  if (answers.pain === 'back')  { score.hybrid += 1; score.innerspring += 1; score.latex += 1; }
+  if (answers.pain === 'joint') { score.foam += 2; score.latex += 1; }
   if (answers.pain === 'neck')  { score.foam += 1; }
 
   // Partner motion
   if (answers.partner === 'partner-move') { score.foam += 2; score.hybrid += 1; score.innerspring -= 1; }
 
-  // Pick the winner. In case of a tie, the order below decides:
-  // hybrid > foam > latex > innerspring (most universally recommended first).
-  const order: Material[] = ['hybrid', 'foam', 'latex', 'innerspring'];
+  // Pick the winner. Tie-break is answers-keyed (see tieBreakOrder).
+  const order = tieBreakOrder(answers);
   const winner = order.reduce<{ m: Material; s: number }>(
     (best, m) => (score[m] > best.s ? { m, s: score[m] } : best),
     { m: order[0], s: -Infinity },
