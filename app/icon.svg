@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!--
+    LA Mattress favicon — Phase 225 recreation. Matches the merchant's
+    live brand mark: navy block on the left (~78% width) with white
+    serif "LA", red vertical bar on the right (~22% width). Square
+    64x64 viewBox so browsers can rasterize to 16/32/48px cleanly.
+
+    Letters are baked as paths instead of <text> so rendering is
+    consistent regardless of which serif font the user's OS ships.
+    Geometry approximates Georgia / Times-style proportions; small
+    enough at favicon scales that subtle variation isn't perceptible.
+  -->
+  <rect width="50" height="64" fill="#142754"/>
+  <rect x="50" width="14" height="64" fill="#E1251B"/>
+
+  <!-- "L": vertical stem + horizontal foot -->
+  <path fill="#FFFFFF" d="M9 16 h7 v32 h13 v6 H9 z"/>
+
+  <!-- "A": triangular silhouette + crossbar -->
+  <path fill="#FFFFFF" d="M30 54 L37.5 16 h5 L50 54 h-7 l-1.4-7 h-7.2 l-1.4 7 z M35.7 41.5 h4.6 l-2.3 -11.5 z"/>
+</svg>
