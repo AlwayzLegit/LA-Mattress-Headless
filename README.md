@@ -177,24 +177,66 @@ next.config.mjs            Image remote patterns + redirects() pipeline reading 
 | Reviews | 6 sample Google reviews | Replace with live review feed (Birdeye/Yotpo TBD) |
 | FAQ | 6 hardcoded Q&As; "Ask a question" → `/pages/mattress-store-contact` | Stay hardcoded; full FAQ once Shopify publishes `/pages/mattress-faq` |
 
-## What's left before launch
+## Pre-launch checklist
 
-Operational (you do these, not code):
+The codebase is feature-complete and has been polished across three coherent tracks (a11y phases 122–156, content+SEO 157–161, perf 162–165, launch ops 166+). What's left is operational + measurement, not code.
 
-1. **Wire Storefront API token + domain in `.env.local`.** Required scopes:
-   `unauthenticated_read_product_listings`, `unauthenticated_read_product_inventory`,
-   `unauthenticated_read_content`, `unauthenticated_write_checkouts`,
-   `unauthenticated_read_checkouts`. Once set, every dynamic route SSGs.
-2. **Run `node scripts/pull-inventory.mjs`** with an Admin token that has
-   `read_content` + `read_themes` scopes to populate the full `redirects.json`
-   (estimated 200+ more entries observed in the live site) and to enumerate
-   article handles per blog (currently only blog handles are snapshotted).
-3. **Visual QA in a real browser.** The whole codebase has been built without
-   live Storefront data and without browser smoke testing — assume cosmetic
-   tweaks are needed once you can see real product imagery in the layout.
+### 1. Set Vercel env vars (production + preview + dev)
 
-Deferred (vendor or content decision needed):
+See `.env.example` for the full list. Required for launch:
 
-- Live review feed on PDP + homepage Reviews section (Birdeye / Yotpo / etc.)
-- Real account dashboard (currently a placeholder that deflects to phone)
-- Hero CMS metaobjects for editorial control of the rotating slides
+- `SHOPIFY_STORE_DOMAIN` + `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` — the storefront fails closed without these.
+- `NEXT_PUBLIC_SITE_URL` — used by sitemap.ts, structured-data, og:url.
+- `SHOPIFY_WEBHOOK_SECRET` — needed for `/api/revalidate` to accept incoming Shopify webhooks. Without it, the route 503s and content stays stale.
+
+Strongly recommended for launch:
+
+- `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_DSN` — error capture. SDK no-ops without these. Wired in Phase 166.
+- `SENTRY_AUTH_TOKEN` — source-map upload at build time so prod stack traces resolve to original files.
+
+Optional:
+
+- `JUDGEME_API_TOKEN` + `JUDGEME_SHOP_DOMAIN` — homepage Reviews section + `/pages/reviews`. Both render nothing when unset.
+- `SHOPIFY_ADMIN_TOKEN` — only used by `scripts/pull-inventory.mjs` (not by the app). Required to refresh the URL inventory.
+
+### 2. Inventory snapshot
+
+`data/url-inventory/` is checked in. Refresh before cutover:
+
+```bash
+SHOPIFY_ADMIN_TOKEN=... node scripts/pull-inventory.mjs
+```
+
+This regenerates `collections.json`, `products.json`, `pages.json`, `blogs.json`, and `redirects.json`. The redirects file currently has 372 entries — verify with the live shop's URL set before launch.
+
+### 3. Webhook URL configuration
+
+In Shopify Admin → Settings → Notifications → Webhooks, point these to the new domain:
+
+- `products/create`, `products/update`, `products/delete` → `https://mattressstoreslosangeles.com/api/revalidate`
+- `collections/update` → same endpoint
+- `pages/update` → same endpoint
+
+Use the same signing secret as `SHOPIFY_WEBHOOK_SECRET`.
+
+### 4. DNS cutover
+
+When ready:
+
+1. Lower TTL on `mattressstoreslosangeles.com` A/ALIAS records to 300s about 24h before cutover.
+2. Switch DNS to Vercel's edge.
+3. Verify HTTPS works (Vercel auto-provisions Let's Encrypt cert).
+4. Spot-check 5 representative URLs from the redirects file return 301 to their new paths.
+5. Spot-check the canonical homepage, a PDP, a PLP, the sleep quiz, and an article all render with full content.
+
+### 5. Measurement (post-cutover)
+
+- Vercel Speed Insights dashboard for LCP/CLS/INP percentiles.
+- Sentry inbox for any new errors in the first 24h.
+- Google Search Console: re-submit sitemap, monitor coverage report for spike in 404s (would indicate a missing redirect).
+
+### Deferred (vendor or content decision needed)
+
+- Real account dashboard (currently a placeholder that deflects to phone).
+- Hero CMS metaobjects for editorial control of the rotating slides.
+- Editorial metafield content for the ~40 mattresses still showing default spec strings on PDP.
