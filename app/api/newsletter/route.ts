@@ -45,9 +45,15 @@ export async function POST(request: Request) {
   const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
 
   if (!adminToken || !storeDomain) {
-    // Capture in logs so the merchant can recover signups before wiring up
-    // the Admin token / external ESP.
-    console.log('[newsletter] queued email (no admin token configured):', email);
+    // Capture in non-prod logs only. Logging customer emails to prod
+    // log aggregators (Vercel logs are searchable, retained 30+ days)
+    // is a privacy issue. Once we hit production traffic the merchant
+    // must have either the admin token configured or an external ESP
+    // wired up — relying on log scraping in prod is not a recovery
+    // strategy. Phase 235.
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[newsletter] queued email (no admin token configured):', email);
+    }
     return NextResponse.json({ ok: true, queued: true });
   }
 
@@ -85,12 +91,16 @@ export async function POST(request: Request) {
     // "Email has already been taken" → already a customer; treat as success.
     const onlyDup = errors.length > 0 && errors.every((e) => /already been taken/i.test(e.message));
     if (errors.length > 0 && !onlyDup) {
-      console.warn('[newsletter] customerCreate errors:', errors);
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[newsletter] customerCreate errors:', errors);
+      }
       return NextResponse.json({ ok: false, error: 'create_failed' }, { status: 502 });
     }
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.warn('[newsletter] admin api failed:', err);
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[newsletter] admin api failed:', err);
+    }
     return NextResponse.json({ ok: false, error: 'admin_api_failed' }, { status: 502 });
   }
 }
