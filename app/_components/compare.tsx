@@ -5,69 +5,36 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icon } from './icon';
 import { announce } from './announcer';
-
-const KEY = 'la-mattress.compare.v1';
-const MAX = 4;
-const EVENT = 'la-mattress:compare-change';
-
-/**
- * Routes where the floating compare tray is contextually meaningful (the
- * visitor is in shopping mode). Hide everywhere else — quiz, blog, account,
- * locations, cart, /compare itself, 404, etc. — to avoid covering content
- * the visitor is actually trying to read.
- */
-function isShoppingRoute(pathname: string | null): boolean {
-  if (!pathname) return false;
-  if (pathname === '/') return true;
-  if (pathname.startsWith('/collections/')) return true;
-  if (pathname.startsWith('/products/')) return true;
-  if (pathname === '/search') return true;
-  return false;
-}
-
-type Snapshot = { handle: string; title: string };
-
-function readSet(): Snapshot[] {
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw) as unknown;
-    if (!Array.isArray(arr)) return [];
-    return arr.filter((x): x is Snapshot => typeof x === 'object' && x != null && 'handle' in x);
-  } catch {
-    return [];
-  }
-}
-
-function writeSet(items: Snapshot[]) {
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX)));
-    window.dispatchEvent(new Event(EVENT));
-  } catch {
-    // ignore quota / private mode
-  }
-}
+import {
+  COMPARE_EVENT,
+  COMPARE_MAX,
+  isShoppingRoute,
+  readCompareSet,
+  writeCompareSet,
+  type CompareSnapshot,
+} from './compare-store';
 
 /**
  * Adds/removes a product from the compare set. Lives inside a PLP card —
  * the click handler stops propagation so it doesn't trigger the parent
  * <Link>'s navigation.
  *
- * Cap is MAX (4 items) — beyond that we silently no-op the add. Keeps the
- * compare table from getting unwieldy.
+ * Cap is COMPARE_MAX (4 items) — beyond that we silently no-op the add
+ * (with an SR announcement explaining why). Keeps the compare table
+ * from getting unwieldy.
  */
 export function CompareToggle({ handle, title }: { handle: string; title: string }) {
   const [selected, setSelected] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const sync = () => setSelected(readSet().some((p) => p.handle === handle));
+    const sync = () => setSelected(readCompareSet().some((p) => p.handle === handle));
     sync();
     setHydrated(true);
-    window.addEventListener(EVENT, sync);
+    window.addEventListener(COMPARE_EVENT, sync);
     window.addEventListener('storage', sync);
     return () => {
-      window.removeEventListener(EVENT, sync);
+      window.removeEventListener(COMPARE_EVENT, sync);
       window.removeEventListener('storage', sync);
     };
   }, [handle]);
@@ -75,20 +42,20 @@ export function CompareToggle({ handle, title }: { handle: string; title: string
   const onToggle = (e: React.MouseEvent | React.ChangeEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const cur = readSet();
+    const cur = readCompareSet();
     const idx = cur.findIndex((p) => p.handle === handle);
     if (idx >= 0) {
       cur.splice(idx, 1);
-      writeSet(cur);
+      writeCompareSet(cur);
       announce(`Removed ${title} from compare`);
-    } else if (cur.length < MAX) {
+    } else if (cur.length < COMPARE_MAX) {
       cur.push({ handle, title });
-      writeSet(cur);
-      announce(`Added ${title} to compare. ${cur.length} of ${MAX} selected.`);
+      writeCompareSet(cur);
+      announce(`Added ${title} to compare. ${cur.length} of ${COMPARE_MAX} selected.`);
     } else {
       // Already 4 selected — surface it audibly so SR users know why
       // their click did nothing.
-      announce(`Compare is full. Remove one of the ${MAX} selected mattresses first.`);
+      announce(`Compare is full. Remove one of the ${COMPARE_MAX} selected mattresses first.`);
     }
   };
 
@@ -101,7 +68,7 @@ export function CompareToggle({ handle, title }: { handle: string; title: string
       className={`compare-toggle${selected ? ' is-selected' : ''}`}
       onClick={onToggle}
       aria-pressed={selected}
-      aria-label={selected ? `Remove ${title} from compare` : `Add ${title} to compare (up to ${MAX})`}
+      aria-label={selected ? `Remove ${title} from compare` : `Add ${title} to compare (up to ${COMPARE_MAX})`}
     >
       <span className="compare-toggle-box" aria-hidden>
         {selected ? <Icon name="check" size={12} /> : null}
@@ -117,20 +84,20 @@ export function CompareToggle({ handle, title }: { handle: string; title: string
  * handles. Visible site-wide; rendered in the root layout.
  */
 export function CompareTray() {
-  const [items, setItems] = useState<Snapshot[]>([]);
+  const [items, setItems] = useState<CompareSnapshot[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [nearFooter, setNearFooter] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    const sync = () => setItems(readSet());
+    const sync = () => setItems(readCompareSet());
     sync();
     setHydrated(true);
-    window.addEventListener(EVENT, sync);
+    window.addEventListener(COMPARE_EVENT, sync);
     window.addEventListener('storage', sync);
     return () => {
-      window.removeEventListener(EVENT, sync);
+      window.removeEventListener(COMPARE_EVENT, sync);
       window.removeEventListener('storage', sync);
     };
   }, []);
@@ -163,7 +130,7 @@ export function CompareTray() {
   const ids = items.map((i) => i.handle).join(',');
 
   const clear = () => {
-    writeSet([]);
+    writeCompareSet([]);
     announce('Cleared compare list');
   };
   const dismiss = () => setDismissed(true);
