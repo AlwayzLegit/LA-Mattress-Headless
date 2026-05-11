@@ -61,8 +61,6 @@ export default withSentryConfig(nextConfig, {
   silent: !process.env.CI,
   // Tunnel /monitoring requests through our domain to bypass ad blockers.
   tunnelRoute: '/monitoring',
-  // Don't bundle Sentry's debug helpers in client code.
-  disableLogger: true,
   // Hide source maps from prod public access (only Sentry can read them).
   hideSourceMaps: true,
 });
