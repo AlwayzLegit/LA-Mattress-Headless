@@ -35,3 +35,12 @@ jobs:
         run: npm test
         env:
           NEXT_TELEMETRY_DISABLED: '1'
+          # Phase 203: forward Shopify env from repo secrets so the
+          # Shopify-dependent route tests (product / collection / article /
+          # CMS page) run for real instead of skipping. If the secrets
+          # aren't set, GitHub injects empty strings — `_helpers.mjs`
+          # treats that as "not configured" and skips those tests with
+          # a clear message. The non-Shopify suites (smoke, hero,
+          # structured-data, a11y, og-meta) run regardless.
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_STOREFRONT_PUBLIC_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_PUBLIC_TOKEN }}
