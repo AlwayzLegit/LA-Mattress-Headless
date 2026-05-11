@@ -55,7 +55,17 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { type: 'article', url, title, description },
+    openGraph: {
+      type: 'article',
+      url,
+      title,
+      description,
+      // Most CMS pages (locations, contact, financing, returns…) have
+      // no associated cover. Reference app/opengraph-image.tsx so a
+      // share renders the brand card instead of nothing — matches the
+      // Phase 180 fallback already on collection / article / PDP.
+      images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
+    },
   };
 }
 

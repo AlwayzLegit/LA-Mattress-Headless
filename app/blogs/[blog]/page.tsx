@@ -39,7 +39,18 @@ export async function generateMetadata(props: { params: Promise<Params['params']
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { type: 'website', url, title, description },
+    openGraph: {
+      type: 'website',
+      url,
+      title,
+      description,
+      // Blog index has no per-blog cover image. Reference the
+      // file-system OG convention (app/opengraph-image.tsx) explicitly
+      // so coverless blog landing pages still serve the brand card —
+      // matches the Phase 180 fallback already on collection / article /
+      // PDP routes.
+      images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
+    },
   };
 }
 

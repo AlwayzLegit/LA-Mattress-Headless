@@ -11,6 +11,11 @@ export const metadata: Metadata = {
     url: '/sleep-quiz',
     title: 'Sleep Quiz — LA Mattress Store',
     description: '8 questions, under 2 minutes — get a mattress matched to how you sleep.',
+    // Quiz route has no associated image. Explicit reference to
+    // app/opengraph-image.tsx so a share renders the brand card —
+    // matches the Phase 180 fallback already on collection / article /
+    // PDP routes.
+    images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
   },
 };
 
