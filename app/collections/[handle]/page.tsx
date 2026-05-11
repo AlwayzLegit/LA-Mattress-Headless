@@ -7,13 +7,14 @@ import Link from 'next/link';
 import { getCollectionByHandle } from '@/lib/shopify';
 import type { CollectionSort } from '@/lib/shopify';
 import { collections as inventoryCollections, findCollection } from '@/lib/inventory';
-import { formatPriceRange } from '@/lib/format';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
-import { CompareToggle } from '@/app/_components/compare-toggle';
-import { PcardSpecs } from '@/app/_components/pcard-specs';
+import { PlpCard } from '@/app/_components/plp-card';
+import { PlpCount } from '@/app/_components/plp-count';
+import { PlpLoadMore } from '@/app/_components/plp-load-more';
 import { SortControl } from './sort-control';
+import { SORT_OPTIONS, parseSort } from './sort-options';
 import { CollectionSkeleton } from './skeleton';
 import {
   FilterPanel,
@@ -37,21 +38,6 @@ export const dynamic = 'force-dynamic';
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
 
 const PER_PAGE = 24;
-
-const SORT_OPTIONS: { value: CollectionSort; label: string; reverse?: boolean }[] = [
-  { value: 'COLLECTION_DEFAULT', label: 'Featured' },
-  { value: 'PRICE',              label: 'Price: low to high' },
-  { value: 'PRICE',              label: 'Price: high to low', reverse: true },
-  { value: 'BEST_SELLING',       label: 'Best selling' },
-  { value: 'CREATED',            label: 'Newest', reverse: true },
-];
-
-function parseSort(raw: string | undefined): { sortKey: CollectionSort; reverse: boolean; index: number } {
-  const idx = SORT_OPTIONS.findIndex((o) => `${o.value}${o.reverse ? '-r' : ''}` === raw);
-  const i = idx >= 0 ? idx : 0;
-  const opt = SORT_OPTIONS[i];
-  return { sortKey: opt.value, reverse: opt.reverse ?? false, index: i };
-}
 
 export function generateStaticParams() {
   if (!SHOPIFY_CONFIGURED) return [];
@@ -169,22 +155,20 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
     },
   };
 
-  // Preserve sort + filter params when paginating; only `after` advances.
-  const buildNextHref = (cursor: string) => {
-    const next = new URLSearchParams();
-    if (searchParams.sort) next.set('sort', searchParams.sort);
+  // Phase 217: serialize the active filter params so the client-side
+  // PlpLoadMore can pass them through to the /api/load-more-products
+  // route. Same shape the old <Link href="?after=cursor"> used to
+  // build, just minus the `after` cursor and minus the route prefix.
+  function buildFilterQueryString(
+    sp: Record<string, string | undefined>,
+  ): string {
+    const out = new URLSearchParams();
     for (const p of FILTER_PARAMS) {
-      const v = searchParams[p];
-      if (v) next.set(p, v);
+      const v = sp[p];
+      if (v) out.set(p, v);
     }
-    next.set('after', cursor);
-    return `/collections/${collection.handle}?${next.toString()}`;
-  };
-
-  const nextHref =
-    collection.products.pageInfo.hasNextPage && collection.products.pageInfo.endCursor
-      ? buildNextHref(collection.products.pageInfo.endCursor)
-      : null;
+    return out.toString();
+  }
 
   const hasResults = collection.products.nodes.length > 0;
   const availableFilters = collection.products.filters ?? [];
@@ -243,15 +227,15 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
               <div className="plp-toolbar">
                 <div className="plp-toolbar-left">
                   <FilterMobileTrigger sel={filterSel} />
-                  <span className="plp-toolbar-count">
-                    {!hasResults
-                      ? 'No products match your filters'
-                      : after
-                      ? `Showing ${collection.products.nodes.length} more product${collection.products.nodes.length === 1 ? '' : 's'}`
-                      : hasFiltersApplied || !totalInCollection
-                      ? `Showing ${collection.products.nodes.length} product${collection.products.nodes.length === 1 ? '' : 's'}`
-                      : `Showing ${collection.products.nodes.length} of ${totalInCollection} product${totalInCollection === 1 ? '' : 's'}`}
-                  </span>
+                  {/* Phase 217: count display is now a client island
+                      that listens for `plp:count-rendered` events from
+                      `PlpLoadMore` and re-renders with the cumulative
+                      total. Initial value is SSR-correct from props. */}
+                  <PlpCount
+                    initial={collection.products.nodes.length}
+                    total={hasFiltersApplied ? null : totalInCollection}
+                    hasFiltersApplied={hasFiltersApplied}
+                  />
                 </div>
                 <SortControl
                   options={SORT_OPTIONS.map((o, i) => ({
@@ -268,71 +252,30 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
             {hasResults ? (
               <>
                 <div className="plp-grid">
-                  {collection.products.nodes.map((p, idx) => {
-                    const minPrice = Number.parseFloat(p.priceRange.minVariantPrice.amount);
-                    const minCompare = Number.parseFloat(p.compareAtPriceRange.minVariantPrice.amount);
-                    const onSale = minCompare > 0 && minCompare > minPrice;
-                    const pctOff = onSale ? Math.round((1 - minPrice / minCompare) * 100) : 0;
-                    return (
-                    // Article wraps the link + the CompareToggle as
-                    // siblings. Previously the Compare <button> sat
-                    // inside the <Link>, which is HTML5-invalid (a >
-                    // button) and creates ergonomics weirdness even
-                    // when stopPropagation cancels the bubble. The
-                    // article now carries the .pcard / .plp-card
-                    // visual styles; the inner .pcard-link is a flat
-                    // flex-column for image + meta only.
-                    <article key={p.id} className="pcard plp-card">
-                      <Link href={`/products/${p.handle}`} className="pcard-link">
-                        <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
-                          {onSale ? (
-                            <span className="pcard-tag pcard-tag-sale">−{pctOff}%</span>
-                          ) : null}
-                          {p.featuredImage ? (
-                            <Image
-                              src={p.featuredImage.url}
-                              alt={p.featuredImage.altText ?? p.title}
-                              width={600}
-                              height={600}
-                              sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                              style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                              priority={!after && idx < 3}
-                              loading={!after && idx < 3 ? 'eager' : 'lazy'}
-                            />
-                          ) : <span className="ph-label">[Image coming]</span>}
-                        </div>
-                        <div className="pcard-meta">
-                          <div className="pcard-brand">{p.vendor}</div>
-                          <div className="pcard-name">{p.title}</div>
-                          <PcardSpecs specs={p.specs} />
-                          <div className="pcard-price">
-                            {onSale ? (
-                              <span className="pcard-was tnum">
-                                {formatPriceRange(p.compareAtPriceRange.minVariantPrice, p.compareAtPriceRange.maxVariantPrice)}
-                              </span>
-                            ) : null}
-                            <span className="pcard-now tnum">
-                              {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
-                            </span>
-                          </div>
-                        </div>
-                      </Link>
-                      <CompareToggle handle={p.handle} title={p.title} />
-                    </article>
-                    );
-                  })}
+                  {collection.products.nodes.map((p, idx) => (
+                    <PlpCard
+                      key={p.id}
+                      product={p}
+                      // LCP candidates: first 3 cards of the SSR'd first
+                      // page. Subsequent pages (loaded by `PlpLoadMore`
+                      // client-side append) pass `priority={false}`.
+                      priority={!after && idx < 3}
+                    />
+                  ))}
                 </div>
-                <div className="plp-pagination">
-                  {nextHref ? (
-                    <Link
-                      href={nextHref}
-                      className="btn btn-ghost btn-lg"
-                      aria-label={`Load more ${collection.title.toLowerCase()}`}
-                    >
-                      Load more <Icon name="arrow-right" size={16} />
-                    </Link>
-                  ) : null}
-                </div>
+                {/* Phase 217: client-side append replaces the previous
+                    `<Link href={?after=cursor}>` full-page navigation.
+                    Renders any client-loaded pages directly below the
+                    SSR'd first page + a skeleton during fetch + the
+                    Load More button. */}
+                <PlpLoadMore
+                  collectionHandle={collection.handle}
+                  sortParam={searchParams.sort}
+                  filterQuery={buildFilterQueryString(searchParams)}
+                  initialCursor={collection.products.pageInfo.endCursor ?? null}
+                  initialHasNext={collection.products.pageInfo.hasNextPage}
+                  initialCount={collection.products.nodes.length}
+                />
               </>
             ) : (
               <div className="plp-empty">
