@@ -3,9 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/app/_components/icon';
 import { announce } from '@/app/_components/announcer';
-
-const KEY = 'la-mattress.compare.v1';
-const EVENT = 'la-mattress:compare-change';
+import { readCompareSet, writeCompareSet } from '@/app/_components/compare-store';
 
 type Props = {
   handle: string;
@@ -24,21 +22,20 @@ type Props = {
  * Wipes the handle from the localStorage compare set, dispatches the
  * change event so the floating tray + PLP toggle states stay in sync,
  * then refreshes the route so the column drops out of the page.
+ *
+ * Phase 235: previously open-coded the localStorage read / write /
+ * event-dispatch in-line with hardcoded KEY / EVENT constants. Now
+ * routes through the shared `compare-store` API (Phase 212), so if the
+ * storage key, event name, or schema ever changes, this consumer
+ * follows automatically.
  */
 export function CompareRemove({ handle, title }: Props) {
   const router = useRouter();
   const ofWhat = title ?? handle;
 
   const onClick = () => {
-    try {
-      const raw = window.localStorage.getItem(KEY);
-      const items = raw ? (JSON.parse(raw) as { handle: string }[]) : [];
-      const next = items.filter((p) => p.handle !== handle);
-      window.localStorage.setItem(KEY, JSON.stringify(next));
-      window.dispatchEvent(new Event(EVENT));
-    } catch {
-      // ignore
-    }
+    const items = readCompareSet();
+    writeCompareSet(items.filter((p) => p.handle !== handle));
     const params = new URLSearchParams(window.location.search);
     const ids = (params.get('ids') ?? '').split(',').filter((h) => h && h !== handle);
     const qs = ids.length ? `?ids=${encodeURIComponent(ids.join(','))}` : '';
