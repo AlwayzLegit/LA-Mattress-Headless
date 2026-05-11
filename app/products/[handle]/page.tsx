@@ -178,13 +178,18 @@ function ProductView({ product, related }: { product: Product; related: ProductS
   // include the sku key when at least one variant has a non-empty SKU.
   const firstSku = product.variants.find((v) => v.sku && v.sku.trim().length > 0)?.sku;
 
+  const productUrl = `https://mattressstoreslosangeles.com/products/${product.handle}`;
+
   const productLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
+    '@id': `${productUrl}#product`,
+    url: productUrl,
     name: product.title,
     description: product.description.slice(0, 5000),
     ...(firstSku ? { sku: firstSku } : {}),
     brand: { '@type': 'Brand', name: product.vendor },
+    ...(product.productType ? { category: product.productType } : {}),
     image: product.images.length ? product.images.map((i) => i.url) : (product.featuredImage ? [product.featuredImage.url] : []),
     offers: {
       '@type': 'AggregateOffer',
@@ -193,6 +198,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
       highPrice: max.amount,
       offerCount: product.variants.length,
       availability: product.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
     },
     // Only include aggregateRating when the merchant's review vendor (Judge.me)
     // has populated the reviews.* metafields. Google rejects fabricated values.
@@ -215,7 +221,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home',       item: 'https://mattressstoreslosangeles.com/' },
       { '@type': 'ListItem', position: 2, name: 'Mattresses', item: 'https://mattressstoreslosangeles.com/collections/mattresses' },
-      { '@type': 'ListItem', position: 3, name: product.title },
+      { '@type': 'ListItem', position: 3, name: product.title, item: productUrl },
     ],
   };
 
