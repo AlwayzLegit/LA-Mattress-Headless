@@ -241,7 +241,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
         <span>{product.title}</span>
       </nav>
 
-      <div className="pdp-grid pdp-grid-with-body">
+      <div className="pdp-grid">
         <div className="pdp-left">
         <PdpGallery
           productTitle={product.title}
