@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from './icon';
@@ -128,13 +128,19 @@ export function Nav() {
   const megaPanelRef = useRef<HTMLElement>(null);
   const megaTriggerRef = useRef<HTMLElement | null>(null);
   const pendingKbdFocusRef = useRef(false);
-  useEffect(() => {
+  // Phase 221: focus the panel's first link synchronously after the
+  // panel commits. The Phase 191 implementation used
+  // `useEffect` + `requestAnimationFrame`, which the Cowork pre-launch
+  // audit found unreliable — the rAF fired after the panel rendered
+  // but the focus call landed on BODY or the trigger anyway, likely
+  // a paint-ordering race. `useLayoutEffect` runs synchronously after
+  // refs attach, before paint, so `querySelector` sees the just-
+  // mounted panel and `focus()` resolves before the browser's own
+  // focus fallback can intervene.
+  useLayoutEffect(() => {
     if (!mega || !pendingKbdFocusRef.current) return;
     pendingKbdFocusRef.current = false;
-    const id = requestAnimationFrame(() => {
-      megaPanelRef.current?.querySelector<HTMLElement>('a, button')?.focus();
-    });
-    return () => cancelAnimationFrame(id);
+    megaPanelRef.current?.querySelector<HTMLElement>('a, button')?.focus();
   }, [mega]);
 
   // Lock background scroll while the mobile drawer is open. Stack-

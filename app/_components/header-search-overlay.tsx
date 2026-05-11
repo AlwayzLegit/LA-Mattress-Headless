@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -110,11 +110,17 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
 
   useBodyScrollLock(true);
 
-  // Auto-focus the input on mount. Wait one frame so the portal has
-  // attached and the input ref is wired.
-  useEffect(() => {
-    const id = requestAnimationFrame(() => inputRef.current?.focus());
-    return () => cancelAnimationFrame(id);
+  // Phase 223: focus the input synchronously after the portal mounts.
+  // The previous Phase 183 implementation used `useEffect` +
+  // `requestAnimationFrame`, but the pre-launch Cowork audit flagged
+  // the input not reliably auto-focusing on open — the rAF was racing
+  // the portal-attach + browser focus fallback. `useLayoutEffect`
+  // runs after the portal has rendered and the ref is attached, but
+  // before paint, so focus lands deterministically. Same fix shape as
+  // Phase 220's quiz Result heading and Phase 221's mega menu first
+  // link.
+  useLayoutEffect(() => {
+    inputRef.current?.focus();
   }, []);
 
   // Debounced predictive fetch on query change.

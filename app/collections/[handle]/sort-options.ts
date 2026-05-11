@@ -5,6 +5,34 @@ import type { CollectionSort } from '@/lib/shopify';
  * `/api/load-more-products` API route (Phase 217 client-side append) so
  * both sides agree on the value-to-{sortKey, reverse} mapping. Lifted
  * out of `page.tsx` in Phase 216 — was previously inline.
+ *
+ * ## Known Shopify sort quirk (Phase 222 investigation)
+ *
+ * Shopify's `ProductCollectionSortKeys.PRICE` sorts products by a
+ * single canonical price value per product — empirically not the same
+ * as `priceRange.minVariantPrice` (the value we display on the card).
+ * For multi-variant mattresses ranging Twin → California King, that
+ * means the visible order under "Price: low to high" is not strictly
+ * monotone in the displayed FROM-price: e.g. cards may show
+ * `$399, $399, $1099, $599, $599, $699`. Shopify is sorting on its
+ * own price field (likely the first variant's price or an aggregate),
+ * and our card chooses to display the cheapest variant's price for
+ * better marketing.
+ *
+ * Tradeoffs of "fixing" this:
+ *   - True client-side re-sort by `minVariantPrice` would require
+ *     fetching the full collection (no pagination) — regression for
+ *     big collections (Mattresses has ~150 products).
+ *   - Renaming the sort option to just "Price" hides the issue but
+ *     also drops the user signal of which direction.
+ *   - Switching the card display to the first-variant price would
+ *     match the sort order but loses the "from $399" marketing pitch
+ *     that's typical on mattress PLPs.
+ *
+ * For now: keep the labels and accept the apparent ordering quirk.
+ * If merchant feedback after launch escalates this, the cleanest fix
+ * is probably (b) — rename to "Price (ascending)" and add a sublabel
+ * "by base price". Cowork pre-launch audit P2-4 flagged this.
  */
 export const SORT_OPTIONS: { value: CollectionSort; label: string; reverse?: boolean }[] = [
   { value: 'COLLECTION_DEFAULT', label: 'Featured' },

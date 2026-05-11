@@ -15,6 +15,13 @@ export function CartDrawer() {
   const { cart, drawerOpen, closeDrawer, updateLine, removeLine, pending } = useCart();
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  // Phase 219: belt-and-braces focus restore on close. `useFocusTrap`
+  // is supposed to restore focus to the activator when its `active`
+  // flag flips false, but the Cowork pre-launch audit caught focus
+  // dropping to BODY after Esc on the cart drawer. Rather than dig
+  // into a timing race we can't reproduce in CI, capture the trigger
+  // synchronously on open and focus it back on close.
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   // Close on Escape
   useEffect(() => {
@@ -36,16 +43,36 @@ export function CartDrawer() {
   // somewhere predictable. Wrapped in rAF so the drawer is in the
   // DOM and not stuck in mid-transition before .focus() runs.
   useEffect(() => {
-    if (!drawerOpen) return;
-    // Announce the open transition with the current item count so
-    // screen-reader users hear what just happened (the visual slide-in
-    // and focus shift to the close button is otherwise silent for AT).
-    // Read totalQuantity inline rather than as a hook dep so the effect
-    // doesn't re-fire (and re-announce) on every cart mutation.
-    const qty = cart?.totalQuantity ?? 0;
-    announce(`Shopping cart opened. ${qty} item${qty === 1 ? '' : 's'}.`);
-    const id = requestAnimationFrame(() => closeBtnRef.current?.focus());
-    return () => cancelAnimationFrame(id);
+    if (drawerOpen) {
+      // Capture the element that had focus right before open — almost
+      // always the trigger that fired addLine() (PDP ATC button, cart
+      // icon in nav, etc.). Stored synchronously so we can restore
+      // even if the trigger is on a different document subtree from
+      // the drawer.
+      triggerRef.current = document.activeElement as HTMLElement | null;
+      // Announce the open transition with the current item count so
+      // screen-reader users hear what just happened (the visual slide-in
+      // and focus shift to the close button is otherwise silent for AT).
+      // Read totalQuantity inline rather than as a hook dep so the effect
+      // doesn't re-fire (and re-announce) on every cart mutation.
+      const qty = cart?.totalQuantity ?? 0;
+      announce(`Shopping cart opened. ${qty} item${qty === 1 ? '' : 's'}.`);
+      const id = requestAnimationFrame(() => closeBtnRef.current?.focus());
+      return () => cancelAnimationFrame(id);
+    }
+    // drawerOpen flipped false — restore focus to the captured trigger
+    // if it's still in the DOM. `triggerRef.current?.focus()` is a no-op
+    // when the trigger has been unmounted (e.g. user navigated mid-
+    // session), which is the desired graceful behaviour.
+    const target = triggerRef.current;
+    triggerRef.current = null;
+    if (target && document.contains(target)) {
+      // rAF so we run after React has finished unmounting the dialog
+      // and removing it from the focus tree — focusing during unmount
+      // can race with the browser's own focus fallback to BODY.
+      requestAnimationFrame(() => target.focus());
+    }
+    return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drawerOpen]);
 
