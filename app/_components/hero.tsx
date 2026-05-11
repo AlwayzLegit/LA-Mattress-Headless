@@ -119,7 +119,7 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
             <div className="container hero-content">
               <div className="hero-copy">
                 <div className="eyebrow eyebrow-on-dark">{s.eyebrow}</div>
-                <h1 className="hero-title">
+                <h1 className="hero-title" aria-label={s.title.replace(/\n/g, ' ')}>
                   {s.title.split('\n').map((l, j) => <span key={j} className="hero-line">{l}</span>)}
                 </h1>
                 <p className="hero-body">{s.body}</p>
