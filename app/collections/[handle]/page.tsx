@@ -12,6 +12,7 @@ import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 import { SortControl } from './sort-control';
+import { SORT_OPTIONS, parseSort } from './sort-options';
 import { CollectionSkeleton } from './skeleton';
 import {
   FilterPanel,
@@ -35,21 +36,6 @@ export const dynamic = 'force-dynamic';
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
 
 const PER_PAGE = 24;
-
-const SORT_OPTIONS: { value: CollectionSort; label: string; reverse?: boolean }[] = [
-  { value: 'COLLECTION_DEFAULT', label: 'Featured' },
-  { value: 'PRICE',              label: 'Price: low to high' },
-  { value: 'PRICE',              label: 'Price: high to low', reverse: true },
-  { value: 'BEST_SELLING',       label: 'Best selling' },
-  { value: 'CREATED',            label: 'Newest', reverse: true },
-];
-
-function parseSort(raw: string | undefined): { sortKey: CollectionSort; reverse: boolean; index: number } {
-  const idx = SORT_OPTIONS.findIndex((o) => `${o.value}${o.reverse ? '-r' : ''}` === raw);
-  const i = idx >= 0 ? idx : 0;
-  const opt = SORT_OPTIONS[i];
-  return { sortKey: opt.value, reverse: opt.reverse ?? false, index: i };
-}
 
 export function generateStaticParams() {
   if (!SHOPIFY_CONFIGURED) return [];
