@@ -54,8 +54,14 @@ export function HeaderSearch() {
       e.preventDefault();
       setOpen(true);
     };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    // Phase 186: window + capture phase so the handler fires before
+    // any third-party instrumentation (Sentry breadcrumbs, Vercel
+    // feedback widget) that wraps document-level listeners. The
+    // pre-split version used document/bubble and the Cowork verifier
+    // of PR #51 confirmed shortcuts didn't reach it post-rebuild —
+    // moving up the propagation tree keeps the listener authoritative.
+    window.addEventListener('keydown', onKey, { capture: true });
+    return () => window.removeEventListener('keydown', onKey, { capture: true });
   }, []);
 
   return (
