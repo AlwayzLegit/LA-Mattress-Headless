@@ -227,11 +227,27 @@ export function Nav() {
                   // Capture the trigger element so Esc-from-inside-the-
                   // panel can restore focus here instead of dropping it
                   // to body.
+                  //
+                  // Phase 227: handle the already-open case explicitly.
+                  // The trigger's `onFocus` opens the panel as soon as
+                  // the user Tabs onto it, so by the time ArrowDown
+                  // fires, `mega` is often ALREADY `item.mega`. In that
+                  // case `setMega(item.mega)` is a no-op state update
+                  // and React bails out before useLayoutEffect re-runs,
+                  // so the deferred first-link focus never happens.
+                  // Detect the already-open case and imperatively focus
+                  // the first panel link directly. The deferred-focus
+                  // path stays for the cold-open case (panel not yet
+                  // mounted at keydown time).
                   if (item.mega && (e.key === 'ArrowDown' || e.key === ' ')) {
                     e.preventDefault();
                     megaTriggerRef.current = e.currentTarget;
-                    pendingKbdFocusRef.current = true;
-                    setMega(item.mega);
+                    if (mega === item.mega) {
+                      megaPanelRef.current?.querySelector<HTMLElement>('a, button')?.focus();
+                    } else {
+                      pendingKbdFocusRef.current = true;
+                      setMega(item.mega);
+                    }
                   } else if (e.key === 'Escape') {
                     setMega(null);
                   }
