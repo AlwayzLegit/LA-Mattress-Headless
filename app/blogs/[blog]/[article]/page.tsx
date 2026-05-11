@@ -112,7 +112,8 @@ function ArticleView({ article }: { article: Article }) {
   const url = `${SITE}/blogs/${article.blog.handle}/${article.handle}`;
   const sanitized = sanitizeShopifyHtml(article.contentHtml);
   const { html: bodyHtml, headings } = injectHeadingIds(sanitized);
-  const readMinutes = estimateReadMinutes(article.contentHtml);
+  const wordCount = countWordsFromHtml(article.contentHtml);
+  const readMinutes = wordCount ? Math.max(1, Math.round(wordCount / 220)) : 0;
   const related = findRelatedArticles(article);
 
   const ldDescription = firstNonEmpty(
@@ -135,6 +136,9 @@ function ArticleView({ article }: { article: Article }) {
       name: 'LA Mattress Store',
       logo: { '@type': 'ImageObject', url: `${SITE}/assets/la-mattress-logo.png` },
     },
+    articleSection: article.blog.title,
+    ...(wordCount ? { wordCount } : {}),
+    ...(article.tags.length ? { keywords: article.tags.join(', ') } : {}),
   };
 
   const breadcrumbLd = {
@@ -253,11 +257,16 @@ function ArticleView({ article }: { article: Article }) {
  * doesn't oversell long-form posts). Returns 0 for empty content so the
  * caller can drop the chip entirely.
  */
-function estimateReadMinutes(html: string): number {
+function countWordsFromHtml(html: string): number {
   if (!html) return 0;
   const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   if (!text) return 0;
-  const words = text.split(' ').length;
+  return text.split(' ').length;
+}
+
+function estimateReadMinutes(html: string): number {
+  const words = countWordsFromHtml(html);
+  if (!words) return 0;
   return Math.max(1, Math.round(words / 220));
 }
 
