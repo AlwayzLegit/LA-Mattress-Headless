@@ -1787,19 +1787,21 @@ summary:focus-visible,
 
 /* PDP rail — design handoff §Buy box. The aside is the column shell; the
    inner is what actually sticks. No card border / radius / padding around
-   the inner — content sits naturally in the column. */
+   the inner — content sits naturally in the column.
+   Phase 228: removed the max-height + overflow-y: auto clamp. The intent
+   was to keep the ATC button visible on short laptop screens, but the
+   clamp produced an inner scrollbar on every normal viewport, which
+   reserved scrollbar width and squished the ATC button + variant
+   selector into the wrong dimensions. Mobile's always-visible ATC
+   requirement is already covered by <PdpStickyAtcBar> (Phase 209). */
 .pdp-rail { position: relative; }
 .pdp-rail-inner {
   position: sticky;
   top: calc(var(--nav-h) + var(--s-5));
   display: flex; flex-direction: column; gap: var(--s-4);
-  /* Clamp to viewport so a tall buybox doesn't push the ATC out of view on
-     short laptop screens. Reserves 88px for the floating compare tray. */
-  max-height: calc(100vh - var(--nav-h) - var(--s-5) - 88px);
-  overflow-y: auto;
 }
 @media (max-width: 1024px) {
-  .pdp-rail-inner { position: static; max-height: none; overflow: visible; }
+  .pdp-rail-inner { position: static; }
 }
 .pdp-brand-mark {
   font-size: 11px; font-weight: 600;
