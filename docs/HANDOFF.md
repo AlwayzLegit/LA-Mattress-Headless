@@ -1,3 +1,134 @@
+# Session handoff — 2026-05-11 (Phases 169–187 — three merged blocks, two phases pending verification)
+
+## Status
+
+Three blocks shipped today, all on branch `claude/determine-starting-point-zRYmC` and merged into `main` via squash:
+
+| PR | Phases | HEAD | Theme |
+|---|---|---|---|
+| #49 | 169–174 | `77f1e4c` | SEO / JSON-LD completeness + hero a11y |
+| #50 | 175–180 | `89eee6c` | SEO / JSON-LD micro-track + OG image fallback |
+| #51 | 181–187 | `11243c7` | perf + cleanup + Cowork follow-ups |
+
+`main` HEAD is `11243c7`. typecheck + lint + build all clean. 13 route templates → 1012 SSG pages (unchanged shape).
+
+## What shipped, what's verified, what isn't
+
+### PR #49 — Phases 169–174 (Cowork sign-off PASS)
+
+- **169** Twitter Card metadata inheritance — drop hardcoded `twitter.title` / `twitter.description` so each route's `openGraph.*` flows through (PDPs were sharing as "LA Mattress" homepage blurb).
+- **170** PDP Product JSON-LD adds `url`, `@id` (`#product`), `category` (Shopify productType), `offers.itemCondition: NewCondition`, and `item` on the position-3 breadcrumb.
+- **171** Homepage `LOCAL_BUSINESS_LD` gets `department[]` for all 5 LA showrooms (mirroring the locations-index template).
+- **172** BreadcrumbList final-item `item` URLs on blog index / blog article / collection PLP.
+- **173** Same breadcrumb fix on the `/pages/[handle]` locations-index + showroom branches; trailing-slash normalization on `Home` item.
+- **174** Hero h1 `aria-label` normalizes the `\n`-split slide-title spans so SR reads `Try before you buy.` not `Try beforeyou buy.`
+
+Cowork PASS 5/5 + regression sweep clean.
+
+### PR #50 — Phases 175–180 (Cowork sign-off PASS w/ in-block follow-up)
+
+- **175** BlogPosting LD adds `articleSection`, `wordCount` (extracted from HTML via shared helper), `keywords` (from `article.tags`). No query change.
+- **176** Collection + Article `openGraph.images` use conditional spread to remove broken `images: []`. **Original intent didn't land** — Next doesn't auto-merge the file-system convention into a route's openGraph. Net positive (no regression) but the fallback didn't fire.
+- **177** Same conditional spread on PDP for parity.
+- **178** `header-search` predictive thumbnails declare `sizes="48px"` (was defaulting to 100vw; saves ~80–150KB per query in the dropdown).
+- **179** `inLanguage: 'en-US'` on Blog, BlogPosting, CollectionPage, Quiz JSON-LD (WebPage already had it from Phases 157–161).
+- **180** Finished the Phase 176 work: explicit `/opengraph-image` fallback URL (width 1200, height 630) so coverless collections / articles / PDPs actually serve the brand OG card.
+
+Cowork verified 175–179 PASS / partial; **Phase 180 self-verified only** (typecheck + lint + behavioral reasoning; not Cowork-tested). Should be verified in the next pass.
+
+### PR #51 — Phases 181–187 (Cowork sign-off on 181–185 PASS w/ caveats; 186–187 NOT YET VERIFIED)
+
+- **181** Drop unused Geist Sans weights from preload. Was `[300, 400, 500, 600, 700, 800, 900]`; globals.css only references 500/600/700.
+- **182** Cart-drawer line-item images get `loading="lazy"`.
+- **183** **Split `HeaderSearch`** — trigger button + keyboard shortcuts stay eager in `app/_components/header-search.tsx` (~75 LOC); overlay (~430 LOC of predictive-search / focus-trap / scroll-lock / portal) moved to new `header-search-overlay.tsx`, loaded via `next/dynamic({ ssr: false })` on first interaction.
+- **184** Drop unused `.reveal` CSS class from globals.css (defined as IntersectionObserver primitive but never wired up).
+- **185** Move Sentry client init from `sentry.client.config.ts` → `instrumentation-client.ts` per the @sentry/nextjs migration path. Server / edge configs unchanged (loaded via `instrumentation.ts`'s `register()` hook).
+- **186** Phase 183 follow-up: Cowork empirically confirmed kbd shortcuts (`/`, `Cmd/Ctrl+K`) stopped opening the overlay after the rebuild. Moved listener from `document` bubble-phase to `window` capture-phase so it fires before third-party instrumentation (Sentry breadcrumbs, Vercel feedback widget) can intercept. **Self-verified only.**
+- **187** Phase 185 follow-up: Sentry's new ACTION REQUIRED notice replaced the old deprecation. Added `export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;` to `instrumentation-client.ts`. **Self-verified only** (build no longer emits either warning).
+
+Cowork verified 181–185; **186 + 187 self-verified only**. The next session should run a real browser pass via Claude in Chrome to confirm:
+1. `/` and `Cmd+K` open the search overlay (Phase 186)
+2. Focus returns to the trigger button after Esc (regression check on Phase 183)
+3. Build logs show no Sentry deprecation / ACTION REQUIRED notices about `sentry.client.config.ts` / `instrumentation-client.ts` / `onRouterTransitionStart` (Phase 187 — this can be checked via the Vercel MCP build-logs tool too)
+
+## Branch state
+
+- `main` is at `11243c7` — fully merged, three squash commits today.
+- `claude/determine-starting-point-zRYmC` is the working branch (currently equal to main after the last reset). Branch policy from earlier sessions: develop on this branch, force-push allowed for reset-to-main between blocks.
+- All historical phase branches (90s, resume-fix-error) merged or stale.
+
+## What's NOT in scope / deferred per HANDOFF history
+
+- **Real `/account` dashboard** — Shopify Customer Account API integration. Big.
+- **Hero CMS metaobjects** — merchant-editable rotating slides.
+- **Review provider** — Birdeye / Yotpo vendor decision pending. Currently Judge.me wired in `lib/judgeme.ts` (gated on `JUDGEME_API_TOKEN`).
+- **Article `dateModified`** — Storefront API exposes Article.publishedAt but not Article.updatedAt; would need Admin API path.
+- **DNS cutover + Vercel env vars** — operational, merchant-side. `SHOPIFY_WEBHOOK_SECRET`, `SHOPIFY_ADMIN_TOKEN`, `SENTRY_DSN`/`NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `JUDGEME_*`. See README pre-launch checklist.
+
+## Suggested next directions for the new session
+
+1. **First: verify 186 + 187** in Claude in Chrome (test plan below).
+2. Then pick a lane for the next 5-phase block. Recently drained: SEO / JSON-LD (169–180), bundle micro-opts (183), Sentry hygiene (185–187). Open lanes:
+   - **A11y deep dive** — mega menu / sleep-quiz / compare-table keyboard nav, focus management on complex widgets, screen-reader semantics on the cart drawer / search overlay.
+   - **Bundle perf round 2** — Hero is `'use client'` (~200 LOC, autoplay timer + image deferral); Compare is `'use client'` (~190 LOC). Both candidate for further split / server-render the static shell.
+   - **Code quality** — extract reusable hooks, find dead code beyond `.reveal`, scan for `as` casts that can be tightened.
+   - **Different lens** — fresh open-ended audit pass.
+
+## Verification toolkit available to the new session (with Claude in Chrome wired up)
+
+- **Claude in Chrome** — drive real browser, press keys, click, take screenshots, observe `document.activeElement` and `performance` entries
+- **Vercel MCP** — `list_deployments`, `get_deployment_build_logs`, `get_access_to_vercel_url`, `web_fetch_vercel_url`, `get_runtime_logs`
+- **Sentry MCP** — `search_issues`, `search_events`, `analyze_issue_with_seer`
+- **Shopify MCP** — admin GraphQL for product / metafield checks
+- **GitHub MCP** — PRs, comments, CI status, merge
+- Static-content tooling — Read, Bash grep, Edit, WebFetch
+
+## Verification plan for Phases 180 / 186 / 187 (run this first in the new session)
+
+### A — Phase 180 OG fallback (untested in PR #50's pass)
+
+1. Get a Vercel share URL for the current production / latest preview.
+2. In Claude in Chrome, open the share URL.
+3. Navigate to a niche collection without a banner image (try `/collections/sheets-pillowcases` or `/collections/popular`).
+4. View source / inspect `<head>`. Confirm `<meta property="og:image">` exists and points at something ending in `/opengraph-image` (with or without a hash query string).
+5. Repeat for an article without a cover image. Use the live blog index to pick one (or check older articles in `/blogs/sleep-blog`).
+6. Confirm a PDP still emits its own product image as og:image (parity).
+
+### B — Phase 186 keyboard shortcuts (P2 regression fix)
+
+1. With the preview / prod open, blur all inputs (click somewhere neutral like the body of the page).
+2. Press `/`. The header search overlay should open and the input should be auto-focused.
+3. Close with Esc. Focus should return to the search-icon trigger button (`<button aria-label="Search (press / to focus)">`).
+4. Press `Cmd+K` (Mac) or `Ctrl+K` (Win/Linux). Overlay should open again.
+5. Confirm typing in any input does NOT trigger the `/` shortcut (regression check — `/` should be ignored when focus is on an `<input>` or `<textarea>`).
+
+### C — Phase 187 Sentry hook (build-log only)
+
+1. Via Vercel MCP `get_deployment_build_logs` on the latest preview / prod deploy.
+2. Grep the logs for `DEPRECATION` and `ACTION REQUIRED`. Confirm NEITHER appears for `sentry.client.config.ts` / `instrumentation-client.ts` / `onRouterTransitionStart`.
+3. The three "No auth token provided. Will not create release / Will not upload source maps." warnings (one per runtime) ARE expected — gated on `SENTRY_AUTH_TOKEN`.
+
+### Regression sweep (always)
+
+- Homepage paint clean, no console errors
+- PDP renders + Add-to-Cart drawer mounts with line-item image (lazy-loaded — Phase 182 verified empirically in the previous Cowork pass; spot-check it still works)
+- /cart shows the Shopify checkout link
+- Sleep-quiz cycles to a recommendation
+- Sentry inbox: `firstSeen:-24h` org-wide query for new exceptions
+
+## Key files to know
+
+- `app/_components/header-search.tsx` — trigger + keyboard shortcuts + dynamic import (Phase 183/186)
+- `app/_components/header-search-overlay.tsx` — overlay (Phase 183)
+- `instrumentation-client.ts` — Sentry client init + onRouterTransitionStart export (Phase 185/187)
+- `app/products/[handle]/page.tsx` — Product LD with all the Phase 170/177/180 enrichments
+- `app/collections/[handle]/page.tsx` — CollectionPage LD + breadcrumb (Phase 172) + OG fallback (Phase 176/180) + inLanguage (Phase 179)
+- `app/blogs/[blog]/[article]/page.tsx` — BlogPosting LD with articleSection/wordCount/keywords/inLanguage (Phase 175/179) + OG fallback (Phase 176/180)
+- `lib/structured-data.ts` — sitewide ORGANIZATION_LD / LOCAL_BUSINESS_LD (Phase 171) / WEBSITE_LD
+- `app/globals.css` — `.reveal` removed (Phase 184)
+
+---
+
 # Session handoff — 2026-05-08 (Phase 90-95 — design realignment complete)
 
 ## Status
