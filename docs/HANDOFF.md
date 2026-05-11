@@ -1,3 +1,103 @@
+# Session handoff — 2026-05-11 cont. (Phases 203–210 — Shopify-aware tests + bundle perf round 3)
+
+## Status
+
+Two more blocks shipped after the 188–202 wave:
+
+| PR | Phases | HEAD | Theme |
+|---|---|---|---|
+| #57 | 203–207 | `c4b0d4d` | Shopify-aware test coverage (26 new assertions, skip-tolerant) |
+| #58 | 208–210 | `12024ba` | Bundle perf round 3 — PDP component splits + sleep-quiz Result defer |
+
+`main` HEAD is `12024ba`. Combined day-1 tally: **6 PRs merged, Phases 188–210 (23 phases) shipped.** typecheck + lint + build all clean. `npm test` passes 20/46 locally (26 Shopify-gated tests skip cleanly until secrets are added; see PR #57 setup steps below).
+
+## What shipped, what's verified, what isn't
+
+### PR #57 — Phases 203–207 (Shopify-aware test coverage)
+
+Closes the last empirical-verification gap inherent to the test infrastructure from PR #55 — the previous suite covered `/` and `/sleep-quiz` only because Shopify-dependent routes (`/products/*`, `/collections/*`, `/blogs/*/*`, `/pages/*`) `notFound()` without env vars. PR #57 makes the workflow Shopify-aware.
+
+- **203** `tests/ssr/_helpers.mjs` exports `SHOPIFY_CONFIGURED` + `SHOPIFY_SKIP` + `parseJsonLd($, scriptId)`. `.github/workflows/test.yml` forwards `SHOPIFY_STORE_DOMAIN` + `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` from repo Actions secrets to `npm test`. Empty secrets → tests skip with a clear message ("Shopify env vars not set — …"). Non-Shopify suites (smoke, hero, structured-data, og-meta, a11y) run regardless. So the workflow stays green today and starts validating PDP / PLP / article / CMS routes the moment the secrets are added.
+- **204** PDP Product LD on `/products/tempur-pedic-tempur-proadapt-medium-hybrid` — 6 assertions: `@id` ending `#product`, canonical `url`, non-empty `category` (Shopify productType), `offers.itemCondition === "https://schema.org/NewCondition"`, breadcrumb position-3 `item` URL. Validated against production preview HTML via Vercel MCP at sha `d3d203b3`.
+- **205** CollectionPage LD on `/collections/mattresses` + OG fallback on `/collections/sheets-pillowcases` — 6 assertions: CollectionPage `@type` + canonical url, `inLanguage='en-US'`, ItemList `mainEntity` + `numberOfItems > 0`, breadcrumb position-2 URL; plus coverless OG fires `/opengraph-image` with width/height.
+- **206** BlogPosting LD on `/blogs/sleep-blog/how-to-elevate-crib-mattress-for-congestion` — 7 assertions: BlogPosting `@type`, `articleSection`, `wordCount > 0`, `inLanguage`, `mainEntityOfPage @id`, breadcrumb position-3 URL. **Intentionally does NOT assert `keywords`** — it's derived from `article.tags` and many real articles have no tags (this one's `keywords` key is omitted from the LD).
+- **207** CMS page LD + Phase 188 OG fallback on `/pages/mattress-store-financing` — 7 assertions: Phase 188 fallback fires; WebPage `@type` + canonical url; `inLanguage`; parseable `datePublished`/`dateModified`; `isPartOf` WebSite; breadcrumb position-2 URL.
+
+**26 new Shopify-gated assertions; 46 total. Local validation: 20 pass / 26 skip (expected, no Shopify) / 0 fail / 14s.** CI validation matched on the first run.
+
+#### To flip the 26 skip-gated assertions ON
+
+Add two repo secrets at `https://github.com/AlwayzLegit/LA-Mattress-Headless/settings/secrets/actions`:
+
+- `SHOPIFY_STORE_DOMAIN` — the `.myshopify.com` value
+- `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` — the public storefront access token
+
+Same values production already uses. Public-ish (storefront token is browser-exposed by design). Once set, the next workflow run executes all 46 assertions instead of skipping 26 of them. No code change needed.
+
+#### Brittleness notes (also in commit bodies)
+
+- **Phase 205's `sheets-pillowcases`** — if the merchant adds a cover image to this collection, the og:image assertion will fail loudly. Swap to another known-coverless collection at that point.
+- **Phase 206's article handle** — 2024-era long-form article. If deleted, swap to another always-live article (assertions are structural).
+- **Phase 207's CMS handle** — 2023-era marketing page on the DefaultPage branch (not showroom / locations). If deleted, swap to another DefaultPage-branch handle.
+
+### PR #58 — Phases 208–210 (bundle perf round 3)
+
+Audit found that buy-box, filter-panel, and the quiz state machine are all genuinely state-driven (unlike Phase 195's Hero, which had static-content-wrapped-in-state). The Hero server-shell pattern doesn't transfer cleanly to these. **Original plan was 5 phases; reduced to 3 — only shipped what produced real change or clean architecture.**
+
+- **208** Extract `SIZE_DIMENSIONS` lookup from `buy-box.tsx` to a no-deps `pdp-data.ts` module. Foundation. Bundle neutral.
+- **209** Extract the PDP sticky mobile ATC bar into a presentational `'use client' PdpStickyAtcBar` component. **Failed `next/dynamic` first** — that was a regression (`/products/[handle]` jumped 7.79 → 8.57 kB, +0.78 kB, because the `next/dynamic` wrapper overhead exceeded the deferred bytes for a component this size). Switched to static import — neutral (+70 B, noise). **Architectural win only**, not a bundle win.
+- **210** Sleep-quiz `Result` → own file (`sleep-quiz-result.tsx`) + `next/dynamic({ ssr: false })` import. **Real defer**: chunk `3686.<hash>.js` is 4,103 bytes, lazy-loaded only when `step === 'result'`. Quiz abandoners (40–70% of starters per industry norms on guided-selling flows) never download it. Route-Size column shows `/sleep-quiz` unchanged at 5.71 kB because that column doesn't surface lazy chunks; confirmed by direct inspection of `.next/static/chunks/`.
+
+What was dropped from the original 5-phase plan, with reasons:
+
+- **PDP gallery server-shell split** — gallery has both an interactive thumbnail tab pattern AND a selected-image swap. Hero pattern would force pre-loading all 8 hero images instead of one — net regression.
+- **PLP filter panel split** — `usePathname` / `useSearchParams` / `useRouter` / `useTransition` interleaved throughout. No clean server/client boundary.
+- **A speculative "PDP data audit" phase 211** — couldn't find a fifth concrete win without padding.
+
+#### Key takeaway for future bundle work
+
+`next/dynamic` has a meaningful wrapper overhead — ~600-800 bytes per dynamic-imported component for the Suspense boundary, loadable registration, and chunk manifest. Below ~1.5 kB of deferred code, dynamic-importing is a net loss. The sleep-quiz `Result` (~4 kB) cleared this bar; the PDP sticky bar (~600 B) did not.
+
+## Branch state
+
+- `main` is at `12024ba`.
+- `claude/determine-starting-point-zRYmC` is the working branch (equal to main after the post-#58 reset).
+
+## Suggested next directions
+
+1. **Code quality / hook extraction** — sweep for repeated patterns: drawer scaffolding across cart / nav / search, focus-trap consumers, the wishlist + compare localStorage stores share a near-identical shape (`readSet` / `writeSet` / `EVENT` / `KEY` pattern from `compare-store.ts` could be generalized). Extract reusable hooks. Tighten `as` casts. Dead-code scan beyond Phase 184.
+2. **Widen SSR test coverage on non-Shopify routes** — `/cart` structural, `/wishlist` empty state, `/search` empty query, `/pages/data-sharing-opt-out`, `/pages/reviews`, `/compare` empty CTA, `manifest.webmanifest`. Easy wins now that the harness exists; protects against silent regressions in those template SEO/a11y attrs.
+3. **Browser-level tests** — Playwright is unblocked the moment a Chromium-capable CI environment is available. The deferred work from PR #55: Phase 186 kbd shortcuts, Phase 191 mega-menu focus, Phase 193 cart announce / search groups (post-mount), Phase 189 focus rings, Phase 195 Hero rotation.
+4. **Bundle perf round 4** — fewer obvious targets remain. Wishlist view (186 LOC) could split empty/populated states. CartDrawer (186 LOC) is similar. Marginal gains.
+5. **Fresh open-ended audit** — read the codebase end-to-end and surface what catches your eye. Historically high-yield (Phase 90s design-realign came from one of these).
+
+## Verification toolkit (no change from prior handoff except CI is now Shopify-aware)
+
+- **`npm test`** — 46 SSR assertions. 20 always run; 26 skip until Shopify secrets are added. ~14s local / ~63s CI.
+- **Vercel MCP** — `list_deployments`, `get_deployment_build_logs`, `get_access_to_vercel_url`, `web_fetch_vercel_url`, `get_runtime_logs`. Used for empirical OG / structured-data verification on preview URLs.
+- **Sentry MCP** — `search_issues`, `search_events`, `analyze_issue_with_seer`. Use `firstSeen:-24h` on `jetnine` org for post-deploy regression sweep.
+- **Shopify MCP** — admin GraphQL for product / metafield checks.
+- **GitHub MCP** — PRs, comments, CI status, merge. `subscribe_pr_activity` for live event stream.
+- **Not available**: Claude in Chrome / Playwright browser MCP (Chromium binary download is firewalled in the sandbox).
+
+## Key files added this round
+
+- `tests/ssr/pdp.test.mjs` — Phase 204 (PDP Product LD assertions)
+- `tests/ssr/collection.test.mjs` — Phase 205 (CollectionPage LD + OG fallback)
+- `tests/ssr/article.test.mjs` — Phase 206 (BlogPosting LD)
+- `tests/ssr/cms-page.test.mjs` — Phase 207 (CMS page LD + OG fallback)
+- `app/products/[handle]/pdp-data.ts` — Phase 208 (`SIZE_DIMENSIONS`)
+- `app/products/[handle]/pdp-sticky-atc-bar.tsx` — Phase 209 (sticky mobile ATC component)
+- `app/sleep-quiz/sleep-quiz-result.tsx` — Phase 210 (lazy-loaded result page)
+
+Updated:
+- `tests/ssr/_helpers.mjs` — Phase 203 (`SHOPIFY_CONFIGURED` / `SHOPIFY_SKIP` / `parseJsonLd`)
+- `.github/workflows/test.yml` — Phase 203 (Shopify secrets forwarding)
+- `app/products/[handle]/buy-box.tsx` — Phases 208 + 209 (data extraction + sticky-bar component swap)
+- `app/sleep-quiz/sleep-quiz.tsx` — Phase 210 (dynamic-import shim, Result function deleted)
+
+---
+
 # Session handoff — 2026-05-11 (Phases 188–202 — four blocks merged, test infrastructure live)
 
 ## Status
