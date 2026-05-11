@@ -1,0 +1,37 @@
+name: SSR tests
+
+# Runs the cheerio-based SSR test suite on every PR + on pushes to main.
+# The tests spin up `next dev` on a non-standard port (3100) and hit it
+# with HTTP requests, parsing the responses with cheerio. They do not
+# require a browser binary — only Node + the npm deps — so the workflow
+# is cheap (~30-60s wall clock once node_modules is cached).
+#
+# Added in Phase 198. See tests/run.mjs for the orchestration and
+# tests/ssr/ for the assertion files.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ssr-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run SSR test suite
+        run: npm test
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
