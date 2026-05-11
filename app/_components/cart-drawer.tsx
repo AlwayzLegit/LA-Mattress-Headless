@@ -85,6 +85,7 @@ export function CartDrawer() {
                           width={120}
                           height={120}
                           sizes="120px"
+                          loading="lazy"
                           style={{ objectFit: 'contain', width: '100%', height: '100%' }}
                         />
                       ) : (

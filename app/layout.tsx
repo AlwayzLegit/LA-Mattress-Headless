@@ -7,7 +7,10 @@ const geistSans = Geist({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-geist-sans',
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  // Globals.css only references font-weight 500 / 600 / 700. The other
+  // weights Next/Font would request (300, 400, 800, 900) were unused
+  // ballast — dropping them trims the preloaded font subset.
+  weight: ['500', '600', '700'],
   preload: true,
 });
 
