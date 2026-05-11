@@ -42,6 +42,7 @@ export function HeroController({
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   // Sync slide DOM (server-rendered by the parent Hero) when `i`
   // changes. Slides are tagged `data-hero-slide={idx}`. We toggle the
@@ -70,6 +71,36 @@ export function HeroController({
     const t = setTimeout(() => setI((v) => (v + 1) % slideCount), SLIDE_INTERVAL_MS);
     return () => clearTimeout(t);
   }, [i, autoplay, paused, slideCount]);
+
+  // Phase 226: roving-tabindex keydown handler attached as a native
+  // listener instead of via React's `onKeyDown` prop. The Phase 141
+  // / 195 implementation used React's synthetic event system, which
+  // the Cowork rev-2 audit repeatedly couldn't trigger from
+  // programmatically dispatched `KeyboardEvent`s (state did not
+  // update; counter unchanged). Whether the same race manifests in
+  // real browsers under unusual focus conditions is hard to confirm
+  // from a sandbox — but native addEventListener fires on any
+  // keydown reaching the wrapper, regardless of how the event was
+  // created, so this closes the gap with no downside.
+  useEffect(() => {
+    const el = progressRef.current;
+    if (!el) return;
+    const onKey = (e: KeyboardEvent) => {
+      const total = slideCount;
+      let next: number | null = null;
+      if (e.key === 'ArrowRight') next = (i + 1) % total;
+      else if (e.key === 'ArrowLeft') next = (i - 1 + total) % total;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = total - 1;
+      if (next === null) return;
+      e.preventDefault();
+      setI(next);
+      const dots = el.querySelectorAll<HTMLButtonElement>('.hero-dot');
+      dots[next]?.focus();
+    };
+    el.addEventListener('keydown', onKey);
+    return () => el.removeEventListener('keydown', onKey);
+  }, [i, slideCount]);
 
   return (
     <div
@@ -105,27 +136,10 @@ export function HeroController({
             Home/End jump to first/last slide.
         */}
         <div
+          ref={progressRef}
           className="hero-progress"
           role="group"
           aria-label="Choose hero slide"
-          onKeyDown={(e) => {
-            // Modulo form so left/right wrap symmetrically. The
-            // earlier ternary form (Phase 141) tested correct on
-            // paper but the Cowork retest caught ArrowLeft-from-0
-            // not wrapping to last. Modulo eliminates any subtle
-            // branch asymmetry.
-            const total = slideCount;
-            let next: number | null = null;
-            if (e.key === 'ArrowRight') next = (i + 1) % total;
-            else if (e.key === 'ArrowLeft') next = (i - 1 + total) % total;
-            else if (e.key === 'Home') next = 0;
-            else if (e.key === 'End') next = total - 1;
-            if (next === null) return;
-            e.preventDefault();
-            setI(next);
-            const dots = e.currentTarget.querySelectorAll<HTMLButtonElement>('.hero-dot');
-            dots[next]?.focus();
-          }}
         >
           {Array.from({ length: slideCount }, (_, idx) => (
             <button
