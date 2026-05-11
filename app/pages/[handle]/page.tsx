@@ -191,8 +191,8 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE },
-      { '@type': 'ListItem', position: 2, name: 'Stores' },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: 'Stores', item: url },
     ],
   };
 
@@ -303,9 +303,9 @@ function ShowroomPage({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
       { '@type': 'ListItem', position: 2, name: 'Stores', item: `${SITE}/pages/mattress-store-locations` },
-      { '@type': 'ListItem', position: 3, name: showroom.area },
+      { '@type': 'ListItem', position: 3, name: showroom.area, item: url },
     ],
   };
 
