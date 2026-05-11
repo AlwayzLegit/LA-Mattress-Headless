@@ -1,3 +1,11 @@
+// Sentry client-side init. Moved from sentry.client.config.ts in Phase 185
+// to follow the @sentry/nextjs guidance (and the Turbopack requirement —
+// sentry.client.config.ts will stop being picked up under Turbopack).
+//
+// The server / edge configs stay at sentry.server.config.ts and
+// sentry.edge.config.ts, loaded via the existing register() hook in
+// instrumentation.ts. Only the client config needed to relocate.
+
 import * as Sentry from '@sentry/nextjs';
 
 const DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
