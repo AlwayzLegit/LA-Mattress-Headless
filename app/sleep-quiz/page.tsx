@@ -24,6 +24,7 @@ export default function SleepQuizPage() {
     about: 'Mattress recommendation based on sleep position, body type, temperature, firmness, pain points, material preference, partner needs, and budget.',
     educationalUse: 'Recommendation',
     timeRequired: 'PT2M',
+    inLanguage: 'en-US',
     provider: { '@type': 'Organization', name: 'LA Mattress Store', url: SITE },
   };
   // BreadcrumbList for the sleep-quiz route — every public top-level

@@ -131,6 +131,7 @@ function ArticleView({ article }: { article: Article }) {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    inLanguage: 'en-US',
     headline: article.title,
     ...(ldDescription ? { description: ldDescription } : {}),
     datePublished: article.publishedAt,

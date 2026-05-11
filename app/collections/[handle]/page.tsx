@@ -149,6 +149,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
     name: collection.title,
     description: firstNonEmpty(collection.seo.description, collection.description) || undefined,
     url: `https://mattressstoreslosangeles.com/collections/${collection.handle}`,
+    inLanguage: 'en-US',
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: collection.products.nodes.length,
