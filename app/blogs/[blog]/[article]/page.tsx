@@ -58,7 +58,13 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
       description,
       publishedTime: article.publishedAt,
       authors: article.author ? [article.author.name] : [],
-      images: article.image ? [{ url: article.image.url, alt: article.image.altText ?? article.title }] : [],
+      // Reference app/opengraph-image.tsx explicitly when the article
+      // has no cover image. Next.js's file-system OG convention is not
+      // auto-merged into a route's openGraph block, so without this
+      // an image-less article would emit no og:image at all.
+      images: article.image
+        ? [{ url: article.image.url, alt: article.image.altText ?? article.title }]
+        : [{ url: '/opengraph-image', width: 1200, height: 630 }],
     },
   };
 }
@@ -112,7 +118,8 @@ function ArticleView({ article }: { article: Article }) {
   const url = `${SITE}/blogs/${article.blog.handle}/${article.handle}`;
   const sanitized = sanitizeShopifyHtml(article.contentHtml);
   const { html: bodyHtml, headings } = injectHeadingIds(sanitized);
-  const readMinutes = estimateReadMinutes(article.contentHtml);
+  const wordCount = countWordsFromHtml(article.contentHtml);
+  const readMinutes = wordCount ? Math.max(1, Math.round(wordCount / 220)) : 0;
   const related = findRelatedArticles(article);
 
   const ldDescription = firstNonEmpty(
@@ -125,6 +132,7 @@ function ArticleView({ article }: { article: Article }) {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    inLanguage: 'en-US',
     headline: article.title,
     ...(ldDescription ? { description: ldDescription } : {}),
     datePublished: article.publishedAt,
@@ -135,6 +143,9 @@ function ArticleView({ article }: { article: Article }) {
       name: 'LA Mattress Store',
       logo: { '@type': 'ImageObject', url: `${SITE}/assets/la-mattress-logo.png` },
     },
+    articleSection: article.blog.title,
+    ...(wordCount ? { wordCount } : {}),
+    ...(article.tags.length ? { keywords: article.tags.join(', ') } : {}),
   };
 
   const breadcrumbLd = {
@@ -253,11 +264,16 @@ function ArticleView({ article }: { article: Article }) {
  * doesn't oversell long-form posts). Returns 0 for empty content so the
  * caller can drop the chip entirely.
  */
-function estimateReadMinutes(html: string): number {
+function countWordsFromHtml(html: string): number {
   if (!html) return 0;
   const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   if (!text) return 0;
-  const words = text.split(' ').length;
+  return text.split(' ').length;
+}
+
+function estimateReadMinutes(html: string): number {
+  const words = countWordsFromHtml(html);
+  if (!words) return 0;
   return Math.max(1, Math.round(words / 220));
 }
 

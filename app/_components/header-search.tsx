@@ -415,6 +415,7 @@ export function HeaderSearch() {
                                           alt={p.featuredImage.altText ?? p.title}
                                           width={48}
                                           height={48}
+                                          sizes="48px"
                                           style={{ objectFit: 'contain', width: '100%', height: '100%' }}
                                         />
                                       ) : null}

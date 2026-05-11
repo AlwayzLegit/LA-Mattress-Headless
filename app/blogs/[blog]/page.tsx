@@ -79,6 +79,7 @@ export default async function BlogIndexPage(props: Params) {
     '@type': 'Blog',
     name: blog.title,
     url: `${SITE}/blogs/${blog.handle}`,
+    inLanguage: 'en-US',
     publisher: { '@type': 'Organization', name: 'LA Mattress Store', url: SITE },
   };
 

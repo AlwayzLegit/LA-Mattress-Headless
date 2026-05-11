@@ -76,7 +76,23 @@ export async function generateMetadata(props: { params: Promise<Params['params']
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { type: 'website', url, title, description, images: collection.image ? [{ url: collection.image.url }] : [] },
+    // Per Next.js metadata rules: a route declaring its own `openGraph`
+    // object replaces the parent layout's wholesale, and the file-system
+    // OG image convention (`app/opengraph-image.tsx`) is NOT auto-merged
+    // unless the route's `openGraph.images` is absent. Routes that omit
+    // images would still emit no og:image. Reference the convention
+    // explicitly as a fallback so coverless collections still serve the
+    // brand OG card. (Width / height match Next.js's auto-emitted
+    // dimensions for `opengraph-image.tsx`.)
+    openGraph: {
+      type: 'website',
+      url,
+      title,
+      description,
+      images: collection.image
+        ? [{ url: collection.image.url }]
+        : [{ url: '/opengraph-image', width: 1200, height: 630 }],
+    },
   };
 }
 
@@ -140,6 +156,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
     name: collection.title,
     description: firstNonEmpty(collection.seo.description, collection.description) || undefined,
     url: `https://mattressstoreslosangeles.com/collections/${collection.handle}`,
+    inLanguage: 'en-US',
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: collection.products.nodes.length,
