@@ -11,7 +11,7 @@ import { formatPriceRange } from '@/lib/format';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
-import { CompareToggle } from '@/app/_components/compare';
+import { CompareToggle } from '@/app/_components/compare-toggle';
 import { PcardSpecs } from '@/app/_components/pcard-specs';
 import { SortControl } from './sort-control';
 import { CollectionSkeleton } from './skeleton';

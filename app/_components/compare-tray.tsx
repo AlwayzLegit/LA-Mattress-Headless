@@ -7,7 +7,6 @@ import { Icon } from './icon';
 import { announce } from './announcer';
 import {
   COMPARE_EVENT,
-  COMPARE_MAX,
   isShoppingRoute,
   readCompareSet,
   writeCompareSet,
@@ -15,73 +14,17 @@ import {
 } from './compare-store';
 
 /**
- * Adds/removes a product from the compare set. Lives inside a PLP card —
- * the click handler stops propagation so it doesn't trigger the parent
- * <Link>'s navigation.
- *
- * Cap is COMPARE_MAX (4 items) — beyond that we silently no-op the add
- * (with an SR announcement explaining why). Keeps the compare table
- * from getting unwieldy.
- */
-export function CompareToggle({ handle, title }: { handle: string; title: string }) {
-  const [selected, setSelected] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    const sync = () => setSelected(readCompareSet().some((p) => p.handle === handle));
-    sync();
-    setHydrated(true);
-    window.addEventListener(COMPARE_EVENT, sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      window.removeEventListener(COMPARE_EVENT, sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, [handle]);
-
-  const onToggle = (e: React.MouseEvent | React.ChangeEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const cur = readCompareSet();
-    const idx = cur.findIndex((p) => p.handle === handle);
-    if (idx >= 0) {
-      cur.splice(idx, 1);
-      writeCompareSet(cur);
-      announce(`Removed ${title} from compare`);
-    } else if (cur.length < COMPARE_MAX) {
-      cur.push({ handle, title });
-      writeCompareSet(cur);
-      announce(`Added ${title} to compare. ${cur.length} of ${COMPARE_MAX} selected.`);
-    } else {
-      // Already 4 selected — surface it audibly so SR users know why
-      // their click did nothing.
-      announce(`Compare is full. Remove one of the ${COMPARE_MAX} selected mattresses first.`);
-    }
-  };
-
-  // Don't render until hydrated so SSR matches first paint.
-  if (!hydrated) return null;
-
-  return (
-    <button
-      type="button"
-      className={`compare-toggle${selected ? ' is-selected' : ''}`}
-      onClick={onToggle}
-      aria-pressed={selected}
-      aria-label={selected ? `Remove ${title} from compare` : `Add ${title} to compare (up to ${COMPARE_MAX})`}
-    >
-      <span className="compare-toggle-box" aria-hidden>
-        {selected ? <Icon name="check" size={12} /> : null}
-      </span>
-      Compare
-    </button>
-  );
-}
-
-/**
  * Floating bottom-center pill that appears when the visitor has selected
  * at least one product to compare. Tap to open /compare with the selected
  * handles. Visible site-wide; rendered in the root layout.
+ *
+ * Phase 197: split out of `compare.tsx` so the layout's shared chunk
+ * (the bundle every route ships) no longer drags in `CompareToggle`,
+ * which is only needed on PLP cards / search results. Tree-shaking
+ * across re-exports from a single file isn't reliable in the absence
+ * of a `sideEffects: false` package.json hint, so the file split is
+ * the most predictable way to get the bundler to drop the unused
+ * symbol from each consumer's chunk.
  */
 export function CompareTray() {
   const [items, setItems] = useState<CompareSnapshot[]>([]);
