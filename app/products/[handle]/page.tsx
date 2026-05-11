@@ -78,12 +78,13 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
       url,
       title,
       description,
-      // Omit `images` entirely if the product has no featuredImage so
-      // Next.js's auto-fallback to app/opengraph-image.tsx applies. PDPs
-      // nearly always have featuredImage so this is mostly belt-and-braces.
-      ...(product.featuredImage
-        ? { images: [{ url: product.featuredImage.url, alt: product.featuredImage.altText ?? product.title }] }
-        : {}),
+      // PDPs almost always have a featuredImage. The fallback to
+      // app/opengraph-image.tsx is belt-and-braces for the rare
+      // missing-image case — Next.js doesn't auto-merge the file
+      // convention into a route's openGraph block.
+      images: product.featuredImage
+        ? [{ url: product.featuredImage.url, alt: product.featuredImage.altText ?? product.title }]
+        : [{ url: '/opengraph-image', width: 1200, height: 630 }],
     },
   };
 }

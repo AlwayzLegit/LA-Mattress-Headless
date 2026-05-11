@@ -76,15 +76,22 @@ export async function generateMetadata(props: { params: Promise<Params['params']
     title,
     description,
     alternates: { canonical: url },
-    // Omit `images` entirely when the collection has no image — Next.js's
-    // auto-fallback to app/opengraph-image.tsx only kicks in when the key
-    // is absent; an explicit empty array suppresses it.
+    // Per Next.js metadata rules: a route declaring its own `openGraph`
+    // object replaces the parent layout's wholesale, and the file-system
+    // OG image convention (`app/opengraph-image.tsx`) is NOT auto-merged
+    // unless the route's `openGraph.images` is absent. Routes that omit
+    // images would still emit no og:image. Reference the convention
+    // explicitly as a fallback so coverless collections still serve the
+    // brand OG card. (Width / height match Next.js's auto-emitted
+    // dimensions for `opengraph-image.tsx`.)
     openGraph: {
       type: 'website',
       url,
       title,
       description,
-      ...(collection.image ? { images: [{ url: collection.image.url }] } : {}),
+      images: collection.image
+        ? [{ url: collection.image.url }]
+        : [{ url: '/opengraph-image', width: 1200, height: 630 }],
     },
   };
 }

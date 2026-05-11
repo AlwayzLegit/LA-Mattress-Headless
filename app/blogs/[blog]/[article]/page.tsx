@@ -58,12 +58,13 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
       description,
       publishedTime: article.publishedAt,
       authors: article.author ? [article.author.name] : [],
-      // Omit `images` entirely when the article has no cover image so
-      // Next.js's auto-fallback to app/opengraph-image.tsx applies. An
-      // explicit empty array would suppress the fallback.
-      ...(article.image
-        ? { images: [{ url: article.image.url, alt: article.image.altText ?? article.title }] }
-        : {}),
+      // Reference app/opengraph-image.tsx explicitly when the article
+      // has no cover image. Next.js's file-system OG convention is not
+      // auto-merged into a route's openGraph block, so without this
+      // an image-less article would emit no og:image at all.
+      images: article.image
+        ? [{ url: article.image.url, alt: article.image.altText ?? article.title }]
+        : [{ url: '/opengraph-image', width: 1200, height: 630 }],
     },
   };
 }
