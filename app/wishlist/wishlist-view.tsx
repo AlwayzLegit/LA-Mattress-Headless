@@ -1,45 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@/app/_components/icon';
 import { announce } from '@/app/_components/announcer';
+import {
+  readWishlistSet,
+  useWishlistSet,
+  writeWishlistSet,
+} from '@/app/_components/wishlist-store';
 import { formatMoney } from '@/lib/format';
-
-const WISHLIST_KEY = 'la-mattress.wishlist.v1';
-const WISHLIST_EVENT = 'la-mattress:wishlist-change';
-
-type Snapshot = {
-  handle: string;
-  title: string;
-  vendor?: string | null;
-  imageUrl?: string | null;
-  imageAlt?: string | null;
-  priceAmount?: string | null;
-  priceCurrency?: string | null;
-};
-
-function readSet(): Snapshot[] {
-  try {
-    const raw = window.localStorage.getItem(WISHLIST_KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw) as unknown;
-    if (!Array.isArray(arr)) return [];
-    return arr.filter((x): x is Snapshot => typeof x === 'object' && x != null && 'handle' in x);
-  } catch {
-    return [];
-  }
-}
-
-function writeSet(items: Snapshot[]) {
-  try {
-    window.localStorage.setItem(WISHLIST_KEY, JSON.stringify(items));
-    window.dispatchEvent(new Event(WISHLIST_EVENT));
-  } catch {
-    // ignore quota / private mode
-  }
-}
 
 /**
  * Saved items list — design handoff §Account · Saved items.
@@ -59,31 +29,19 @@ function writeSet(items: Snapshot[]) {
  * eyebrow + headline + browse CTA.
  */
 export function WishlistView() {
-  const [items, setItems] = useState<Snapshot[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    const sync = () => setItems(readSet());
-    sync();
-    setHydrated(true);
-    window.addEventListener(WISHLIST_EVENT, sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      window.removeEventListener(WISHLIST_EVENT, sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, []);
+  // Phase 213: store sync via shared hook.
+  const { items, hydrated } = useWishlistSet();
 
   const remove = (handle: string) => {
-    const current = readSet();
+    const current = readWishlistSet();
     const target = current.find((p) => p.handle === handle);
     const next = current.filter((p) => p.handle !== handle);
-    writeSet(next);
+    writeWishlistSet(next);
     announce(target ? `Removed ${target.title} from saved` : 'Removed from saved');
   };
 
   const clearAll = () => {
-    writeSet([]);
+    writeWishlistSet([]);
     announce('Cleared saved mattresses');
   };
 
