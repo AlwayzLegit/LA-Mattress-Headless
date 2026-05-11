@@ -25,7 +25,7 @@ import { Nav } from './_components/nav';
 import { Footer } from './_components/footer';
 import { CartProvider } from './_components/cart-context';
 import { CartDrawer } from './_components/cart-drawer';
-import { CompareTray } from './_components/compare';
+import { CompareTray } from './_components/compare-tray';
 import { Announcer } from './_components/announcer';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';

@@ -7,7 +7,7 @@ import type { ProductSummary, PredictiveArticle } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
 import { searchShowrooms, type Showroom } from '@/lib/showrooms';
 import { Icon } from '@/app/_components/icon';
-import { CompareToggle } from '@/app/_components/compare';
+import { CompareToggle } from '@/app/_components/compare-toggle';
 import { PcardSpecs } from '@/app/_components/pcard-specs';
 import {
   FilterPanel,
