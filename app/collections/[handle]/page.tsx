@@ -76,7 +76,16 @@ export async function generateMetadata(props: { params: Promise<Params['params']
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { type: 'website', url, title, description, images: collection.image ? [{ url: collection.image.url }] : [] },
+    // Omit `images` entirely when the collection has no image — Next.js's
+    // auto-fallback to app/opengraph-image.tsx only kicks in when the key
+    // is absent; an explicit empty array suppresses it.
+    openGraph: {
+      type: 'website',
+      url,
+      title,
+      description,
+      ...(collection.image ? { images: [{ url: collection.image.url }] } : {}),
+    },
   };
 }
 

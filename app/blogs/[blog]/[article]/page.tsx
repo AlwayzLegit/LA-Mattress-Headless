@@ -58,7 +58,12 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
       description,
       publishedTime: article.publishedAt,
       authors: article.author ? [article.author.name] : [],
-      images: article.image ? [{ url: article.image.url, alt: article.image.altText ?? article.title }] : [],
+      // Omit `images` entirely when the article has no cover image so
+      // Next.js's auto-fallback to app/opengraph-image.tsx applies. An
+      // explicit empty array would suppress the fallback.
+      ...(article.image
+        ? { images: [{ url: article.image.url, alt: article.image.altText ?? article.title }] }
+        : {}),
     },
   };
 }
