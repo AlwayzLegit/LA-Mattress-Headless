@@ -11,6 +11,8 @@ import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
+import { PlpCount } from '@/app/_components/plp-count';
+import { PlpLoadMore } from '@/app/_components/plp-load-more';
 import { SortControl } from './sort-control';
 import { SORT_OPTIONS, parseSort } from './sort-options';
 import { CollectionSkeleton } from './skeleton';
@@ -153,22 +155,20 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
     },
   };
 
-  // Preserve sort + filter params when paginating; only `after` advances.
-  const buildNextHref = (cursor: string) => {
-    const next = new URLSearchParams();
-    if (searchParams.sort) next.set('sort', searchParams.sort);
+  // Phase 217: serialize the active filter params so the client-side
+  // PlpLoadMore can pass them through to the /api/load-more-products
+  // route. Same shape the old <Link href="?after=cursor"> used to
+  // build, just minus the `after` cursor and minus the route prefix.
+  function buildFilterQueryString(
+    sp: Record<string, string | undefined>,
+  ): string {
+    const out = new URLSearchParams();
     for (const p of FILTER_PARAMS) {
-      const v = searchParams[p];
-      if (v) next.set(p, v);
+      const v = sp[p];
+      if (v) out.set(p, v);
     }
-    next.set('after', cursor);
-    return `/collections/${collection.handle}?${next.toString()}`;
-  };
-
-  const nextHref =
-    collection.products.pageInfo.hasNextPage && collection.products.pageInfo.endCursor
-      ? buildNextHref(collection.products.pageInfo.endCursor)
-      : null;
+    return out.toString();
+  }
 
   const hasResults = collection.products.nodes.length > 0;
   const availableFilters = collection.products.filters ?? [];
@@ -227,15 +227,15 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
               <div className="plp-toolbar">
                 <div className="plp-toolbar-left">
                   <FilterMobileTrigger sel={filterSel} />
-                  <span className="plp-toolbar-count">
-                    {!hasResults
-                      ? 'No products match your filters'
-                      : after
-                      ? `Showing ${collection.products.nodes.length} more product${collection.products.nodes.length === 1 ? '' : 's'}`
-                      : hasFiltersApplied || !totalInCollection
-                      ? `Showing ${collection.products.nodes.length} product${collection.products.nodes.length === 1 ? '' : 's'}`
-                      : `Showing ${collection.products.nodes.length} of ${totalInCollection} product${totalInCollection === 1 ? '' : 's'}`}
-                  </span>
+                  {/* Phase 217: count display is now a client island
+                      that listens for `plp:count-rendered` events from
+                      `PlpLoadMore` and re-renders with the cumulative
+                      total. Initial value is SSR-correct from props. */}
+                  <PlpCount
+                    initial={collection.products.nodes.length}
+                    total={hasFiltersApplied ? null : totalInCollection}
+                    hasFiltersApplied={hasFiltersApplied}
+                  />
                 </div>
                 <SortControl
                   options={SORT_OPTIONS.map((o, i) => ({
@@ -257,23 +257,25 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                       key={p.id}
                       product={p}
                       // LCP candidates: first 3 cards of the SSR'd first
-                      // page. Subsequent pages (loaded by Phase 217's
+                      // page. Subsequent pages (loaded by `PlpLoadMore`
                       // client-side append) pass `priority={false}`.
                       priority={!after && idx < 3}
                     />
                   ))}
                 </div>
-                <div className="plp-pagination">
-                  {nextHref ? (
-                    <Link
-                      href={nextHref}
-                      className="btn btn-ghost btn-lg"
-                      aria-label={`Load more ${collection.title.toLowerCase()}`}
-                    >
-                      Load more <Icon name="arrow-right" size={16} />
-                    </Link>
-                  ) : null}
-                </div>
+                {/* Phase 217: client-side append replaces the previous
+                    `<Link href={?after=cursor}>` full-page navigation.
+                    Renders any client-loaded pages directly below the
+                    SSR'd first page + a skeleton during fetch + the
+                    Load More button. */}
+                <PlpLoadMore
+                  collectionHandle={collection.handle}
+                  sortParam={searchParams.sort}
+                  filterQuery={buildFilterQueryString(searchParams)}
+                  initialCursor={collection.products.pageInfo.endCursor ?? null}
+                  initialHasNext={collection.products.pageInfo.hasNextPage}
+                  initialCount={collection.products.nodes.length}
+                />
               </>
             ) : (
               <div className="plp-empty">
