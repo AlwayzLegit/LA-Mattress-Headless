@@ -1393,11 +1393,6 @@
       "permanent": true
     },
     {
-      "source": "/pages/mattress-store-delivery",
-      "destination": "/pages/mattress-store-locations",
-      "permanent": false
-    },
-    {
       "source": "/pages/mattress-sizes-dimensions",
       "destination": "/pages/mattress-sizes",
       "permanent": true
