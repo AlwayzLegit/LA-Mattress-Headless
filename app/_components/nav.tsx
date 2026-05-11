@@ -118,6 +118,25 @@ export function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { count, openDrawer } = useCart();
 
+  // When the mega panel opens via keyboard (ArrowDown / Space on the
+  // trigger), we need to (a) move focus from the trigger into the
+  // panel so the user can keyboard-navigate the links without first
+  // Tab-cycling through the entire trigger row, and (b) restore focus
+  // back to the trigger on Esc so the user lands somewhere predictable
+  // instead of body. Mouse-driven opens (hover) skip both — they don't
+  // disturb focus and there's no "previous focus" to restore.
+  const megaPanelRef = useRef<HTMLElement>(null);
+  const megaTriggerRef = useRef<HTMLElement | null>(null);
+  const pendingKbdFocusRef = useRef(false);
+  useEffect(() => {
+    if (!mega || !pendingKbdFocusRef.current) return;
+    pendingKbdFocusRef.current = false;
+    const id = requestAnimationFrame(() => {
+      megaPanelRef.current?.querySelector<HTMLElement>('a, button')?.focus();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [mega]);
+
   // Lock background scroll while the mobile drawer is open. Stack-
   // aware via the shared hook so it composes with the cart drawer,
   // search overlay, and mobile filter shell.
@@ -199,8 +218,13 @@ export function Nav() {
                 onFocus={() => setMega(item.mega)}
                 onKeyDown={(e) => {
                   // Open mega menu via keyboard. Down opens; Esc closes.
+                  // Capture the trigger element so Esc-from-inside-the-
+                  // panel can restore focus here instead of dropping it
+                  // to body.
                   if (item.mega && (e.key === 'ArrowDown' || e.key === ' ')) {
                     e.preventDefault();
+                    megaTriggerRef.current = e.currentTarget;
+                    pendingKbdFocusRef.current = true;
                     setMega(item.mega);
                   } else if (e.key === 'Escape') {
                     setMega(null);
@@ -252,10 +276,22 @@ export function Nav() {
           // is the right pattern for a navigation submenu; the label
           // surfaces because <nav> has implicit role="navigation".
           <nav
+            ref={megaPanelRef}
             id={`nav-mega-${mega}`}
             className="mega"
             onMouseLeave={() => setMega(null)}
-            onKeyDown={(e) => { if (e.key === 'Escape') setMega(null); }}
+            onKeyDown={(e) => {
+              if (e.key !== 'Escape') return;
+              setMega(null);
+              // Return focus to the trigger that opened this panel.
+              // Read from the ref synchronously, then schedule the
+              // .focus() for after the panel unmounts.
+              const trigger = megaTriggerRef.current;
+              megaTriggerRef.current = null;
+              if (trigger) {
+                requestAnimationFrame(() => trigger.focus());
+              }
+            }}
             aria-label={`${mega.charAt(0).toUpperCase() + mega.slice(1)} submenu`}
           >
             <div className="container mega-inner">
