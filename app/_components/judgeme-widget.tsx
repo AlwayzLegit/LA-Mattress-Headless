@@ -61,7 +61,15 @@ export function JudgemeWidget({ productId }: Props) {
       >
         <div
           className="jdgm-widget jdgm-review-widget"
-          data-product-id={productId}
+          // Phase 248: Judge.me's preloader keys off `data-id`, NOT
+          // `data-product-id`. With the wrong attribute name the
+          // loader marks the widget `jdgm--done-setup-widget`,
+          // fires its cache fetch with an empty
+          // `review_widget_product_ids=` query param, gets a 200
+          // back with no relevant data, and leaves the widget empty.
+          // No JS error, no console warning — fails silent. Caught
+          // by Cowork rev-6 P0-1.
+          data-id={productId}
         />
       </div>
     </>
