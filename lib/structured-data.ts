@@ -29,12 +29,18 @@ export const LOCAL_BUSINESS_LD = {
   telephone: SITE_PHONE_SCHEMA,
   priceRange: '$$$',
   image: `${SITE}/assets/la-mattress-logo.png`,
+  // Phase 236: top-level FurnitureStore address uses the Studio City
+  // showroom (12306 Ventura Blvd) — that's the Shopify shop.billingAddress,
+  // i.e. the canonical corporate address. Previously hardcoded to an
+  // unrelated `3550 Wilshire Blvd 90010` that didn't match any showroom.
+  // Each individual showroom is still emitted as a `department` below,
+  // so Google sees both the corporate anchor and the 5 branch locations.
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '3550 Wilshire Blvd',
-    addressLocality: 'Los Angeles',
+    streetAddress: '12306 Ventura Blvd',
+    addressLocality: 'Studio City',
     addressRegion: 'CA',
-    postalCode: '90010',
+    postalCode: '91604',
     addressCountry: 'US',
   },
   areaServed: { '@type': 'City', name: 'Los Angeles' },

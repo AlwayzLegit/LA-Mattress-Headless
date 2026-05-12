@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { searchProducts, searchArticles } from '@/lib/shopify';
 import type { ProductSummary, PredictiveArticle } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
-import { searchShowrooms, type Showroom } from '@/lib/showrooms';
+import { formatPhone, searchShowrooms, type Showroom } from '@/lib/showrooms';
 import { Icon } from '@/app/_components/icon';
 import { CompareToggle } from '@/app/_components/compare-toggle';
 import { PcardSpecs } from '@/app/_components/pcard-specs';
@@ -346,7 +346,7 @@ export default async function SearchPage(props: Params) {
                           {s.city}, {s.region} {s.postalCode}
                         </address>
                         <div className="search-showroom-foot">
-                          <span className="muted">{s.phone}</span>
+                          <span className="muted">{formatPhone(s.phone)}</span>
                           <span className="link-arrow">View <Icon name="arrow-right" size={14} /></span>
                         </div>
                       </div>
@@ -652,7 +652,7 @@ function SearchAllTab({
                     {s.city}, {s.region} {s.postalCode}
                   </address>
                   <div className="search-showroom-foot">
-                    <span className="muted">{s.phone}</span>
+                    <span className="muted">{formatPhone(s.phone)}</span>
                     <span className="link-arrow">View <Icon name="arrow-right" size={14} /></span>
                   </div>
                 </div>
