@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 import { getPageByHandle } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
-import { SHOWROOMS, findShowroom, getOpenStatus, type Showroom } from '@/lib/showrooms';
+import { SHOWROOMS, findShowroom, formatPhone, getOpenStatus, type Showroom } from '@/lib/showrooms';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_PHONE_SCHEMA } from '@/lib/site-config';
@@ -234,7 +234,7 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
                   <div>{s.city}, {s.region} {s.postalCode}</div>
                 </address>
                 <div className="location-card-actions">
-                  <span className="location-card-phone tnum">{s.phone.replace('+1-', '(').replace(/-/, ') ').replace(/-/, '-')}</span>
+                  <span className="location-card-phone tnum">{formatPhone(s.phone)}</span>
                   <span className="link-arrow">Store details <Icon name="arrow-right" size={14} /></span>
                 </div>
               </div>
@@ -296,12 +296,20 @@ function ShowroomPage({
       : {}),
     openingHoursSpecification: showroom.hours.map((h) => ({
       '@type': 'OpeningHoursSpecification',
+      // Phase 236: extended for Mon-Fri / Sat-Sun spans now used by all
+      // five showrooms (replaced the older Mon-Sat / Sun split).
       dayOfWeek:
-        h.day === 'Mon-Sat'
-          ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-          : h.day === 'Sun'
-            ? 'Sunday'
-            : h.day,
+        h.day === 'Mon-Fri'
+          ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+          : h.day === 'Sat-Sun'
+            ? ['Saturday', 'Sunday']
+            : h.day === 'Mon-Sat'
+              ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+              : h.day === 'Sun'
+                ? 'Sunday'
+                : h.day === 'Sat'
+                  ? 'Saturday'
+                  : h.day,
       opens: h.open,
       closes: h.close,
     })),
@@ -363,7 +371,7 @@ function ShowroomPage({
               <div>{showroom.city}, {showroom.region} {showroom.postalCode}</div>
             </address>
             <a href={`tel:${showroom.phone.replace(/[^+\d]/g, '')}`} className="showroom-info-phone">
-              <Icon name="phone" size={14} /> {showroom.phone}
+              <Icon name="phone" size={14} /> {formatPhone(showroom.phone)}
             </a>
             <ul className="showroom-info-hours">
               {showroom.hours.map((h) => (
