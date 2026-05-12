@@ -1,6 +1,7 @@
 import { shopifyFetch } from '../client';
 import type { ProductSummary } from '../types';
 import { IMAGE_FRAGMENT, MONEY_FRAGMENT, PRODUCT_SUMMARY_FRAGMENT } from './fragments';
+import { parseReviewsMetafields } from './product';
 
 const QUERY = /* GraphQL */ `
   ${IMAGE_FRAGMENT}
@@ -13,7 +14,38 @@ const QUERY = /* GraphQL */ `
   }
 `;
 
-type Raw = { productRecommendations: ProductSummary[] | null };
+type RawSpecMetafield = { value: string } | null;
+type RawReviewMetafield = { value: string; type: string } | null;
+
+type RawSummary = Omit<ProductSummary, 'reviews' | 'specs'> & {
+  firmnessMetafield?: RawSpecMetafield;
+  heightMetafield?:   RawSpecMetafield;
+  materialMetafield?: RawSpecMetafield;
+  ratingMetafield?:        RawReviewMetafield;
+  ratingCountMetafield?:   RawReviewMetafield;
+  judgemeBadgeMetafield?:  RawReviewMetafield;
+};
+
+type Raw = { productRecommendations: RawSummary[] | null };
+
+function liftSummary(n: RawSummary): ProductSummary {
+  const {
+    firmnessMetafield, heightMetafield, materialMetafield,
+    ratingMetafield, ratingCountMetafield, judgemeBadgeMetafield,
+    ...rest
+  } = n;
+  const heightStr = heightMetafield?.value;
+  const heightNum = heightStr ? Number.parseFloat(heightStr) : NaN;
+  return {
+    ...rest,
+    specs: {
+      firmness: firmnessMetafield?.value || null,
+      heightInches: Number.isFinite(heightNum) ? heightNum : null,
+      materialType: materialMetafield?.value || null,
+    },
+    reviews: parseReviewsMetafields(ratingMetafield, ratingCountMetafield, judgemeBadgeMetafield),
+  };
+}
 
 /**
  * Fetches Shopify Storefront-API product recommendations for a PDP cross-sell
@@ -46,5 +78,5 @@ export async function getProductRecommendations(
     nodes = related.productRecommendations ?? [];
   }
 
-  return nodes.filter((p) => p.handle !== handle).slice(0, limit);
+  return nodes.filter((p) => p.handle !== handle).slice(0, limit).map(liftSummary);
 }

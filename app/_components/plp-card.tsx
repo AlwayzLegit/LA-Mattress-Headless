@@ -4,6 +4,7 @@ import type { ProductSummary } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
 import { PcardSpecs } from './pcard-specs';
 import { CompareToggle } from './compare-toggle';
+import { ReviewsBadge } from './reviews-badge';
 
 /**
  * Single product card on the PLP / search results grid.
@@ -66,6 +67,9 @@ export function PlpCard({
         <div className="pcard-meta">
           <div className="pcard-brand">{product.vendor}</div>
           <div className="pcard-name">{product.title}</div>
+          {product.reviews ? (
+            <div className="pcard-reviews"><ReviewsBadge reviews={product.reviews} size="inline" /></div>
+          ) : null}
           <PcardSpecs specs={product.specs} />
           <div className="pcard-price">
             {onSale ? (

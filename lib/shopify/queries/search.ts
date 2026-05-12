@@ -1,6 +1,7 @@
 import { shopifyFetch } from '../client';
 import type { AvailableFilter, ArticleSummary, ProductFilter, ProductSummary } from '../types';
 import { IMAGE_FRAGMENT, MONEY_FRAGMENT, PRODUCT_SUMMARY_FRAGMENT } from './fragments';
+import { parseReviewsMetafields } from './product';
 
 const SEARCH_PRODUCTS = /* GraphQL */ `
   ${IMAGE_FRAGMENT}
@@ -42,14 +43,24 @@ export type SearchResult = {
   filters: AvailableFilter[];
 };
 
-type RawSummary = ProductSummary & {
-  firmnessMetafield?: { value: string } | null;
-  heightMetafield?:   { value: string } | null;
-  materialMetafield?: { value: string } | null;
+type RawSpecMetafield = { value: string } | null;
+type RawReviewMetafield = { value: string; type: string } | null;
+
+type RawSummary = Omit<ProductSummary, 'reviews'> & {
+  firmnessMetafield?: RawSpecMetafield;
+  heightMetafield?:   RawSpecMetafield;
+  materialMetafield?: RawSpecMetafield;
+  ratingMetafield?:        RawReviewMetafield;
+  ratingCountMetafield?:   RawReviewMetafield;
+  judgemeBadgeMetafield?:  RawReviewMetafield;
 };
 
 function liftSummarySpecs(n: RawSummary): ProductSummary {
-  const { firmnessMetafield, heightMetafield, materialMetafield, ...rest } = n;
+  const {
+    firmnessMetafield, heightMetafield, materialMetafield,
+    ratingMetafield, ratingCountMetafield, judgemeBadgeMetafield,
+    ...rest
+  } = n;
   const heightStr = heightMetafield?.value;
   const heightNum = heightStr ? Number.parseFloat(heightStr) : NaN;
   return {
@@ -59,6 +70,7 @@ function liftSummarySpecs(n: RawSummary): ProductSummary {
       heightInches: Number.isFinite(heightNum) ? heightNum : null,
       materialType: materialMetafield?.value || null,
     },
+    reviews: parseReviewsMetafields(ratingMetafield, ratingCountMetafield, judgemeBadgeMetafield),
   };
 }
 

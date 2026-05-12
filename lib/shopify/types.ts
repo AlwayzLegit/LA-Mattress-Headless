@@ -133,6 +133,12 @@ export type ProductSummary = {
   compareAtPriceRange: { minVariantPrice: Money; maxVariantPrice: Money };
   /** Subset of ProductSpecs surfaced in ProductSummary fragment for PLP cards. */
   specs?: { firmness: string | null; heightInches: number | null; materialType: string | null };
+  /**
+   * Aggregate review rating + count for card-level star badge. Phase 242.
+   * Populated via the same fallback chain as the full Product type
+   * (reviews.rating + reviews.rating_count, OR judgeme.badge HTML).
+   */
+  reviews: ProductReviews | null;
 };
 
 export type Collection = {

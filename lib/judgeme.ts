@@ -82,7 +82,13 @@ export async function getProductReviews(
   productExternalId: string | number,
   { perPage = 8, page = 1 } = {},
 ): Promise<JudgemeReview[]> {
-  if (!ENABLED) return [];
+  if (!ENABLED) {
+    // Phase 242 diagnostic — production-safe log (no PII, no token).
+    // Helps the user verify env vars are actually configured on the
+    // running deploy. Tagged so it grep-filters cleanly in runtime logs.
+    console.warn('[judgeme] getProductReviews: ENABLED=false — JUDGEME_API_TOKEN or JUDGEME_SHOP_DOMAIN env var missing');
+    return [];
+  }
   try {
     const res = await fetch(
       buildUrl('/reviews', {
@@ -93,10 +99,25 @@ export async function getProductReviews(
       }),
       { next: { revalidate: 3600, tags: ['judgeme:reviews', `judgeme:product:${productExternalId}`] } },
     );
-    if (!res.ok) return [];
+    if (!res.ok) {
+      // Phase 242: surface status code in prod for debug. No PII, no
+      // token leakage — just the HTTP status + product ID so we can
+      // diagnose 401 (wrong token), 403 (token type), 404 (wrong
+      // shop_domain), 5xx (Judge.me-side outage). Phase 235c PII-gate
+      // doesn't apply here because there's no user-submitted data.
+      console.warn(`[judgeme] getProductReviews productId=${productExternalId} → HTTP ${res.status}`);
+      return [];
+    }
     const data = (await res.json()) as ReviewsResponse;
+    const got = data.reviews?.length ?? 0;
+    if (got === 0) {
+      // Helpful even when status=200: API responded but the published
+      // filter or product_id mismatch returned empty.
+      console.warn(`[judgeme] getProductReviews productId=${productExternalId} → 200 but 0 reviews returned`);
+    }
     return data.reviews ?? [];
-  } catch {
+  } catch (err) {
+    console.warn(`[judgeme] getProductReviews productId=${productExternalId} → fetch threw: ${(err as Error).message?.slice(0, 100) ?? 'unknown'}`);
     return [];
   }
 }
