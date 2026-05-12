@@ -29,7 +29,7 @@ export const HOMEPAGE_FAQ: FaqItem[] = [
   },
   {
     q: 'Do you remove my old mattress?',
-    a: 'Free haul-away on every white-glove delivery. We recycle responsibly through a local LA partner.',
+    a: 'Free haul-away on every white-glove delivery. We recycle responsibly so your old mattress doesn’t end up in a landfill.',
   },
 ];
 
