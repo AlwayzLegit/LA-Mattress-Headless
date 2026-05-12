@@ -27,11 +27,10 @@ import type { ProductReviews } from '@/lib/shopify';
 type Props = {
   productGid: string;
   productHandle: string;
-  productTitle: string;
   reviews: ProductReviews | null;
 };
 
-export function PdpReviewsSection({ productGid, productHandle, productTitle, reviews }: Props) {
+export function PdpReviewsSection({ productGid, productHandle, reviews }: Props) {
   const productId = shopifyProductIdFromGid(productGid);
 
   return (
@@ -45,13 +44,14 @@ export function PdpReviewsSection({ productGid, productHandle, productTitle, rev
               · {reviews.count.toLocaleString()} review{reviews.count === 1 ? '' : 's'}
             </span>
           </div>
-        ) : (
-          <p className="muted pdp-reviews-empty">
-            Be the first to review {productTitle}.
-          </p>
-        )}
+        ) : null}
       </header>
 
+      {/* Phase 249: dropped the LA Mattress-side "Be the first to review X"
+          server copy on 0-review PDPs. Judge.me's widget hydrates its own
+          empty state ("Be the first to write a review" + Write/Ask buttons)
+          which covers the same user need without the redundancy that
+          confused Cowork rev-7. */}
       {productId ? (
         <JudgemeWidget productId={productId} />
       ) : (

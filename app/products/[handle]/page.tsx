@@ -322,7 +322,6 @@ function ProductView({ product, related }: { product: Product; related: ProductS
       <PdpReviewsSection
         productGid={product.id}
         productHandle={product.handle}
-        productTitle={product.title}
         reviews={product.reviews}
       />
 

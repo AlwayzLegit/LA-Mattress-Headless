@@ -1,14 +1,28 @@
 /**
  * Judge.me Reviews API — server-side fetch helpers.
  *
- * We pull individual review records (not just the aggregate metafields,
- * which we already render on PDPs via the ProductReviews type). Server-side
- * fetch keeps the public API token off the client, lets Next.js cache the
- * response per ISR config, and gives us SSR'd markup that's good for SEO.
+ * Used for two surfaces only:
+ *   - /pages/reviews — aggregate header + latest-reviews carousel
+ *     across the entire store
+ *   - homepage Reviews section (static-sections.tsx) — same data,
+ *     subset of items
  *
- * Setup:
+ * Per-product review fetch was removed in Phase 247 because Judge.me's
+ * REST API silently ignores every per-product filter on this token
+ * tier (verified in Phases 245/246 diagnostic — all of `external_id`,
+ * `product_external_id`, `product_id`, `handle` return identical
+ * unfiltered results). Phase 247 pivoted PDP reviews to Judge.me's
+ * official client-side widget instead. See `<JudgemeWidget>` in
+ * app/_components.
+ *
+ * Phase 249: pruned `getProductReviews`, `createReview`, and the
+ * `CreateReviewPayload` / `CreateReviewResult` types that those used.
+ * `shopifyProductIdFromGid` stays — still used by the PDP reviews
+ * section to wire the widget's `data-id`.
+ *
+ * Setup (unchanged):
  *   1. Log into Judge.me → Settings → Public API → reveal token.
- *   2. Set Vercel env vars (Production + Preview):
+ *   2. Set Vercel env vars (Production + Preview + Development):
  *        JUDGEME_API_TOKEN=<that token>
  *        JUDGEME_SHOP_DOMAIN=<your-shop>.myshopify.com
  *   3. Redeploy.
@@ -73,113 +87,12 @@ export async function getStorefrontReviews({ perPage = 12, page = 1, minRating =
 }
 
 /**
- * Per-product reviews — feeds the PDP reviews section. Judge.me identifies
- * products by their Shopify numeric ID (not the storefront handle), so
- * pass the value extracted from `product.id` (e.g. `7894217031836` from
- * the full gid). Phase 238.
- */
-export async function getProductReviews(
-  productExternalId: string | number,
-  { perPage = 8, page = 1 } = {},
-): Promise<JudgemeReview[]> {
-  if (!ENABLED) {
-    // Phase 242 diagnostic — production-safe log (no PII, no token).
-    // Helps the user verify env vars are actually configured on the
-    // running deploy. Tagged so it grep-filters cleanly in runtime logs.
-    console.warn('[judgeme] getProductReviews: ENABLED=false — JUDGEME_API_TOKEN or JUDGEME_SHOP_DOMAIN env var missing');
-    return [];
-  }
-  try {
-    const res = await fetch(
-      // Phase 244: param name is `product_external_id` (Shopify ID), NOT
-      // `product_id` (Judge.me's internal numeric ID). Diagnostic
-      // confirmed Judge.me returns 422 "The number used for product_id
-      // is too big. Please use Judge.me product_id." when we pass the
-      // 13-digit Shopify ID under the wrong param name.
-      buildUrl('/reviews', {
-        product_external_id: productExternalId,
-        per_page: perPage,
-        page,
-        published: 'true',
-      }),
-      { next: { revalidate: 3600, tags: ['judgeme:reviews', `judgeme:product:${productExternalId}`] } },
-    );
-    if (!res.ok) {
-      // Phase 242: surface status code in prod for debug. No PII, no
-      // token leakage — just the HTTP status + product ID so we can
-      // diagnose 401 (wrong token), 403 (token type), 404 (wrong
-      // shop_domain), 5xx (Judge.me-side outage). Phase 235c PII-gate
-      // doesn't apply here because there's no user-submitted data.
-      console.warn(`[judgeme] getProductReviews productId=${productExternalId} → HTTP ${res.status}`);
-      return [];
-    }
-    const data = (await res.json()) as ReviewsResponse;
-    const got = data.reviews?.length ?? 0;
-    if (got === 0) {
-      // Helpful even when status=200: API responded but the published
-      // filter or product_id mismatch returned empty.
-      console.warn(`[judgeme] getProductReviews productId=${productExternalId} → 200 but 0 reviews returned`);
-    }
-    return data.reviews ?? [];
-  } catch (err) {
-    console.warn(`[judgeme] getProductReviews productId=${productExternalId} → fetch threw: ${(err as Error).message?.slice(0, 100) ?? 'unknown'}`);
-    return [];
-  }
-}
-
-/**
- * Submit a new review on behalf of a shopper. Used by /api/reviews
- * (the internal POST endpoint that proxies the form submission to
- * Judge.me) so the API token stays server-side. Reviews land in
- * Judge.me's moderation queue by default; the merchant approves them
- * in Judge.me Admin before they go live on the site. Phase 238.
- */
-export type CreateReviewPayload = {
-  productExternalId: string | number;
-  rating: number;
-  body: string;
-  title?: string;
-  name: string;
-  email: string;
-  /** Optional reviewer IP for Judge.me's fraud signals. Pass through from the request. */
-  ipAddr?: string;
-};
-
-export type CreateReviewResult =
-  | { ok: true; reviewId?: number }
-  | { ok: false; error: string };
-
-export async function createReview(payload: CreateReviewPayload): Promise<CreateReviewResult> {
-  if (!ENABLED) return { ok: false, error: 'judgeme_not_configured' };
-  try {
-    const form = new URLSearchParams();
-    form.set('api_token', process.env.JUDGEME_API_TOKEN ?? '');
-    form.set('shop_domain', process.env.JUDGEME_SHOP_DOMAIN ?? '');
-    form.set('platform', 'shopify');
-    form.set('id', String(payload.productExternalId));
-    form.set('name', payload.name);
-    form.set('email', payload.email);
-    form.set('rating', String(Math.max(1, Math.min(5, Math.round(payload.rating)))));
-    form.set('body', payload.body);
-    if (payload.title) form.set('title', payload.title);
-    if (payload.ipAddr) form.set('ip_addr', payload.ipAddr);
-    const res = await fetch(`${JUDGEME_BASE}/reviews`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: form.toString(),
-    });
-    if (!res.ok) return { ok: false, error: `judgeme_api_${res.status}` };
-    const data = (await res.json()) as { review?: { id?: number } };
-    return { ok: true, reviewId: data.review?.id };
-  } catch {
-    return { ok: false, error: 'judgeme_api_failed' };
-  }
-}
-
-/**
  * Extract the numeric Shopify product ID from a Storefront API gid string
  * (e.g. `gid://shopify/Product/7894217031836` → `7894217031836`). Returns
  * null for malformed input so callers can short-circuit cleanly.
+ *
+ * Used by the PDP reviews section to derive the value for Judge.me's
+ * widget `data-id` attribute (Phase 248).
  */
 export function shopifyProductIdFromGid(gid: string): string | null {
   const m = /\/Product\/(\d+)/.exec(gid);
