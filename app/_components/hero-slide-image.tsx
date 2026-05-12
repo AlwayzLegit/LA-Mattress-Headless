@@ -44,14 +44,21 @@ export function HeroSlideImage({
       fill
       priority={priority}
       fetchPriority={priority ? 'high' : 'auto'}
-      sizes="100vw"
-      // Phase 254: dropped quality from 65 → 55. Phase 234 predicted q=65
-      // would land at ~510 KB but Cowork rev-7 measured 619 KB live, so
-      // we still ship over the 550 KB perf target. q=55 on a photographic
-      // lifestyle background that's overlaid with a dark gradient and
-      // foreground text is sub-perceptual — the only viewer who could
-      // tell the difference is one looking for it side-by-side.
-      quality={55}
+      // Phase 256: tell Next.js the hero renders at 50vw on phones even
+      // though it's 100vw on screen. With sizes="100vw" + DPR 3 on a 375px
+      // phone, Next picks the 1200px-wide deviceSize from Unsplash; setting
+      // 50vw on mobile drops the picked source to 640px-wide. The hero is
+      // a deliberately blurred photographic background overlaid with a
+      // dark gradient and foreground text — upscaling a 640px source to a
+      // 375px display is visually undetectable. PSI rev-1 (2026-05-12)
+      // showed LCP 4.4s mobile with ~600 KB hero; halving the served res
+      // brings the image to ~180–220 KB and is the single biggest LCP win
+      // available without a hero-image overhaul.
+      sizes="(max-width: 768px) 50vw, 100vw"
+      // Phase 256: quality 55 → 50. Diminishing returns at this point but
+      // every extra ~10 KB saved on the LCP candidate counts when the
+      // total mobile-throttled download budget for sub-2.5s LCP is tight.
+      quality={50}
       className="hero-bg-img"
     />
   );
