@@ -105,7 +105,68 @@ export type Recommendation = {
   primary: { handle: string; label: string };
   rationale: string[];
   alternates: { handle: string; label: string }[];
+  /**
+   * Phase 255: the single best-fit product to surface as a hero card on
+   * the result screen, alongside the existing category recommendation.
+   * Curated static mapping over (material × tier) — see QUIZ_PRODUCT_PICKS.
+   * The collection-level `primary` is kept as a fallback if the picked
+   * product hasn't been pre-fetched into the result UI.
+   */
+  productPickHandle: string;
 };
+
+/**
+ * Phase 255: curated product picks for the quiz result hero card.
+ *
+ * Map shape: (material × {premium | default}) → product handle. `default`
+ * fires for every non-premium tier (value, mid, open). Picks chosen from
+ * the live catalog 2026-05-12 — anchored to vendors the merchant carries
+ * across price tiers (Tempur-Pedic, Stearns & Foster, Helix, Southerland,
+ * Englander). When the catalog changes, the merchant updates this map.
+ *
+ * Why static instead of Shopify-tag-based: ships immediately with no
+ * merchant action and stays fully reviewable in code. A future phase can
+ * migrate to `quiz-pick:hybrid-mid` style tags once the merchant adds
+ * them, without breaking this contract — the Recommendation shape stays
+ * the same.
+ */
+export const QUIZ_PRODUCT_PICKS: Record<Material, { premium: string; default: string }> = {
+  foam: {
+    premium: 'tempur-pedic-tempur-proadapt-soft-mattress',
+    default: 'tempur-pedic-tempur-adapt-medium-mattress',
+  },
+  hybrid: {
+    premium: 'lux-estate-hybrid-medium-by-stearns-foster',
+    default: 'helix-sleep-core-collection-midnight-medium-11-5-mattress',
+  },
+  innerspring: {
+    premium: 'stearns-foster-lux-estate-medium-pillow-top-16-mattress',
+    default: 'englander-oconner-luxury-firm-mattress',
+  },
+  latex: {
+    premium: 'sandmahn-luxury-plush-box-top-by-scandinavian',
+    default: 'stockholm-firm-euro-top-by-scandinavian',
+  },
+};
+
+/**
+ * Deduplicated list of every handle referenced by QUIZ_PRODUCT_PICKS, for
+ * the server-side pre-fetch in /sleep-quiz/page.tsx. Order is irrelevant
+ * since the fetcher returns a handle-keyed record.
+ */
+export function allQuizPickHandles(): string[] {
+  const set = new Set<string>();
+  for (const m of Object.values(QUIZ_PRODUCT_PICKS)) {
+    set.add(m.premium);
+    set.add(m.default);
+  }
+  return [...set];
+}
+
+function productPickHandleFor(material: Material, tier: Tier): string {
+  const picks = QUIZ_PRODUCT_PICKS[material];
+  return tier === 'premium' ? picks.premium : picks.default;
+}
 
 /**
  * Phase 231: deterministic answer-keyed tie-break order.
@@ -219,6 +280,7 @@ export function recommend(answers: Answers): Recommendation {
     primary,
     rationale: rationaleFor(answers, winner),
     alternates,
+    productPickHandle: productPickHandleFor(winner, tier),
   };
 }
 

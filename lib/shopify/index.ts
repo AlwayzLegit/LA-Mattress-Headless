@@ -13,6 +13,7 @@ export { getMenu }                            from './queries/menu';
 export { getAllProductHandles, getAllCollectionHandles, getAllPageHandles } from './queries/handles';
 export { searchProducts, searchArticles, predictiveSearch } from './queries/search';
 export { getProductRecommendations }          from './queries/recommendations';
+export { getQuizPicks }                       from './queries/quiz-picks';
 export type { SearchResult, Predictive, PredictiveArticle, ArticleSearchResult } from './queries/search';
 export { cartCreate, cartLinesAdd, cartLinesUpdate, cartLinesRemove, getCart } from './mutations/cart';
 export type { CartLineInput, UserError }     from './mutations/cart';
