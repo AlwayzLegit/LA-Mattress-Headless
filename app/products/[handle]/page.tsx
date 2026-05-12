@@ -297,7 +297,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
                 <Icon name="truck" size={18} />
                 <div>
                   <div className="pdp-delivery-title">Free white-glove delivery</div>
-                  <div className="muted pdp-delivery-sub">Free setup &amp; old mattress haul-away · Same-day to 90% of LA</div>
+                  <div className="muted pdp-delivery-sub">Free setup &amp; old mattress haul-away on orders $499+ · Same-day anywhere in LA when you order by 4pm</div>
                 </div>
               </div>
               <div className="pdp-delivery-row">
@@ -311,7 +311,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
                 <Icon name="card" size={18} />
                 <div>
                   <div className="pdp-delivery-title">0% APR financing</div>
-                  <div className="muted pdp-delivery-sub">Up to 60 months on approved credit · Synchrony or Acima</div>
+                  <div className="muted pdp-delivery-sub">Synchrony or Acima · terms vary by approval · apply at checkout</div>
                 </div>
               </div>
             </div>

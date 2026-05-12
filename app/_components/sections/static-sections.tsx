@@ -9,7 +9,7 @@ export function TrustBar() {
     { icon: 'shield', label: '120-night comfort exchange', sub: 'Sleep on it for 4 months' },
     { icon: 'truck',  label: 'Free white-glove delivery',   sub: 'Setup & old mattress haul-away' },
     { icon: 'home',   label: 'Family-owned since 2012',     sub: '5 showrooms across LA' },
-    { icon: 'card',   label: '0% APR financing',             sub: 'Up to 60 months, no fees' },
+    { icon: 'card',   label: '0% APR financing',             sub: 'Synchrony & Acima · no fees' },
   ];
   return (
     <section className="trust-bar">
@@ -110,7 +110,7 @@ export function WhyUs() {
   const items = [
     { n: '01', title: 'Local for 14 years.',         body: 'Family-owned and operated since 2012. Five LA showrooms, real people on every call — no chatbots, no overseas support.' },
     { n: '02', title: 'No pressure, no script.',     body: 'Our consultants work on salary — not commission. Lie down as long as you want, leave when you want.' },
-    { n: '03', title: 'Same-day to most of LA.',     body: 'White glove delivery, mattress setup, and old mattress haul-away — included on every order over $799.' },
+    { n: '03', title: 'Same-day to all of LA.',      body: 'White-glove delivery, mattress setup, and old mattress haul-away — all included on every order over $499. Order by 4pm for same-day.' },
     { n: '04', title: 'Real return policy.',         body: '120 nights to decide. If it’s not right, we’ll exchange it for free — no restocking fee.' },
   ];
   return (

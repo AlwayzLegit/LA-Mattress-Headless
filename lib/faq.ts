@@ -13,7 +13,7 @@ export const HOMEPAGE_FAQ: FaqItem[] = [
   },
   {
     q: 'How fast is delivery?',
-    a: 'Same-day to most LA zip codes if ordered before 2pm. Otherwise next-day. Free white-glove setup and old mattress haul-away on orders over $799.',
+    a: 'Same-day anywhere in LA if ordered before 4pm. Otherwise next-day. Free white-glove delivery, setup, and old mattress haul-away on orders over $499.',
   },
   {
     q: 'What if I don’t like it?',
@@ -21,7 +21,7 @@ export const HOMEPAGE_FAQ: FaqItem[] = [
   },
   {
     q: 'Is financing actually 0%?',
-    a: 'Yes. 0% APR for up to 60 months on approved credit, with no prepayment penalty and no origination fees.',
+    a: 'Yes. We offer 0% APR financing through Synchrony and Acima on approved credit — terms vary by purchase amount and partner. Apply at checkout or in any showroom.',
   },
   {
     q: 'Can I see them in person first?',
