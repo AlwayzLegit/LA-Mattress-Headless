@@ -57,6 +57,13 @@ export const PRODUCT_SUMMARY_FRAGMENT = /* GraphQL */ `
     firmnessMetafield: metafield(namespace: "custom", key: "firmness")        { value }
     heightMetafield:   metafield(namespace: "custom", key: "height_inches")   { value }
     materialMetafield: metafield(namespace: "custom", key: "material_type")   { value }
+    # Phase 242: review aggregates surface in ProductSummary so PLP /
+    # related-rail / recently-viewed / popular-products cards can render
+    # the star + count badge. Same fallback chain as the PDP path
+    # (structured first, judgeme.badge HTML second).
+    ratingMetafield:        metafield(namespace: "reviews",  key: "rating")        { value type }
+    ratingCountMetafield:   metafield(namespace: "reviews",  key: "rating_count")  { value type }
+    judgemeBadgeMetafield:  metafield(namespace: "judgeme",  key: "badge")         { value type }
   }
 `;
 

@@ -1390,6 +1390,7 @@ summary:focus-visible,
 .pcard-rating svg { color: var(--text); }
 .pcard-reviews { font-size: 12px; }
 .pcard-price { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.pcard-reviews { display: inline-flex; align-items: center; margin-top: 2px; min-height: 18px; }
 .pcard-was { font-size: 13px; color: var(--text-3); text-decoration: line-through; }
 .pcard-now { font-size: 17px; font-weight: 600; }
 .pcard-fin { font-size: 12px; }

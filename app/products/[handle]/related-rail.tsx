@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ProductSummary } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
+import { ReviewsBadge } from '@/app/_components/reviews-badge';
 
 type Props = {
   products: ProductSummary[];
@@ -49,6 +50,9 @@ export function RelatedRail({ products, heading = 'Pairs well with', eyebrow = '
               <div className="pcard-meta">
                 <div className="pcard-brand">{p.vendor}</div>
                 <div className="pcard-name">{p.title}</div>
+                {p.reviews ? (
+                  <div className="pcard-reviews"><ReviewsBadge reviews={p.reviews} size="inline" /></div>
+                ) : null}
                 <div className="pcard-price">
                   <span className="pcard-now tnum">
                     {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}

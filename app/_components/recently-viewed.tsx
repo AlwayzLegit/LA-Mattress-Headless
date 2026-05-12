@@ -7,6 +7,7 @@ import type { Product, ProductSummary } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
 import { announce } from './announcer';
 import { createLocalStoreApi } from './use-local-store';
+import { ReviewsBadge } from './reviews-badge';
 
 type StoredItem = {
   handle: string;
@@ -16,6 +17,10 @@ type StoredItem = {
   imgAlt: string | null;
   priceMin: { amount: string; currencyCode: string };
   priceMax: { amount: string; currencyCode: string };
+  /** Phase 242: snapshot review aggregates at click time so the rail
+   *  can render the star badge without an extra Shopify fetch. */
+  rating?: number | null;
+  reviewCount?: number | null;
   ts: number;
 };
 
@@ -52,6 +57,8 @@ export function RecordRecentlyViewed({ product }: { product: Product }) {
         amount: product.priceRange.maxVariantPrice.amount,
         currencyCode: product.priceRange.maxVariantPrice.currencyCode,
       },
+      rating: product.reviews?.rating ?? null,
+      reviewCount: product.reviews?.count ?? null,
       ts: Date.now(),
     };
     const existing = RECENTLY_VIEWED_API.read().filter((p) => p.handle !== product.handle);
@@ -133,6 +140,11 @@ export function RecentlyViewedRail({
                 <div className="pcard-meta">
                   <div className="pcard-brand">{p.vendor}</div>
                   <div className="pcard-name">{p.title}</div>
+                  {typeof p.rating === 'number' && typeof p.reviewCount === 'number' && p.reviewCount > 0 ? (
+                    <div className="pcard-reviews">
+                      <ReviewsBadge reviews={{ rating: p.rating, count: p.reviewCount }} size="inline" />
+                    </div>
+                  ) : null}
                   <div className="pcard-price">
                     <span className="pcard-now tnum">
                       {formatPriceRange(summary.priceRange.minVariantPrice, summary.priceRange.maxVariantPrice)}
