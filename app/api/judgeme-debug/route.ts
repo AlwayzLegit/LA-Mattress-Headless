@@ -47,7 +47,7 @@ export async function GET(req: Request) {
   const revUrl = new URL(`${JUDGEME_BASE}/reviews`);
   revUrl.searchParams.set('api_token', token);
   revUrl.searchParams.set('shop_domain', shop);
-  revUrl.searchParams.set('product_id', productId);
+  revUrl.searchParams.set('product_external_id', productId);
   revUrl.searchParams.set('per_page', '2');
   revUrl.searchParams.set('published', 'true');
 
