@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import type { ProductSummary } from '@/lib/shopify';
 import { Icon } from '@/app/_components/icon';
 import { QUESTIONS, recommend, type Answers, type Recommendation } from './quiz-data';
 
@@ -23,7 +24,7 @@ const SleepQuizResult = dynamic(
 
 const PERSIST_KEY = 'la-mattress.sleep-quiz.v1';
 
-export function SleepQuiz() {
+export function SleepQuiz({ productPicks }: { productPicks: Record<string, ProductSummary> }) {
   // Step 0..QUESTIONS.length-1 = questions, then "result" = done.
   const [step, setStep] = useState<number | 'result'>(0);
   const [answers, setAnswers] = useState<Answers>({});
@@ -72,7 +73,7 @@ export function SleepQuiz() {
     };
   }, []);
 
-  if (step === 'result' && result) return <SleepQuizResult result={result} answers={answers} onRestart={() => { setStep(0); setAnswers({}); }} />;
+  if (step === 'result' && result) return <SleepQuizResult result={result} answers={answers} productPicks={productPicks} onRestart={() => { setStep(0); setAnswers({}); }} />;
 
   const idx = step as number;
   const q = QUESTIONS[idx];

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SleepQuiz } from './sleep-quiz';
+import { allQuizPickHandles } from './quiz-data';
+import { getQuizPicks } from '@/lib/shopify';
 
 export const metadata: Metadata = {
   title: 'Sleep Quiz — LA Mattress Store',
@@ -19,7 +21,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SleepQuizPage() {
+export default async function SleepQuizPage() {
+  // Phase 255: pre-fetch all candidate product picks server-side so the
+  // result hero card paints immediately when the user finishes the quiz
+  // instead of stalling on a client-side fetch. ISR caches the bundle.
+  const productPicks = await getQuizPicks(allQuizPickHandles());
   const SITE = 'https://mattressstoreslosangeles.com';
   const url = `${SITE}/sleep-quiz`;
   const quizLd = {
@@ -61,7 +67,7 @@ export default function SleepQuizPage() {
               shortlist the right mattresses for you. Free, under two minutes, no email required.
             </p>
           </header>
-          <SleepQuiz />
+          <SleepQuiz productPicks={productPicks} />
         </div>
       </section>
 

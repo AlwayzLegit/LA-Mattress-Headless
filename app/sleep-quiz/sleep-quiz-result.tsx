@@ -1,9 +1,13 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Icon } from '@/app/_components/icon';
+import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { announce } from '@/app/_components/announcer';
+import { formatPriceRange } from '@/lib/format';
+import type { ProductSummary } from '@/lib/shopify';
 import { QUESTIONS, type Answers, type Recommendation } from './quiz-data';
 
 /**
@@ -28,12 +32,20 @@ import { QUESTIONS, type Answers, type Recommendation } from './quiz-data';
 export function SleepQuizResult({
   result,
   answers,
+  productPicks,
   onRestart,
 }: {
   result: Recommendation;
   answers: Answers;
+  productPicks: Record<string, ProductSummary>;
   onRestart: () => void;
 }) {
+  // Phase 255: hero product card. Pre-fetched server-side in
+  // /sleep-quiz/page.tsx; lookup is keyed by the recommend()-chosen
+  // handle. Falls back to null when the catalog has shifted out from
+  // under the static mapping — the category CTA below covers that
+  // case so the result page is never empty-handed.
+  const pick: ProductSummary | null = productPicks[result.productPickHandle] ?? null;
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   // Phase 220: focus the result heading synchronously after the DOM
@@ -83,6 +95,8 @@ export function SleepQuizResult({
         </div>
       </div>
 
+      {pick ? <QuizProductHero pick={pick} /> : null}
+
       {result.rationale.length ? (
         <div className="quiz-result-rationale">
           <h3 className="eyebrow" style={{ margin: 0 }}>Why this match</h3>
@@ -128,5 +142,70 @@ export function SleepQuizResult({
         </button>
       </div>
     </div>
+  );
+}
+
+/**
+ * Phase 255: hero product card on the quiz result.
+ *
+ * Visual is a wider-than-PLP horizontal layout: image on the left,
+ * brand / title / reviews / price / CTA on the right. Lives below the
+ * existing category recommendation so the user sees a concrete pick
+ * before scrolling — but still has the category CTA + collection
+ * alternates as fallbacks if the specific product doesn't fit.
+ */
+function QuizProductHero({ pick }: { pick: ProductSummary }) {
+  const minPrice = Number.parseFloat(pick.priceRange.minVariantPrice.amount);
+  const minCompare = Number.parseFloat(pick.compareAtPriceRange.minVariantPrice.amount);
+  const onSale = minCompare > 0 && minCompare > minPrice;
+  const pctOff = onSale ? Math.round((1 - minPrice / minCompare) * 100) : 0;
+
+  return (
+    <Link
+      href={`/products/${pick.handle}`}
+      className="quiz-result-product"
+      aria-label={`Shop ${pick.vendor} ${pick.title} — our top pick for you`}
+    >
+      <div className="quiz-result-product-img ph" style={{ aspectRatio: '1' }}>
+        {onSale ? <span className="pcard-tag pcard-tag-sale">−{pctOff}%</span> : null}
+        {pick.featuredImage ? (
+          <Image
+            src={pick.featuredImage.url}
+            alt={pick.featuredImage.altText ?? pick.title}
+            width={600}
+            height={600}
+            sizes="(max-width: 760px) 100vw, 360px"
+            style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+          />
+        ) : (
+          <span className="ph-label">[Image coming]</span>
+        )}
+      </div>
+      <div className="quiz-result-product-meta">
+        <div className="eyebrow">Our top pick for you</div>
+        <div className="quiz-result-product-brand">{pick.vendor}</div>
+        <div className="quiz-result-product-title">{pick.title}</div>
+        {pick.reviews ? (
+          <div className="quiz-result-product-reviews">
+            <ReviewsBadge reviews={pick.reviews} size="inline" />
+          </div>
+        ) : null}
+        <div className="quiz-result-product-price">
+          {onSale ? (
+            <span className="pcard-was tnum">
+              {formatPriceRange(pick.compareAtPriceRange.minVariantPrice, pick.compareAtPriceRange.maxVariantPrice)}
+            </span>
+          ) : null}
+          <span className="pcard-now tnum">
+            {formatPriceRange(pick.priceRange.minVariantPrice, pick.priceRange.maxVariantPrice)}
+          </span>
+        </div>
+        <div className="quiz-result-product-cta">
+          <span className="btn btn-primary btn-lg">
+            See this mattress <Icon name="arrow-right" size={14} />
+          </span>
+        </div>
+      </div>
+    </Link>
   );
 }
