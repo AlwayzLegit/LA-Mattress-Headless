@@ -42,12 +42,17 @@ export const IMAGES: Record<string, string> = {
   'cat-cooling':       'https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=800&q=65&auto=format&fit=crop',
   'cat-adjustable':    'https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Elite_-_Plus_-_05_csqszn.jpg?v=1772572000&width=800',
 
-  // Showrooms
-  'showroom-koreatown':    'https://mattressstoreslosangeles.com/images/locations/koreatown-storefront.jpg',
-  'showroom-west-la':      'https://mattressstoreslosangeles.com/images/locations/west-la-storefront.jpg',
+  // Showrooms — Phase 237: migrated 4 of 5 URLs from
+  // mattressstoreslosangeles.com/images/locations/*.jpg (Hydrogen-only
+  // path that will 404 once DNS flips to this headless site) onto
+  // Shopify CDN. These are the same files lib/showrooms.ts already
+  // uses in its `imageUrl` field, so we now have a single CDN-served
+  // source per showroom.
+  'showroom-koreatown':    'https://cdn.shopify.com/s/files/1/0684/1759/files/Koreatown.jpg?v=1734092287',
+  'showroom-west-la':      'https://cdn.shopify.com/s/files/1/0684/1759/files/West_LA.jpg?v=1734092103',
   'showroom-hancock-park': 'https://cdn.shopify.com/s/files/1/0684/1759/files/Los_Angeles_Mattress_Stores_Inside.png?v=1734095081&width=1600',
-  'showroom-studio-city':  'https://mattressstoreslosangeles.com/images/locations/studio-city-storefront.jpg',
-  'showroom-glendale':     'https://mattressstoreslosangeles.com/images/locations/glendale-storefront.jpg',
+  'showroom-studio-city':  'https://cdn.shopify.com/s/files/1/0684/1759/files/Studio_City.jpg?v=1734378534',
+  'showroom-glendale':     'https://cdn.shopify.com/s/files/1/0684/1759/files/Glendale.jpg?v=1734092279',
 
   // Lifestyle
   // Original photo-1616627781901-92f81a36c4d6 was 404'd by Unsplash; reusing

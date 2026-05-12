@@ -13,7 +13,7 @@ export const HOMEPAGE_FAQ: FaqItem[] = [
   },
   {
     q: 'How fast is delivery?',
-    a: 'Same-day to most LA zip codes if ordered before 12pm. Otherwise next-day. Free white-glove setup and old mattress haul-away on orders over $799.',
+    a: 'Same-day to most LA zip codes if ordered before 2pm. Otherwise next-day. Free white-glove setup and old mattress haul-away on orders over $799.',
   },
   {
     q: 'What if I don’t like it?',
