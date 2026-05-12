@@ -30,6 +30,7 @@ type Raw = {
         variants: { nodes: Product['variants'] };
         ratingMetafield?: RawMetafield;
         ratingCountMetafield?: RawMetafield;
+        judgemeBadgeMetafield?: RawMetafield;
         firmnessMetafield?: RawMetafield;
         heightMetafield?: RawMetafield;
         materialMetafield?: RawMetafield;
@@ -48,32 +49,69 @@ type Raw = {
 };
 
 /**
- * Parse Judge.me's reviews.rating + reviews.rating_count metafield pair into
- * a ProductReviews object. Both metafields must be present and the count
- * must be > 0 for the result to be non-null. Returns null when:
- *  - the merchant hasn't installed Judge.me yet
- *  - the product has no reviews
- *  - the storefront access toggle isn't on for the metafield definitions
+ * Parse Judge.me review aggregates into a ProductReviews object. Tries
+ * two sources in priority order:
  *
- * The `reviews.rating` metafield type is `rating`, encoded as JSON like:
- *   {"value":"4.8","scale_min":"1.0","scale_max":"5.0"}
+ *   1. Structured metafields `reviews.rating` + `reviews.rating_count`
+ *      (only present on Judge.me's paid plans that expose the
+ *      Storefront-API metafield toggle).
+ *   2. HTML-blob metafield `judgeme.badge` with `data-average-rating`
+ *      + `data-number-of-reviews` attributes (available on all Judge.me
+ *      plans by default — this is what the Liquid theme widget reads).
+ *
+ * Returns null when:
+ *  - the merchant hasn't installed Judge.me yet
+ *  - the product has no reviews (count is 0)
+ *  - none of the metafields have storefront access enabled
+ *
+ * Phase 241: added the `judgemeBadgeMetafield` fallback so the headless
+ * gets aggregate stars for every product immediately, without waiting
+ * on a Judge.me plan upgrade.
  */
 export function parseReviewsMetafields(
   ratingMetafield?: RawMetafield,
   ratingCountMetafield?: RawMetafield,
+  judgemeBadgeMetafield?: RawMetafield,
 ): ProductReviews | null {
-  if (!ratingMetafield?.value || !ratingCountMetafield?.value) return null;
-  const count = Number.parseInt(ratingCountMetafield.value, 10);
-  if (!Number.isFinite(count) || count <= 0) return null;
-  let rating: number;
-  try {
-    const parsed = JSON.parse(ratingMetafield.value) as { value?: string };
-    rating = parsed.value ? Number.parseFloat(parsed.value) : Number.NaN;
-  } catch {
-    // Some implementations store rating as a plain number string.
-    rating = Number.parseFloat(ratingMetafield.value);
+  // Path 1: structured metafields.
+  if (ratingMetafield?.value && ratingCountMetafield?.value) {
+    const count = Number.parseInt(ratingCountMetafield.value, 10);
+    if (Number.isFinite(count) && count > 0) {
+      let rating: number;
+      try {
+        const parsed = JSON.parse(ratingMetafield.value) as { value?: string };
+        rating = parsed.value ? Number.parseFloat(parsed.value) : Number.NaN;
+      } catch {
+        rating = Number.parseFloat(ratingMetafield.value);
+      }
+      if (Number.isFinite(rating) && rating >= 0) return { rating, count };
+    }
   }
-  if (!Number.isFinite(rating) || rating < 0) return null;
+  // Path 2: judgeme.badge HTML fallback.
+  if (judgemeBadgeMetafield?.value) {
+    return parseJudgemeBadgeHtml(judgemeBadgeMetafield.value);
+  }
+  return null;
+}
+
+/**
+ * Extract `data-average-rating` and `data-number-of-reviews` from a
+ * Judge.me badge HTML blob. Phase 241.
+ *
+ * Example input (truncated):
+ *   <div class='jdgm-prev-badge' data-average-rating='4.62' data-number-of-reviews='196' ...>
+ *
+ * Returns null on any malformed input — never throws. The headless
+ * gracefully renders the no-reviews UI when this returns null.
+ */
+function parseJudgemeBadgeHtml(html: string): ProductReviews | null {
+  const ratingMatch = /data-average-rating=['"]([0-9.]+)['"]/.exec(html);
+  const countMatch = /data-number-of-reviews=['"]([0-9]+)['"]/.exec(html);
+  if (!ratingMatch || !countMatch) return null;
+  const rating = Number.parseFloat(ratingMatch[1]);
+  const count = Number.parseInt(countMatch[1], 10);
+  if (!Number.isFinite(rating) || !Number.isFinite(count)) return null;
+  if (count <= 0 || rating <= 0) return null;
   return { rating, count };
 }
 
@@ -206,7 +244,7 @@ export async function getProductByHandle(handle: string): Promise<Product | null
   );
   if (!data.product) return null;
   const {
-    ratingMetafield, ratingCountMetafield,
+    ratingMetafield, ratingCountMetafield, judgemeBadgeMetafield,
     firmnessMetafield, heightMetafield, materialMetafield, warrantyMetafield, trialMetafield,
     taglineMetafield, ledeMetafield, bestForMetafield, notIdealForMetafield,
     highlightsMetafield, firmnessScoreMetafield, positionFitMetafield, layersMetafield,
@@ -216,7 +254,7 @@ export async function getProductByHandle(handle: string): Promise<Product | null
     ...rest,
     images: data.product.images.nodes,
     variants: data.product.variants.nodes,
-    reviews: parseReviewsMetafields(ratingMetafield, ratingCountMetafield),
+    reviews: parseReviewsMetafields(ratingMetafield, ratingCountMetafield, judgemeBadgeMetafield),
     specs: parseSpecMetafields({
       firmnessMetafield, heightMetafield, materialMetafield, warrantyMetafield, trialMetafield,
     }),
