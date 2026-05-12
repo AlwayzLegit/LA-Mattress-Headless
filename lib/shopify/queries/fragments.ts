@@ -61,22 +61,37 @@ export const PRODUCT_SUMMARY_FRAGMENT = /* GraphQL */ `
 `;
 
 /**
- * Judge.me writes review aggregates to product metafields. Both fields
- * silently return null until Judge.me is installed and writing data, at
- * which point the storefront picks them up automatically — no code changes
- * needed.
+ * Judge.me review aggregates — pulled from two possible metafield shapes,
+ * in priority order:
  *
- *   reviews.rating       → JSON `{"value":"4.8","scale_min":"1.0","scale_max":"5.0"}`
- *   reviews.rating_count → integer string
+ *   1. Structured (preferred):
+ *        reviews.rating        → JSON `{"value":"4.8","scale_min":"1.0","scale_max":"5.0"}`
+ *        reviews.rating_count  → integer string
+ *      Only available on Judge.me's paid plans that expose the "Reviews
+ *      metafields for Storefront API" toggle. This is the cleaner path —
+ *      structured types, no HTML parsing, validates cleanly.
+ *
+ *   2. HTML-blob fallback (Phase 241):
+ *        judgeme.badge → HTML string with `data-average-rating="…"` and
+ *                        `data-number-of-reviews="…"` attributes on the
+ *                        outer .jdgm-prev-badge div.
+ *      Available on all Judge.me plans by default — this is the metafield
+ *      the Judge.me Shopify app writes for its Liquid theme widget. We
+ *      parse the data-* attrs out so the headless can render aggregate
+ *      stars without needing the paid metafield exposure.
+ *
+ * Both are queried; parseReviewsMetafields picks whichever is populated.
  *
  * Storefront access for these metafields needs to be enabled in Shopify
- * Admin → Settings → Custom data → Products → "reviews.rating" definition
- * → Storefront access toggle. Judge.me typically does this automatically
- * on install.
+ * Admin → Settings → Custom data → Products → corresponding definition
+ * → Storefront access toggle. For `judgeme.badge` this is usually already
+ * ON because the Liquid theme reads it; for `reviews.*` it requires the
+ * Judge.me toggle that's plan-gated.
  */
 export const REVIEWS_METAFIELDS = /* GraphQL */ `
   ratingMetafield: metafield(namespace: "reviews", key: "rating") { value type }
   ratingCountMetafield: metafield(namespace: "reviews", key: "rating_count") { value type }
+  judgemeBadgeMetafield: metafield(namespace: "judgeme", key: "badge") { value type }
 `;
 
 /**
