@@ -1866,6 +1866,12 @@
       "source": "/products/twin-xl-restonic-mattress-clearance-enchantment-latex-firm-13",
       "destination": "/products/twin-xl-restonic-mattress-clearance-enchantment-latex-firm-12",
       "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses/:slug*",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true,
+      "$note": "Phase 251: catch-all for ~287 old Hydrogen blog slugs not covered by specific redirects above. Ordered LAST so the specific entries win first; this wildcard only fires for unmatched slugs."
     }
   ]
 }
