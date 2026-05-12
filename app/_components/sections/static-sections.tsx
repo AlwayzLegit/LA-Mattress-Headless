@@ -108,7 +108,7 @@ export function BrandStrip() {
 /* ───── Why LA Mattress ───────────────────────────────── */
 export function WhyUs() {
   const items = [
-    { n: '01', title: 'Local for 14 years.',         body: 'Family-owned and operated since 2012. Five showrooms, one phone number, real people.' },
+    { n: '01', title: 'Local for 14 years.',         body: 'Family-owned and operated since 2012. Five LA showrooms, real people on every call — no chatbots, no overseas support.' },
     { n: '02', title: 'No pressure, no script.',     body: 'Our consultants work on salary — not commission. Lie down as long as you want, leave when you want.' },
     { n: '03', title: 'Same-day to most of LA.',     body: 'White glove delivery, mattress setup, and old mattress haul-away — included on every order over $799.' },
     { n: '04', title: 'Real return policy.',         body: '120 nights to decide. If it’s not right, we’ll exchange it for free — no restocking fee.' },
