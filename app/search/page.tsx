@@ -52,6 +52,13 @@ export const metadata: Metadata = {
   title: 'Search — LA Mattress Store',
   description: 'Search mattresses, adjustable beds, bedding, and more at LA Mattress Store.',
   robots: { index: false, follow: true },
+  // Phase 258: /search is noindex but should still declare a clean
+  // canonical pointing to the param-free URL. Without it, parameterized
+  // permutations (?q=tempur&tab=mattresses&filter.size=Queen&sort=...)
+  // each look like separate URLs to crawlers that respect canonical but
+  // not noindex. The robots noindex covers Google; canonical covers
+  // everyone else (SEMrush "Too many URL parameters" flag).
+  alternates: { canonical: '/search' },
 };
 
 /**
