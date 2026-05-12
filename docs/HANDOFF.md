@@ -1,3 +1,152 @@
+# Session handoff — 2026-05-12 (Phases 236–254 — launch week + post-launch closeout)
+
+## Status
+
+> **DNS cutover is live.** `mattressstoreslosangeles.com` + `www.` now serve this headless storefront. Four post-launch Cowork rounds (rev-6/7/8/9) closed all P0/P1/P2 findings. Sentry observability is wired and verified. Judge.me reviews work end-to-end after a 9-phase debugging journey. SEMrush mega-export triage cleared the structured-data + bulk-redirect tails. The launch is closed and the site is operating.
+
+| PR | Phases | Theme |
+|---|---|---|
+| #73 | 236 | Showroom canonical data — 5 phone/address/hours corrections from merchant |
+| #74 | 237 | FAQ + delivery copy — 2pm cutoff, $499 threshold, anywhere-in-LA |
+| #75 | 238 | First Judge.me wiring attempt (REST `getProductReviews`) |
+| #76 | 239 | FAQ pass 2 — 4pm cutoff (was 2pm), recycling phrasing, no "60 months" |
+| #77 | 240 | Old-mattress recycling toggle + price-match copy retained |
+| #78 | 241 | Judge.me badge from Shopify `judgeme.badge` metafield + 3-source fallback |
+| #79 | 242 | Diagnostic logging for Judge.me filter failures (deleted in #82) |
+| #80 | 243 | DNS cutover prep — add apex + www to Vercel project domains |
+| #81 | 244–246 | Judge.me filter debug (`/api/judgeme-debug`) — 9 filter variants all unfiltered |
+| #82 | 247 | Pivot Judge.me to client-side widget (server REST silently ignores filters) |
+| #83 | 248 | Judge.me widget attribute fix — `data-product-id` → `data-id` |
+| #84 | 249 | Judge.me lib pruning — `getProductReviews` + `createReview` removed |
+| #85 | 250 | Sentry wiring + `instrumentation-client.ts` + tunnel route |
+| #86 | 250 | Hero h1 — only slide 0 renders `<h1>` (SEMrush multi-h1 fix on 477 URLs) |
+| #87 | 251 | Bulk wildcard redirect for ~287 old `/blogs/beds-mattresses/*` slugs |
+| #88 | 252 | Clear SEMrush structured-data errors on showroom + locations pages |
+| #89 | 254 | Hero image quality 65 → 55 (619 KB → < 550 KB perf target) |
+
+## What shipped
+
+### Phases 236–240 — content corrections from merchant
+
+- **236** All 5 showrooms had wrong canonical data (phone numbers, addresses, hours). Replaced with verified-correct values: Koreatown 201 S Western Ave (213) 984-4654, West LA 10861 W Pico Blvd (310) 507-8024, La Brea 300 S La Brea Ave (323) 275-4715, Studio City 12306 Ventura Blvd (818) 247-7790, Glendale 201 N Central Ave (818) 275-6592. Hours Mon-Fri 10-21, Sat-Sun 10-20. Added `formatPhone` helper to render `+1-XXX-XXX-XXXX` as `(XXX) XXX-XXXX`.
+- **237** FAQ copy — initial pass: 2 PM same-day cutoff, $799 free-delivery threshold, "most of LA" coverage.
+- **239** FAQ pass 2 after merchant correction: **4 PM** cutoff (not 12 PM and not 2 PM), $499 threshold (not $799), "anywhere in LA" (not "most of"/"90%"), recycling: "doesn't end up in a landfill" (no "local LA partner" claim), Synchrony + Acima financing (no "60 months" rate claim).
+- **240** Old-mattress recycling toggle stayed in (merchant decision); price-match copy retained.
+
+### Phases 238–249 — Judge.me reviews integration (9-phase debugging journey)
+
+The merchant uses Judge.me for reviews. Server-side integration via Judge.me's Public REST API failed in a non-obvious way: every per-product filter param (`external_id`, `product_external_id`, `product_id`, `handle`, GID forms — 9 variants tested) was silently ignored. The API returned identical unfiltered store-wide results regardless of filter. After exhausting the diagnostic, we pivoted to Judge.me's client-side widget, which hits a different endpoint (`api.judge.me/reviews/reviews_for_widget`) that does respect product filters.
+
+What's running now:
+- Aggregate badge (stars + count) on PDPs + PLP cards: server-side from Shopify metafield `judgeme.badge` (3-source fallback in `parseJudgemeBadgeHtml`).
+- Per-product review list + Write-a-Review form + photo upload on PDPs: Judge.me's widget loaded from `app/_components/judgeme-widget.tsx` using the public widget token (intentionally exposed).
+- Sitewide aggregate + latest reviews on `/pages/reviews` + homepage Reviews section: `getStorefrontReviews` (this REST endpoint doesn't take filters so it works).
+
+Critical fix in #83: Judge.me's preloader keys off `data-id`, not `data-product-id`. Single-line rename.
+
+Cleanup in #84 reduced `lib/judgeme.ts` from 209 → 117 lines by removing the dead per-product server-side helpers.
+
+### Phase 250 — SEMrush multi-h1 fix (#86)
+
+SEMrush flagged 477 URLs for "Multiple h1 tags." Root cause: the homepage hero carousel renders 3 slides simultaneously and each slide had its title in an `<h1>`. The active-slide CSS hides the inactive 2, but DOM-wise they're still present. Changed slide 1+2 to render the same `.hero-title` styling on `<p>` instead of `<h1>` — visually identical when the carousel rotates client-side because `aria-hidden + inert` already remove them from the a11y tree.
+
+### Phase 251 — bulk redirect old Hydrogen blog URLs (#87)
+
+SEMrush flagged 287 4xx old `/blogs/beds-mattresses/*` URLs (and ~1,314 broken-internal-link warnings rooted at them). 136 specific entries already existed in `redirects.json` pointing to the new blog category structure; the other 287 had no equivalent in the new sitemap. Single-line wildcard `/blogs/beds-mattresses/:slug* → /blogs/sleep-blog` (permanent) appended LAST so the specific entries still win. Preserves SEO equity from any backlinks pointing at the old URLs.
+
+### Phase 252 — clear SEMrush structured-data errors (#88)
+
+SEMrush flagged 6 URLs for "Structured data that contains markup errors":
+
+- 5 showroom URLs × 3 errors each = 15 — each `Service` entry in `ld-services` had only `serviceType`, no `name`. Google's Service rich-result requires `name`. Added one.
+- `/pages/mattress-store-locations` × 1 error — its `FurnitureStore` LD had no `address`. LocalBusiness requires it. Added the canonical Studio City address (same source as sitewide `LOCAL_BUSINESS_LD`).
+
+Net: 16 errors across 6 URLs → 0.
+
+### Phase 254 — hero image quality 65 → 55 (#89)
+
+Phase 234 predicted q=65 would land the hero LCP candidate at ~510 KB. Cowork rev-7 measured 619 KB live — Unsplash JPEG compression curve isn't linear so the prediction undershot reality. Dropped to q=55. On a photographic lifestyle background overlaid with a dark gradient and foreground text the quality drop is sub-perceptual.
+
+## Cowork audit summary across 9 revs
+
+| Rev | Date | Findings | Outcome |
+|---|---|---|---|
+| rev-1 | 2026-05-10 | 2 P1, 5 P2, favicon ask | PR #62 |
+| rev-2 | 2026-05-10 | 2 P1 still failing | PR #63 |
+| rev-3 | 2026-05-10 | 0 new | GO confirmed |
+| rev-4 | 2026-05-11 | 1 P1 (delivery redirect) | PR #69 |
+| rev-5 | 2026-05-11 | 1 P3 (image weight) | PR #71 |
+| rev-6 | 2026-05-12 | 1 P0 (Judge.me widget hydrating empty) | PR #83 |
+| rev-7 | 2026-05-12 | 1 P3 (hero 619 KB still over budget) | PR #89 |
+| rev-8 | 2026-05-12 | 0 actionable (2 false P0/P1 from grep-c counting on minified HTML) | Closed |
+| rev-9 | 2026-05-12 | 1 P2 (Sentry project not visible) | Wired and verified |
+
+🟢 GO on all nine rounds.
+
+## DNS cutover
+
+- Pre-flight: added `mattressstoreslosangeles.com` + `www.mattressstoreslosangeles.com` to the Vercel project's Domains list BEFORE flipping nameservers at the registrar. (Caught this gap before cutover — domain wasn't on the project yet.)
+- Cutover: user flipped at registrar; Vercel auto-provisioned SSL on both apex + www.
+- Post-cutover verification: site loads on both apex + www, Sentry baggage headers present on `/cart` (cache-busted), Judge.me widget hydrating on PDPs.
+
+## Sentry observability
+
+User created Sentry project `la-mattress-headless` in `jetnine` org. Vercel env vars set: `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`. Verified live by inspecting `/cart` response headers (Sentry's baggage propagation visible). Source map upload during build is gated on `SENTRY_AUTH_TOKEN` so prod stack traces show original-source filenames.
+
+## SEMrush mega-export triage
+
+User pulled a full SEMrush site audit (CSV at `/root/.claude/uploads/.../2cd34c9c-mattressstoreslosangeles.com_mega_export_20260512.csv`) after DNS cutover. Findings split into:
+
+- **Hero multi-h1** (477 URLs) — Phase 250.
+- **287 missing redirects** for old Hydrogen blog URLs — Phase 251.
+- **16 structured-data errors** on 6 showroom/locations URLs — Phase 252.
+- **Apex→www currently 307**, should be 308 (permanent) for SEO equity — see "Outstanding" below.
+
+## Shopify content backfill
+
+Done in the prior session via Admin GraphQL `pageUpdate`. 4 pages updated twice during this session when the merchant's Phase 239 corrections arrived (`mattress-store-delivery`, `about`, `mattress-store-financing`, `mattress-store-in-glendale`).
+
+## Outstanding (none code-blocking)
+
+- **Phase 253 — apex→www 307→308.** The Vercel apex domain currently 307s to www (Vercel's default). 307 is *temporary* — search engines treat it differently from 308 (permanent) for link-equity transfer. Fix is a Vercel UI toggle: Project → Settings → Domains → click `mattressstoreslosangeles.com` → change redirect status from 307 to 308. No code change, no PR. Quick win for SEO equity.
+- **PSI on live URLs**: PSI quota ran out during rev-9. Run manually after a 24h cooldown. Budget LCP < 2.5s mobile, CLS < 0.1, INP < 200ms.
+- **CCPA error path → Sentry**: Phase 235c gated the logs but the catch block should still emit `Sentry.captureException` so the merchant has structured recovery for CCPA requests that fail Shopify integration. Out of scope for this closeout.
+
+## Key files added/touched this round
+
+Updated:
+- `app/_components/hero.tsx` — Phase 250 (slide 0 `<h1>`, slides 1+ `<p>`)
+- `app/_components/hero-slide-image.tsx` — Phase 254 (quality 65 → 55)
+- `app/_components/judgeme-widget.tsx` — Phases 247 + 248 (widget mount + `data-id` rename)
+- `app/_components/pdp-reviews-section.tsx` — Phase 249 (drop redundant empty-state copy)
+- `app/pages/[handle]/page.tsx` — Phase 252 (Service.name + locations LD address)
+- `data/url-inventory/redirects.json` — Phase 251 (wildcard for old blog URLs)
+- `lib/faq.ts` — Phases 237 / 239 / 240 (delivery/financing/recycling copy)
+- `lib/judgeme.ts` — Phase 249 (pruned dead helpers, 209 → 117 lines)
+- `lib/showrooms.ts` — Phase 236 (canonical data for all 5 showrooms + `formatPhone`)
+- `lib/shopify/queries/fragments.ts` + `lib/shopify/queries/product.ts` — Phase 241 (Judge.me badge metafield with 3-source fallback)
+- `instrumentation-client.ts` — Phase 250 (Sentry client init + router-transition hook)
+- `next.config.mjs` — Phase 250 (withSentryConfig wrap, tunnelRoute `/monitoring`)
+
+Added:
+- `instrumentation-client.ts` (replaces deleted `sentry.client.config.ts` for Turbopack)
+- `app/_components/judgeme-widget.tsx`
+- `app/_components/pdp-reviews-section.tsx`
+
+Deleted:
+- `app/api/judgeme-debug/route.ts` (temporary diagnostic from Phase 246, removed in Phase 247)
+- `sentry.client.config.ts` (moved to `instrumentation-client.ts` per @sentry/nextjs guidance)
+
+## Day-2 totals
+
+- **17 PRs merged** (#73–#89)
+- **19 code phases** shipped (236–254, minus 253 which is a Vercel UI action)
+- **9 Cowork audit rounds**, all 🟢
+- **1 9-phase Judge.me debugging journey** ending in a working pivot
+- **DNS cutover live**, SSL provisioned, Sentry verified
+
+---
+
 # Session handoff — 2026-05-11 cont. (Phases 228–235 — final pre-launch closeout)
 
 ## Status
