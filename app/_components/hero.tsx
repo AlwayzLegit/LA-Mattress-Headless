@@ -51,11 +51,26 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
               <div className="container hero-content">
                 <div className="hero-copy">
                   <div className="eyebrow eyebrow-on-dark">{s.eyebrow}</div>
-                  <h1 className="hero-title" aria-label={s.title.replace(/\n/g, ' ')}>
-                    {s.title.split('\n').map((l, j) => (
-                      <span key={j} className="hero-line">{l}</span>
-                    ))}
-                  </h1>
+                  {/* Phase 250: only slide 0 renders as <h1> so the page has
+                      exactly one h1 for SEO. Slides 1+ render the same
+                      .hero-title styling on a <p> so they look identical when
+                      the hero rotates client-side (aria-hidden + inert above
+                      already remove them from the a11y tree). Cowork rev-7
+                      flagged SEMrush "Multiple h1 tags" on the homepage,
+                      caused by all 3 slide h1s being in the DOM at once. */}
+                  {idx === 0 ? (
+                    <h1 className="hero-title" aria-label={s.title.replace(/\n/g, ' ')}>
+                      {s.title.split('\n').map((l, j) => (
+                        <span key={j} className="hero-line">{l}</span>
+                      ))}
+                    </h1>
+                  ) : (
+                    <p className="hero-title" aria-label={s.title.replace(/\n/g, ' ')}>
+                      {s.title.split('\n').map((l, j) => (
+                        <span key={j} className="hero-line">{l}</span>
+                      ))}
+                    </p>
+                  )}
                   <p className="hero-body">{s.body}</p>
                   <div className="hero-ctas">
                     <a className="btn btn-lg btn-on-dark" href={s.primary.href}>
