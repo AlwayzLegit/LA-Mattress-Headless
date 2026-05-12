@@ -179,6 +179,18 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
     telephone: SITE_PHONE_SCHEMA,
     priceRange: '$$$',
     image: `${SITE}/assets/la-mattress-logo.png`,
+    // Phase 252: LocalBusiness requires `address` — SEMrush flagged this LD
+    // for the 1 missing-required-property error on /pages/mattress-store-locations.
+    // Reuse the canonical Studio City corporate address (same source as the
+    // sitewide LOCAL_BUSINESS_LD in lib/structured-data.ts).
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '12306 Ventura Blvd',
+      addressLocality: 'Studio City',
+      addressRegion: 'CA',
+      postalCode: '91604',
+      addressCountry: 'US',
+    },
     areaServed: { '@type': 'City', name: 'Los Angeles' },
     department: SHOWROOMS.map((s) => ({
       '@type': 'FurnitureStore',
@@ -430,9 +442,15 @@ function ShowroomPage({
       <script id="ld-services" type="application/ld+json" dangerouslySetInnerHTML={{
         __html: JSON.stringify({
           '@context': 'https://schema.org',
+          // Phase 252: each Service must declare `name` — Google's rich-result
+          // requirements and SEMrush structured-data validator both flag a
+          // Service that has only `serviceType`. Adding `name` removed the
+          // 3 errors/URL that the May SEMrush export attributed to every
+          // showroom page.
           '@graph': [
             {
               '@type': 'Service',
+              name: 'Free White-Glove Mattress Delivery in Los Angeles',
               serviceType: 'Free White-Glove Mattress Delivery',
               provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
@@ -440,6 +458,7 @@ function ShowroomPage({
             },
             {
               '@type': 'Service',
+              name: '0% APR Mattress Financing',
               serviceType: '0% APR Mattress Financing',
               provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
@@ -447,6 +466,7 @@ function ShowroomPage({
             },
             {
               '@type': 'Service',
+              name: '120-Night Mattress Comfort Exchange',
               serviceType: '120-Night Comfort Exchange',
               provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
