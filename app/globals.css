@@ -3514,3 +3514,194 @@ summary:focus-visible,
   font-variant-numeric: tabular-nums;
   pointer-events: none;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PDP customer reviews — Phase 238.
+   Server-rendered list of latest reviews + inline Write-a-Review form.
+   ─────────────────────────────────────────────────────────────────────── */
+
+.pdp-reviews {
+  margin: var(--s-9) auto 0;
+  max-width: 880px;
+  padding: 0 var(--s-5);
+}
+.pdp-reviews-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--line);
+}
+.pdp-reviews-title { margin: 0; }
+.pdp-reviews-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+.pdp-reviews-avg { font-weight: 600; font-size: 22px; }
+.pdp-reviews-empty { margin: 0; font-size: 14px; }
+.pdp-reviews-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--s-5) 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+}
+@media (max-width: 760px) {
+  .pdp-reviews-list { grid-template-columns: 1fr; }
+}
+.pdp-review-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  padding: var(--s-4);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pdp-review-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.pdp-review-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.pdp-review-title { margin: 4px 0 0; font-size: 15px; font-weight: 600; line-height: 1.35; }
+.pdp-review-body { margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-2); }
+.pdp-review-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.pdp-review-stars { display: inline-flex; gap: 2px; }
+.pdp-review-star-on  { color: var(--accent); }
+.pdp-review-star-off { color: var(--line-strong); }
+
+/* ─── Write a review CTA + form ────────────────────────────────────────── */
+.pdp-review-cta-row {
+  margin-top: var(--s-5);
+  display: flex;
+  justify-content: center;
+}
+.pdp-review-cta-btn { min-width: 220px; }
+.pdp-review-form {
+  margin-top: var(--s-5);
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+.pdp-review-form-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pdp-review-form-title { margin: 0; }
+.pdp-review-form-cancel {
+  background: transparent;
+  border: 0;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-3);
+}
+.pdp-review-form-cancel:hover { color: var(--text); }
+.pdp-review-form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.pdp-review-form-field input,
+.pdp-review-form-field textarea {
+  width: 100%;
+  appearance: none;
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-2);
+  background: var(--background);
+  color: var(--text);
+  transition: border-color var(--d-fast), box-shadow var(--d-fast);
+}
+.pdp-review-form-field input:focus,
+.pdp-review-form-field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(20,40,160,0.12);
+  outline: none;
+}
+.pdp-review-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+@media (max-width: 600px) {
+  .pdp-review-form-row { grid-template-columns: 1fr; }
+}
+.pdp-review-form-stars { border: 0; padding: 0; margin: 0; }
+.pdp-review-form-stars-row {
+  display: inline-flex;
+  gap: 2px;
+}
+.pdp-review-form-star {
+  background: transparent;
+  border: 0;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--line-strong);
+  transition: color var(--d-fast);
+}
+.pdp-review-form-star:hover,
+.pdp-review-form-star.is-on,
+.pdp-review-form-star:focus-visible { color: var(--accent); }
+.pdp-review-form-star:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.pdp-review-form-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--sale);
+  background: rgba(224, 0, 0, 0.06);
+  padding: 8px 12px;
+  border-radius: var(--r-2);
+}
+.pdp-review-form-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.pdp-review-form-fine { font-size: 12px; margin: 0; max-width: 36ch; }
+.pdp-review-form-success {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+  padding: var(--s-4);
+  background: rgba(20, 160, 80, 0.06);
+  border: 1px solid rgba(20, 160, 80, 0.3);
+  border-radius: var(--r-3);
+  color: var(--text);
+}
+.pdp-review-form-success-title { font-weight: 600; }
+.pdp-review-form-success-body { margin: 4px 0 0; font-size: 14px; line-height: 1.55; }
