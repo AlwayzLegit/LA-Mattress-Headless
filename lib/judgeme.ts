@@ -91,8 +91,13 @@ export async function getProductReviews(
   }
   try {
     const res = await fetch(
+      // Phase 244: param name is `product_external_id` (Shopify ID), NOT
+      // `product_id` (Judge.me's internal numeric ID). Diagnostic
+      // confirmed Judge.me returns 422 "The number used for product_id
+      // is too big. Please use Judge.me product_id." when we pass the
+      // 13-digit Shopify ID under the wrong param name.
       buildUrl('/reviews', {
-        product_id: productExternalId,
+        product_external_id: productExternalId,
         per_page: perPage,
         page,
         published: 'true',
