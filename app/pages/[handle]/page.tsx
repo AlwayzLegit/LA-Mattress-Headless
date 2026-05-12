@@ -436,14 +436,14 @@ function ShowroomPage({
               serviceType: 'Free White-Glove Mattress Delivery',
               provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
-              description: 'Free white-glove delivery and setup with old-mattress haul-away across Los Angeles.',
+              description: 'Free white-glove delivery, setup, and old-mattress haul-away on orders over $499 across Los Angeles. Same-day delivery available when you order by 4pm.',
             },
             {
               '@type': 'Service',
               serviceType: '0% APR Mattress Financing',
               provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
-              description: 'Up to 60 months 0% APR financing on approved credit, no prepayment penalty, no origination fees.',
+              description: '0% APR financing through Synchrony and Acima on approved credit. Terms vary by purchase amount and partner. Apply at checkout or in any showroom.',
             },
             {
               '@type': 'Service',
