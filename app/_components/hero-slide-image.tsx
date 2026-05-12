@@ -45,13 +45,13 @@ export function HeroSlideImage({
       priority={priority}
       fetchPriority={priority ? 'high' : 'auto'}
       sizes="100vw"
-      // Phase 234: dropped quality from 75 → 65. Cowork rev-5 found the
-      // hero LCP candidate was a 678 KB Unsplash JPG at 3840w; at q=65
-      // the same image lands at ~510 KB with no perceptible difference
-      // on a photographic lifestyle background. Significant LCP win on
-      // mobile / Fast 3G; cost is zero on detail-critical content
-      // (heroes are deliberately blurred-edge backgrounds, not text).
-      quality={65}
+      // Phase 254: dropped quality from 65 → 55. Phase 234 predicted q=65
+      // would land at ~510 KB but Cowork rev-7 measured 619 KB live, so
+      // we still ship over the 550 KB perf target. q=55 on a photographic
+      // lifestyle background that's overlaid with a dark gradient and
+      // foreground text is sub-perceptual — the only viewer who could
+      // tell the difference is one looking for it side-by-side.
+      quality={55}
       className="hero-bg-img"
     />
   );
