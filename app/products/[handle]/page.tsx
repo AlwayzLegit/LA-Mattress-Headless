@@ -12,6 +12,7 @@ import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
+import { PdpReviewsSection } from '@/app/_components/pdp-reviews-section';
 import { BuyBox } from './buy-box';
 import { PdpCtaRow } from './pdp-cta-row';
 import { PdpGallery } from './gallery';
@@ -317,6 +318,13 @@ function ProductView({ product, related }: { product: Product; related: ProductS
           </div>
         </aside>
       </div>
+
+      <PdpReviewsSection
+        productGid={product.id}
+        productHandle={product.handle}
+        productTitle={product.title}
+        reviews={product.reviews}
+      />
 
       <RelatedRail products={related} />
       <RecentlyViewedRail excludeHandle={product.handle} />

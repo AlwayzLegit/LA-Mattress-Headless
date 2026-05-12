@@ -73,6 +73,94 @@ export async function getStorefrontReviews({ perPage = 12, page = 1, minRating =
 }
 
 /**
+ * Per-product reviews — feeds the PDP reviews section. Judge.me identifies
+ * products by their Shopify numeric ID (not the storefront handle), so
+ * pass the value extracted from `product.id` (e.g. `7894217031836` from
+ * the full gid). Phase 238.
+ */
+export async function getProductReviews(
+  productExternalId: string | number,
+  { perPage = 8, page = 1 } = {},
+): Promise<JudgemeReview[]> {
+  if (!ENABLED) return [];
+  try {
+    const res = await fetch(
+      buildUrl('/reviews', {
+        product_id: productExternalId,
+        per_page: perPage,
+        page,
+        published: 'true',
+      }),
+      { next: { revalidate: 3600, tags: ['judgeme:reviews', `judgeme:product:${productExternalId}`] } },
+    );
+    if (!res.ok) return [];
+    const data = (await res.json()) as ReviewsResponse;
+    return data.reviews ?? [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Submit a new review on behalf of a shopper. Used by /api/reviews
+ * (the internal POST endpoint that proxies the form submission to
+ * Judge.me) so the API token stays server-side. Reviews land in
+ * Judge.me's moderation queue by default; the merchant approves them
+ * in Judge.me Admin before they go live on the site. Phase 238.
+ */
+export type CreateReviewPayload = {
+  productExternalId: string | number;
+  rating: number;
+  body: string;
+  title?: string;
+  name: string;
+  email: string;
+  /** Optional reviewer IP for Judge.me's fraud signals. Pass through from the request. */
+  ipAddr?: string;
+};
+
+export type CreateReviewResult =
+  | { ok: true; reviewId?: number }
+  | { ok: false; error: string };
+
+export async function createReview(payload: CreateReviewPayload): Promise<CreateReviewResult> {
+  if (!ENABLED) return { ok: false, error: 'judgeme_not_configured' };
+  try {
+    const form = new URLSearchParams();
+    form.set('api_token', process.env.JUDGEME_API_TOKEN ?? '');
+    form.set('shop_domain', process.env.JUDGEME_SHOP_DOMAIN ?? '');
+    form.set('platform', 'shopify');
+    form.set('id', String(payload.productExternalId));
+    form.set('name', payload.name);
+    form.set('email', payload.email);
+    form.set('rating', String(Math.max(1, Math.min(5, Math.round(payload.rating)))));
+    form.set('body', payload.body);
+    if (payload.title) form.set('title', payload.title);
+    if (payload.ipAddr) form.set('ip_addr', payload.ipAddr);
+    const res = await fetch(`${JUDGEME_BASE}/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form.toString(),
+    });
+    if (!res.ok) return { ok: false, error: `judgeme_api_${res.status}` };
+    const data = (await res.json()) as { review?: { id?: number } };
+    return { ok: true, reviewId: data.review?.id };
+  } catch {
+    return { ok: false, error: 'judgeme_api_failed' };
+  }
+}
+
+/**
+ * Extract the numeric Shopify product ID from a Storefront API gid string
+ * (e.g. `gid://shopify/Product/7894217031836` → `7894217031836`). Returns
+ * null for malformed input so callers can short-circuit cleanly.
+ */
+export function shopifyProductIdFromGid(gid: string): string | null {
+  const m = /\/Product\/(\d+)/.exec(gid);
+  return m ? m[1] : null;
+}
+
+/**
  * Sitewide aggregate (avg rating + total count) for the /pages/reviews
  * header and for sitewide review-aggregate JSON-LD if we ever want it.
  */
