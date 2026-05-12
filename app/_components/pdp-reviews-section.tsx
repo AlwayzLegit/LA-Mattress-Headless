@@ -1,21 +1,28 @@
-import { Icon } from './icon';
-import { getProductReviews, shopifyProductIdFromGid, type JudgemeReview } from '@/lib/judgeme';
-import { PdpWriteReview } from './pdp-write-review';
+import { ReviewsBadge } from './reviews-badge';
+import { shopifyProductIdFromGid } from '@/lib/judgeme';
+import { JudgemeWidget } from './judgeme-widget';
 import type { ProductReviews } from '@/lib/shopify';
 
 /**
- * Customer Reviews section on the PDP. Server-rendered list of the 8 most
- * recent reviews for this product, plus the inline Write-a-Review form
- * (client island). Phase 238.
+ * Customer Reviews section on the PDP.
  *
- * Visibility:
- *   - If Judge.me isn't configured (env vars missing), or the API call
- *     fails, we still render the Write-a-Review form but with a soft
- *     empty list state. That way new shoppers can leave reviews even on
- *     day one of the headless cutover, before any reviews have synced.
- *   - The summary (avg + count) is fed from `product.reviews` which
- *     comes from Shopify metafields — works even when the Judge.me
- *     Public API is unreachable.
+ * Phase 247: pivoted from server-side Judge.me REST API to their official
+ * client-side widget. The REST API at /api/v1/reviews silently ignores
+ * every filter param (external_id, product_external_id, product_id) on
+ * this token tier — we tried 9 variants in Phase 246's diagnostic, all
+ * returned identical unfiltered results. The widget uses a different
+ * Judge.me endpoint (api.judge.me/reviews/reviews_for_widget) that
+ * properly filters per-product because that's what the widget is for.
+ *
+ * What this renders now:
+ *   - Aggregate header (stars + count) from `product.reviews` — that's
+ *     populated server-side via the `judgeme.badge` Shopify metafield
+ *     (Phase 241), so it's available at SSR time and emits in JSON-LD
+ *     aggregateRating. Works without the widget JS even loading.
+ *   - <JudgemeWidget /> placeholder div. Judge.me's preloader JS (loaded
+ *     globally in layout.tsx) finds the placeholder, fetches the reviews
+ *     for this product, and hydrates the list + Write-a-Review form +
+ *     photo upload. Their UI styling, not ours.
  */
 type Props = {
   productGid: string;
@@ -24,9 +31,8 @@ type Props = {
   reviews: ProductReviews | null;
 };
 
-export async function PdpReviewsSection({ productGid, productHandle, productTitle, reviews }: Props) {
+export function PdpReviewsSection({ productGid, productHandle, productTitle, reviews }: Props) {
   const productId = shopifyProductIdFromGid(productGid);
-  const list: JudgemeReview[] = productId ? await getProductReviews(productId, { perPage: 8 }) : [];
 
   return (
     <section className="pdp-reviews" aria-labelledby={`reviews-h-${productHandle}`}>
@@ -34,67 +40,25 @@ export async function PdpReviewsSection({ productGid, productHandle, productTitl
         <h2 id={`reviews-h-${productHandle}`} className="h2 pdp-reviews-title">Customer reviews</h2>
         {reviews ? (
           <div className="pdp-reviews-summary" aria-label={`${reviews.rating.toFixed(1)} out of 5, ${reviews.count} reviews`}>
-            <ReviewStars rating={reviews.rating} size="lg" />
-            <span className="pdp-reviews-avg tnum">{reviews.rating.toFixed(1)}</span>
-            <span className="muted">/ 5 · {reviews.count.toLocaleString()} review{reviews.count === 1 ? '' : 's'}</span>
+            <ReviewsBadge reviews={reviews} size="block" />
+            <span className="muted pdp-reviews-summary-count">
+              · {reviews.count.toLocaleString()} review{reviews.count === 1 ? '' : 's'}
+            </span>
           </div>
         ) : (
           <p className="muted pdp-reviews-empty">
-            Be the first to review this mattress.
+            Be the first to review {productTitle}.
           </p>
         )}
       </header>
 
-      {list.length > 0 ? (
-        <ul className="pdp-reviews-list" aria-label="Reviews">
-          {list.map((r) => (
-            <ReviewCard key={r.id} review={r} />
-          ))}
-        </ul>
-      ) : null}
-
-      <PdpWriteReview productId={productId ?? ''} productTitle={productTitle} />
+      {productId ? (
+        <JudgemeWidget productId={productId} />
+      ) : (
+        <p className="muted">
+          Reviews unavailable for this product right now.
+        </p>
+      )}
     </section>
-  );
-}
-
-function ReviewCard({ review }: { review: JudgemeReview }) {
-  const date = new Date(review.created_at).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-  return (
-    <li className="pdp-review-card">
-      <div className="pdp-review-card-head">
-        <ReviewStars rating={review.rating} />
-        {review.verified ? (
-          <span className="pdp-review-verified" title="Verified buyer">
-            <Icon name="check" size={12} /> Verified
-          </span>
-        ) : null}
-      </div>
-      {review.title ? <h3 className="pdp-review-title">{review.title}</h3> : null}
-      <p className="pdp-review-body">{review.body}</p>
-      <div className="pdp-review-meta muted">
-        <span>{review.reviewer.name || 'Anonymous'}</span>
-        <span aria-hidden="true">·</span>
-        <time dateTime={review.created_at}>{date}</time>
-      </div>
-    </li>
-  );
-}
-
-function ReviewStars({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'lg' }) {
-  const px = size === 'lg' ? 18 : 14;
-  const full = Math.round(rating);
-  return (
-    <span className={`pdp-review-stars pdp-review-stars-${size}`} aria-label={`${rating.toFixed(1)} out of 5`}>
-      {Array.from({ length: 5 }, (_, i) => (
-        <span key={i} className={i < full ? 'pdp-review-star-on' : 'pdp-review-star-off'}>
-          <Icon name="star" size={px} />
-        </span>
-      ))}
-    </span>
   );
 }
