@@ -1,22 +1,10 @@
 import { NextResponse } from 'next/server';
 
 /**
- * TEMPORARY diagnostic endpoint to figure out why individual reviews
- * aren't fetching even though aggregate badges (from Shopify metafields)
- * work fine. Bypasses ISR and the in-app helper so we see exactly what
- * Judge.me returns. Phase 243.
+ * TEMPORARY diagnostic — Phase 246 final-attempt edition.
+ * Tries every reasonable filter shape side-by-side so we can pick one.
  *
- * DELETE THIS FILE after Judge.me individual-review fetch is confirmed
- * working. No PII leakage (we never expose the token), but it does
- * surface env-var presence + API response shape, which is more verbose
- * than we want in production long-term.
- *
- * Usage: GET /api/judgeme-debug?productId=<numeric_shopify_id>
- *   - returns the env-var state, the URL we called (token redacted),
- *     the HTTP status, and the first-100-chars of the response body.
- *
- * Path-bypass-safe — anyone with the protection-bypass cookie can hit
- * this. Should be deleted before public DNS cutover regardless.
+ * DELETE this file once individual reviews are confirmed flowing.
  */
 export const dynamic = 'force-dynamic';
 
@@ -38,113 +26,106 @@ export async function GET(req: Request) {
     return NextResponse.json({ env: envState, error: 'env_vars_missing' });
   }
 
-  // Step 1: resolve Judge.me's internal product_id from Shopify external_id
-  const prodUrl = new URL(`${JUDGEME_BASE}/products/-1`);
-  prodUrl.searchParams.set('api_token', token);
-  prodUrl.searchParams.set('shop_domain', shop);
-  prodUrl.searchParams.set('external_id', productId);
-  const prodRes = await fetch(prodUrl.toString(), { cache: 'no-store' }).catch(
-    (e) => ({ status: 0, ok: false, error: String(e) } as const),
-  );
-  const prodBody = await readResponse(prodRes);
+  const redact = (u: string) => u.replace(token, '<REDACTED>');
 
-  // Try to pull the JM internal id out of the product response.
-  let jmProductId: number | null = null;
-  if (prodBody && typeof prodBody === 'object' && 'product' in prodBody) {
-    const p = (prodBody as { product?: { id?: number } }).product;
-    if (p && typeof p.id === 'number') jmProductId = p.id;
-  }
-
-  // Also try the products list endpoint as a fallback (some Judge.me API
-  // versions expose only the list form, not the singleton GET).
-  let listBody: unknown = null;
-  let listStatus = 0;
-  if (jmProductId === null) {
-    const listUrl = new URL(`${JUDGEME_BASE}/products`);
-    listUrl.searchParams.set('api_token', token);
-    listUrl.searchParams.set('shop_domain', shop);
-    listUrl.searchParams.set('external_id', productId);
-    listUrl.searchParams.set('per_page', '1');
-    const listRes = await fetch(listUrl.toString(), { cache: 'no-store' }).catch(
-      (e) => ({ status: 0, ok: false, error: String(e) } as const),
-    );
-    listBody = await readResponse(listRes);
-    listStatus = 'status' in listRes ? listRes.status : 0;
-    if (listBody && typeof listBody === 'object' && 'products' in listBody) {
-      const arr = (listBody as { products?: { sample?: { id?: number }[] } }).products;
-      if (arr?.sample?.[0]?.id) jmProductId = arr.sample[0].id;
-    }
-  }
-
-  // Step 2: fetch reviews with whichever IDs we have. Try both shapes
-  // side-by-side so we can see which one actually filters.
-  const tryReviews = async (params: Record<string, string>) => {
-    const u = new URL(`${JUDGEME_BASE}/reviews`);
+  const call = async (path: string, params: Record<string, string>) => {
+    const u = new URL(`${JUDGEME_BASE}${path}`);
     u.searchParams.set('api_token', token);
     u.searchParams.set('shop_domain', shop);
-    u.searchParams.set('per_page', '3');
-    u.searchParams.set('published', 'true');
     for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
-    const res = await fetch(u.toString(), { cache: 'no-store' }).catch(
-      (e) => ({ status: 0, ok: false, error: String(e) } as const),
-    );
-    return {
-      url: u.toString().replace(token, '<REDACTED>'),
-      status: 'status' in res ? res.status : 0,
-      body: await readResponse(res),
-    };
+    try {
+      const res = await fetch(u.toString(), { cache: 'no-store' });
+      const text = await res.text();
+      let body: unknown;
+      try {
+        body = JSON.parse(text);
+      } catch {
+        body = { rawPreview: text.slice(0, 200) };
+      }
+      return { url: redact(u.toString()), status: res.status, body };
+    } catch (e) {
+      return { url: redact(u.toString()), status: 0, error: String(e) };
+    }
   };
 
-  const variants: Record<string, Awaited<ReturnType<typeof tryReviews>>> = {};
-  variants.by_external_id = await tryReviews({ external_id: productId });
-  if (jmProductId !== null) {
-    variants.by_internal_product_id = await tryReviews({ product_id: String(jmProductId) });
+  const summarize = (b: unknown): unknown => {
+    if (typeof b !== 'object' || b === null) return b;
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(b)) {
+      if (Array.isArray(v)) {
+        out[k] = {
+          length: v.length,
+          first3External: v.slice(0, 3).map((r: any) => ({
+            review_id: r?.id,
+            product_external_id: r?.product_external_id,
+            product_handle: r?.product_handle,
+            product_title: r?.product_title?.slice(0, 60),
+          })),
+        };
+      } else {
+        out[k] = v;
+      }
+    }
+    return out;
+  };
+
+  // PRODUCT-LOOKUP VARIANTS — find the Judge.me internal product_id.
+  const products_byExternalId = await call('/products', { external_id: productId, per_page: '5' });
+  const products_byProductExternalId = await call('/products', { product_external_id: productId, per_page: '5' });
+  const products_listOnly = await call('/products', { per_page: '5' });
+  const products_byGid = await call('/products', { external_id: `gid://shopify/Product/${productId}`, per_page: '5' });
+
+  // REVIEW-LOOKUP VARIANTS — try every plausible filter.
+  const reviews_byExternalId = await call('/reviews', { external_id: productId, per_page: '3', published: 'true' });
+  const reviews_byProductExternalId = await call('/reviews', { product_external_id: productId, per_page: '3', published: 'true' });
+  const reviews_byGid = await call('/reviews', { external_id: `gid://shopify/Product/${productId}`, per_page: '3', published: 'true' });
+  const reviews_byProductIdGid = await call('/reviews', { product_id: `gid://shopify/Product/${productId}`, per_page: '3', published: 'true' });
+  const reviews_handleFilter = await call('/reviews', { handle: 'tempur-pedic-tempur-proadapt-medium-hybrid', per_page: '3', published: 'true' });
+  // Larger page for client-side filtering test.
+  const reviews_unfilteredLarge = await call('/reviews', { per_page: '100', published: 'true' });
+
+  // Look up reviews where product_external_id MATCHES our target, from the large page.
+  let clientSideMatches: unknown = null;
+  if (typeof reviews_unfilteredLarge.body === 'object' && reviews_unfilteredLarge.body !== null) {
+    const arr = (reviews_unfilteredLarge.body as { reviews?: unknown[] }).reviews;
+    if (Array.isArray(arr)) {
+      const wanted = String(productId);
+      const matching = arr.filter((r: any) => String(r?.product_external_id) === wanted);
+      clientSideMatches = {
+        totalScanned: arr.length,
+        matchedCount: matching.length,
+        firstMatch: matching[0] ? {
+          id: (matching[0] as any).id,
+          product_external_id: (matching[0] as any).product_external_id,
+          product_title: (matching[0] as any).product_title,
+          rating: (matching[0] as any).rating,
+          body: (matching[0] as any).body?.slice(0, 80),
+        } : null,
+        // Are reviews paginated? Check if we hit the per_page cap.
+        likelyHasMore: arr.length === 100,
+      };
+    }
   }
-  variants.by_product_external_id = await tryReviews({ product_external_id: productId });
 
   return NextResponse.json({
     env: envState,
-    productLookup: {
-      shopifyExternalId: productId,
-      judgemeInternalId: jmProductId,
-      singletonGet: {
-        url: prodUrl.toString().replace(token, '<REDACTED>'),
-        status: 'status' in prodRes ? prodRes.status : 0,
-        body: prodBody,
-      },
-      listFallback: jmProductId === null ? {
-        status: listStatus,
-        body: listBody,
-      } : null,
+    targetShopifyExternalId: productId,
+    productLookupVariants: {
+      byExternalId: { ...products_byExternalId, body: summarize(products_byExternalId.body) },
+      byProductExternalId: { ...products_byProductExternalId, body: summarize(products_byProductExternalId.body) },
+      byGid: { ...products_byGid, body: summarize(products_byGid.body) },
+      listOnly: { ...products_listOnly, body: summarize(products_listOnly.body) },
     },
-    reviewVariants: variants,
+    reviewLookupVariants: {
+      byExternalId: { ...reviews_byExternalId, body: summarize(reviews_byExternalId.body) },
+      byProductExternalId: { ...reviews_byProductExternalId, body: summarize(reviews_byProductExternalId.body) },
+      byGid: { ...reviews_byGid, body: summarize(reviews_byGid.body) },
+      byProductIdGid: { ...reviews_byProductIdGid, body: summarize(reviews_byProductIdGid.body) },
+      handleFilter: { ...reviews_handleFilter, body: summarize(reviews_handleFilter.body) },
+    },
+    clientSideFilterTest: {
+      unfilteredCall: { url: reviews_unfilteredLarge.url, status: reviews_unfilteredLarge.status },
+      matches: clientSideMatches,
+    },
   });
-}
-
-async function readResponse(res: { status: number; ok: boolean; error?: string } | Response): Promise<unknown> {
-  if (!('text' in res)) return { networkError: res.error ?? 'unknown' };
-  try {
-    const text = await res.text();
-    if (text.length === 0) return { empty: true };
-    try {
-      const json = JSON.parse(text);
-      // Trim large arrays to first 2 items for readability.
-      if (typeof json === 'object' && json !== null) {
-        const summary: Record<string, unknown> = {};
-        for (const [k, v] of Object.entries(json)) {
-          if (Array.isArray(v)) {
-            summary[k] = { count: v.length, sample: v.slice(0, 2) };
-          } else {
-            summary[k] = v;
-          }
-        }
-        return summary;
-      }
-      return json;
-    } catch {
-      return { rawPreview: text.slice(0, 500) };
-    }
-  } catch {
-    return { readError: true };
-  }
 }
