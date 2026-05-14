@@ -20,19 +20,20 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.mattressstoreslosa
  *                         all the indexable content here
  *   /api/               — JSON endpoints + webhook receivers
  *
- * Phase 273: also disallow query-string permutations Google indexes as
- * separate URLs even though our canonical points to the bare URL. These
- * patterns inflate our indexed-pages count without ranking value:
+ * Phase 275: query-param disallows scoped to TRACKING-only params per
+ * Google's official guidance
+ * (developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls):
+ * "Don't use robots.txt disallow to handle duplicates — use canonical
+ * tags." Content-distinguishing params (`?variant=` on PDPs,
+ * `?after=` pagination) are now handled via canonical alone so Google
+ * can crawl them, read the canonical, and consolidate signals properly.
+ * The patterns below are crawl-budget-only tracking params with no
+ * unique content:
  *
- *   /*?variant=*  — PDP variant selector. Pure UI state; canonical
- *                   already drops the variant param. 195 products ×
- *                   ~5 variants each = ~975 redundant URLs.
- *   /*?srsltid=*  — Google Search click-through tracking. Google itself
- *                   indexes these as distinct URLs, then later dedupes.
- *                   Faster to disallow upfront.
- *   /*?_pos=*, /*?_sid=*, /*?_ss=*  — Shopify search pagination/sort
- *                   tracking params. Same UI-state pattern.
- *   /*?after=*    — pagination cursor. Filtered content; canonical drops it.
+ *   /*?srsltid=*  — Google Search click-through tracking (Google's own
+ *                   tracking redirect; safe to block).
+ *   /*?_pos=*, /*?_sid=*, /*?_ss=*  — Shopify search-source/session
+ *                   tracking params. No content value.
  */
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -48,12 +49,10 @@ export default function robots(): MetadataRoute.Robots {
           '/compare',
           '/search?',
           '/api/',
-          '/*?variant=*',
           '/*?srsltid=*',
           '/*?_pos=*',
           '/*?_sid=*',
           '/*?_ss=*',
-          '/*?after=*',
         ],
       },
     ],
