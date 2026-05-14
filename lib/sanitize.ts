@@ -37,6 +37,21 @@ const HOSTS_TO_REWRITE = [
   /https?:\/\/la-mattress\.myshopify\.com/gi,
 ];
 
+// Phase 262: rewrite Hydrogen-era CDN URLs to the canonical Shopify CDN.
+// Merchant-authored article bodies (imported from the old Hydrogen site)
+// contain `<a href="https://mattressstoreslosangeles.com/cdn/shop/files/…">`
+// link wrappers around `<img>` tags. The host-strip pass below would turn
+// these into `/cdn/shop/files/…` — a path our headless storefront doesn't
+// serve, so it 404s and SEMrush flagged it under "Broken internal images."
+// Rewriting to `cdn.shopify.com/s/files/<shop-id>/{files,products}/…`
+// points the link at the original full-resolution asset (the merchant's
+// intent: click an article image to view it bigger).
+//
+// Shop ID `1/0684/1759` matches the IDs already used in product
+// `featuredImage.url` payloads from the Storefront API.
+const HYDROGEN_CDN_REWRITE = /https?:\/\/(?:www\.)?mattressstoreslosangeles\.com\/cdn\/shop\/(files|products)\//gi;
+const SHOPIFY_CDN_PREFIX = 'https://cdn.shopify.com/s/files/1/0684/1759/';
+
 // Matches an entire `<iframe …></iframe>` (and self-closing variants) when
 // the `src` attribute references Google Maps. Single-line `s` flag covers
 // merchant-pasted markup that often spans multiple lines with embedded
@@ -46,6 +61,10 @@ const GOOGLE_MAPS_IFRAME = /<iframe\b[^>]*\bsrc=["'][^"']*(?:google\.com\/maps|m
 export function sanitizeShopifyHtml(html: string | null | undefined): string {
   if (!html) return '';
   let out = html;
+  // Phase 262: rewrite Hydrogen-era CDN URLs FIRST, before the generic
+  // host-strip below — otherwise the host gets stripped to a dead
+  // root-relative path before we get a chance to redirect to cdn.shopify.com.
+  out = out.replace(HYDROGEN_CDN_REWRITE, SHOPIFY_CDN_PREFIX + '$1/');
   for (const re of HOSTS_TO_REWRITE) out = out.replace(re, '');
   out = out.replace(GOOGLE_MAPS_IFRAME, '');
   // Some legacy article bodies were imported with bad encoding and contain
