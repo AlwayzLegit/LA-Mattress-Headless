@@ -22,7 +22,14 @@
 | 3 | `seo-image-alt-report.mjs` (read-only CSV) | ✅ shipped | 277d |
 | 3 | `docs/seo-shopify-runbook.md` operating guide | ✅ shipped | 277d |
 | 3 | Run the scripts against production catalog | ⏳ pending — requires merchant + SHOPIFY_ADMIN_TOKEN |  |
-| 4-9 | Content + local + off-page + monitoring | ⏳ pending |  |
+| 6 | Neighborhood page template + 8-entry data structure | ✅ shipped | 277e |
+| 6 | Showroom + neighborhood sitemap priority bump (0.7 → 0.85) | ✅ shipped | 277e |
+| 6 | Create the 8 neighborhood Shopify Pages | ⏳ pending — see `docs/seo-followup-tasks.md` §5 |  |
+| 4 | Content refresh on 9 near-miss-keyword pages | ⏳ pending — see `docs/seo-followup-tasks.md` §6 |  |
+| 5 | 5 new pillar articles | ⏳ pending — see `docs/seo-followup-tasks.md` §7 |  |
+| 7-9 | Cross-cut sub-nav, off-page, monitoring | ⏳ pending |  |
+
+**Full user-action checklist:** `docs/seo-followup-tasks.md`.
 
 ## Context
 

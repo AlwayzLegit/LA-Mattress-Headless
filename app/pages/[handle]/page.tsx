@@ -8,6 +8,7 @@ import { getPageByHandle, getCollectionByHandle } from '@/lib/shopify';
 import type { ProductSummary } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, formatPhone, getOpenStatus, type Showroom } from '@/lib/showrooms';
+import { findNeighborhood, getNearestShowrooms, type Neighborhood } from '@/lib/neighborhoods';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_PHONE_SCHEMA } from '@/lib/site-config';
@@ -123,6 +124,15 @@ export default async function ShopifyPage(props: Params) {
     const onSaleCount = saleCollection?.products.nodes.length ?? 0;
     return <SalePage page={page} featuredProducts={featuredProducts} onSaleCount={onSaleCount} />;
   }
+  // Phase 277e: neighborhood pages (mattress-store-beverly-hills, etc.)
+  // render the NeighborhoodPage template — physically distinct from a
+  // showroom (no own address), serves an LA neighborhood from the
+  // 1–2 nearest physical showrooms via FurnitureStore.areaServed.
+  // Checked after the sale-page dispatch because none of the neighborhood
+  // handles match SALE_HANDLE_PATTERNS, but the sale check is the cheaper
+  // early-exit for the more common path.
+  const neighborhood = findNeighborhood(page.handle);
+  if (neighborhood) return <NeighborhoodPage page={page} neighborhood={neighborhood} />;
 
   return <DefaultPage page={page} />;
 }
@@ -734,6 +744,183 @@ function SalePage({
 
       <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
       <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+    </main>
+  );
+}
+
+/**
+ * Phase 277e: LA-neighborhood page template (Beverly Hills, Santa Monica,
+ * DTLA, Pasadena, Burbank, Sherman Oaks, Hollywood, Long Beach). Each
+ * page targets "mattress store {neighborhood}" search intent without
+ * pretending to be a physical store of its own — there's no address,
+ * no own hours, no map embed. Instead, the page positions the 1–2
+ * nearest physical showrooms with drive-time context and a clear
+ * "Visit our nearest showroom" CTA.
+ *
+ * Renders only when the merchant has created a Shopify Page with one
+ * of the handles defined in lib/neighborhoods.ts NEIGHBORHOODS. If the
+ * Shopify page body is empty, the neighborhood's `defaultBlurb` fills
+ * in (≥150 words to avoid thin-content flags).
+ *
+ * Schema: FurnitureStore with `areaServed` set to the neighborhood
+ * (not `address` — see lib/neighborhoods.ts comments) and `department`
+ * listing the nearest physical showrooms so Google can still see the
+ * real stores behind this landing page.
+ */
+function NeighborhoodPage({
+  page,
+  neighborhood,
+}: {
+  page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
+  neighborhood: Neighborhood;
+}) {
+  const url = `${SITE}/pages/${page.handle}`;
+  const nearest = getNearestShowrooms(neighborhood);
+  const primaryShowroom = nearest[0]; // first listed is the "primary" CTA
+
+  const localBusinessLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FurnitureStore',
+    '@id': url,
+    name: `LA Mattress Store — ${neighborhood.name}`,
+    url,
+    telephone: SITE_PHONE_SCHEMA,
+    priceRange: '$$$',
+    image: primaryShowroom?.imageUrl ?? `${SITE}/assets/la-mattress-logo.png`,
+    // No `address` — this isn't a physical store. areaServed handles the
+    // local-search signal without misrepresenting location.
+    areaServed: {
+      '@type': 'Place',
+      name: neighborhood.name,
+      ...(neighborhood.geo
+        ? {
+            geo: {
+              '@type': 'GeoCoordinates',
+              latitude: neighborhood.geo.latitude,
+              longitude: neighborhood.geo.longitude,
+            },
+          }
+        : {}),
+    },
+    // Surface the real physical stores so the entity graph stays accurate.
+    department: nearest.map((s) => ({
+      '@type': 'FurnitureStore',
+      name: s.name,
+      url: `${SITE}/pages/${s.handle}`,
+      telephone: s.phone,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: s.street,
+        addressLocality: s.city,
+        addressRegion: s.region,
+        postalCode: s.postalCode,
+        addressCountry: 'US',
+      },
+      ...(s.geo
+        ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } }
+        : {}),
+    })),
+    parentOrganization: { '@id': `${SITE}/#organization` },
+  };
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: 'Stores', item: `${SITE}/pages/mattress-store-locations` },
+      { '@type': 'ListItem', position: 3, name: neighborhood.name, item: url },
+    ],
+  };
+
+  return (
+    <main className="container">
+      <article className="cms-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
+        <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
+          <Link href="/">Home</Link>
+          <span className="sep" aria-hidden="true">/</span>
+          <Link href="/pages/mattress-store-locations">Stores</Link>
+          <span className="sep" aria-hidden="true">/</span>
+          <span>{neighborhood.name}</span>
+        </nav>
+
+        <header className="showroom-page-hero">
+          <div className="eyebrow">{neighborhood.name} · Los Angeles</div>
+          <h1 className="h1">
+            {toSentenceCase(stripBrandSuffix(page.title))}
+          </h1>
+          <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
+            Free white-glove delivery to {neighborhood.name} on orders over $499 — same-day if you order by 4pm.{' '}
+            {primaryShowroom
+              ? `Visit our ${primaryShowroom.area} showroom to try every mattress in person.`
+              : 'Visit any of our 5 LA showrooms to try every mattress in person.'}
+          </p>
+        </header>
+
+        {page.body ? (
+          <div
+            className="rte cms-body"
+            style={{ marginTop: 'var(--s-5)' }}
+            dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }}
+          />
+        ) : (
+          <div className="rte cms-body" style={{ marginTop: 'var(--s-5)' }}>
+            <p>{neighborhood.defaultBlurb}</p>
+          </div>
+        )}
+
+        {nearest.length > 0 ? (
+          <section className="section" style={{ marginTop: 'var(--s-7)' }}>
+            <div className="eyebrow">Nearest showrooms</div>
+            <h2 className="h2">
+              {nearest.length === 1
+                ? `Visit our ${nearest[0].area} mattress store`
+                : `Two showrooms near ${neighborhood.name}`}
+            </h2>
+            <div className="nf-grid" style={{ marginTop: 'var(--s-5)' }}>
+              {nearest.map((s) => (
+                <Link key={s.handle} href={`/pages/${s.handle}`} className="nf-tile">
+                  <div className="nf-tile-label">{s.name}</div>
+                  <div className="nf-tile-sub muted">
+                    {s.street}, {s.city} · {formatPhone(s.phone)}
+                  </div>
+                  <Icon name="arrow-right" size={16} />
+                </Link>
+              ))}
+            </div>
+            <p className="muted" style={{ marginTop: 'var(--s-5)', maxWidth: '60ch' }}>
+              Prefer to see all 5 showrooms?{' '}
+              <Link href="/pages/mattress-store-locations" className="link-arrow">
+                View every Los Angeles location <Icon name="arrow-right" size={14} />
+              </Link>
+              .
+            </p>
+          </section>
+        ) : null}
+
+        <section className="section" style={{ marginTop: 'var(--s-7)' }}>
+          <div className="eyebrow">Skip the drive</div>
+          <h2 className="h2">Take the 2-minute sleep quiz</h2>
+          <p className="muted" style={{ maxWidth: '60ch' }}>
+            Eight questions, one recommendation. We&rsquo;ll match you to a mattress, then deliver it free anywhere in LA.
+          </p>
+          <div style={{ marginTop: 'var(--s-4)' }}>
+            <Link href="/sleep-quiz" className="btn btn-primary">
+              Start the quiz <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+        </section>
+      </article>
+      <script
+        id="ld-neighborhood"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
+      />
+      <script
+        id="ld-breadcrumb-neighborhood"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
     </main>
   );
 }

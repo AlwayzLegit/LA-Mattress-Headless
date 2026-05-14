@@ -1,7 +1,23 @@
 import type { MetadataRoute } from 'next';
 import { blogs, nonEmptyCollections, products, publishedPages } from '@/lib/inventory';
+import { SHOWROOMS } from '@/lib/showrooms';
+import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.mattressstoreslosangeles.com';
+
+/**
+ * Phase 277e: showroom + neighborhood pages are high-intent local
+ * landing pages — they should signal more importance to crawlers than
+ * a generic CMS page (warranty / financing / returns). Bumped from
+ * the default 0.7 to 0.85, matching collections.
+ *
+ * Locations index gets the same treatment for the same reason.
+ */
+const LOCAL_LANDING_HANDLES = new Set<string>([
+  ...SHOWROOMS.map((s) => s.handle),
+  ...NEIGHBORHOODS.map((n) => n.handle),
+  'mattress-store-locations',
+]);
 
 /**
  * Phase 260: blog handles that exist in the inventory snapshot but are
@@ -54,12 +70,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  const pageEntries: MetadataRoute.Sitemap = publishedPages.map((p) => ({
-    url: u(`/pages/${p.handle}`),
-    lastModified: new Date(p.updatedAt),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }));
+  const pageEntries: MetadataRoute.Sitemap = publishedPages.map((p) => {
+    const isLocalLanding = LOCAL_LANDING_HANDLES.has(p.handle);
+    return {
+      url: u(`/pages/${p.handle}`),
+      lastModified: new Date(p.updatedAt),
+      changeFrequency: isLocalLanding ? ('weekly' as const) : ('monthly' as const),
+      priority: isLocalLanding ? 0.85 : 0.7,
+    };
+  });
 
   const liveBlogs = blogs.filter((b) => !DEPRECATED_BLOG_HANDLES.has(b.handle));
 
