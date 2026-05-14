@@ -15,7 +15,8 @@ import { FAQ } from './_components/sections/faq';
 import { RecentlyViewedRail } from './_components/recently-viewed';
 import { faqJsonLd } from '@/lib/faq';
 import { LOCAL_BUSINESS_LD } from '@/lib/structured-data';
-import { getShopBrand } from '@/lib/shopify';
+import { getShopBrand, getHeroSlides } from '@/lib/shopify';
+import { FALLBACK_HERO_SLIDES } from './_components/hero-slides';
 
 // Phase 268: homepage title + description now read from Shopify Brand
 // (Settings → Store details → Brand) when available, with hardcoded
@@ -41,10 +42,18 @@ export async function generateMetadata(): Promise<Metadata> {
 // and emits on every page. Per-template structured data (Product, CollectionPage,
 // BlogPosting, etc.) is emitted by each route's page.tsx.
 
-export default function Home() {
+export default async function Home() {
+  // Phase 267: hero slides come from `hero_slide` Shopify metaobjects
+  // when the merchant has created them; otherwise we fall back to the
+  // 3-slide constant so the page is never empty-handed. The Shopify
+  // path also moves the bg images onto Shopify CDN (preconnected +
+  // edge-cached) instead of Unsplash.
+  const shopifySlides = await getHeroSlides();
+  const slides = shopifySlides.length > 0 ? shopifySlides : FALLBACK_HERO_SLIDES;
+
   return (
     <main>
-      <Hero />
+      <Hero slides={slides} />
       <TrustBar />
       <RecentlyViewedRail heading="Welcome back" eyebrow="Pick up where you left off" />
       <PopularProducts />

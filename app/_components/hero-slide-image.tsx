@@ -23,10 +23,15 @@ import Image from 'next/image';
  */
 export function HeroSlideImage({
   src,
+  alt,
   eager,
   priority,
 }: {
   src: string;
+  // Phase 267: passed in from the parent so the slide's bg_image_alt
+  // (or the Shopify MediaImage's altText fallback) can be authored
+  // alongside the image in Shopify Admin instead of hardcoded here.
+  alt: string;
   eager: boolean;
   priority: boolean;
 }) {
@@ -40,7 +45,7 @@ export function HeroSlideImage({
   return (
     <Image
       src={src}
-      alt=""
+      alt={alt}
       fill
       priority={priority}
       fetchPriority={priority ? 'high' : 'auto'}
