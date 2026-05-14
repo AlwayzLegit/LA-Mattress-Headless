@@ -1,64 +1,47 @@
-import type { IconName } from './icon';
+import type { HeroSlideData } from '@/lib/shopify';
+import { imgUrl } from './images';
 
 /**
- * Homepage hero carousel slide definitions.
+ * Homepage hero carousel slide definitions — FALLBACK only.
  *
- * Lifted out of `hero.tsx` (Phase 194) so the data can be imported
- * from server contexts — the Phase 195 split makes `hero.tsx` a server
- * component that renders the static slide DOM, while a sibling
- * `'use client' HeroController` owns the interactive carousel state.
- * Both need the slide list, but only the controller is client-side.
+ * Phase 267: hero slides are now sourced from `hero_slide` Shopify
+ * metaobjects via `lib/shopify/queries/hero-slides.ts`. This file
+ * keeps the original 3-slide content as the fallback for when:
+ *   - Shopify isn't configured
+ *   - the merchant hasn't created the metaobjects yet
+ *   - the Storefront fetch fails
  *
- * Order is rendering order. Slide 0 is the LCP candidate — it renders
- * with `priority={true}` and `fetchPriority="high"` on its background
- * image (see hero-slide-image.tsx). Subsequent slides defer their
- * image render until after hydration to avoid the browser fetching
- * three hero-sized images on initial paint (Phase 162 optimization;
- * preserved by Phase 195 via the shared `HeroSlideImage` client
- * component).
+ * Hero 0 is the LCP candidate — server-rendered with `priority={true}`
+ * and `fetchPriority="high"` (see hero-slide-image.tsx). Subsequent
+ * slides defer their image render until after hydration to avoid the
+ * browser fetching three hero-sized images on initial paint (Phase 162).
  */
-export type HeroSlide = {
-  kind: 'showroom' | 'product' | 'sale';
-  eyebrow: string;
-  title: string;
-  body: string;
-  primary: { label: string; icon?: IconName; href: string };
-  secondary: { label: string; href: string };
-  bgLabel: string;
-  bgImg: string;
-  accent?: boolean;
-};
+export type HeroSlide = HeroSlideData;
 
-export const HERO_SLIDES: HeroSlide[] = [
+export const FALLBACK_HERO_SLIDES: HeroSlide[] = [
   {
-    kind: 'showroom',
     eyebrow: '5 LA Showrooms',
     title: 'Try before\nyou buy.',
     body: 'Lie down on every mattress we sell, in person, at a showroom near you. Open daily across Los Angeles.',
     primary:   { label: 'Find a store',         icon: 'pin',         href: '/pages/mattress-store-locations' },
     secondary: { label: 'Book an appointment',                       href: '/pages/mattress-store-contact' },
-    bgLabel: '[Koreatown showroom interior]',
-    bgImg: 'hero-showroom',
+    bgImage: { url: imgUrl('hero-showroom'), altText: 'Koreatown showroom interior' },
   },
   {
-    kind: 'product',
     eyebrow: 'Premium Brands · Same-Day Delivery',
     title: 'Sleep, engineered\nin Los Angeles.',
     body: 'Tempur-Pedic, Stearns & Foster, Helix, Diamond and more — delivered to your door, often the same day.',
     primary:   { label: 'Shop mattresses',     icon: 'arrow-right', href: '/collections/mattresses' },
     secondary: { label: 'Take the 2-min quiz',                      href: '/sleep-quiz' },
-    bgLabel: '[Brand lifestyle bedroom]',
-    bgImg: 'lifestyle-bedroom',
+    bgImage: { url: imgUrl('lifestyle-bedroom'), altText: 'Brand lifestyle bedroom' },
   },
   {
-    kind: 'sale',
     eyebrow: 'Memorial Day Event',
     title: 'Up to\n60% off.',
     body: 'Markdowns on every floor model, plus free upgrades on king sizes. Limited stock at every showroom.',
     primary:   { label: 'Shop the sale',  icon: 'arrow-right', href: '/collections/on-sale' },
     secondary: { label: 'See all deals',                       href: '/collections/floor-model-discontinued-mattress-clearance-sale' },
-    bgLabel: '[Sale event composition]',
-    bgImg: 'lifestyle-couple',
+    bgImage: { url: imgUrl('lifestyle-couple'), altText: 'Sale event composition' },
     accent: true,
   },
 ];

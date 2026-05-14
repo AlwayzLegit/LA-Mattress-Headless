@@ -1,6 +1,5 @@
 import { Icon } from './icon';
-import { imgUrl } from './images';
-import { HERO_SLIDES } from './hero-slides';
+import type { HeroSlide } from './hero-slides';
 import { HeroController } from './hero-controller';
 import { HeroSlideImage } from './hero-slide-image';
 
@@ -27,16 +26,16 @@ import { HeroSlideImage } from './hero-slide-image';
  * (this component) for the static layout, with state isolated in
  * hero-controller.tsx.
  */
-export function Hero({ autoplay = true }: { autoplay?: boolean }) {
+export function Hero({ slides, autoplay = true }: { slides: HeroSlide[]; autoplay?: boolean }) {
   return (
     <section
       className="hero"
       aria-roledescription="carousel"
       aria-label="Featured highlights"
     >
-      <HeroController slideCount={HERO_SLIDES.length} autoplay={autoplay}>
+      <HeroController slideCount={slides.length} autoplay={autoplay}>
         <div className="hero-stack">
-          {HERO_SLIDES.map((s, idx) => (
+          {slides.map((s, idx) => (
             <div
               key={idx}
               data-hero-slide={idx}
@@ -45,7 +44,7 @@ export function Hero({ autoplay = true }: { autoplay?: boolean }) {
               inert={idx !== 0}
             >
               <div className="hero-bg">
-                <HeroSlideImage src={imgUrl(s.bgImg)} eager={idx === 0} priority={idx === 0} />
+                <HeroSlideImage src={s.bgImage.url} alt={s.bgImage.altText ?? ''} eager={idx === 0} priority={idx === 0} />
               </div>
               <div className="hero-grad" />
               <div className="container hero-content">
