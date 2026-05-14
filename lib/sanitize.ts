@@ -74,6 +74,19 @@ function stripEmptyAnchors(html: string): string {
   });
 }
 
+// Phase 271b: rewrite the boilerplate "Read More" anchor text on
+// /pages/mattress-warranty links. ~18 product description templates
+// share this exact link pattern in their Warranty row:
+//   <a href="/pages/mattress-warranty">Read More</a>
+// SEMrush flags "Read More" as non-descriptive anchor text. Rather than
+// mutating 18 product descriptions individually, we transform the
+// anchor text at render time so any product (current or future) with
+// this boilerplate gets the descriptive replacement automatically.
+//
+// Pattern is narrowly scoped to mattress-warranty hrefs so we don't
+// accidentally rewrite other "Read More" links that may be legitimate.
+const WARRANTY_READ_MORE = /(<a\b[^>]*\bhref="\/pages\/mattress-warranty"[^>]*>)\s*Read More\s*(<\/a>)/gi;
+
 export function sanitizeShopifyHtml(html: string | null | undefined): string {
   if (!html) return '';
   let out = html;
@@ -84,6 +97,7 @@ export function sanitizeShopifyHtml(html: string | null | undefined): string {
   for (const re of HOSTS_TO_REWRITE) out = out.replace(re, '');
   out = out.replace(GOOGLE_MAPS_IFRAME, '');
   out = stripEmptyAnchors(out);
+  out = out.replace(WARRANTY_READ_MORE, '$1Mattress warranty details$2');
   // Some legacy article bodies were imported with bad encoding and contain
   // U+FFFD (the � replacement char). Drop them — they only ever render as
   // visible glyphs that look broken.
