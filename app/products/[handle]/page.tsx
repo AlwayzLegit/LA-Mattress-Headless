@@ -243,25 +243,12 @@ function ProductView({ product, related }: { product: Product; related: ProductS
       </nav>
 
       <div className="pdp-grid">
-        <div className="pdp-left">
-        <PdpGallery
-          productTitle={product.title}
-          featured={product.featuredImage}
-          images={product.images}
-        />
-
-        <PdpOverview product={product} />
-        <PdpFirmness product={product} />
-        <PdpMaterials product={product} />
-        <SpecTable product={product} />
-
-        {product.descriptionHtml ? (
-          <section className="pdp-description">
-            <div className="eyebrow">Details</div>
-            <h2 className="h2">About this mattress</h2>
-            <div className="rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(product.descriptionHtml) }} />
-          </section>
-        ) : null}
+        <div className="pdp-gallery-area">
+          <PdpGallery
+            productTitle={product.title}
+            featured={product.featuredImage}
+            images={product.images}
+          />
         </div>
 
         <aside className="pdp-rail">
@@ -317,6 +304,21 @@ function ProductView({ product, related }: { product: Product; related: ProductS
             </div>
           </div>
         </aside>
+
+        <div className="pdp-details-area">
+          <PdpOverview product={product} />
+          <PdpFirmness product={product} />
+          <PdpMaterials product={product} />
+          <SpecTable product={product} />
+
+          {product.descriptionHtml ? (
+            <section className="pdp-description">
+              <div className="eyebrow">Details</div>
+              <h2 className="h2">About this mattress</h2>
+              <div className="rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(product.descriptionHtml) }} />
+            </section>
+          ) : null}
+        </div>
       </div>
 
       <PdpReviewsSection

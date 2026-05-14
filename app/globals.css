@@ -1750,19 +1750,47 @@ summary:focus-visible,
 /* PDP layout — design handoff (pdp-showroom.css §PDP grid).
    Gallery on left in 1fr, sticky buybox on right at 440px. */
 .pdp { padding-top: 0; }
+/* Phase 279: grid-template-areas split the PDP into three regions
+   (gallery / buy-box rail / details) so the mobile order matches
+   industry-standard PDP UX: gallery → title+price+variant+ATC →
+   details. On desktop, gallery stacks above details in the left
+   column while the rail sticks alongside on the right.
+
+   Before Phase 279, the markup was `.pdp-left` (gallery + details all
+   together) and `.pdp-rail` (buy box) — on mobile this rendered the
+   buy box AFTER every spec section, forcing shoppers to scroll the
+   entire page to find variant + add-to-cart. */
 .pdp-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 440px;
-  gap: var(--s-8);
+  grid-template-areas:
+    "gallery rail"
+    "details rail";
+  column-gap: var(--s-8);
+  row-gap: var(--s-7);
   align-items: start;
   padding-bottom: var(--s-9);
 }
-@media (max-width: 1024px) { .pdp-grid { grid-template-columns: 1fr; gap: var(--s-6); } }
+@media (max-width: 1024px) {
+  .pdp-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "gallery"
+      "rail"
+      "details";
+    gap: var(--s-6);
+  }
+}
 
-/* Gallery + description + spec table all live in the left column so the
-   buy box sticks through the whole scroll. */
-.pdp-left { display: flex; flex-direction: column; gap: var(--s-7); min-width: 0; }
-@media (max-width: 1024px) { .pdp-left { gap: var(--s-5); } }
+.pdp-gallery-area { grid-area: gallery; min-width: 0; }
+.pdp-details-area {
+  grid-area: details;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-7);
+  min-width: 0;
+}
+@media (max-width: 1024px) { .pdp-details-area { gap: var(--s-5); } }
 
 /* PDP Gallery — design handoff §Gallery.
    .pdp-gallery > .pdp-gallery-main (1:1 r-4 with counter overlay) +
@@ -2022,7 +2050,8 @@ summary:focus-visible,
 /* PDP below-the-fold sections — design handoff (pdp-showroom.css §Sections).
    Each .pdp-section has a section-head (eyebrow + h2 left, optional lede
    right) and section-specific content underneath. Sections sit inside
-   pdp-left so the buybox stays sticky next to them. */
+   .pdp-details-area so the buybox stays sticky next to them on desktop
+   and renders above them on mobile (Phase 279 grid-template-areas). */
 .pdp-section { padding: var(--s-7) 0 0; }
 .pdp-section-head {
   display: grid;
@@ -2247,7 +2276,7 @@ summary:focus-visible,
 }
 .pdp-trust li { display: inline-flex; align-items: center; gap: 8px; }
 
-/* Inline within pdp-left — spacing handled by parent flex gap, not own padding. */
+/* Inline within .pdp-details-area — spacing handled by parent flex gap, not own padding. */
 .pdp-description { padding: 0; }
 
 /* RTE — Shopify-authored body HTML */
