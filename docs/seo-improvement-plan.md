@@ -1,5 +1,29 @@
 # Deep SEO Audit & Improvement Plan — mattressstoreslosangeles.com
 
+## Implementation status (rolling — updated as PRs land)
+
+| Phase | Item | Status | Commit |
+|---|---|---|---|
+| 1 | GA4 (env-gated, useReportWebVitals for CWV) | ✅ shipped | 277a |
+| 1 | Search Console + Bing verification meta | ✅ shipped | 277a |
+| 1 | `docs/seo-measurement.md` runbook | ✅ shipped | 277a |
+| 2 | `Organization.sameAs` scaffold (`SOCIAL_PROFILES`) | ✅ shipped | 277b |
+| 2 | Daily inventory snapshot GitHub Action | ✅ shipped | 277b |
+| 2 | Image `sizes` audit (verified — all `<Image fill>` already have `sizes`) | ✅ verified | 277b |
+| 2 | Hero LCP preload (already handled by next/image `priority`) | ✅ verified | 277b |
+| 2 | FAQ schema on showrooms + 3 CMS pages | ✅ shipped | 277c |
+| 2 | PDP H1 ≠ title fix ("in Los Angeles" infix on fallback) | ✅ shipped | 277c |
+| 2 | Review schema on review-style articles | ⏸ deferred — needs merchant product+rating data | — |
+| 2 | VideoObject schema | ⏸ deferred — needs YouTube oEmbed metadata | — |
+| 2 | Sitemap split into per-type index | ⏸ deferred — current ~400 URLs well under 50K; splitting risks breaking GSC submission | — |
+| 3 | `seo-backfill-product-seo.mjs` (dry-run + `--apply`) | ✅ shipped | 277d |
+| 3 | `seo-backfill-skus.mjs` (dry-run + `--apply`) | ✅ shipped | 277d |
+| 3 | `seo-tag-cleanup-report.mjs` (read-only CSV) | ✅ shipped | 277d |
+| 3 | `seo-image-alt-report.mjs` (read-only CSV) | ✅ shipped | 277d |
+| 3 | `docs/seo-shopify-runbook.md` operating guide | ✅ shipped | 277d |
+| 3 | Run the scripts against production catalog | ⏳ pending — requires merchant + SHOPIFY_ADMIN_TOKEN |  |
+| 4-9 | Content + local + off-page + monitoring | ⏳ pending |  |
+
 ## Context
 
 LA Mattress Store is a 5-showroom Los Angeles mattress retailer running on a
