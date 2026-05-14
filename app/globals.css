@@ -3961,3 +3961,43 @@ summary:focus-visible,
 .sale-page-foot-cta .h2 { margin: 0 0 var(--s-3); }
 .sale-page-foot-cta p { margin: 0 0 var(--s-5); }
 .sale-page-foot-cta .sale-page-ctas { justify-content: center; }
+
+/* Phase 282 — HTML sitemap page (/pages/sitemap). Footer-linked
+   directory of every collection / page / blog article / product. Exists
+   so SEMrush + similar crawlers find every sitemap.xml entry from a
+   single landing page without paginating PLPs / blog indexes deeply. */
+.html-sitemap {
+  padding: var(--s-7) var(--container-pad) var(--s-9);
+  max-width: 1200px;
+}
+.html-sitemap-head { margin-bottom: var(--s-7); max-width: 75ch; }
+.html-sitemap-head .h1 { margin: var(--s-3) 0 var(--s-4); }
+.html-sitemap-lede { font-size: 16px; line-height: 1.6; }
+.html-sitemap-section { margin-top: var(--s-7); border-top: 1px solid var(--line); padding-top: var(--s-5); }
+.html-sitemap-section .h2 {
+  margin: 0 0 var(--s-4);
+  font-size: clamp(20px, 2vw, 24px);
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.html-sitemap-section .h2 a { color: inherit; text-decoration: none; }
+.html-sitemap-section .h2 a:hover { color: var(--accent); }
+.html-sitemap-count { font-size: 14px; font-weight: 400; }
+.html-sitemap-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px 24px;
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+.html-sitemap-list li { padding: 4px 0; }
+.html-sitemap-list a { color: var(--text); text-decoration: none; }
+.html-sitemap-list a:hover { color: var(--accent); text-decoration: underline; }
+@media (max-width: 760px) {
+  .html-sitemap-list { grid-template-columns: 1fr; gap: 6px 0; }
+}
