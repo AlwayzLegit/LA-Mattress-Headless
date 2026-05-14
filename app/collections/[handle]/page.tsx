@@ -13,6 +13,7 @@ import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 import { PlpCount } from '@/app/_components/plp-count';
 import { PlpLoadMore } from '@/app/_components/plp-load-more';
+import { PlpContentBlock } from '@/app/_components/plp-content-block';
 import { SortControl } from './sort-control';
 import { SORT_OPTIONS, parseSort } from './sort-options';
 import { CollectionSkeleton } from './skeleton';
@@ -291,6 +292,8 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
           </div>
         </FilterShell>
       </section>
+
+      <PlpContentBlock handle={collection.handle} title={collection.title} />
 
       <script id="ld-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
       <script id="ld-breadcrumb-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
