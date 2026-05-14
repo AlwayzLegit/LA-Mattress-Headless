@@ -1868,6 +1868,1417 @@
       "permanent": true
     },
     {
+      "source": "/blogs/mattress-buying-guide/articles",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true,
+      "$note": "Phase 261: 282 4xx URLs from May SEMrush export \u2014 fuzzy-matched to nearest live product/collection, or routed to /collections/mattresses (products) / /blogs/<category> (article slugs) as the safe fallback to preserve link equity. Bulk-generated; specific overrides applied for pillow/protector/Tempur/Helix/sale variants."
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/comfortcare-limited-smart-mattress",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/latex-foam-mattress",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/memory-foam-mattress",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/micro-crevices",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/perfect-mattress-8363",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/whats-hybrid-mattress-2139",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/pages/about-us",
+      "destination": "/pages/about",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/pages/financing-1",
+      "destination": "/pages/mattress-store-financing",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/pages/free-120-night-comfort-guarantee",
+      "destination": "/pages/love-your-bed-guarantee",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/40-dietitian-approved-bedtime-snacks-5687",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/can-lavender-help-sleep-better-3749",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/love-mattress",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/sleep-during-pregnancy-part1",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/sleep-during-pregnancy-part3",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/sleep-tracker-wrecking-sleep-8516",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/time-new-mattress-8464",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/collections/accessories-beddings",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/bed-bug-zippered-encasements",
+      "destination": "/collections/mattress-protector",
+      "permanent": true
+    },
+    {
+      "source": "/collections/bedroom-accessories",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/bedroom-furniture-dressers",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/bedroom-sets",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/beds",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/beds-and-headboards",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/bunk-beds",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/bunkie-board-foundation",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/chests",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/complete-bedroom-sets",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/cool-pillow",
+      "destination": "/collections/pillows",
+      "permanent": true
+    },
+    {
+      "source": "/collections/englander-mattresses/Brand_Englander",
+      "destination": "/collections/englander-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/englander-mattresses/brand_englander",
+      "destination": "/collections/englander-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/extra-firm-mattresses-at-la-mattress",
+      "destination": "/collections/extra-firm-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/gel-foam-mattress/brand_diamond",
+      "destination": "/collections/gel-foam-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/helix-sleep-mattresses",
+      "destination": "/collections/helix-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/los-angeles-furniture-sale",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/low-profile-foundation",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/Brand_Harvest-Green",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/Brand_Stress-O-Pedic",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/Comfort_Pillowtop",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/brand_stress-o-pedic",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/brand_tempur-pedic",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/size_ca-king",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/size_full",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/size_king",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/size_queen",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/size_twin",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/size_twin-xl",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/type_foam-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/type_hybrid",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/mattresses/type_latex",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/nightstands",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/organic-latex",
+      "destination": "/collections/organic-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/collections/organic-pillows",
+      "destination": "/collections/pillows",
+      "permanent": true
+    },
+    {
+      "source": "/collections/pillows/type_memory-foam",
+      "destination": "/collections/pillows",
+      "permanent": true
+    },
+    {
+      "source": "/collections/platform-beds",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/sealy-mattresses",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/serta-mattresses",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/sheet-sets",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/sheet-sets-save-on-sheets-best-prices",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/sofas",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/split-king-adjustable-beds",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/stearns-foster-sale",
+      "destination": "/collections/stearns-foster-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/storage-beds",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-breeze",
+      "destination": "/collections/tempur-pedic-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-breeze-tempur-pedic-breeze",
+      "destination": "/collections/tempur-pedic-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-pedic-pillows",
+      "destination": "/collections/pillows",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-pedic-sale",
+      "destination": "/collections/tempur-pedic-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-pro-adapt-luxe-tempur-pedic",
+      "destination": "/collections/tempur-pedic-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/top-memorial-day-mattress-sales-2024",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/twin-xl",
+      "destination": "/collections/twin-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/mattresses/memory-foam",
+      "destination": "/collections/memory-foam-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/policies/terms-of-service",
+      "destination": "/pages/terms-conditions",
+      "permanent": true
+    },
+    {
+      "source": "/products/2-5-gel-memory-foam-mattress-topper-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/2-75-vegan-firm-natural-latex-w-wool-mattress-topper-by-harvest-green-mattress",
+      "destination": "/products/harvest-green-essential-natural-latex-by-harvest-green-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/2-memory-foam-mattress-topper-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/2-vegan-natural-latex-mattress-topper-by-harvest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/all-american-frame-bedding-mattress-safeguard-protector",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/anniversary-luxury-firm-box-top-by-scandinavian",
+      "destination": "/products/sandmahn-luxury-plush-box-top-by-scandinavian",
+      "permanent": true
+    },
+    {
+      "source": "/products/arten-black-4pc-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ash-rayon-from-bamboo-sheet-set-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/bella-dark-gray-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/bella-gray-tufted-storage-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/birsfelden-bed-frame-1",
+      "destination": "/products/deluxe-bed-frame",
+      "permanent": true
+    },
+    {
+      "source": "/products/blackwell-desert-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/blackwell-oat-beige-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/bliss-medium-gel-memory-foam-euro-top-by-diamond-mattress",
+      "destination": "/products/spring-air-medium-gel-memory-foam-euro-top-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/bliss-plush-gel-memory-foam-pillow-top-by-diamond-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-chattam-wells-mattress-clearance-geneva-luxury-medium-euro-top-16",
+      "destination": "/products/split-california-king-chattam-wells-mattress-clearance-geneva-luxury-medium-euro-top-16",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-clearance-mattress-stress-o-pedic-sleep-systems-pescara-ii-plush-pillow-top-14",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-clearnce-mattress-stress-o-pedic-sleep-systems-christelle-latex-extra-firm-12",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-ergo-pedic-adjustable-base-clearance-expression",
+      "destination": "/products/king-ergo-pedic-adjustable-base-clearance-wireless-expression",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-savvy-rest-organic-cotton-sheet-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-serta-mattress-clearance-icomfort-blue-max-touch-3000-plush-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-split-reverie-r400-adjustable-power-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/cal-king-micro-plush-waterproof-mattress-protectors-10-18",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/california-king-mattress-clearance-stress-o-pedic-royale-ii-extra-firm-gel-memory-foam-13",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charcoal-supima-premium-cotton-pillowcase-set-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charcoal-supima-premium-cotton-sheet-set-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charles-4pc-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charles-gray-4pc-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/chattam-wells-clearance-mattress-windsor-medium-firm-luxury-euro-top-18",
+      "destination": "/products/chattam-wells-buckingham-medium-luxury-euro-top-18-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/chattam-wells-weston-medium-luxury-pillow-top-13-floor-sample-clearance-mattress",
+      "destination": "/products/chattam-wells-miramare-luxury-firm-13-floor-sample-clearance-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/cheer-medium-bed-in-a-box-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/chrissy-black-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/chrissy-white-storage-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/clarity-ii-adjustable-bed-base-by-rize",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/clearance-mattress-stress-o-pedic-cashmere-ii-comfort-top-gel-latex-firm-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/clementine-4pc-queen-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/copy-of-chattam-wells-the-ashford-luxury-medium-euro-top-15-5-mattress",
+      "destination": "/products/queen-chattam-wells-mattress-clearance-the-ashford-luxury-medium-euro-top-15",
+      "permanent": true
+    },
+    {
+      "source": "/products/copy-of-diamond-generations-collection-jeremiah-medium-latex-euro-top-15-floor-sample-clearance-mattress",
+      "destination": "/products/full-diamond-mattress-clearance-generations-collection-jeremiah-plush-latex-euro-top-15",
+      "permanent": true
+    },
+    {
+      "source": "/products/copy-of-protect-a-bed-cool-tencel-waterproof-mattress-protectors-8-20",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/cotton-encased-down-blend-pillow-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-gel-grid-float-firm-9-5-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-gravity-13-cool-gel-grid-hybrid-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-mattress-tundra-hybrid-cool-copper-gel-medium-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-mattress-tundra-hybrid-cool-copper-gel-plush-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-mattress-tundra-hybrid-copper-gel-firm-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-polina-firm-gel-memory-foam-tight-top-11-clearance-mattress",
+      "destination": "/products/diamond-dreamstage-2-0-collection-tranquility-firm-gel-memory-foam-tight-top-16-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-rally-medium-cool-copper-gel-memory-foam-12-mattress",
+      "destination": "/products/diamond-glory-medium-cool-gel-swirl-memory-foam-12-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/dimple-cotton-cloth-waterproof-mattress-protectors-10-18",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/dogwood-firm-value-collection-mattress-by-spring-air",
+      "destination": "/products/olive-8-firm-value-collection-mattress-by-spring-air",
+      "permanent": true
+    },
+    {
+      "source": "/products/dogwood-pillow-top-value-collection-mattress-by-spring-air",
+      "destination": "/products/olive-8-firm-value-collection-mattress-by-spring-air",
+      "permanent": true
+    },
+    {
+      "source": "/products/driftwood-rayon-from-bamboo-sheet-set-by-malouf",
+      "destination": "/products/brushed-microfiber-driftwood-sheet-set-by-malouf",
+      "permanent": true
+    },
+    {
+      "source": "/products/duncan-charcoal-gray-platform-bed-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/eclipse-cares-collection-joyfulness-hybrid-11-plush-mattress",
+      "destination": "/products/eclipse-cares-collection-peacefulness-hybrid-12-plush-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/eluxury-medium-firmness-down-alternative-bed-pillow-set-of-2-standard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/englander-tanner-latex-hybrid-14-mattress",
+      "destination": "/products/englander-amsbury-firm-14-hybrid-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/englander-the-supreme-collection-allendale-grand-euro-top-16-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/englander-the-supreme-collection-allendale-royal-firm-euro-top-16-mattress",
+      "destination": "/products/englander-allendale-luxury-firm-box-top-17-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/englander-the-supreme-collection-beckford-luxury-firm-14-mattress",
+      "destination": "/products/englander-everest-luxury-firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/englander-the-supreme-collection-beckford-luxury-plush-box-top-16-mattress",
+      "destination": "/products/englander-everest-luxury-plush-box-top-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/englander-the-supreme-collection-essex-firm-16-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/englander-the-supreme-collection-essex-pillow-top-15-5-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/englander-the-supreme-collection-essex-plush-16-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/envoy-firm-gel-memory-foam-by-diamond-mattress",
+      "destination": "/products/10-gel-memory-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/envoy-gel-plush-pillow-top-innerspring-by-diamond-mattress",
+      "destination": "/products/spruce-plush-pillow-top-innerspring-by-eastman-house",
+      "permanent": true
+    },
+    {
+      "source": "/products/ergopedic-solutions-ii-adjustable-bed-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/flax-supima-premium-cotton-pillowcase-set-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/flax-supima-premium-cotton-sheet-set-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/framos-full-queen-twin-adjustable-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/framos-platform-base-13",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/full-chattam-wells-weston-medium-luxury-pillow-top-13-clearance-mattress",
+      "destination": "/products/chattam-wells-buckingham-medium-luxury-euro-top-18-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/full-mattress-clearance-stress-o-pedic-sleep-systems-allison-plush-pillow-top-14",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/grenadier-gel-firm-mattress-by-eglander",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/grenadier-gel-pillow-top-mattress-by-eglander",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/grenadier-gel-plush-mattress-by-englander",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/harvest-green-firm-natural-latex-w-organic-cotton-mattress-2-75-topper",
+      "destination": "/products/harvest-green-original-firm-natural-latex-by-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/harvest-green-plush-pillow-top",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/harvest-green-soft-natural-latex-w-organic-cotton-mattress-2-75-topper",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/harvest-pillow-top-latex-by-harvest-green-mattress",
+      "destination": "/products/harvest-green-essential-natural-latex-by-harvest-green-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/iria-black-metal-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/isabel-pillow-top-by-spring-air-back-supporter",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/isabel-plush-by-spring-air-back-supporter-hybrid",
+      "destination": "/products/spring-air-back-supporter-hybrid-kaylee-plush-14-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/janeiro-gray-platform-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/josie-pillow-top-by-spring-air-back-supporter-hybrid",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/josie-plush-top-by-spring-air-back-supporter-hybrid-1",
+      "destination": "/products/spring-air-back-supporter-hybrid-kaylee-plush-14-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/justice-euro-top-innerspring-by-diamond-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/katrina-euro-top-by-spring-air-back-supporter-hybrid",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/katrina-extra-firm-by-spring-air-back-supporter-hybrid",
+      "destination": "/products/spring-air-back-supporter-francesca-firm-hybrid-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/katrina-firm-by-spring-air-back-supporter-hybrid",
+      "destination": "/products/spring-air-back-supporter-francesca-firm-hybrid-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/king-chattam-wells-mattress-floor-sample-clearance-the-ashford-euro-top",
+      "destination": "/products/queen-chattam-wells-mattress-clearance-the-ashford-luxury-medium-euro-top-15",
+      "permanent": true
+    },
+    {
+      "source": "/products/king-clearance-mattress-restonic-300-series-gel-memory-foam-medium-10",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/king-diamond-black-diamond-collection-azusa-luxury-latex-plush-euro-top-18-clearance-mattress",
+      "destination": "/products/ca-king-clearance-mattress-black-diamond-collection-azusa-luxury-latex-plush-euro-top-18",
+      "permanent": true
+    },
+    {
+      "source": "/products/king-savvy-rest-organic-latex-pillow",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/king-spring-air-mattress-clearance-spirit-eurotop-14",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/king-tempur-pedic-tempur-luxeadapt-13-soft-discontinued-clearance-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-13-medium-hybrid-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/leeroy-gray-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/leeroy-ivory-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/lennart-bed-frame",
+      "destination": "/products/deluxe-bed-frame",
+      "permanent": true
+    },
+    {
+      "source": "/products/lily-firm-gel-memory-foam-tight-top-by-diamond-mattress",
+      "destination": "/products/diamond-dreamstage-2-0-collection-tranquility-firm-gel-memory-foam-tight-top-16-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/lily-medium-gel-memory-foam-euro-top-by-diamond-mattress",
+      "destination": "/products/spring-air-medium-gel-memory-foam-euro-top-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/lily-plush-gel-memory-foam-pillow-top-by-diamond-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/lois-firm-natural-latex-hybrid-by-diamond-mattress",
+      "destination": "/products/harvest-green-original-firm-natural-latex-by-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/lois-medium-natural-latex-hybrid-by-diamond-mattress",
+      "destination": "/products/medium-lucille-luxury-natural-latex-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/lois-plush-natural-latex-hybrid-by-diamond-mattress",
+      "destination": "/products/plush-lucille-luxury-natural-latex-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-philippe-black-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-philippe-cherry-4pc-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-phillippe-4pc-queen-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-phillippe-gray-4pc-queen-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-eastman-stone-platform-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-s755-adjustable-bed-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-watson-oat-platform-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-watson-platform-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/massage-ergopedic-solutions-iii-adjustable-bed-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mattress-clearance-christelle-ii-firm-natural-latex-restonic",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mattress-safeguard-completely-encased-zippered-mattress-protector-10-14-all-amer",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mattress-safeguard-completely-encased-zippered-mattress-protector-14-18-all-amer",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/micah-luxury-firm-euro-top-by-eastman-house",
+      "destination": "/products/micha-luxury-firm-by-eastman-house",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-brownstone-platform-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-graystone-platform-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/natasha-natural-latex-luxury-firm-euro-top-by-diamond-mattress",
+      "destination": "/products/diana-natural-latex-luxury-medium-euro-top-by-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/natasha-natural-latex-luxury-medium-euro-top-by-diamond-mattress",
+      "destination": "/products/diana-natural-latex-luxury-medium-euro-top-by-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/polina-gel-memory-foam-euro-top-by-diamond-mattress",
+      "destination": "/products/spring-air-medium-gel-memory-foam-euro-top-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/polina-gel-memory-foam-firm-mattress-by-diamond-mattress",
+      "destination": "/products/10-gel-memory-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/premium-comfort-prelude-firm-mattress-scandinavian",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/premium-comfort-prelude-medium-mattress-scandinavian",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/premium-cotton-terry-cloth-waterproof-mattress-protectors-8-20",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/protect-a-bed-premium-waterproof-mattress-protectors",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-adelaide-plush-gel-hybrid-classic-collection-by-chattam-wells",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-chattam-wells-chantilly-luxury-plush-14-5-floor-sample-clearance-mattress",
+      "destination": "/products/chattam-wells-miramare-luxury-firm-13-floor-sample-clearance-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-chattam-wells-mattress-clearance-adelaide-gel-hybrid-13",
+      "destination": "/products/ca-king-chattam-wells-mattress-clearance-adelaide-luxury-plush-gel-hybrid-13",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-chattam-wells-mattress-floor-sample-clearance-geneva-euro-top",
+      "destination": "/products/queen-chattam-wells-mattress-clearance-the-ashford-luxury-medium-euro-top-15",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-clearance-adjustable-tempur-ergo-power-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-diamond-rally-medium-hybrid-cool-copper-gel-memory-foam-12-floor-sample-clearance-mattress",
+      "destination": "/products/full-diamond-lily-medium-gel-memory-foam-euro-top-12-5-floor-model-clearance-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-diamond-tundra-medium-hybrid-cool-copper-14-floor-model-clearance-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-savvy-rest-organic-kapok-pillow",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-savvy-rest-organic-wool-pillow",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-southerland-mattress-clearance-scandinavian-collection-anniversary-cushion-firm-box-top-14-2020",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-stearns-foster-mattress-clearance-cassatt-pillow-top-firm-15",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-stearns-foster-mattress-clearance-hepburn-luxury-plush-eurotop",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-stearns-foster-mattress-clearance-hurston-luxury-plush-euro-pillow-top-13",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-stress-o-pedic-sleep-systems-florence-pillow-top-13-clearance-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-tempur-pedic-tempur-luxebreeze-firm-13-discontinued-floor-sample-clearance-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxebreeze-firm-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-tempur-pedic-tempur-proadapt-firm-12-discontinued-floor-model-clearance-mattress",
+      "destination": "/products/tempur-pedic-tempur-proadapt-firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/rain-rayon-from-bamboo-sheet-set-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rally-hybrid-cool-sleep-medium-copper-gel-memory-foam-by-diamond-mattress",
+      "destination": "/products/diamond-glory-medium-cool-gel-swirl-memory-foam-12-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/rally-hybrid-cool-sleep-plush-copper-gel-memory-foam-by-diamond-mattress-1",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rally-sleep-memory-foam-firm-diamond-mattress",
+      "destination": "/products/progel-8-memory-diamond-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/rally-sleep-memory-foam-medium-diamond-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rally-sleep-memory-foam-plush-diamond-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rayon-from-bamboo-mattress-pad-10-18-by-elux",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/remedy-ii-adjustable-bed-base-by-rize",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/reserve-firm-pillow-top-by-stearns-foster",
+      "destination": "/products/reserve-soft-pillow-top-by-stearns-foster",
+      "permanent": true
+    },
+    {
+      "source": "/products/rize-beds-contemporary-3-adjustable-base-lumbar-support",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rize-cottage-style-wedge-blue-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rize-rx-cloud-memory-foam-pillow",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/royale-ii-extra-firm-gel-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/savvy-rest-clearance-mattress-vitality-talalay-latex-topper",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/savvy-rest-organic-wool-mattress-pad",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sealy-mattress-clearance-posturepedic-hybrid-performance-kelburn-ii-13",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sealy-mattress-clearance-posturepedic-performance-hybrid-copper-ii-plush-13",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sealy-mattresses-z11-silver-chill-firm",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sealy-posturepedic-hybrid-performance-kelburn-ii",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sealy-posturepedic-performance-hybrid-kelburn-ii-medium-13-floor-model-clearance-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sealy-posturepedic-premium-hybrid-gold-chill",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/serta-motion-custom-ii-discontinued-clearance-adjustable-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/smoke-supima-premium-cotton-pillowcase-set-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/smoke-supima-premium-cotton-sheet-set-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/southerland-inmotion-g94-adjustable-bed-base-1",
+      "destination": "/products/southerland-inmotion-b26-adjustable-base",
+      "permanent": true
+    },
+    {
+      "source": "/products/split-ca-king-sealy-posturepedic-performance-hybrid-kelburn-ii-medium-13-clearance-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/spring-air-back-supporter-donna-elite-collection-mattress",
+      "destination": "/products/spring-air-back-supporter-francesca-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/spring-air-back-supporter-donna-firm-elite-collection-mattress",
+      "destination": "/products/spring-air-back-supporter-francesca-firm-hybrid-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/spring-air-back-supporter-donna-plush-elite-collection-mattress",
+      "destination": "/products/spring-air-back-supporter-francesca-plush-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/spring-air-davis-firm-value-collection-mattress",
+      "destination": "/products/olive-8-firm-value-collection-mattress-by-spring-air",
+      "permanent": true
+    },
+    {
+      "source": "/products/spring-air-marc-firm-heritage-collection-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/spring-air-marc-pillow-top-heritage-collection-mattress",
+      "destination": "/products/spring-air-tradition-collection-vang-gogh-pillow-top-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/spring-air-marc-plush-heritage-collection-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/stearns-foster-lux-estate-latex-down-pillow",
+      "destination": "/products/stearns-foster-lux-estate-medium-pillow-top-16-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/stearns-foster-studio-latex-pillow",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/supreme-mattress-protector",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/temperature-regulating-memory-foam-mattress-topper-1-5",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/temperature-regulating-memory-foam-mattress-topper-3",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-adapt-prohi-cooling-pillow-by-tempur-pedic",
+      "destination": "/products/copy-of-tempur-adapt-promid-cooling-pillow-by-tempur-pedic",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-adapt-prolo-cooling-pillow-by-tempur-pedic",
+      "destination": "/products/copy-of-tempur-adapt-promid-cooling-pillow-by-tempur-pedic",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-breeze-neck-advanced-cooling-pillow-pillow-by-tempur-pedic",
+      "destination": "/products/copy-of-tempur-adapt-promid-cooling-pillow-by-tempur-pedic",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-breeze-pro-lo-advanced-cooling-by-tempur-pedic",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-breeze-prohi-advanced-cooling-by-tempur-pedic",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-extend-base-powered-by-tempur-pedic",
+      "destination": "/products/tempur-flat-foundation-by-tempur-pedic",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-neck-firm-pillow-by-tempur-pedic",
+      "destination": "/products/tempur-flat-foundation-by-tempur-pedic",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-adapt-medium-hybrid-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-ergo-3-0-power-base-1",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-ergo-power-base-1",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-ergo-smart-adjustable-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-luxeadapt-13-soft-floor-sample-clearance-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-luxeadapt-soft-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-firm-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-luxebreeze-firm-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxebreeze-firm-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-luxebreeze-soft-2019-13-floor-sample-clearance-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxebreeze-soft-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-luxebreeze-soft-8-cooler",
+      "destination": "/products/tempur-pedic-tempur-luxebreeze-soft-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-12-mattress",
+      "destination": "/products/tempur-pedic-tempur-probreeze-medium-12-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/the-windsor-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
+      "destination": "/products/ashford-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
+      "permanent": true
+    },
+    {
+      "source": "/products/tranquility-ii-adjustable-bed-base-w-lumbar-support-by-rize",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/twin-chattam-wells-mattress-clearance-geneva-luxury-medium-euro-top-16",
+      "destination": "/products/split-california-king-chattam-wells-mattress-clearance-geneva-luxury-medium-euro-top-16",
+      "permanent": true
+    },
+    {
+      "source": "/products/twin-xl-chattam-wells-geneva-luxury-medium-euro-top-16-clearance-mattress",
+      "destination": "/products/split-california-king-chattam-wells-mattress-clearance-geneva-luxury-medium-euro-top-16",
+      "permanent": true
+    },
+    {
+      "source": "/products/twin-xl-sealy-mattress-clearance-nposturepedic-premium-hybrid-gold-chill",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ultima-standard-metal-bed-frame-by-kinkerbocker-bed-frames",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/viola-beige-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/white-supima-premium-cotton-pillowcase-set-by-malouf",
+      "destination": "/products/white-botanical-tencel-lyocell-pillowcase-set-by-malouf",
+      "permanent": true
+    },
+    {
+      "source": "/products/white-supima-premium-cotton-sheet-set-by-malouf",
+      "destination": "/products/malouf-white-linen-weave-cotton-sheet-set",
+      "permanent": true
+    },
+    {
+      "source": "/products/winn-park-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/quiz",
+      "destination": "/sleep-quiz",
+      "permanent": true
+    },
+    {
+      "source": "/sale",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
       "source": "/blogs/beds-mattresses",
       "destination": "/blogs/sleep-blog",
       "permanent": true,
