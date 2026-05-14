@@ -19,6 +19,20 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mattressstoreslosangel
  *   /search?            — query-string driven; the no-q recovery grid is
  *                         all the indexable content here
  *   /api/               — JSON endpoints + webhook receivers
+ *
+ * Phase 273: also disallow query-string permutations Google indexes as
+ * separate URLs even though our canonical points to the bare URL. These
+ * patterns inflate our indexed-pages count without ranking value:
+ *
+ *   /*?variant=*  — PDP variant selector. Pure UI state; canonical
+ *                   already drops the variant param. 195 products ×
+ *                   ~5 variants each = ~975 redundant URLs.
+ *   /*?srsltid=*  — Google Search click-through tracking. Google itself
+ *                   indexes these as distinct URLs, then later dedupes.
+ *                   Faster to disallow upfront.
+ *   /*?_pos=*, /*?_sid=*, /*?_ss=*  — Shopify search pagination/sort
+ *                   tracking params. Same UI-state pattern.
+ *   /*?after=*    — pagination cursor. Filtered content; canonical drops it.
  */
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -34,6 +48,12 @@ export default function robots(): MetadataRoute.Robots {
           '/compare',
           '/search?',
           '/api/',
+          '/*?variant=*',
+          '/*?srsltid=*',
+          '/*?_pos=*',
+          '/*?_sid=*',
+          '/*?_ss=*',
+          '/*?after=*',
         ],
       },
     ],
