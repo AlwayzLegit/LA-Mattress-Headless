@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Icon } from './icon';
-import { PLP_FAQ, categoryIntroFor } from '@/lib/plp-content';
+import { categoryIntroFor, categoryFaqFor } from '@/lib/plp-content';
 import { faqJsonLd } from '@/lib/faq';
 
 /**
@@ -29,6 +29,9 @@ export function PlpContentBlock({
   title: string;
 }) {
   const intro = categoryIntroFor(handle, title);
+  // Phase 276: per-category FAQ so each PLP has unique Q&A relevant to
+  // its material/brand instead of the prior shared PLP_FAQ block.
+  const faqItems = categoryFaqFor(handle);
   return (
     <section className="plp-content" aria-labelledby={`plp-content-h-${handle}`}>
       <div className="plp-content-intro">
@@ -41,7 +44,7 @@ export function PlpContentBlock({
       <div className="plp-content-grid">
         <div className="plp-content-faq">
           <h3 className="eyebrow plp-content-eyebrow">Common questions</h3>
-          {PLP_FAQ.map((item) => (
+          {faqItems.map((item) => (
             <details key={item.q} className="plp-content-faq-item">
               <summary>
                 <span className="plp-content-faq-q">{item.q}</span>
@@ -70,7 +73,7 @@ export function PlpContentBlock({
       <script
         type="application/ld+json"
         id={`ld-plp-faq-${handle}`}
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(PLP_FAQ)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faqItems)) }}
       />
     </section>
   );
