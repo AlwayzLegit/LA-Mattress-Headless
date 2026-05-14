@@ -16,10 +16,18 @@
  *        collections/create, collections/update, collections/delete
  *        articles/create, articles/update, articles/delete
  *        pages/update
+ *        metaobjects/create, metaobjects/update, metaobjects/delete  (Phase 269)
+ *        shop/update                                                 (Phase 269)
  *      Use Format: JSON, API version 2024-10, and paste the same secret.
  *
  * The Shopify Admin UI auto-includes an `X-Shopify-Hmac-Sha256` header on every
  * webhook; we verify it before doing anything.
+ *
+ * Phase 269 added the metaobject + shop topics so Phase 266 (announcement
+ * bar), Phase 267 (hero slides), and Phase 268 (shop.brand) cache tags
+ * (`metaobject:announcement_bar`, `metaobject:hero_slide`, `shop:brand`)
+ * busting on merchant edits instead of waiting for the 5-min / 1-hour
+ * revalidate window.
  */
 import { revalidateTag, revalidatePath } from 'next/cache';
 import crypto from 'node:crypto';
@@ -40,7 +48,10 @@ function verifyHmac(rawBody: string, hmacHeader: string | null, secret: string):
   return timingSafeEqual(hmacHeader, computed);
 }
 
-function tagsFor(topic: string, payload: { handle?: string; blog?: { handle?: string } }): string[] {
+function tagsFor(
+  topic: string,
+  payload: { handle?: string; type?: string; blog?: { handle?: string } },
+): string[] {
   const handle = payload.handle;
   const blogHandle = payload.blog?.handle;
   switch (true) {
@@ -52,6 +63,17 @@ function tagsFor(topic: string, payload: { handle?: string; blog?: { handle?: st
       return handle ? [`page:${handle}`] : [];
     case topic.startsWith('articles/'):
       return handle && blogHandle ? [`article:${blogHandle}/${handle}`, `blog:${blogHandle}`] : [];
+    case topic.startsWith('metaobjects/'):
+      // Phase 269: Shopify metaobject CRUD. Payload's `type` field maps
+      // to the cache tag pattern `metaobject:<type>` used by
+      // lib/shopify/queries/announcement.ts and hero-slides.ts.
+      return payload.type ? [`metaobject:${payload.type}`] : [];
+    case topic === 'shop/update':
+      // Phase 269: shop name / description / brand assets edited in
+      // Settings → Store details. Phase 268's getShopBrand() tags
+      // `shop:brand`, which feeds the layout metadata + Organization
+      // JSON-LD logo.
+      return ['shop:brand'];
     default:
       return [];
   }
@@ -72,7 +94,7 @@ export async function POST(req: Request) {
   }
 
   const topic = req.headers.get('x-shopify-topic') ?? '';
-  let payload: { handle?: string; blog?: { handle?: string } } = {};
+  let payload: { handle?: string; type?: string; blog?: { handle?: string } } = {};
   try {
     payload = JSON.parse(rawBody);
   } catch {
