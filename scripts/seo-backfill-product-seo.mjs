@@ -95,25 +95,28 @@ async function pullProducts() {
   return all;
 }
 
+// Skip the vendor prefix when the title already contains the vendor
+// name anywhere in it — common in this catalog, where titles read like
+// "Diamond Diana Firm…" or "Twin XL Restonic Natural Latex…". Without
+// this dedupe the description becomes "Restonic Twin XL Restonic …".
+function titleContainsVendor(title, vendor) {
+  return Boolean(vendor) && title.toLowerCase().includes(vendor.toLowerCase());
+}
+
 function generateSeoTitle({ title, vendor }) {
-  // Build "{Vendor} {Title} in Los Angeles · LA Mattress" but trim
-  // left-to-right if it exceeds TITLE_MAX so the location suffix and
-  // brand stay visible at the cost of a truncated product name.
   const suffix = ' in Los Angeles · LA Mattress';
-  const vendorPrefix = vendor ? `${vendor} ` : '';
+  const vendorPrefix = vendor && !titleContainsVendor(title, vendor) ? `${vendor} ` : '';
   const naive = `${vendorPrefix}${title}${suffix}`;
   if (naive.length <= TITLE_MAX) return naive;
-  // Drop the vendor prefix first; the product title usually contains it.
   const noVendor = `${title}${suffix}`;
   if (noVendor.length <= TITLE_MAX) return noVendor;
-  // Truncate the title at a word boundary so the suffix still fits.
   const budget = TITLE_MAX - suffix.length - 1;
   const truncated = title.slice(0, budget).replace(/\s+\S*$/, '').trim();
   return `${truncated}…${suffix}`;
 }
 
 function generateSeoDescription({ title, vendor }) {
-  const vendorBit = vendor ? `${vendor} ` : '';
+  const vendorBit = vendor && !titleContainsVendor(title, vendor) ? `${vendor} ` : '';
   const naive = `${vendorBit}${title} at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.`;
   return naive.length > 160 ? naive.slice(0, 157).trimEnd() + '...' : naive;
 }

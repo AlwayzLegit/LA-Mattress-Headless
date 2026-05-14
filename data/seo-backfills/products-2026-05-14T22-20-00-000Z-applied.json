@@ -1,0 +1,1319 @@
+{
+  "generatedAt": "2026-05-14T22:20:24.706838+00:00",
+  "mode": "apply",
+  "changes": [
+    {
+      "id": "gid://shopify/Product/6539805379",
+      "handle": "standard-foundation-box-spring",
+      "productTitle": "Standard Profile 9\" Box Spring Universal Flat Foundation",
+      "vendor": "Eastman House",
+      "before": {
+        "title": null,
+        "description": "Standard Profile 9\" Box Spring Foundation in Los Angeles includes free delivery with mattress. Queen from $259 offers rigid flat support at traditional bed height."
+      },
+      "after": {
+        "title": "Standard Profile 9\" Box\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Standard Profile 9\" Box Spring Foundation in Los Angeles includes free delivery with mattress. Queen from $259 offers rigid flat support at traditional bed height."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/1355038982234",
+      "handle": "twin-xl-restonic-mattress-clearance-enchantment-latex-firm-12",
+      "productTitle": "Twin XL Restonic Natural Latex Collection Enchantment Firm 12\" FLOOR SAMPLE Clearance Mattress",
+      "vendor": "Restonic",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Twin XL Restonic Natural\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Twin XL Restonic Natural Latex Collection Enchantment Firm 12\" FLOOR SAMPLE Clearance Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/1606501662810",
+      "handle": "low-profile-flat-box-spring-mattress-foundation",
+      "productTitle": "Low Profile 4\" Box Spring Flat Universal Foundation",
+      "vendor": "Eastman House",
+      "before": {
+        "title": null,
+        "description": "Low Profile 4\" Box Spring Foundation in Los Angeles includes free delivery with mattress. Queen from $259 offers rigid support at lower bed height."
+      },
+      "after": {
+        "title": "Low Profile 4\" Box Spring\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Low Profile 4\" Box Spring Foundation in Los Angeles includes free delivery with mattress. Queen from $259 offers rigid support at lower bed height."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/1606506446938",
+      "handle": "bunkie-board-mattress-foundation",
+      "productTitle": "Bunkie Board 2\" Ultra Low Flat Foundation",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Bunkie Board 2\" foundation in Los Angeles includes free delivery with mattress. Ultra-low profile rigid support for mattresses on platform beds or bunk beds."
+      },
+      "after": {
+        "title": "Bunkie Board 2\" Ultra Low\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Bunkie Board 2\" foundation in Los Angeles includes free delivery with mattress. Ultra-low profile rigid support for mattresses on platform beds or bunk beds."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/1830287376474",
+      "handle": "tempur-pedic-tempur-proadapt-soft-mattress",
+      "productTitle": "Tempur-Pedic TEMPUR-ProAdapt\u00ae Soft 12\" Mattress",
+      "vendor": "Tempur-Pedic",
+      "before": {
+        "title": null,
+        "description": "The Tempur-Pedic TEMPUR-ProAdapt\u00ae Soft 12\" Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this plush and supportive mattress."
+      },
+      "after": {
+        "title": "Tempur-Pedic TEMPUR-ProAdapt\u00ae\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "The Tempur-Pedic TEMPUR-ProAdapt\u00ae Soft 12\" Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this plush and supportive mattress."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/1830294913114",
+      "handle": "tempur-pedic-tempur-proadapt-medium-hybrid",
+      "productTitle": "Tempur-Pedic TEMPUR-ProAdapt\u00ae Medium Hybrid 12\" Mattress",
+      "vendor": "Tempur-Pedic",
+      "before": {
+        "title": null,
+        "description": "The Tempur-Pedic TEMPUR-ProAdapt\u00ae Medium Hybrid 12\" Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this medium firmness hybrid mattress."
+      },
+      "after": {
+        "title": "Tempur-Pedic TEMPUR-ProAdapt\u00ae\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "The Tempur-Pedic TEMPUR-ProAdapt\u00ae Medium Hybrid 12\" Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this medium firmness hybrid mattress."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/1830299140186",
+      "handle": "tempur-pedic-tempur-proadapt-firm-mattress",
+      "productTitle": "Tempur-Pedic TEMPUR-ProAdapt\u00ae Firm 12\" Mattress",
+      "vendor": "Tempur-Pedic",
+      "before": {
+        "title": null,
+        "description": "The Tempur-Pedic TEMPUR-ProAdapt\u00ae Firm 12\" Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this firm and supportive mattress."
+      },
+      "after": {
+        "title": "Tempur-Pedic TEMPUR-ProAdapt\u00ae\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "The Tempur-Pedic TEMPUR-ProAdapt\u00ae Firm 12\" Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this firm and supportive mattress."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/1831691845722",
+      "handle": "tempur-pedic-tempur-luxeadapt-firm-mattress",
+      "productTitle": "Tempur-Pedic TEMPUR-LuxeAdapt\u00ae 13\" Firm Mattress",
+      "vendor": "Tempur-Pedic",
+      "before": {
+        "title": null,
+        "description": "The Tempur-Pedic TEMPUR-LuxeAdapt\u00ae 13\" Firm Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this luxurious firm mattress."
+      },
+      "after": {
+        "title": "Tempur-Pedic\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "The Tempur-Pedic TEMPUR-LuxeAdapt\u00ae 13\" Firm Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this luxurious firm mattress."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/4180612776026",
+      "handle": "tempur-pedic-tempur-adapt-medium-mattress",
+      "productTitle": "Tempur-Pedic TEMPUR-Adapt\u00ae 11\" Medium Mattress",
+      "vendor": "Tempur-Pedic",
+      "before": {
+        "title": null,
+        "description": "The Tempur-Pedic TEMPUR-Adapt\u00ae 11\" Medium Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this medium firmness mattress."
+      },
+      "after": {
+        "title": "Tempur-Pedic TEMPUR-Adapt\u00ae\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "The Tempur-Pedic TEMPUR-Adapt\u00ae 11\" Medium Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this medium firmness mattress."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7459998630141",
+      "handle": "rock-extra-firm-mattress-diamond-mattress",
+      "productTitle": "Diamond Rock Extra Firm 12\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Rock Extra Firm 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers the firmest Diamond innerspring with 20-year warranty."
+      },
+      "after": {
+        "title": "Diamond Rock Extra Firm 12\"\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Rock Extra Firm 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers the firmest Diamond innerspring with 20-year warranty."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7492709253373",
+      "handle": "firm-lucille-natural-latex-generation-diamond-mattress",
+      "productTitle": "Diamond Lucille Firm Natural Latex Lux Euro Top 15\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Lucille Firm Natural Latex 15\" mattress in Los Angeles includes free delivery. Queen from $3,899 offers natural Talalay latex with organic cotton and pocketed coil support."
+      },
+      "after": {
+        "title": "Diamond Lucille Firm Natural\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Lucille Firm Natural Latex 15\" mattress in Los Angeles includes free delivery. Queen from $3,899 offers natural Talalay latex with organic cotton and pocketed coil support."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7492730028285",
+      "handle": "medium-lucille-luxury-natural-latex-diamond-mattress",
+      "productTitle": "Diamond Lucille Medium Natural Latex Luxury Euro Top 15\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Lucille Medium Natural Latex 15\" mattress in Los Angeles includes free delivery. Queen from $3,899 offers natural Talalay latex with organic cotton for all sleeping positions."
+      },
+      "after": {
+        "title": "Diamond Lucille Medium\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Lucille Medium Natural Latex 15\" mattress in Los Angeles includes free delivery. Queen from $3,899 offers natural Talalay latex with organic cotton for all sleeping positions."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7492892590333",
+      "handle": "plush-lucille-luxury-natural-latex-diamond-mattress",
+      "productTitle": "Diamond Lucille Plush Natural Latex Lux Euro Top 15\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Lucille Plush Natural Latex 15\" mattress in Los Angeles includes free delivery. Queen from $3,899 offers plush Talalay latex with organic cotton for side sleepers."
+      },
+      "after": {
+        "title": "Diamond Lucille Plush Natural\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Lucille Plush Natural Latex 15\" mattress in Los Angeles includes free delivery. Queen from $3,899 offers plush Talalay latex with organic cotton for side sleepers."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7492996923645",
+      "handle": "firm-diana-luxury-natural-latex-euro-top-diamond-mattress",
+      "productTitle": "Diamond Diana Firm Natural Latex Lux Euro Top 14\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Diana Firm Natural Latex 14\" mattress in Los Angeles includes free delivery. Queen from $3,549 offers natural Talalay latex with organic cotton and 20-year warranty."
+      },
+      "after": {
+        "title": "Diamond Diana Firm Natural\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Diana Firm Natural Latex 14\" mattress in Los Angeles includes free delivery. Queen from $3,549 offers natural Talalay latex with organic cotton and 20-year warranty."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7493014814973",
+      "handle": "diana-natural-latex-luxury-plush-euro-top-diamond-mattress",
+      "productTitle": "Diamond Diana Plush Natural Latex Lux Euro Top 16\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Diana Plush Natural Latex 16\" mattress in Los Angeles includes free delivery. Queen from $3,549 offers plush Talalay latex cushioning for side sleepers."
+      },
+      "after": {
+        "title": "Diamond Diana Plush Natural\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Diana Plush Natural Latex 16\" mattress in Los Angeles includes free delivery. Queen from $3,549 offers plush Talalay latex cushioning for side sleepers."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7525653184765",
+      "handle": "tempur-flat-foundation-by-tempur-pedic",
+      "productTitle": "TEMPUR-Flat\u00ae High 9\" Box Spring Flat Foundation by TEMPUR-Pedic",
+      "vendor": "Tempur-Pedic",
+      "before": {
+        "title": null,
+        "description": "TEMPUR-Flat foundation by Tempur-Pedic. Standard height (5\") flat base designed for Tempur-Pedic mattresses. Solid, reliable mattress support."
+      },
+      "after": {
+        "title": "TEMPUR-Flat\u00ae High 9\" Box\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "TEMPUR-Flat foundation by Tempur-Pedic. Standard height (5\") flat base designed for Tempur-Pedic mattresses. Solid, reliable mattress support."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7529048113405",
+      "handle": "copy-of-tempur-flat-standard-flat-foundation-high-9-by-tempur-pedic",
+      "productTitle": "TEMPUR-Flat\u00ae Low Profile 5\" Box Spring Flat Foundation by Tempur-Pedic",
+      "vendor": "Tempur-Pedic",
+      "before": {
+        "title": null,
+        "description": "TEMPUR-Flat high profile foundation (9\") by Tempur-Pedic. Extra height flat base for easier bed entry. Perfect pairing for any Tempur-Pedic mattress."
+      },
+      "after": {
+        "title": "TEMPUR-Flat\u00ae Low Profile 5\"\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "TEMPUR-Flat high profile foundation (9\") by Tempur-Pedic. Extra height flat base for easier bed entry. Perfect pairing for any Tempur-Pedic mattress."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7572459159805",
+      "handle": "micha-luxury-firm-by-eastman-house",
+      "productTitle": "Eastman House Micah Firm 12.5\" Mattress",
+      "vendor": "Eastman House",
+      "before": {
+        "title": null,
+        "description": "Eastman House Micah Firm 12.5\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers firm support with a touch of surface comfort."
+      },
+      "after": {
+        "title": "Eastman House Micah Firm\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Eastman House Micah Firm 12.5\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers firm support with a touch of surface comfort."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7575642636541",
+      "handle": "royal-sands-luxury-firm-by-eastman-house",
+      "productTitle": "Eastman House Royal Sands Firm Luxury Gel Memory Foam 13.5\" Mattress",
+      "vendor": "Eastman House",
+      "before": {
+        "title": null,
+        "description": "Eastman House Royal Sands Firm Gel Memory Foam 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,899 offers gel-infused cooling foam with pocketed coil hybrid support."
+      },
+      "after": {
+        "title": "Eastman House Royal Sands\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Eastman House Royal Sands Firm Gel Memory Foam 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,899 offers gel-infused cooling foam with pocketed coil hybrid support."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7614751244541",
+      "handle": "spruce-firm-innerspring-by-eclipse-mattress",
+      "productTitle": "Eastman House Spruce Firm 9\" Mattress",
+      "vendor": "Eastman House",
+      "before": {
+        "title": null,
+        "description": "Eastman House Spruce Firm 9\" mattress in Los Angeles includes free delivery. Queen from $749 offers firm innerspring support from a 160-year American heritage brand."
+      },
+      "after": {
+        "title": "Eastman House Spruce Firm 9\"\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Eastman House Spruce Firm 9\" mattress in Los Angeles includes free delivery. Queen from $749 offers firm innerspring support from a 160-year American heritage brand."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7614761763069",
+      "handle": "spruce-plush-pillow-top-innerspring-by-eastman-house",
+      "productTitle": "Eastman House Spruce Medium Pillow Top 11\" Mattress",
+      "vendor": "Eastman House",
+      "before": {
+        "title": null,
+        "description": "Eastman House Spruce Medium Pillow Top 11\" mattress in Los Angeles includes free delivery. Queen from $949 offers pillow top comfort at an entry-level price from a 160-year brand."
+      },
+      "after": {
+        "title": "Eastman House Spruce Medium\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Eastman House Spruce Medium Pillow Top 11\" mattress in Los Angeles includes free delivery. Queen from $949 offers pillow top comfort at an entry-level price from a 160-year brand."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7635440435453",
+      "handle": "diana-natural-latex-luxury-medium-euro-top-by-diamond-mattress",
+      "productTitle": "Diamond Diana Medium Natural Latex Lux Euro Top 15.5\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Diana Medium Natural Latex 15.5\" mattress in Los Angeles includes free delivery. Queen from $3,549 offers balanced natural Talalay latex for all sleeping positions."
+      },
+      "after": {
+        "title": "Diamond Diana Medium Natural\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Diana Medium Natural Latex 15.5\" mattress in Los Angeles includes free delivery. Queen from $3,549 offers balanced natural Talalay latex for all sleeping positions."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7637667447037",
+      "handle": "topaz-diamond-mattress",
+      "productTitle": "Diamond Dreamstage Value Collection Topaz Firm Tight Top 7\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Topaz Firm 7\" mattress in Los Angeles includes free delivery. Queen from $399 offers California-made innerspring quality with 20-year warranty."
+      },
+      "after": {
+        "title": "Diamond Dreamstage Value\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Topaz Firm 7\" mattress in Los Angeles includes free delivery. Queen from $399 offers California-made innerspring quality with 20-year warranty."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7680034832637",
+      "handle": "royal-sands-luxury-pillow-top-by-eastman-house",
+      "productTitle": "Eastman House Royal Sands Medium Luxury Gel Memory Foam Pillow Top 14\" Mattress",
+      "vendor": "Eastman House",
+      "before": {
+        "title": null,
+        "description": "Eastman House Royal Sands Medium Gel Memory Foam Pillow Top 14\" mattress in Los Angeles includes free delivery. Queen from $1,999 offers gel foam pillow top with pocketed coil motion isolation."
+      },
+      "after": {
+        "title": "Eastman House Royal Sands\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Eastman House Royal Sands Medium Gel Memory Foam Pillow Top 14\" mattress in Los Angeles includes free delivery. Queen from $1,999 offers gel foam pillow top with pocketed coil motion isolation."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7682934866173",
+      "handle": "luxe-gel-memory-foam-plush-by-venus-mattress-limited-stock-may-not-be-available",
+      "productTitle": "Twin XL Venus Mattress Luxe Hybrid Gel Memory Foam Plush 13\" Discontinued Clearance Mattress",
+      "vendor": "Venus",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Twin XL Venus Mattress Luxe\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Twin XL Venus Mattress Luxe Hybrid Gel Memory Foam Plush 13\" Discontinued Clearance Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery,..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/7729455988989",
+      "handle": "smokey-low-profile-4-box-spring-flat-metal-foundation",
+      "productTitle": "Smokey Low Profile 5\" Metal Box Spring Flat Foundation",
+      "vendor": "Southerland",
+      "before": {
+        "title": null,
+        "description": "Smokey 4\" low profile box spring metal foundation. Slim design reduces bed height while providing solid mattress support. All sizes available."
+      },
+      "after": {
+        "title": "Smokey Low Profile 5\" Metal\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Smokey 4\" low profile box spring metal foundation. Slim design reduces bed height while providing solid mattress support. All sizes available."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7729460412669",
+      "handle": "smokey-standard-profile-9-metal-box-spring-flat-foundation",
+      "productTitle": "Smokey Standard Profile 9\" Metal Box Spring Flat Foundation",
+      "vendor": "Southerland",
+      "before": {
+        "title": null,
+        "description": "Smokey 9\" standard profile metal box spring foundation. Classic height flat foundation with steel construction. Reliable support for any mattress."
+      },
+      "after": {
+        "title": "Smokey Standard Profile 9\"\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Smokey 9\" standard profile metal box spring foundation. Classic height flat foundation with steel construction. Reliable support for any mattress."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7743594135805",
+      "handle": "lismore-luxury-firm-mattress-palace-collection-by-chattam-wells",
+      "productTitle": "Chattam & Wells Lismore Luxury Firm 13\" Mattress",
+      "vendor": "Chattam & Wells",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Chattam & Wells Lismore\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Chattam & Wells Lismore Luxury Firm 13\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/7743694799101",
+      "handle": "miramare-luxury-mattress-palace-collection-by-chattam-wells-1",
+      "productTitle": "Chattam & Wells Miramare Luxury Firm 13\" Mattress",
+      "vendor": "Chattam & Wells",
+      "before": {
+        "title": null,
+        "description": "Chattam & Wells Miramare luxury mattress from the Palace Collection. Handcrafted with premium materials for exceptional comfort and lasting support."
+      },
+      "after": {
+        "title": "Chattam & Wells Miramare\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Chattam & Wells Miramare luxury mattress from the Palace Collection. Handcrafted with premium materials for exceptional comfort and lasting support."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/7743697944829",
+      "handle": "chantilly-luxury-mattress-palace-collection-by-chattam-wells",
+      "productTitle": "Chattam & Wells Chantilly Luxury Plush 14.5\" Mattress",
+      "vendor": "Chattam & Wells",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Chattam & Wells Chantilly\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Chattam & Wells Chantilly Luxury Plush 14.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR fina..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/7743731302653",
+      "handle": "ashford-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
+      "productTitle": "Chattam & Wells The Ashford Luxury Medium Euro Top 15.5\" Mattress",
+      "vendor": "Chattam & Wells",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Chattam & Wells The Ashford\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Chattam & Wells The Ashford Luxury Medium Euro Top 15.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange,..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/7744266633469",
+      "handle": "kensington-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
+      "productTitle": "Chattam & Wells Kensington Medium Luxury Euro Top 17\" Mattress",
+      "vendor": "Chattam & Wells",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Chattam & Wells Kensington\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Chattam & Wells Kensington Medium Luxury Euro Top 17\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0%..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/7744316244221",
+      "handle": "chattam-heavy-duty-low-profile-4-foundation-palace-collection-by-chattam-wells",
+      "productTitle": "Chattam & Wells Heavy Duty 4\" Foundation",
+      "vendor": "Chattam & Wells",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Chattam & Wells Heavy Duty 4\"\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Chattam & Wells Heavy Duty 4\" Foundation at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/7744316932349",
+      "handle": "chattam-wells-heavy-duty-9-foundation",
+      "productTitle": "Chattam & Wells Heavy Duty 9\" Foundation",
+      "vendor": "Chattam & Wells",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Chattam & Wells Heavy Duty 9\"\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Chattam & Wells Heavy Duty 9\" Foundation at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/8102754091261",
+      "handle": "progel-8-memory-diamond-mattress",
+      "productTitle": "Diamond ProGel Memory Foam 8\" Firm Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond ProGel Firm 8\" memory foam mattress in Los Angeles includes free delivery. Queen from $959 offers compact gel foam bed-in-a-box with 20-year warranty."
+      },
+      "after": {
+        "title": "Diamond ProGel Memory Foam 8\"\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond ProGel Firm 8\" memory foam mattress in Los Angeles includes free delivery. Queen from $959 offers compact gel foam bed-in-a-box with 20-year warranty."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8647917109501",
+      "handle": "eclipse-glacier-tufted-firm-euro-top-15-mattress",
+      "productTitle": "Eclipse Ice Tufted Firm Euro Top 15\" Mattress",
+      "vendor": "Eclipse",
+      "before": {
+        "title": null,
+        "description": "Eclipse Glacier 15\" tufted firm euro top mattress. Gel-infused cooling foam with firm pocketed coil support. Great value for back and stomach sleepers."
+      },
+      "after": {
+        "title": "Eclipse Ice Tufted Firm Euro\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Eclipse Glacier 15\" tufted firm euro top mattress. Gel-infused cooling foam with firm pocketed coil support. Great value for back and stomach sleepers."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8920921506045",
+      "handle": "diamond-dreamstage-2-0-collection-clarity-medium-cool-copper-gel-memory-foam-13-mattress",
+      "productTitle": "Diamond Dreamstage 2.0 Collection Clarity Medium Cool Copper Gel Memory Foam 13\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Clarity Medium All-Foam 13\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers copper-infused cool gel memory foam for all sleeping positions."
+      },
+      "after": {
+        "title": "Diamond Dreamstage 2.0\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Clarity Medium All-Foam 13\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers copper-infused cool gel memory foam for all sleeping positions."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8920932942077",
+      "handle": "diamond-dreamstage-2-0-collection-clarity-plush-cool-copper-gel-memory-foam-13-mattress",
+      "productTitle": "Diamond Dreamstage 2.0 Collection Clarity Plush Cool Copper Gel Memory Foam 13\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Clarity Plush All-Foam 13\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers plush copper-infused memory foam for side sleepers."
+      },
+      "after": {
+        "title": "Diamond Dreamstage 2.0\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Clarity Plush All-Foam 13\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers plush copper-infused memory foam for side sleepers."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8922225901821",
+      "handle": "diamond-dreamstage-2-0-collection-glory-firm-cool-gel-swirl-memory-foam-12-mattress",
+      "productTitle": "Diamond Dreamstage 2.0 Collection Glory Firm Cool Gel Swirl Memory Foam 12\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Glory Firm Cool Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers gel swirl cooling foam made in California with 20-year warranty."
+      },
+      "after": {
+        "title": "Diamond Dreamstage 2.0\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Glory Firm Cool Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers gel swirl cooling foam made in California with 20-year warranty."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8922241106173",
+      "handle": "diamond-glory-plush-cool-gel-swirl-memory-foam-12-mattress",
+      "productTitle": "Diamond Dreamstage 2.0 Collection Glory Plush Cool Gel Swirl Memory Foam 12\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Glory Plush Cool Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers plush gel swirl foam for side sleepers."
+      },
+      "after": {
+        "title": "Diamond Dreamstage 2.0\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Glory Plush Cool Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers plush gel swirl foam for side sleepers."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8922245136637",
+      "handle": "diamond-glory-medium-cool-gel-swirl-memory-foam-12-mattress",
+      "productTitle": "Diamond Dreamstage 2.0 Collection Glory Medium Cool Gel Swirl Memory Foam 12\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Glory Medium Cool Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers balanced gel swirl comfort for all positions."
+      },
+      "after": {
+        "title": "Diamond Dreamstage 2.0\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Glory Medium Cool Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers balanced gel swirl comfort for all positions."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8922380566781",
+      "handle": "diamond-dreamstage-2-0-collection-medium-titanium-memory-foam-euro-top-16-mattress",
+      "productTitle": "Diamond Dreamstage 2.0 Collection Tranquility Medium Titanium Memory Foam Euro Top 16\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Tranquility Medium Euro Top 16\" mattress in Los Angeles includes free delivery. Queen from $1,799 offers titanium foam euro top with innerspring support."
+      },
+      "after": {
+        "title": "Diamond Dreamstage 2.0\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Tranquility Medium Euro Top 16\" mattress in Los Angeles includes free delivery. Queen from $1,799 offers titanium foam euro top with innerspring support."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8927682593021",
+      "handle": "diamond-dreamstage-2-0-collection-tranquility-plush-titanium-memory-foam-euro-top-16-mattress",
+      "productTitle": "Diamond Dreamstage 2.0 Collection Tranquility Plush Titanium Memory Foam Euro Top 16\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Tranquility Plush Euro Top 16\" mattress in Los Angeles includes free delivery. Queen from $1,799 offers plush titanium foam euro top for side sleepers."
+      },
+      "after": {
+        "title": "Diamond Dreamstage 2.0\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Tranquility Plush Euro Top 16\" mattress in Los Angeles includes free delivery. Queen from $1,799 offers plush titanium foam euro top for side sleepers."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8933303681277",
+      "handle": "diamond-dreamstage-collection-2-0-grace-firm-gel-swirl-memory-foam-12-mattress",
+      "productTitle": "Diamond Dreamstage Collection 2.0 Grace Firm Gel Swirl Memory Foam 12\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Grace Firm Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers California-made Diamond quality with 20-year warranty."
+      },
+      "after": {
+        "title": "Diamond Dreamstage Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Grace Firm Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers California-made Diamond quality with 20-year warranty."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8933308498173",
+      "handle": "diamond-dreamstage-2-0-grace-plush-gel-swirl-memory-foam-12-mattress",
+      "productTitle": "Diamond Dreamstage 2.0 Grace Plush Gel Swirl Memory Foam 12\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Grace Plush Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers plush gel foam for side sleepers at entry-level price."
+      },
+      "after": {
+        "title": "Diamond Dreamstage 2.0 Grace\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Grace Plush Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers plush gel foam for side sleepers at entry-level price."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8933319311613",
+      "handle": "diamond-dreamstage-2-0-medium-gel-swirl-memory-foam-12-mattress",
+      "productTitle": "Diamond Dreamstage 2.0 Collection Grace Quilted Medium 12\" Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Diamond Grace Quilted Medium 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers quilted gel swirl foam for all sleeping positions."
+      },
+      "after": {
+        "title": "Diamond Dreamstage 2.0\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Diamond Grace Quilted Medium 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers quilted gel swirl foam for all sleeping positions."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8934183305469",
+      "handle": "spring-air-back-supporter-francesca-plush-mattress",
+      "productTitle": "Spring Air Back Supporter Francesca Plush Hybrid Euro Top 13.5\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Francesca Plush Euro Top Hybrid 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers Back Supporter lumbar support with plush euro top cushioning."
+      },
+      "after": {
+        "title": "Spring Air Back Supporter\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Francesca Plush Euro Top Hybrid 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers Back Supporter lumbar support with plush euro top cushioning."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8934742950141",
+      "handle": "spring-air-back-supporter-francesca-medium-mattress",
+      "productTitle": "Spring Air Back Supporter Francesca Medium Hybrid 13.5\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Francesca Medium Hybrid 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers Back Supporter lumbar zoning with balanced medium hybrid comfort."
+      },
+      "after": {
+        "title": "Spring Air Back Supporter\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Francesca Medium Hybrid 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers Back Supporter lumbar zoning with balanced medium hybrid comfort."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8934754287869",
+      "handle": "spring-air-back-supporter-francesca-firm-hybrid-mattress",
+      "productTitle": "Spring Air Back Supporter Francesca Firm Hybrid 13.5\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Francesca Firm Hybrid 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers Back Supporter lumbar zoning with pocketed coil hybrid support."
+      },
+      "after": {
+        "title": "Spring Air Back Supporter\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Francesca Firm Hybrid 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers Back Supporter lumbar zoning with pocketed coil hybrid support."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8938245849341",
+      "handle": "spring-air-back-supporter-hybrid-kaylee-extra-firm-14-mattress",
+      "productTitle": "Spring Air Back Supporter Hybrid Kaylee Extra Firm 14\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Kaylee Extra Firm 14\" hybrid mattress in Los Angeles includes free delivery. Queen from $1,499 offers premium Back Supporter with 8-Series pocketed coils for maximum support."
+      },
+      "after": {
+        "title": "Spring Air Back Supporter\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Kaylee Extra Firm 14\" hybrid mattress in Los Angeles includes free delivery. Queen from $1,499 offers premium Back Supporter with 8-Series pocketed coils for maximum support."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8939012489469",
+      "handle": "spring-air-back-supporter-hybrid-kaylee-plush-14-mattress",
+      "productTitle": "Spring Air Back Supporter Hybrid Kaylee Plush 15.5\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Kaylee Plush 15.5\" hybrid mattress in Los Angeles includes free delivery. Queen from $1,499 offers premium Back Supporter 8-Series coils with plush euro top cushioning."
+      },
+      "after": {
+        "title": "Spring Air Back Supporter\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Kaylee Plush 15.5\" hybrid mattress in Los Angeles includes free delivery. Queen from $1,499 offers premium Back Supporter 8-Series coils with plush euro top cushioning."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8941921009917",
+      "handle": "spring-air-back-supporter-hybrid-kaylee-medium-15-5-mattress",
+      "productTitle": "Spring Air Back Supporter Hybrid Kaylee Medium 15.5\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Kaylee Medium 15.5\" hybrid mattress in Los Angeles includes free delivery. Queen from $1,499 offers premium Back Supporter 8-Series coils with balanced medium comfort."
+      },
+      "after": {
+        "title": "Spring Air Back Supporter\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Kaylee Medium 15.5\" hybrid mattress in Los Angeles includes free delivery. Queen from $1,499 offers premium Back Supporter 8-Series coils with balanced medium comfort."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8945852285181",
+      "handle": "spring-air-aria-medium-mattress",
+      "productTitle": "Spring Air Value Collection Aria Medium 11\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Aria Medium 11\" mattress in Los Angeles includes free delivery. Queen from $799 offers balanced medium innerspring comfort from a 100-year American brand."
+      },
+      "after": {
+        "title": "Spring Air Value Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Aria Medium 11\" mattress in Los Angeles includes free delivery. Queen from $799 offers balanced medium innerspring comfort from a 100-year American brand."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8945886855421",
+      "handle": "spring-air-medium-gel-memory-foam-euro-top-13-mattress",
+      "productTitle": "Spring Air Value Collection Blair Plush Gel Memory Foam Euro Top 15\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Blair Plush Gel Memory Foam Euro Top 15\" mattress in Los Angeles includes free delivery. Queen from $1,439 offers plush gel foam euro top comfort."
+      },
+      "after": {
+        "title": "Spring Air Value Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Blair Plush Gel Memory Foam Euro Top 15\" mattress in Los Angeles includes free delivery. Queen from $1,439 offers plush gel foam euro top comfort."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8945935286525",
+      "handle": "spring-air-blair-extra-firm-gel-memory-foam-13-mattress",
+      "productTitle": "Spring Air Value Collection Blair Extra Firm Gel Memory Foam 13\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Blair Extra Firm Gel Memory Foam 13\" mattress in Los Angeles includes free delivery. Queen from $1,249 offers the firmest gel foam in the Value Collection."
+      },
+      "after": {
+        "title": "Spring Air Value Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Blair Extra Firm Gel Memory Foam 13\" mattress in Los Angeles includes free delivery. Queen from $1,249 offers the firmest gel foam in the Value Collection."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8945969922301",
+      "handle": "spring-air-value-collection-erin-medium-euro-top-12-mattress",
+      "productTitle": "Spring Air Value Collection Erin Medium Euro Top 12\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Erin Medium Euro Top 12\" mattress in Los Angeles includes free delivery. Queen from $899 offers euro top cushioning on innerspring support at an accessible price."
+      },
+      "after": {
+        "title": "Spring Air Value Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Erin Medium Euro Top 12\" mattress in Los Angeles includes free delivery. Queen from $899 offers euro top cushioning on innerspring support at an accessible price."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8945989583101",
+      "handle": "spring-air-value-collection-lexi-plush-gel-memory-foam-tight-top-11-mattress",
+      "productTitle": "Spring Air Value Collection Lexi Plush Gel Memory Foam 13.5\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Lexi Plush Gel Memory Foam 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,049 offers plush gel cooling foam for side sleepers."
+      },
+      "after": {
+        "title": "Spring Air Value Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Lexi Plush Gel Memory Foam 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,049 offers plush gel cooling foam for side sleepers."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8950179561725",
+      "handle": "spring-air-value-collection-blair-plush-gel-memory-foam-euro-top-16-mattress",
+      "productTitle": "Spring Air Value Collection Demi Ultra Plush Gel Memory Foam Euro Top 16\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Demi Ultra Plush Gel Memory Foam Euro Top 16\" mattress in Los Angeles includes free delivery. Queen from $1,349 offers the softest, tallest Value Collection mattress."
+      },
+      "after": {
+        "title": "Spring Air Value Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Demi Ultra Plush Gel Memory Foam Euro Top 16\" mattress in Los Angeles includes free delivery. Queen from $1,349 offers the softest, tallest Value Collection mattress."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8950685958397",
+      "handle": "spring-air-value-collection-lexi-medium-gel-memory-foam-13-5-mattress",
+      "productTitle": "Spring Air Value Collection Lexi Medium Gel Memory Foam 13.5\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Lexi Medium Gel Memory Foam 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,049 offers gel-infused cooling foam with medium comfort for all positions."
+      },
+      "after": {
+        "title": "Spring Air Value Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Lexi Medium Gel Memory Foam 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,049 offers gel-infused cooling foam with medium comfort for all positions."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8950802612477",
+      "handle": "spring-air-value-collection-lexi-plush-gel-memory-foam-euro-top-14-5-mattress",
+      "productTitle": "Spring Air Value Collection Lexi Gel Memory Foam Euro Top 14.5\" Mattress",
+      "vendor": "Spring Air",
+      "before": {
+        "title": null,
+        "description": "Spring Air Lexi Gel Memory Foam Euro Top 14.5\" mattress in Los Angeles includes free delivery. Queen from $1,199 offers gel foam euro top with maximum Lexi cushioning."
+      },
+      "after": {
+        "title": "Spring Air Value Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Spring Air Lexi Gel Memory Foam Euro Top 14.5\" mattress in Los Angeles includes free delivery. Queen from $1,199 offers gel foam euro top with maximum Lexi cushioning."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/8955388461309",
+      "handle": "stearns-foster-estate-medium-mattress",
+      "productTitle": "Stearns & Foster Estate\u00ae Medium 14.5\" Mattress",
+      "vendor": "Stearns & Foster",
+      "before": {
+        "title": null,
+        "description": "Stearns & Foster Estate Medium 14.5\" mattress in Los Angeles includes free delivery. Queen from $1,999 offers IntelliCoil HD with balanced comfort foam for all positions."
+      },
+      "after": {
+        "title": "Stearns & Foster Estate\u00ae\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Stearns & Foster Estate Medium 14.5\" mattress in Los Angeles includes free delivery. Queen from $1,999 offers IntelliCoil HD with balanced comfort foam for all positions."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9090515173629",
+      "handle": "southerland-cobalt-medium-13-mattress",
+      "productTitle": "Southerland Cobalt Medium 13.5\" Mattress",
+      "vendor": "Southerland",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Southerland Cobalt Medium\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Southerland Cobalt Medium 13.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/9090516353277",
+      "handle": "southerland-cobalt-firm-13-mattress",
+      "productTitle": "Southerland Cobalt Firm 13\" Mattress",
+      "vendor": "Southerland",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Southerland Cobalt Firm 13\"\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Southerland Cobalt Firm 13\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/9090516746493",
+      "handle": "southerland-cobalt-extra-firm-13-mattress",
+      "productTitle": "Southerland Cobalt Extra Firm 13\" Mattress",
+      "vendor": "Southerland",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Southerland Cobalt Extra Firm\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Southerland Cobalt Extra Firm 13\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/9095906263293",
+      "handle": "englander-amsbury-plush-mattress",
+      "productTitle": "Englander Amesbury Plush 14.5\" Mattress",
+      "vendor": "Englander",
+      "before": {
+        "title": null,
+        "description": "Englander Amesbury Plush 14.5\" mattress in Los Angeles includes free delivery. Queen from $1,199 offers plush innerspring comfort for side sleepers from America's oldest brand."
+      },
+      "after": {
+        "title": "Englander Amesbury Plush\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Englander Amesbury Plush 14.5\" mattress in Los Angeles includes free delivery. Queen from $1,199 offers plush innerspring comfort for side sleepers from America's oldest brand."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9095982547197",
+      "handle": "englander-everest-luxury-firm-mattress",
+      "productTitle": "Englander Everest Luxury Firm Box Top 14\" Mattress",
+      "vendor": "Englander",
+      "before": {
+        "title": null,
+        "description": "Englander Everest Luxury Firm Box Top 14\" mattress in Los Angeles includes free delivery. Queen from $1,899 offers copper foam cooling with box top comfort and Edge technology."
+      },
+      "after": {
+        "title": "Englander Everest Luxury Firm\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Englander Everest Luxury Firm Box Top 14\" mattress in Los Angeles includes free delivery. Queen from $1,899 offers copper foam cooling with box top comfort and Edge technology."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9096004174077",
+      "handle": "englander-everest-luxury-extra-firm-box-top-14-mattress",
+      "productTitle": "Englander Everest Luxury Extra Firm Euro Top 14\" Mattress",
+      "vendor": "Englander",
+      "before": {
+        "title": null,
+        "description": "Englander Everest Extra Firm Euro Top 14\" mattress in Los Angeles includes free delivery. Queen from $1,899 offers copper-infused cooling with Englander Edge technology."
+      },
+      "after": {
+        "title": "Englander Everest Luxury\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Englander Everest Extra Firm Euro Top 14\" mattress in Los Angeles includes free delivery. Queen from $1,899 offers copper-infused cooling with Englander Edge technology."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9096022491389",
+      "handle": "englander-everest-luxury-plush-box-top-mattress",
+      "productTitle": "Englander Everest Luxury Plush Euro Top 14\" Mattress",
+      "vendor": "Englander",
+      "before": {
+        "title": null,
+        "description": "Englander Everest Luxury Plush Euro Top 14\" mattress in Los Angeles includes free delivery. Queen from $1,899 offers plush copper foam cooling for side sleepers who run hot."
+      },
+      "after": {
+        "title": "Englander Everest Luxury\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Englander Everest Luxury Plush Euro Top 14\" mattress in Los Angeles includes free delivery. Queen from $1,899 offers plush copper foam cooling for side sleepers who run hot."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9096049590525",
+      "handle": "englander-allendale-luxury-plush-box-top-17-mattress",
+      "productTitle": "Englander Allendale Luxury Ultra Plush Box Top 17\" Mattress",
+      "vendor": "Englander",
+      "before": {
+        "title": null,
+        "description": "Englander Allendale Ultra Plush Box Top 17\" mattress in Los Angeles includes free delivery. Queen from $2,499 offers ultra plush natural copper Talalay latex with Phase Change cooling."
+      },
+      "after": {
+        "title": "Englander Allendale Luxury\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Englander Allendale Ultra Plush Box Top 17\" mattress in Los Angeles includes free delivery. Queen from $2,499 offers ultra plush natural copper Talalay latex with Phase Change cooling."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9096064499965",
+      "handle": "englander-allendale-luxury-firm-box-top-17-mattress",
+      "productTitle": "Englander Allendale Luxury Firm Box Top 17\" Mattress",
+      "vendor": "Englander",
+      "before": {
+        "title": null,
+        "description": "Englander Allendale Luxury Firm Box Top 17\" mattress in Los Angeles includes free delivery. Queen from $2,499 offers natural copper Talalay latex with Phase Change cooling."
+      },
+      "after": {
+        "title": "Englander Allendale Luxury\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Englander Allendale Luxury Firm Box Top 17\" mattress in Los Angeles includes free delivery. Queen from $2,499 offers natural copper Talalay latex with Phase Change cooling."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9096083439869",
+      "handle": "englander-oconner-luxury-ultra-plush-box-top-mattress",
+      "productTitle": "Englander O'Conner Luxury Plush Box Top 16.5\" Mattress",
+      "vendor": "Englander",
+      "before": {
+        "title": null,
+        "description": "Englander O'Conner Luxury Plush Box Top 16.5\" mattress in Los Angeles includes free delivery. Queen from $2,299 offers plush Phase Change cooling with 3\u00b0 Cooling Coils."
+      },
+      "after": {
+        "title": "Englander O'Conner Luxury\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Englander O'Conner Luxury Plush Box Top 16.5\" mattress in Los Angeles includes free delivery. Queen from $2,299 offers plush Phase Change cooling with 3\u00b0 Cooling Coils."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9096109752573",
+      "handle": "englander-oconner-luxury-firm-mattress",
+      "productTitle": "Englander O'Conner Luxury Firm Euro Top 16.5\" Mattress",
+      "vendor": "Englander",
+      "before": {
+        "title": null,
+        "description": "Englander O'Conner Luxury Firm Euro Top 16.5\" mattress in Los Angeles includes free delivery. Queen from $2,299 offers Glacier Phase Change cooling with 3\u00b0 Cooling Coils."
+      },
+      "after": {
+        "title": "Englander O'Conner Luxury\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Englander O'Conner Luxury Firm Euro Top 16.5\" mattress in Los Angeles includes free delivery. Queen from $2,299 offers Glacier Phase Change cooling with 3\u00b0 Cooling Coils."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9157860884733",
+      "handle": "helix-sleep-core-collection-midnight-medium-11-5-mattress",
+      "productTitle": "Helix Sleep Core Collection Midnight Medium 11.5\" Mattress",
+      "vendor": "Helix Sleep",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Helix Sleep Core Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Helix Sleep Core Collection Midnight Medium 11.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/9157878808829",
+      "handle": "helix-sleep-core-collection-midnight-luxe-medium-13-5-mattress",
+      "productTitle": "Helix Sleep Luxe Collection Midnight Luxe Medium 13.5\" Mattress",
+      "vendor": "Helix Sleep",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Helix Sleep Luxe Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Helix Sleep Luxe Collection Midnight Luxe Medium 13.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/9157885952253",
+      "handle": "helix-sleep-core-collection-twilight-firm-11-5-mattress",
+      "productTitle": "Helix Sleep Core Collection Twilight Firm 11.5\" Mattress",
+      "vendor": "Helix Sleep",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Helix Sleep Core Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Helix Sleep Core Collection Twilight Firm 11.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR f..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/9157888934141",
+      "handle": "helix-sleep-luxe-collection-twilight-luxe-medium-13-5-mattress",
+      "productTitle": "Helix Sleep Luxe Collection Twilight Luxe Firm 13.5\" Mattress",
+      "vendor": "Helix Sleep",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Helix Sleep Luxe Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Helix Sleep Luxe Collection Twilight Luxe Firm 13.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0%..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/9157891227901",
+      "handle": "helix-luxe-collection-twilight-elite-mattress",
+      "productTitle": "Helix Sleep Elite Collection Twilight Elite Luxury Firm 15\" Mattress",
+      "vendor": "Helix Sleep",
+      "before": {
+        "title": null,
+        "description": "Meet The Helix Twilight Elite the ultimate investment in better sleep for side-sleepers who love a firm mattress with top-of-the-line comfort. Designed for better sleep with with extra contouring to the hips and shoulders for best-in-class support for side-sleepers. Advanced lumbar support \u2014 the ErgoAlign Contour Layer helps alleviate tightness and discomfort. Innovative GlacioTex Cooling Cover feels instantly cool when you get into bed, for that crisp-sheets feeling. Peaceful nights for you and your partner thanks to a microcoil comfort layer that erases any shifts or stirrings. A deeply comfortable, restorative rest with our house-designed SupremeSupport 7.0 Memory Foam for 7x the tension-relieving comfort. Guaranteed to feel perfect,  if you\u2019re not completely satisfied, we\u2019ll help calibrate it with comfort inserts or a seamless exchange. Medium Firm feel: Naturally responsive with little contouring Luxuriously supportive and pressure-relieving Softer under the shoulders to relieve pressure & firmer under the hips for lumbar support Best for: Side sleepers Side sleepers People with lower back pain Anyone who loves a bed with little give and a lot of support Designed and Assembled In Our Arizona Factory Don\u2019t settle for a mattress made overseas with low quality and questionable materials. At Helix, we make our own foam, roll our own coils, and hand-assemble every mattress to ensure the highest quality. The ultimate investment in your sleep, designed to deliver exceptional comfort, advanced cooling, and unparalleled support for years to come. Backed by a Limited Lifetime Warranty."
+      },
+      "after": {
+        "title": "Helix Sleep Elite Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Meet The Helix Twilight Elite the ultimate investment in better sleep for side-sleepers who love a firm mattress with top-of-the-line comfort. Designed for better sleep with with extra contouring to the hips and shoulders for best-in-class support for side-sleepers. Advanced lumbar support \u2014 the ErgoAlign Contour Layer helps alleviate tightness and discomfort. Innovative GlacioTex Cooling Cover feels instantly cool when you get into bed, for that crisp-sheets feeling. Peaceful nights for you and your partner thanks to a microcoil comfort layer that erases any shifts or stirrings. A deeply comfortable, restorative rest with our house-designed SupremeSupport 7.0 Memory Foam for 7x the tension-relieving comfort. Guaranteed to feel perfect,  if you\u2019re not completely satisfied, we\u2019ll help calibrate it with comfort inserts or a seamless exchange. Medium Firm feel: Naturally responsive with little contouring Luxuriously supportive and pressure-relieving Softer under the shoulders to relieve pressure & firmer under the hips for lumbar support Best for: Side sleepers Side sleepers People with lower back pain Anyone who loves a bed with little give and a lot of support Designed and Assembled In Our Arizona Factory Don\u2019t settle for a mattress made overseas with low quality and questionable materials. At Helix, we make our own foam, roll our own coils, and hand-assemble every mattress to ensure the highest quality. The ultimate investment in your sleep, designed to deliver exceptional comfort, advanced cooling, and unparalleled support for years to come. Backed by a Limited Lifetime Warranty."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9162777985277",
+      "handle": "helix-sleep-elite-collection-midnight-elite-luxury-plush-15-mattress",
+      "productTitle": "Helix Sleep Elite Collection Midnight Elite Luxury Plush 15\" Mattress",
+      "vendor": "Helix Sleep",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Helix Sleep Elite Collection\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Helix Sleep Elite Collection Midnight Elite Luxury Plush 15\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort excha..."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    },
+    {
+      "id": "gid://shopify/Product/9176768020733",
+      "handle": "chattam-wells-miramare-luxury-firm-13-floor-sample-clearance-mattress",
+      "productTitle": "Queen Chattam & Wells Miramare Luxury Firm 13\" Floor Sample Clearance Mattress",
+      "vendor": "Chattam & Wells",
+      "before": {
+        "title": null,
+        "description": "Clearance: Chattam & Wells Miramare luxury firm 13\" floor sample mattress. Premium handcrafted comfort at a fraction of the price. Limited availability."
+      },
+      "after": {
+        "title": "Queen Chattam & Wells\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Clearance: Chattam & Wells Miramare luxury firm 13\" floor sample mattress. Premium handcrafted comfort at a fraction of the price. Limited availability."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9176769822973",
+      "handle": "queen-diamond-diana-medium-natural-latex-lux-euro-top-15-5-floor-model-clerance-mattress",
+      "productTitle": "Queen Diamond Diana Medium Natural Latex Lux Euro Top 15.5\" Floor Model Clerance Mattress",
+      "vendor": "Diamond",
+      "before": {
+        "title": null,
+        "description": "Clearance: Queen Diamond Diana natural latex medium euro top 15.5\" floor model. Premium latex mattress at closeout pricing. Limited stock available."
+      },
+      "after": {
+        "title": "Queen Diamond Diana Medium\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Clearance: Queen Diamond Diana natural latex medium euro top 15.5\" floor model. Premium latex mattress at closeout pricing. Limited stock available."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9176836636925",
+      "handle": "queen-eclipse-ice-tufted-firm-euro-top-15-fllor-sample-clerance-mattress",
+      "productTitle": "Queen Eclipse Ice Tufted Firm Euro Top 15\" Floor Sample Clearance Mattress",
+      "vendor": "Eclipse",
+      "before": {
+        "title": null,
+        "description": "Clearance: Queen Eclipse Ice 15\" tufted firm euro top floor sample. Premium cooling mattress at closeout pricing. While supplies last."
+      },
+      "after": {
+        "title": "Queen Eclipse Ice Tufted Firm\u2026 in Los Angeles \u00b7 LA Mattress",
+        "description": "Clearance: Queen Eclipse Ice 15\" tufted firm euro top floor sample. Premium cooling mattress at closeout pricing. While supplies last."
+      },
+      "filledTitle": true,
+      "filledDescription": false
+    },
+    {
+      "id": "gid://shopify/Product/9218359755005",
+      "handle": "deluxe-bed-frame",
+      "productTitle": "Deluxe Bed Frame",
+      "vendor": "Rize Home",
+      "before": {
+        "title": null,
+        "description": null
+      },
+      "after": {
+        "title": "Rize Home Deluxe Bed Frame in Los Angeles \u00b7 LA Mattress",
+        "description": "Rize Home Deluxe Bed Frame at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing."
+      },
+      "filledTitle": true,
+      "filledDescription": true
+    }
+  ],
+  "note": "Applied via Shopify Admin MCP on 2026-05-14. Buggy first dry-run (vendor doubling in 16 descriptions) was discarded and superseded by this corrected version."
+}
