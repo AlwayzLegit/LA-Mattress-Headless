@@ -10,7 +10,7 @@
 // fallback when shop data isn't available (Shopify unconfigured, or
 // merchant hasn't filled out Brand assets).
 
-import { SITE_BRAND, SITE_PHONE_SCHEMA } from './site-config';
+import { SITE_BRAND, SITE_PHONE_SCHEMA, SOCIAL_PROFILES } from './site-config';
 import { SHOWROOMS } from './showrooms';
 import type { ShopBrand } from './shopify/queries/shop';
 
@@ -25,6 +25,9 @@ export const ORGANIZATION_LD = {
   url: `${SITE}/`,
   logo: FALLBACK_LOGO,
   telephone: SITE_PHONE_SCHEMA,
+  // Phase 277b: include sameAs only when configured — emitting an empty
+  // array produces an invalid Organization in some validators.
+  ...(SOCIAL_PROFILES.length > 0 ? { sameAs: [...SOCIAL_PROFILES] } : {}),
 };
 
 /**
@@ -43,6 +46,7 @@ export function buildOrganizationLd(shop: ShopBrand | null) {
     url: `${SITE}/`,
     logo,
     telephone: SITE_PHONE_SCHEMA,
+    ...(SOCIAL_PROFILES.length > 0 ? { sameAs: [...SOCIAL_PROFILES] } : {}),
   };
 }
 
