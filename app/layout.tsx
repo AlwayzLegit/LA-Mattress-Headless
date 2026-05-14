@@ -59,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = shop?.brand?.shortDescription ?? shop?.description ?? FALLBACK_DESCRIPTION;
   const ogImage = shop?.brand?.coverImage?.url;
   return {
-    metadataBase: new URL('https://mattressstoreslosangeles.com'),
+    metadataBase: new URL('https://www.mattressstoreslosangeles.com'),
     title: {
       default: defaultTitle,
       template: `%s · ${siteName}`,
@@ -71,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       locale: 'en_US',
-      url: 'https://mattressstoreslosangeles.com/',
+      url: 'https://www.mattressstoreslosangeles.com/',
       siteName,
       title: defaultTitle,
       description: shop?.brand?.shortDescription ?? FALLBACK_OG_DESCRIPTION,

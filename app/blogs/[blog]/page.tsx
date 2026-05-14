@@ -18,7 +18,7 @@ type Params = {
 export const dynamic = 'force-dynamic';
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 const PER_PAGE = 12;
 
 export function generateStaticParams() {

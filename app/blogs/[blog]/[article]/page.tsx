@@ -20,7 +20,7 @@ export const revalidate = 600;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 // Pre-render the published article handles from the inventory snapshot.
 // `dynamicParams = true` still serves articles published since the last

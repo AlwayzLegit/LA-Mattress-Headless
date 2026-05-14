@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { blogs, nonEmptyCollections, products, publishedPages } from '@/lib/inventory';
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mattressstoreslosangeles.com';
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.mattressstoreslosangeles.com';
 
 /**
  * Phase 260: blog handles that exist in the inventory snapshot but are

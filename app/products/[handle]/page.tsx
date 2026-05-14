@@ -185,7 +185,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
   // include the sku key when at least one variant has a non-empty SKU.
   const firstSku = product.variants.find((v) => v.sku && v.sku.trim().length > 0)?.sku;
 
-  const productUrl = `https://mattressstoreslosangeles.com/products/${product.handle}`;
+  const productUrl = `https://www.mattressstoreslosangeles.com/products/${product.handle}`;
 
   const productLd = {
     '@context': 'https://schema.org',
@@ -226,8 +226,8 @@ function ProductView({ product, related }: { product: Product; related: ProductS
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home',       item: 'https://mattressstoreslosangeles.com/' },
-      { '@type': 'ListItem', position: 2, name: 'Mattresses', item: 'https://mattressstoreslosangeles.com/collections/mattresses' },
+      { '@type': 'ListItem', position: 1, name: 'Home',       item: 'https://www.mattressstoreslosangeles.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Mattresses', item: 'https://www.mattressstoreslosangeles.com/collections/mattresses' },
       { '@type': 'ListItem', position: 3, name: product.title, item: productUrl },
     ],
   };

@@ -132,8 +132,8 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://mattressstoreslosangeles.com/' },
-      { '@type': 'ListItem', position: 2, name: collection.title, item: `https://mattressstoreslosangeles.com/collections/${collection.handle}` },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.mattressstoreslosangeles.com/' },
+      { '@type': 'ListItem', position: 2, name: collection.title, item: `https://www.mattressstoreslosangeles.com/collections/${collection.handle}` },
     ],
   };
 
@@ -142,7 +142,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
     '@type': 'CollectionPage',
     name: collection.title,
     description: firstNonEmpty(collection.seo.description, collection.description) || undefined,
-    url: `https://mattressstoreslosangeles.com/collections/${collection.handle}`,
+    url: `https://www.mattressstoreslosangeles.com/collections/${collection.handle}`,
     inLanguage: 'en-US',
     mainEntity: {
       '@type': 'ItemList',
@@ -150,7 +150,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
       itemListElement: collection.products.nodes.map((p, i) => ({
         '@type': 'ListItem',
         position: i + 1,
-        url: `https://mattressstoreslosangeles.com/products/${p.handle}`,
+        url: `https://www.mattressstoreslosangeles.com/products/${p.handle}`,
         name: p.title,
       })),
     },

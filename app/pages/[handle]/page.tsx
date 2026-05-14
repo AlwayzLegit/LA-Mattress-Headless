@@ -34,7 +34,7 @@ export const revalidate = 600;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 export function generateStaticParams() {
   if (!SHOPIFY_CONFIGURED) return [];

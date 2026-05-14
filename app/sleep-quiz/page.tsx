@@ -26,7 +26,7 @@ export default async function SleepQuizPage() {
   // result hero card paints immediately when the user finishes the quiz
   // instead of stalling on a client-side fetch. ISR caches the bundle.
   const productPicks = await getQuizPicks(allQuizPickHandles());
-  const SITE = 'https://mattressstoreslosangeles.com';
+  const SITE = 'https://www.mattressstoreslosangeles.com';
   const url = `${SITE}/sleep-quiz`;
   const quizLd = {
     '@context': 'https://schema.org',
