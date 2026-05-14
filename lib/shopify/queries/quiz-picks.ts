@@ -69,11 +69,23 @@ export async function getQuizPicks(handles: string[]): Promise<Record<string, Pr
   const variables: Record<string, string> = {};
   handles.forEach((h, i) => { variables[aliases[i]] = h; });
 
-  const data = await shopifyFetch<Record<string, RawSummary | null>, Record<string, string>>(
-    query,
-    variables,
-    { tags: ['quiz-picks'] },
-  );
+  // Phase 280: catch Shopify-not-configured / network errors here instead
+  // of letting them bubble up to the `/sleep-quiz` route. The quiz UI
+  // works without product picks (the SleepQuizResult component falls
+  // back to the category recommendation when a handle isn't in the
+  // picks map), so an empty record is a valid degraded state. Letting
+  // the throw bubble would 500 the entire quiz route — bad UX + breaks
+  // SSR tests when Shopify secrets aren't set in CI.
+  let data: Record<string, RawSummary | null>;
+  try {
+    data = await shopifyFetch<Record<string, RawSummary | null>, Record<string, string>>(
+      query,
+      variables,
+      { tags: ['quiz-picks'] },
+    );
+  } catch {
+    return {};
+  }
 
   const out: Record<string, ProductSummary> = {};
   handles.forEach((h, i) => {
