@@ -28,4 +28,4 @@ export const SITE_BRAND = 'LA Mattress Store';
 
 /** Public site URL (matches NEXT_PUBLIC_SITE_URL when set). */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mattressstoreslosangeles.com';
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.mattressstoreslosangeles.com';

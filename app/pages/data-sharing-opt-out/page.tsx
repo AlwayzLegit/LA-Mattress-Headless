@@ -5,7 +5,7 @@ import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { OptOutForm } from './opt-out-form';
 
 const CONTACT_EMAIL = 'privacy@mattressstoreslosangeles.com';
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 export const metadata: Metadata = {
   title: 'Do Not Sell or Share My Personal Information',

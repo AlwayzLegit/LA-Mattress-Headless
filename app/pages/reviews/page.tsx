@@ -4,7 +4,7 @@ import { Icon } from '@/app/_components/icon';
 import { getShopAggregate, getStorefrontReviews, type JudgemeReview } from '@/lib/judgeme';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 export const revalidate = 3600;
 

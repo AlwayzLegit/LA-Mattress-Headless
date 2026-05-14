@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: 'https://mattressstoreslosangeles.com/' },
+    alternates: { canonical: 'https://www.mattressstoreslosangeles.com/' },
   };
 }
 

@@ -14,7 +14,7 @@ import { SITE_BRAND, SITE_PHONE_SCHEMA } from './site-config';
 import { SHOWROOMS } from './showrooms';
 import type { ShopBrand } from './shopify/queries/shop';
 
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 const FALLBACK_LOGO = `${SITE}/assets/la-mattress-logo.png`;
 
 export const ORGANIZATION_LD = {
