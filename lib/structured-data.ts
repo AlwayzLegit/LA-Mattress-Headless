@@ -4,11 +4,18 @@
 // Per-page templates (PDP, PLP, blog, locations index, per-showroom) emit
 // their OWN, more specific JSON-LD with a distinct `@id` — Schema.org
 // allows multiple of the same @type on a page so long as @id differs.
+//
+// Phase 268: Organization name + logo now read from `shop.brand` via
+// `buildOrganizationLd(shopBrand)`. Hardcoded constants stay as the
+// fallback when shop data isn't available (Shopify unconfigured, or
+// merchant hasn't filled out Brand assets).
 
 import { SITE_BRAND, SITE_PHONE_SCHEMA } from './site-config';
 import { SHOWROOMS } from './showrooms';
+import type { ShopBrand } from './shopify/queries/shop';
 
 const SITE = 'https://mattressstoreslosangeles.com';
+const FALLBACK_LOGO = `${SITE}/assets/la-mattress-logo.png`;
 
 export const ORGANIZATION_LD = {
   '@context': 'https://schema.org',
@@ -16,9 +23,28 @@ export const ORGANIZATION_LD = {
   '@id': `${SITE}/#organization`,
   name: SITE_BRAND,
   url: `${SITE}/`,
-  logo: `${SITE}/assets/la-mattress-logo.png`,
+  logo: FALLBACK_LOGO,
   telephone: SITE_PHONE_SCHEMA,
 };
+
+/**
+ * Phase 268: build the Organization JSON-LD using Shopify Brand data
+ * when available, falling back to the static ORGANIZATION_LD above for
+ * any fields the merchant hasn't filled out.
+ */
+export function buildOrganizationLd(shop: ShopBrand | null) {
+  const logo = shop?.brand?.logo?.url ?? FALLBACK_LOGO;
+  const name = shop?.name ?? SITE_BRAND;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE}/#organization`,
+    name,
+    url: `${SITE}/`,
+    logo,
+    telephone: SITE_PHONE_SCHEMA,
+  };
+}
 
 export const LOCAL_BUSINESS_LD = {
   '@context': 'https://schema.org',

@@ -29,39 +29,56 @@ import { CompareTray } from './_components/compare-tray';
 import { Announcer } from './_components/announcer';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { ORGANIZATION_LD, WEBSITE_LD } from '@/lib/structured-data';
+import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
+import { getShopBrand } from '@/lib/shopify';
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://mattressstoreslosangeles.com'),
-  title: {
-    default: 'LA Mattress — Sleep, engineered in Los Angeles.',
-    template: '%s · LA Mattress',
-  },
-  description:
-    'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white-glove delivery & 0% APR financing.',
-  applicationName: 'LA Mattress Store',
-  authors: [{ name: 'LA Mattress Store' }],
-  category: 'shopping',
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://mattressstoreslosangeles.com/',
-    siteName: 'LA Mattress Store',
-    title: 'LA Mattress — Sleep, engineered in Los Angeles.',
-    description:
-      'Five LA showrooms. Premium mattress brands, same-day delivery, 0% APR financing. Family-owned since 2012.',
-  },
-  // Only set the card type globally. Title / description / images fall back
-  // automatically to each route's `openGraph.*` per Next.js metadata
-  // inheritance — so a PDP share renders the product copy, an article
-  // share renders the article copy, etc. Hardcoding them here would
-  // override that fallback with the global blurb on every route.
-  twitter: { card: 'summary_large_image' },
-  // No `robots:` declaration here — search engines index by default. An
-  // explicit `{ index:true, follow:true }` was leaking through to 404
-  // responses as a second `<meta name="robots" content="index, follow">`
-  // alongside Next.js's automatic `noindex` injection.
-};
+// Phase 268: homepage / site-wide title + description + OG default
+// image now read from Shopify's built-in Brand assets (Settings →
+// Store details → Brand) when the merchant has filled them in. Hardcoded
+// fallbacks fire when Shopify isn't configured or Brand fields are
+// blank, so unconfigured stores still render correctly.
+//
+// `generateMetadata` is used instead of static `metadata` so the
+// Shopify fetch can be awaited. Each detail route (products, collections,
+// pages, blog, articles) overrides title + description from its own
+// metadata, so this layout-level value only applies to routes that don't
+// declare their own.
+const FALLBACK_TITLE = 'LA Mattress — Sleep, engineered in Los Angeles.';
+const FALLBACK_DESCRIPTION =
+  'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white-glove delivery & 0% APR financing.';
+const FALLBACK_OG_DESCRIPTION =
+  'Five LA showrooms. Premium mattress brands, same-day delivery, 0% APR financing. Family-owned since 2012.';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const shop = await getShopBrand();
+  const siteName = shop?.name ?? 'LA Mattress Store';
+  const defaultTitle = shop?.brand?.slogan
+    ? `${siteName} — ${shop.brand.slogan}`
+    : FALLBACK_TITLE;
+  const description = shop?.brand?.shortDescription ?? shop?.description ?? FALLBACK_DESCRIPTION;
+  const ogImage = shop?.brand?.coverImage?.url;
+  return {
+    metadataBase: new URL('https://mattressstoreslosangeles.com'),
+    title: {
+      default: defaultTitle,
+      template: `%s · ${siteName}`,
+    },
+    description,
+    applicationName: siteName,
+    authors: [{ name: siteName }],
+    category: 'shopping',
+    openGraph: {
+      type: 'website',
+      locale: 'en_US',
+      url: 'https://mattressstoreslosangeles.com/',
+      siteName,
+      title: defaultTitle,
+      description: shop?.brand?.shortDescription ?? FALLBACK_OG_DESCRIPTION,
+      ...(ogImage ? { images: [{ url: ogImage }] } : {}),
+    },
+    twitter: { card: 'summary_large_image' },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: '#1B2C5E',
@@ -69,7 +86,14 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Phase 268: Organization JSON-LD logo + name now come from Shopify
+  // Brand assets when available. buildOrganizationLd() handles the
+  // fallback chain internally so this call is safe even when Shopify
+  // is unconfigured.
+  const shop = await getShopBrand();
+  const organizationLd = buildOrganizationLd(shop);
+
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <head>
@@ -99,7 +123,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Analytics />
         <SpeedInsights />
         <script id="ld-organization" type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }} />
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
         <script id="ld-website" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }} />
       </body>
