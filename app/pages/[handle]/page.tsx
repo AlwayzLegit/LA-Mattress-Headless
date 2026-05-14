@@ -11,6 +11,8 @@ import { SHOWROOMS, findShowroom, formatPhone, getOpenStatus, type Showroom } fr
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_PHONE_SCHEMA } from '@/lib/site-config';
+import { faqJsonLd } from '@/lib/faq';
+import { getShowroomFaq, getCmsPageFaq } from '@/lib/faq-extra';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 
@@ -205,6 +207,21 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
       </article>
       <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
       <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      {/* Phase 277c: FAQPage JSON-LD on CMS pages with a curated FAQ set
+          (shipping/delivery, financing, warranty). getCmsPageFaq returns
+          null for handles without a set, so the script is skipped on
+          most pages. Visual FAQ UI is intentionally unchanged — the
+          schema is emitted from a structured-data-only source. */}
+      {(() => {
+        const faqs = getCmsPageFaq(page.handle);
+        return faqs ? (
+          <script
+            id="ld-faq-page"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faqs)) }}
+          />
+        ) : null;
+      })()}
     </main>
   );
 }
@@ -482,6 +499,16 @@ function ShowroomPage({
       </article>
       <script id="ld-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
       <script id="ld-breadcrumb-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      {/* Phase 277c: per-showroom FAQPage JSON-LD. Q&As are templated
+          from the showroom's neighborhood/street/hours so each of the
+          5 pages emits genuinely unique FAQ content (avoids the
+          "near-duplicate body" footprint Semrush flagged on the
+          legacy crawl). */}
+      <script
+        id="ld-faq-showroom"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(getShowroomFaq(showroom))) }}
+      />
       <script id="ld-services" type="application/ld+json" dangerouslySetInnerHTML={{
         __html: JSON.stringify({
           '@context': 'https://schema.org',

@@ -61,7 +61,20 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Product' };
   const product = await getProductByHandle(params.handle).catch(() => null);
   if (!product) return { title: 'Product not found' };
-  const title = capTitle(firstNonEmpty(product.seo.title, product.title));
+  // Phase 277c: when Shopify SEO title isn't set (~35% of products per the
+  // 2026-05 audit), fall back to a local-intent variant rather than the
+  // bare product title. Otherwise the <title> would equal the H1 verbatim
+  // after the layout's brand suffix is added (Semrush "Duplicate content
+  // in h1 and title" rule). Only append "in Los Angeles" when the result
+  // still fits in TITLE_MAX (56 char cap) so capTitle doesn't ellipsis-
+  // truncate it; long product titles fall back to the bare title.
+  const titleFallback = `${product.title} in Los Angeles`;
+  const title = capTitle(
+    firstNonEmpty(
+      product.seo.title,
+      titleFallback.length <= 56 ? titleFallback : product.title,
+    ),
+  );
   const description = truncDescription(
     firstNonEmpty(
       product.seo.description,
