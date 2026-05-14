@@ -60,7 +60,7 @@ export async function generateMetadata(props: { params: Promise<Params['params']
   );
   const url = `/collections/${collection.handle}`;
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     // Per Next.js metadata rules: a route declaring its own `openGraph`
