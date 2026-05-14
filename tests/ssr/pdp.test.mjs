@@ -22,7 +22,7 @@ import { strict as assert } from 'node:assert';
 import { fetchHtml, expect200, parseJsonLd, SHOPIFY_SKIP } from './_helpers.mjs';
 
 const PRODUCT_PATH = '/products/tempur-pedic-tempur-proadapt-medium-hybrid';
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 test('PDP renders 200', { skip: SHOPIFY_SKIP }, async () => {
   const res = await fetchHtml(PRODUCT_PATH);

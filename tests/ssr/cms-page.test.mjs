@@ -22,7 +22,7 @@ import { strict as assert } from 'node:assert';
 import { fetchHtml, expect200, parseJsonLd, SHOPIFY_SKIP } from './_helpers.mjs';
 
 const PAGE_PATH = '/pages/mattress-store-financing';
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 test('CMS page renders 200', { skip: SHOPIFY_SKIP }, async () => {
   const res = await fetchHtml(PAGE_PATH);

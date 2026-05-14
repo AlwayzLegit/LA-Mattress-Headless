@@ -25,7 +25,7 @@ import { strict as assert } from 'node:assert';
 import { fetchHtml, expect200, parseJsonLd, SHOPIFY_SKIP } from './_helpers.mjs';
 
 const ARTICLE_PATH = '/blogs/sleep-blog/how-to-elevate-crib-mattress-for-congestion';
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 test('article renders 200', { skip: SHOPIFY_SKIP }, async () => {
   const res = await fetchHtml(ARTICLE_PATH);

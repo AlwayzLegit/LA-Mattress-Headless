@@ -30,7 +30,7 @@ import { fetchHtml, expect200, parseJsonLd, SHOPIFY_SKIP } from './_helpers.mjs'
 const STABLE_HANDLE = 'mattresses';
 const STABLE_PATH = `/collections/${STABLE_HANDLE}`;
 const COVERLESS_PATH = '/collections/sheets-pillowcases';
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 test('collection page renders 200', { skip: SHOPIFY_SKIP }, async () => {
   const res = await fetchHtml(STABLE_PATH);
