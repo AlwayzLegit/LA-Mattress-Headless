@@ -66,6 +66,25 @@ export default async function SleepQuizPage() {
               Tell us how you sleep — position, body, temperature, partner needs — and we&rsquo;ll
               shortlist the right mattresses for you. Free, under two minutes, no email required.
             </p>
+            {/* Phase 260c: expanded descriptive copy beneath the quiz lede.
+                SEMrush flagged /sleep-quiz for low word count — the quiz UI
+                itself is mostly hidden inside form interactions, so the
+                visible above-the-fold prose was thin. This paragraph also
+                explains the methodology to shoppers who want to know how
+                the recommendation is computed before answering. */}
+            <p className="muted" style={{ maxWidth: '64ch', marginTop: 'var(--s-3)' }}>
+              The quiz recommends one of four mattress materials — memory foam, hybrid, latex,
+              or innerspring — based on the eight inputs that drive the decision in our showrooms.
+              Sleep position decides how much contour you need at the shoulders and hips. Body
+              weight changes how much pushback the support layer needs to give back. Temperature
+              sensitivity decides whether memory foam will sleep too hot. Pain points (back,
+              neck, joints) decide which support profile reduces pressure on the right spots.
+              Partner motion decides how much isolation the foam layers need. And budget decides
+              which tier we recommend — value, mid, or premium — across the brands we stock
+              (Tempur-Pedic, Stearns &amp; Foster, Helix, Diamond, Southerland, Englander, Eastman
+              House). You can try every recommendation in person at one of our 5 LA showrooms
+              before buying, and every mattress ships with a 120-night Love Your Bed Guarantee.
+            </p>
           </header>
           <SleepQuiz productPicks={productPicks} />
         </div>

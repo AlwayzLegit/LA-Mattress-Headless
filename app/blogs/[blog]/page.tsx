@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getBlogByHandle } from '@/lib/shopify';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
+import { blogIntroFor } from '@/lib/blog-content';
 import { Icon } from '@/app/_components/icon';
 
 type Params = {
@@ -107,9 +108,15 @@ export default async function BlogIndexPage(props: Params) {
             <div className="lp-hero-copy">
               <div className="eyebrow">Articles · {displayTitle}</div>
               <h1 className="h-display">{displayTitle}</h1>
-              <p className="lp-hero-lede">
-                Buying guides and sleep advice from the team that fits mattresses for a living. No SEO fluff —
-                this is what we tell shoppers when they walk into the showroom.
+              {/* Phase 260c: per-blog descriptive intro replaces the prior
+                  generic "Buying guides and sleep advice" lede. Gives each
+                  blog index unique category copy (boosts text-to-HTML
+                  ratio, clears SEMrush low-word-count flag on
+                  /blogs/sleep-health and adjacent indexes) and gives
+                  crawlers a clear category signal. Sourced from
+                  lib/blog-content.ts. */}
+              <p className="lp-hero-lede" style={{ maxWidth: '72ch' }}>
+                {blogIntroFor(blog.handle)}
               </p>
               <div className="lp-hero-meta">
                 <span><strong>{articles.length}</strong> articles on this page</span>
