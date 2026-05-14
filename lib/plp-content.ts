@@ -13,8 +13,12 @@
  * Content discipline:
  *   - Intros vary by collection handle (memory-foam vs hybrid vs latex
  *     vs innerspring vs brand-specific) so PLPs aren't pure boilerplate.
- *   - FAQ is consistent across PLPs but distinct from HOMEPAGE_FAQ in
- *     lib/faq.ts so the two pages don't trigger duplicate-content flags.
+ *   - Phase 276: FAQ ALSO varies by collection — each category gets its
+ *     own 3-question Q&A specific to that material/brand, plus the same
+ *     3 universal shopping questions (delivery / guarantee / financing)
+ *     that apply to every PLP. Category-specific Qs make each PLP's
+ *     FAQPage JSON-LD eligible for featured-snippet matches specific to
+ *     that category (e.g., "memory foam mattress hot" → memory-foam PLP).
  *   - All copy reflects merchant-confirmed facts from Phase 239
  *     (4 PM cutoff, $499 free-delivery threshold, anywhere in LA,
  *     Synchrony + Acima financing).
@@ -22,14 +26,15 @@
 
 import type { FaqItem } from './faq';
 
-export const PLP_FAQ: FaqItem[] = [
-  {
-    q: 'Can I try these mattresses in person before I buy?',
-    a: 'Yes. Every model on this page is on the floor at one of our 5 LA showrooms — Koreatown, West LA, La Brea, Studio City, and Glendale. No appointment needed. Lie down on it for as long as you want.',
-  },
+/**
+ * 3 universal shopping questions that apply to every category. These
+ * appear at the END of every PLP's FAQ list, after the category-specific
+ * Qs above them.
+ */
+const UNIVERSAL_FAQ: FaqItem[] = [
   {
     q: 'How does delivery work?',
-    a: 'Free white-glove delivery on orders over $499 anywhere in Los Angeles. Same-day if you order before 4 PM, otherwise next-day. We set up the new mattress, haul away your old one, and recycle it.',
+    a: 'Free white-glove delivery on orders over $499 anywhere in Los Angeles. Same-day if you order before 4 PM, otherwise next-day. We set up the new mattress, haul away your old one, and recycle it — not landfill.',
   },
   {
     q: 'What if the mattress isn’t right for me?',
@@ -39,15 +44,214 @@ export const PLP_FAQ: FaqItem[] = [
     q: 'Is financing really 0% APR?',
     a: 'Yes. We offer 0% APR financing through Synchrony and Acima on approved credit. Terms vary by purchase amount and partner — apply in 60 seconds at checkout or in any showroom.',
   },
+];
+
+const MEMORY_FOAM_FAQ: FaqItem[] = [
   {
-    q: 'How do I know which firmness to choose?',
-    a: 'Take our 2-minute sleep quiz at /sleep-quiz — we match firmness to your sleep position, body weight, and any pain points. You can also call any showroom at (213) 984-4654 and talk to a real person.',
+    q: 'Will a memory foam mattress sleep hot?',
+    a: 'Older memory foam did. Modern memory foam mattresses use gel infusion, copper, open-cell construction, or phase-change covers to dissipate heat — most current models sleep cooler than traditional foam. If you sleep hot, look specifically for "cooling" or "gel-infused" in the description, or consider a hybrid (foam over coils) which breathes more.',
   },
   {
-    q: 'What sizes do you carry?',
+    q: 'Is memory foam good for side sleepers?',
+    a: 'Yes — memory foam is typically the best material for side sleepers because it contours around the shoulder and hip, distributing pressure instead of concentrating it where the body curves. Look for a medium to medium-soft firmness; firm foam reduces the pressure-relief benefit that makes the material work for side sleeping.',
+  },
+  {
+    q: 'How long does a memory foam mattress last?',
+    a: 'Quality memory foam mattresses last 7–10 years with proper care (rotation every 3–6 months, use of a mattress protector, proper foundation). Premium brands like Tempur-Pedic typically warranty 10 years; some budget foam mattresses degrade faster.',
+  },
+];
+
+const HYBRID_FAQ: FaqItem[] = [
+  {
+    q: 'What is a hybrid mattress?',
+    a: 'A hybrid combines a pocketed-coil support unit with foam or latex comfort layers on top. You get the contour and pressure relief of foam plus the airflow, edge support, and bounce of innersprings. Most shoppers do well on a hybrid — it’s the most universally comfortable material we carry.',
+  },
+  {
+    q: 'Are hybrid mattresses good for hot sleepers?',
+    a: 'Yes — the coil layer creates an airflow channel under the comfort foam, which lets heat escape much better than an all-foam mattress. Hot sleepers usually prefer hybrid or latex over pure memory foam for this reason.',
+  },
+  {
+    q: 'How is a hybrid different from a traditional innerspring?',
+    a: 'A traditional innerspring uses a single connected coil unit (Bonnell or continuous-wire) with thin foam or fiber on top. A hybrid uses individually-wrapped pocketed coils that move independently, with substantially deeper comfort layers. Hybrid sleeps quieter, isolates motion better, and contours more closely than an old-style innerspring.',
+  },
+];
+
+const LATEX_FAQ: FaqItem[] = [
+  {
+    q: 'Is latex naturally cooling?',
+    a: 'Yes — natural latex is one of the most breathable mattress materials available. Its open-cell structure allows airflow, and many latex mattresses use moisture-wicking covers (TENCEL, organic cotton, copper-infused fabric) to enhance cooling further. Latex is our top recommendation for hot sleepers.',
+  },
+  {
+    q: 'How long does a latex mattress last?',
+    a: '15–20 years with proper rotation — the longest-lasting mattress material we carry. Natural latex is highly durable and resists body impressions much better than memory foam or innerspring. The longer lifespan often makes latex the most cost-effective mattress over time despite the higher upfront price.',
+  },
+  {
+    q: 'Is natural latex safe? Any chemical concerns?',
+    a: 'Natural latex is harvested from rubber trees and is generally considered safe for the vast majority of shoppers. Look for GOLS, GOTS, OEKO-TEX, or CertiPUR-US certifications which confirm low VOC emissions and absence of harmful chemicals. If you have a known latex allergy, talk to your doctor before purchase.',
+  },
+];
+
+const INNERSPRING_FAQ: FaqItem[] = [
+  {
+    q: 'Are innerspring mattresses outdated?',
+    a: 'Modern innersprings use individually-wrapped pocketed coils, foam-encased edges, and substantial comfort layers — very different from the loud, transfer-prone innersprings of decades past. They remain a strong choice for shoppers who want classic bounce, excellent airflow, and a firmer feel. Brands like Stearns & Foster, Chattam & Wells, and Englander are still primarily innerspring.',
+  },
+  {
+    q: 'Do innerspring mattresses sleep hot?',
+    a: 'Innerspring is actually one of the coolest mattress types — the open coil core allows continuous air circulation. Hot sleepers often do better on an innerspring or hybrid than on an all-foam mattress.',
+  },
+  {
+    q: 'What’s the difference between pocketed coils and continuous coils?',
+    a: 'Pocketed coils are individually wrapped in fabric and move independently — better motion isolation, more conforming. Continuous (or Bonnell) coils are connected by wire and move as a unit — historically cheaper, more bouncy, less individual support. Almost every quality innerspring we carry today uses pocketed coils.',
+  },
+];
+
+const TEMPUR_FAQ: FaqItem[] = [
+  {
+    q: 'Is Tempur-Pedic worth the price?',
+    a: 'For shoppers who specifically want the original TEMPUR memory foam feel and a long-term mattress (10+ years), yes. The viscoelastic foam Tempur-Pedic invented contours like nothing else — it’s the gold standard side-by-side. The premium is for the material formulation and the 10-year warranty, not just the brand name.',
+  },
+  {
+    q: 'Does Tempur-Pedic sleep hot?',
+    a: 'Older Tempur-Pedic models had heat-retention complaints. The current ProAdapt, LuxeAdapt, and ProBreeze lines all include phase-change cooling covers, gel-infused TEMPUR foam, or active cooling materials. The ProBreeze line specifically targets hot sleepers with up to 10°F cooler sleep claims. Hybrid Tempur-Pedic models (with coils underneath) breathe better than all-foam variants.',
+  },
+  {
+    q: 'How long does a Tempur-Pedic last?',
+    a: 'Tempur-Pedic mattresses are warrantied 10 years and typically last 12–15 years with proper care. Their density (the TEMPUR material is denser than typical memory foam) is what drives the longevity — and what justifies the premium.',
+  },
+];
+
+const STEARNS_FAQ: FaqItem[] = [
+  {
+    q: 'What makes Stearns & Foster mattresses special?',
+    a: 'Stearns & Foster is hand-tufted, hand-built, and uses premium materials like cashmere-blend covers, IntelliCoil pocketed support, and natural-fiber comfort layers. They sit in the luxury innerspring + hybrid tier alongside Aireloom and Hastens. Owned by Sealy, made in the USA.',
+  },
+  {
+    q: 'Are Stearns & Foster mattresses worth it?',
+    a: 'For shoppers who want a luxury innerspring/hybrid with hand-craftsmanship and don’t want all-foam, yes. They typically last 12–15 years and feature support technologies (IntelliCoil, advanced edge systems) that outlast cheaper innersprings. The premium pays for material quality and build, not marketing.',
+  },
+  {
+    q: 'What’s the difference between Lux Estate and Reserve collections?',
+    a: 'Lux Estate is the mid-luxury tier with hand-tufting and IntelliCoil HD support. Reserve is the top-tier collection — hand-tufted by master craftsmen, cashmere-blend covers, and the deepest pillow-top builds (up to 17 inches). Both come in firm, plush, and Euro-top variants across multiple sizes.',
+  },
+];
+
+const HELIX_FAQ: FaqItem[] = [
+  {
+    q: 'What makes Helix Sleep different from other hybrids?',
+    a: 'Helix builds to-fit hybrid mattresses with three collection tiers (Core, Luxe, Elite) that step up in coil count, foam density, and cover technology. The Midnight, Twilight, and other model names within each collection indicate firmness profile (e.g., Midnight = medium, Twilight = firm). It’s a more granular firmness selection than most hybrid brands.',
+  },
+  {
+    q: 'How firm are Helix mattresses?',
+    a: 'Helix labels firmness clearly per model: medium-soft, medium, medium-firm, firm. Their Midnight series sits at medium; Twilight at firm; Sunset at plush. The 13.5-inch Luxe models are slightly softer-feeling because of the deeper comfort layer; 11.5-inch Core models feel firmer.',
+  },
+  {
+    q: 'Is Helix Sleep good for side sleepers?',
+    a: 'Yes — the Midnight (medium) and Midnight Luxe (medium with deeper comfort layer) are particularly good for side sleepers. They contour at the shoulders and hips while the pocketed coils keep the spine aligned. Try both at any of our 5 LA showrooms to compare.',
+  },
+];
+
+const SOUTHERLAND_FAQ: FaqItem[] = [
+  {
+    q: 'What is the Scandinavian Collection by Southerland?',
+    a: 'Southerland’s Scandinavian Collection is a CertiPUR-US-certified natural latex line built in Minnesota. Natural latex over pocketed coils, with TENCEL and copper-gel covers. Models include the firm Stockholm, the medium Anniversary, and the plush Sandmahn — covering 13–16 inch heights and firm to plush comfort levels.',
+  },
+  {
+    q: 'How long does a Southerland mattress last?',
+    a: 'Southerland’s natural-latex Scandinavian Collection mattresses are warrantied 12 years and typically last 15+ years with proper rotation. Latex is the longest-lasting mattress material we carry.',
+  },
+  {
+    q: 'Is the Scandinavian Collection good for hot sleepers?',
+    a: 'Yes. The natural latex layer is highly breathable, the pocketed coil core creates an airflow channel, and the TENCEL/copper covers wick moisture. This collection is one of our top recommendations for hot sleepers along with the Harvest Green organic latex line.',
+  },
+];
+
+const ENGLANDER_FAQ: FaqItem[] = [
+  {
+    q: 'What makes Englander mattresses different from other innersprings?',
+    a: 'Englander is a fourth-generation American mattress maker known for the O’Conner and Allendale luxury innerspring collections. They focus on the $1,500–$2,500 queen tier with advanced cooling covers (Polar Touch) and copper-infused memory foam comfort layers over pocketed coils. Strong value at the entry-luxury price point.',
+  },
+  {
+    q: 'Is Englander made in the USA?',
+    a: 'Yes — every Englander mattress is manufactured in the United States by a family-owned company that has been building mattresses since 1894.',
+  },
+  {
+    q: 'Are Englander mattresses good for back sleepers?',
+    a: 'Yes — the O’Conner and Allendale firm and luxury-firm Euro-top configurations provide the steady lumbar support back sleepers need, with enough cushioning at the surface to relieve pressure on the shoulders and hips.',
+  },
+];
+
+const SALE_FAQ: FaqItem[] = [
+  {
+    q: 'Are the mattresses on the sale page brand new?',
+    a: 'Yes. Floor models and clearance mattresses are brand new — they may have been displayed at one of our 5 LA showrooms where shoppers tried them for a few minutes at a time, but they were never slept on. Every clearance mattress ships with the same 120-night Love Your Bed Guarantee as full-price models.',
+  },
+  {
+    q: 'Why are these mattresses discounted?',
+    a: 'Mostly because they’re last season’s models or because we’re rotating in newer styles. Brands periodically refresh their lineups and we discount the previous-generation models to clear floor space. The mattresses themselves haven’t changed in quality — just the year on the spec sheet.',
+  },
+  {
+    q: 'Can I see clearance mattresses in person before buying?',
+    a: 'Yes — clearance mattresses are typically on the floor at the same showrooms where they were originally displayed. Call the showroom nearest you to confirm availability before driving over: Koreatown (213) 984-4654, West LA (310) 507-8024, La Brea (323) 275-4715, Studio City (818) 247-7790, Glendale (818) 275-6592.',
+  },
+];
+
+const GENERIC_FAQ: FaqItem[] = [
+  {
+    q: 'Can I try these mattresses in person before I buy?',
+    a: 'Yes. Every model on this page is on the floor at one of our 5 LA showrooms — Koreatown, West LA, La Brea, Studio City, and Glendale. No appointment needed. Lie down on it for as long as you want.',
+  },
+  {
+    q: 'How do I know which firmness to choose?',
+    a: 'Take our 2-minute sleep quiz at /sleep-quiz — we match firmness to your sleep position, body weight, and any pain points. You can also call any showroom at (213) 984-4654 and talk to a real person who fits mattresses for a living.',
+  },
+  {
+    q: 'What sizes are available?',
     a: 'Twin, Twin XL, Full, Queen, King, California King, Split King, and Split California King across every brand we stock. Sizing details and room-fit recommendations are at /pages/mattress-sizes.',
   },
 ];
+
+/**
+ * Phase 276: return a 6-item FAQ that's specific to the collection's
+ * category (material or brand). 3 category-specific Qs followed by 3
+ * universal shopping Qs (delivery / guarantee / financing).
+ *
+ * Each PLP gets unique FAQPage JSON-LD eligible for featured-snippet
+ * matches on category-specific searches. E.g., "memory foam mattress
+ * hot" → memory-foam PLP Q&A. Plus the universal Qs cover the bulk
+ * shopping concerns that apply across categories.
+ */
+export function categoryFaqFor(handle: string): FaqItem[] {
+  const h = handle.toLowerCase();
+
+  // Brand-specific (most specific first)
+  if (h.includes('tempur')) return [...TEMPUR_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('stearns') && h.includes('foster')) return [...STEARNS_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('helix')) return [...HELIX_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('southerland') || h.includes('scandinavian')) return [...SOUTHERLAND_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('englander')) return [...ENGLANDER_FAQ, ...UNIVERSAL_FAQ];
+
+  // Material-specific
+  if (h.includes('memory-foam') || h.includes('foam')) return [...MEMORY_FOAM_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('hybrid')) return [...HYBRID_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('latex')) return [...LATEX_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('innerspring')) return [...INNERSPRING_FAQ, ...UNIVERSAL_FAQ];
+
+  // Sale / clearance
+  if (h.includes('sale') || h.includes('clearance') || h.includes('floor-model')) {
+    return [...SALE_FAQ, ...UNIVERSAL_FAQ];
+  }
+
+  // Generic mattress fallback
+  return [...GENERIC_FAQ, ...UNIVERSAL_FAQ];
+}
+
+/**
+ * Legacy export kept for backwards compatibility with any callers; the
+ * PlpContentBlock now uses categoryFaqFor() instead. Don't add new
+ * callers to PLP_FAQ — use the category-aware function.
+ */
+export const PLP_FAQ: FaqItem[] = [...GENERIC_FAQ, ...UNIVERSAL_FAQ];
 
 /**
  * Return a 2-3 sentence intro paragraph for a collection PLP, varied by
