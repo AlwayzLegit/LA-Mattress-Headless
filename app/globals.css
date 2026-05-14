@@ -3811,3 +3811,54 @@ summary:focus-visible,
 }
 .pdp-review-form-success-title { font-weight: 600; }
 .pdp-review-form-success-body { margin: 4px 0 0; font-size: 14px; line-height: 1.55; }
+
+/* ===========================================================================
+   Phase 277 — Sale-page template (/pages/memorial-day-sale, /pages/black-friday-...)
+   Triggered by handle pattern. Full-bleed navy hero with eyebrow/title/lede/CTAs,
+   then merchant body in a wider container below.
+   =========================================================================== */
+.sale-page-hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--brand-navy) 0%, #1B2C5E 50%, #2a3f7a 100%);
+  color: #fff;
+  padding: clamp(60px, 10vw, 120px) 0 clamp(80px, 12vw, 140px);
+  margin-bottom: var(--s-7);
+  overflow: hidden;
+}
+.sale-page-hero::before {
+  /* Subtle radial highlight for depth without an image — keeps page fast
+     and lets the merchant focus on copy + the existing /collections/on-sale
+     thumbnail grid in the body. */
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at top right, rgb(255 255 255 / 8%) 0%, transparent 60%);
+  pointer-events: none;
+}
+.sale-page-hero-inner { position: relative; z-index: 1; max-width: 900px; }
+.sale-page-breadcrumbs { color: rgb(255 255 255 / 70%); margin-bottom: var(--s-5); }
+.sale-page-breadcrumbs a { color: inherit; }
+.sale-page-breadcrumbs a:hover { color: #fff; }
+.sale-page-eyebrow { color: rgb(255 255 255 / 85%); margin-bottom: var(--s-3); }
+.sale-page-title {
+  margin: 0 0 var(--s-4);
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.sale-page-lede {
+  margin: 0 0 var(--s-6);
+  font-size: clamp(17px, 1.6vw, 21px);
+  line-height: 1.5;
+  color: rgb(255 255 255 / 92%);
+  max-width: 60ch;
+}
+.sale-page-ctas { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+.sale-page-body {
+  max-width: 880px;
+  padding-bottom: var(--s-9);
+}
+.sale-page-body .rte { font-size: 17px; line-height: 1.7; }
+@media (max-width: 760px) {
+  .sale-page-hero { padding: 60px 0 80px; }
+}

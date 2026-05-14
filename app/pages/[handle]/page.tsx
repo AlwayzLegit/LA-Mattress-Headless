@@ -69,6 +69,33 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   };
 }
 
+/**
+ * Phase 277: handle-based detection for sale-template pages. Storefront
+ * API doesn't expose `Page.templateSuffix`, so we use a handle
+ * convention: any page whose handle contains a sale-related keyword
+ * (memorial-day, black-friday, july-4, etc.) renders the SalePage
+ * layout instead of the default CMS template. Merchants just need to
+ * name pages with the convention; no additional Shopify configuration.
+ */
+const SALE_HANDLE_PATTERNS = [
+  /(^|-)sale(-|$)/i,
+  /memorial-day/i,
+  /labor-day/i,
+  /presidents-?day/i,
+  /mlk-?day/i,
+  /july-?4|fourth-of-july|independence-day/i,
+  /black-friday/i,
+  /cyber-monday/i,
+  /christmas/i,
+  /new-year/i,
+  /spring-sale|summer-sale|fall-sale|winter-sale/i,
+  /clearance/i,
+  /deals?-event/i,
+];
+function isSalePage(handle: string): boolean {
+  return SALE_HANDLE_PATTERNS.some((p) => p.test(handle));
+}
+
 export default async function ShopifyPage(props: Params) {
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
@@ -78,6 +105,7 @@ export default async function ShopifyPage(props: Params) {
   const showroom = findShowroom(page.handle);
   if (showroom) return <ShowroomPage page={page} showroom={showroom} />;
   if (page.handle === 'mattress-store-locations') return <LocationsIndexPage page={page} />;
+  if (isSalePage(page.handle)) return <SalePage page={page} />;
 
   return <DefaultPage page={page} />;
 }
@@ -485,4 +513,77 @@ function formatHour(hhmm: string): string {
   const ampm = h >= 12 ? 'pm' : 'am';
   const h12 = ((h + 11) % 12) + 1;
   return m ? `${h12}:${String(m).padStart(2, '0')}${ampm}` : `${h12}${ampm}`;
+}
+
+/**
+ * Phase 277: sale-page template. Renders a full-bleed accent-color hero
+ * with the page title + bodySummary as the lede, followed by the
+ * merchant-authored body in a wider container, plus a sticky "Shop the
+ * Sale" CTA at the foot of the hero linking to /collections/on-sale.
+ *
+ * Activated by handle pattern (see SALE_HANDLE_PATTERNS). Merchant just
+ * names the page accordingly — e.g., `/pages/memorial-day-sale`,
+ * `/pages/black-friday-2026` — and gets the sale layout automatically.
+ * No additional Shopify-side configuration required.
+ */
+function SalePage({ page }: { page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>> }) {
+  const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
+  const url = `${SITE}/pages/${page.handle}`;
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
+      { '@type': 'ListItem', position: 2, name: cleanTitle, item: url },
+    ],
+  };
+  const webPageLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: cleanTitle,
+    url,
+    description: firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined,
+    isPartOf: { '@type': 'WebSite', url: SITE },
+    inLanguage: 'en-US',
+    datePublished: page.createdAt || undefined,
+    dateModified: page.updatedAt || undefined,
+  };
+
+  return (
+    <main>
+      <header className="sale-page-hero">
+        <div className="container sale-page-hero-inner">
+          <nav className="lp-breadcrumbs sale-page-breadcrumbs" aria-label="Breadcrumb">
+            <Link href="/">Home</Link>
+            <span className="sep" aria-hidden="true">/</span>
+            <span>{cleanTitle}</span>
+          </nav>
+          <div className="eyebrow eyebrow-on-dark sale-page-eyebrow">Limited-time event</div>
+          <h1 className="sale-page-title">{cleanTitle}</h1>
+          {page.bodySummary ? (
+            <p className="sale-page-lede">{page.bodySummary}</p>
+          ) : null}
+          <div className="sale-page-ctas">
+            <Link href="/collections/on-sale" className="btn btn-lg btn-on-dark">
+              Shop the Sale <Icon name="arrow-right" size={16} />
+            </Link>
+            <Link href="/pages/mattress-store-locations" className="btn btn-lg btn-ghost-on-dark">
+              Find a showroom
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <article className="container sale-page-body">
+        {page.body ? (
+          <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
+        ) : (
+          <p className="muted">More sale details coming soon.</p>
+        )}
+      </article>
+
+      <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
+      <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+    </main>
+  );
 }

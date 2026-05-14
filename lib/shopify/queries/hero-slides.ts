@@ -99,6 +99,25 @@ function parseInt10(s: string | null | undefined, fallback: number): number {
   return Number.isFinite(n) ? n : fallback;
 }
 
+/**
+ * Phase 277: hero slides can optionally declare a `starts_at`/`ends_at`
+ * date window for scheduled sale takeovers. Outside the window the slide
+ * is skipped exactly like `enabled: false`. Bounds default to "always
+ * on" when either field is empty.
+ */
+function isInWindow(startsAt: string | undefined, endsAt: string | undefined): boolean {
+  const now = Date.now();
+  if (startsAt) {
+    const t = Date.parse(startsAt);
+    if (Number.isFinite(t) && now < t) return false;
+  }
+  if (endsAt) {
+    const t = Date.parse(endsAt);
+    if (Number.isFinite(t) && now > t) return false;
+  }
+  return true;
+}
+
 export async function getHeroSlides(): Promise<HeroSlideData[]> {
   let data: Raw;
   try {
@@ -116,6 +135,11 @@ export async function getHeroSlides(): Promise<HeroSlideData[]> {
     // Required fields — skip the slide if any are missing.
     const enabled = f.enabled?.value === 'true';
     if (!enabled) continue;
+
+    // Phase 277: date-window gating. Slide is hidden before starts_at
+    // and after ends_at; both bounds default to "always on" when empty.
+    // Enables scheduling sale-takeover slides in advance.
+    if (!isInWindow(f.starts_at?.value || undefined, f.ends_at?.value || undefined)) continue;
 
     const eyebrow = f.eyebrow?.value ?? '';
     const title = f.title?.value ?? '';
