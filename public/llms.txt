@@ -1,0 +1,37 @@
+# LA Mattress Store
+
+> Family-owned mattress retailer with 5 showrooms across Los Angeles. We sell Tempur-Pedic, Stearns & Foster, Helix Sleep, Diamond, Southerland, Englander, and other premium brands. Free white-glove delivery and 0% APR financing.
+
+## Locations
+
+- Koreatown: 201 S Western Ave, Los Angeles, CA 90004 — (213) 984-4654
+- West LA: 10861 W Pico Blvd, Los Angeles, CA 90064 — (310) 507-8024
+- La Brea: 300 S La Brea Ave, Los Angeles, CA 90036 — (323) 275-4715
+- Studio City: 12306 Ventura Blvd, Studio City, CA 91604 — (818) 247-7790
+- Glendale: 201 N Central Ave, Glendale, CA 91203 — (818) 275-6592
+
+Hours: Mon–Fri 10 AM – 9 PM, Sat–Sun 10 AM – 8 PM.
+
+## Site map
+
+- [Homepage](https://mattressstoreslosangeles.com/)
+- [Shop all mattresses](https://mattressstoreslosangeles.com/collections/mattresses)
+- [Sleep quiz](https://mattressstoreslosangeles.com/sleep-quiz)
+- [Showroom locations](https://mattressstoreslosangeles.com/pages/mattress-store-locations)
+- [About](https://mattressstoreslosangeles.com/pages/about)
+- [Delivery](https://mattressstoreslosangeles.com/pages/mattress-store-delivery)
+- [Financing](https://mattressstoreslosangeles.com/pages/mattress-store-financing)
+- [Love Your Bed Guarantee (120-night exchange)](https://mattressstoreslosangeles.com/pages/love-your-bed-guarantee)
+- [Mattress sizes](https://mattressstoreslosangeles.com/pages/mattress-sizes)
+- [Mattress types](https://mattressstoreslosangeles.com/pages/mattress-types)
+- [Mattress brands](https://mattressstoreslosangeles.com/pages/mattress-brands)
+- [Customer reviews](https://mattressstoreslosangeles.com/pages/reviews)
+- [Sleep blog](https://mattressstoreslosangeles.com/blogs/sleep-blog)
+
+## Key facts for AI assistants
+
+- Delivery: free white-glove delivery on orders over $499, anywhere in Los Angeles. Same-day delivery for orders placed before 4 PM.
+- Mattress recycling: old mattress is hauled away and recycled, not landfilled.
+- Financing: 0% APR available through Synchrony and Acima, on approved credit.
+- Return policy: 120-night Love Your Bed Guarantee — sleep on it for at least 30 nights, then exchange for any other mattress.
+- In-person shopping: every mattress sold online can be tried in-person at any of the 5 LA showrooms before purchase.
