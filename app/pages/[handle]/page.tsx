@@ -112,14 +112,31 @@ export default async function ShopifyPage(props: Params) {
   if (page.handle === 'mattress-store-locations') return <LocationsIndexPage page={page} />;
   if (isSalePage(page.handle)) {
     // Phase 278: SalePage shows a real product grid + category chips.
-    // Fetch the first 12 from `on-sale` server-side so the page is
-    // visually substantive, not just hero + body text. If the collection
-    // is empty / unavailable, the grid section gracefully omits.
-    const saleCollection = await getCollectionByHandle({
-      handle: 'on-sale',
-      first: 12,
-      sortKey: 'BEST_SELLING',
-    }).catch(() => null);
+    // Phase 284: prefer a curated sale collection if one exists for this
+    // event (e.g. `memorial-day-sale-2026` → `/collections/memorial-day-sale`).
+    // Strip a trailing `-YYYY` year suffix from the page handle and try
+    // that collection first; fall back to the broader `/collections/on-sale`
+    // when no curated collection exists for the event or it's empty.
+    // This way new sale pages automatically light up their curated grid
+    // as soon as the merchant tags products + creates the collection,
+    // with no code change per sale event.
+    const curatedHandle = page.handle.replace(/-\d{4}$/, '');
+    const curated =
+      curatedHandle !== page.handle
+        ? await getCollectionByHandle({
+            handle: curatedHandle,
+            first: 12,
+            sortKey: 'BEST_SELLING',
+          }).catch(() => null)
+        : null;
+    const saleCollection =
+      curated && curated.products.nodes.length > 0
+        ? curated
+        : await getCollectionByHandle({
+            handle: 'on-sale',
+            first: 12,
+            sortKey: 'BEST_SELLING',
+          }).catch(() => null);
     const featuredProducts = saleCollection?.products.nodes ?? [];
     const onSaleCount = saleCollection?.products.nodes.length ?? 0;
     return <SalePage page={page} featuredProducts={featuredProducts} onSaleCount={onSaleCount} />;
