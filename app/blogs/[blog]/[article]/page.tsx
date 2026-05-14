@@ -48,7 +48,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   );
   const url = `/blogs/${article.blog.handle}/${article.handle}`;
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {
