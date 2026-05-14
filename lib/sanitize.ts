@@ -87,6 +87,20 @@ function stripEmptyAnchors(html: string): string {
 // accidentally rewrite other "Read More" links that may be legitimate.
 const WARRANTY_READ_MORE = /(<a\b[^>]*\bhref="\/pages\/mattress-warranty"[^>]*>)\s*Read More\s*(<\/a>)/gi;
 
+// Phase 281: downgrade merchant-authored <h1> tags to <h2> inside
+// rendered Shopify body content. The route templates already emit a
+// single <h1> for the page title (article title on /blogs/*/*, product
+// title on /products/*, page title on /pages/*) — but the merchant body
+// rendered via dangerouslySetInnerHTML often contains its own <h1>
+// (Word/Docs paste artifact or merchant convention). Result: two h1s on
+// the same page, which SEMrush flags as "Multiple h1 tags" (295 URLs in
+// the May 14 audit, mostly blog articles + 22 PDPs).
+//
+// Downgrading to h2 fixes the SEO issue and gives a sensible visual
+// hierarchy (page title h1 → first-level section h2). No content lost.
+const MERCHANT_H1_OPEN  = /<h1(\b[^>]*)>/gi;
+const MERCHANT_H1_CLOSE = /<\/h1>/gi;
+
 export function sanitizeShopifyHtml(html: string | null | undefined): string {
   if (!html) return '';
   let out = html;
@@ -98,6 +112,7 @@ export function sanitizeShopifyHtml(html: string | null | undefined): string {
   out = out.replace(GOOGLE_MAPS_IFRAME, '');
   out = stripEmptyAnchors(out);
   out = out.replace(WARRANTY_READ_MORE, '$1Mattress warranty details$2');
+  out = out.replace(MERCHANT_H1_OPEN, '<h2$1>').replace(MERCHANT_H1_CLOSE, '</h2>');
   // Some legacy article bodies were imported with bad encoding and contain
   // U+FFFD (the � replacement char). Drop them — they only ever render as
   // visible glyphs that look broken.

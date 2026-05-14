@@ -84,7 +84,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   );
   const url = `/products/${product.handle}`;
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {
