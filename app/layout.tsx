@@ -32,6 +32,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
 import { getShopBrand, getActiveAnnouncement } from '@/lib/shopify';
 import { AnnouncementBar } from './_components/announcement-bar';
+import { AnalyticsGa4 } from './_components/analytics-ga4';
 
 // Phase 268: homepage / site-wide title + description + OG default
 // image now read from Shopify's built-in Brand assets (Settings →
@@ -58,6 +59,19 @@ export async function generateMetadata(): Promise<Metadata> {
     : FALLBACK_TITLE;
   const description = shop?.brand?.shortDescription ?? shop?.description ?? FALLBACK_DESCRIPTION;
   const ogImage = shop?.brand?.coverImage?.url;
+  // Phase 277: Search Console + Bing Webmaster verification meta tags.
+  // Gated on env vars so unconfigured deploys don't emit empty
+  // <meta name="google-site-verification" content="">, which would
+  // silently mark the site as un-verifiable.
+  const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
+  const bingVerification = process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION;
+  const verification =
+    googleVerification || bingVerification
+      ? {
+          ...(googleVerification ? { google: googleVerification } : {}),
+          ...(bingVerification ? { other: { 'msvalidate.01': bingVerification } } : {}),
+        }
+      : undefined;
   return {
     metadataBase: new URL('https://www.mattressstoreslosangeles.com'),
     title: {
@@ -78,6 +92,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ...(ogImage ? { images: [{ url: ogImage }] } : {}),
     },
     twitter: { card: 'summary_large_image' },
+    ...(verification ? { verification } : {}),
   };
 }
 
@@ -131,6 +146,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </CartProvider>
         <Analytics />
         <SpeedInsights />
+        <AnalyticsGa4 />
         <script id="ld-organization" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
         <script id="ld-website" type="application/ld+json"
