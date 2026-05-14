@@ -15,13 +15,27 @@ import { FAQ } from './_components/sections/faq';
 import { RecentlyViewedRail } from './_components/recently-viewed';
 import { faqJsonLd } from '@/lib/faq';
 import { LOCAL_BUSINESS_LD } from '@/lib/structured-data';
+import { getShopBrand } from '@/lib/shopify';
 
-export const metadata: Metadata = {
-  title: 'LA Mattress — Sleep, engineered in Los Angeles.',
-  description:
-    'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white-glove delivery & 0% APR financing.',
-  alternates: { canonical: 'https://mattressstoreslosangeles.com/' },
-};
+// Phase 268: homepage title + description now read from Shopify Brand
+// (Settings → Store details → Brand) when available, with hardcoded
+// fallbacks for unconfigured stores or empty Brand fields.
+const FALLBACK_TITLE = 'LA Mattress — Sleep, engineered in Los Angeles.';
+const FALLBACK_DESCRIPTION =
+  'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white-glove delivery & 0% APR financing.';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const shop = await getShopBrand();
+  const title = shop?.brand?.slogan
+    ? `${shop?.name ?? 'LA Mattress'} — ${shop.brand.slogan}`
+    : FALLBACK_TITLE;
+  const description = shop?.brand?.shortDescription ?? shop?.description ?? FALLBACK_DESCRIPTION;
+  return {
+    title,
+    description,
+    alternates: { canonical: 'https://mattressstoreslosangeles.com/' },
+  };
+}
 
 // Site-wide Organization / LocalBusiness / WebSite JSON-LD lives in app/layout.tsx
 // and emits on every page. Per-template structured data (Product, CollectionPage,
