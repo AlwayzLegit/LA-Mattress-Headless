@@ -30,7 +30,8 @@ import { Announcer } from './_components/announcer';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
-import { getShopBrand } from '@/lib/shopify';
+import { getShopBrand, getActiveAnnouncement } from '@/lib/shopify';
+import { AnnouncementBar } from './_components/announcement-bar';
 
 // Phase 268: homepage / site-wide title + description + OG default
 // image now read from Shopify's built-in Brand assets (Settings →
@@ -91,7 +92,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Brand assets when available. buildOrganizationLd() handles the
   // fallback chain internally so this call is safe even when Shopify
   // is unconfigured.
-  const shop = await getShopBrand();
+  //
+  // Phase 266: announcement bar fetched from a Shopify metaobject. When
+  // active (enabled + in date window), it replaces the regular TopBar
+  // sitewide. Two fetches run in parallel — both are fast Storefront
+  // queries with 5min–1hr ISR caches.
+  const [shop, announcement] = await Promise.all([
+    getShopBrand(),
+    getActiveAnnouncement(),
+  ]);
   const organizationLd = buildOrganizationLd(shop);
 
   return (
@@ -104,7 +113,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <CartProvider>
-          <TopBar />
+          {announcement ? <AnnouncementBar data={announcement} /> : <TopBar />}
           <Nav />
           {/*
             Skip-link target. tabIndex={-1} is required: without it, the
