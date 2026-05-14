@@ -3279,10 +3279,2207 @@
       "permanent": true
     },
     {
+      "source": "/$",
+      "destination": "/",
+      "permanent": true,
+      "$note": "Phase 273: 438 GSC 404 URLs (May 14 export) \u2014 fuzzy-matched to nearest live product/collection/page, or safely defaulted to /collections/mattresses / /blogs/sleep-blog / homepage."
+    },
+    {
+      "source": "/accessibility",
+      "destination": "/pages/about",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/discover-a-dreamy-night-s-rest-close-to-shadow-hills",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/elevate-your-nightly-rest-at-a-mattress-shop-serving-la-canada-flintridge",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/enhance-your-nights-with-stearns-foster-mattresses-near-universal-city",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/enjoy-pocketed-coil-comfort-near-harvard-heights",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/experience-gel-foam-mattress-near-vermont-ave",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/experience-luxury-mattresses-minutes-away-from-pasadena",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/explore-premium-mattresses-conveniently-located-near-la-crescenta",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/find-your-perfect-hybrid-mattress-close-to-tarzana",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/get-the-best-deals-on-hybrid-mattresses-near-wilshire-blvd",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/how-can-you-spot-the-best-mattress-store-near-me",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/make-every-night-feel-like-a-vacation-with-premium-mattresses-near-santa-monica",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/mattress-store-near-me-expert-tips-for-la-shoppers",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/shop-quality-latex-mattresses-serving-panorama-city",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/top-memory-foam-mattresses-near-beverly-hills",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/top-reasons-to-buy-organic-latex-mattresses-in-venice",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/top-reasons-to-buy-pillow-top-mattresses-in-hollywood-1",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/upgrade-your-rest-with-tempur-pedic-mattresses-near-sherman-oaks",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/upgrade-your-sleep-with-a-quick-trip-from-atwater-village",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/where-to-find-a-cheap-yet-comfortable-queen-mattress-near-you",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/why-memory-foam-mattresses-are-gaining-popularity-in-windsor-square",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/news/23-best-restaurants-in-los-angeles",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/news/air-foam-vs-memory-foam-mattress",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/news/tuft-and-needle-vs-tempurpedic-mattress-comparison",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/breakfast-proof-your-bed",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-blog/how-many-hours-of-sleep-are-right-for-me",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/cant-sleep-caffeine-297634",
+      "destination": "/blogs/sleep-health",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/foods-that-may-give-you-nightmares",
+      "destination": "/blogs/sleep-health",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/sleep-health/yoga-for-sleep-15-poses-to-help-you-relax",
+      "destination": "/blogs/sleep-health",
+      "permanent": true
+    },
+    {
+      "source": "/collections/allowed-for-custom-discount.atom",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/best-selling-mattresses-next-day-delivery",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/cal-king-beds",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/california-king-adjustable-beds",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/california-king-clearance",
+      "destination": "/collections/california-king-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/california-king-sheets",
+      "destination": "/collections/california-king-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/chattam-wells-suggestions",
+      "destination": "/collections/chattam-wells-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/daybed-suggestions",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/daybeds",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/eligible-for-free-adjustable-bed-mattresses",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/featured-mattress-deals",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/full-mattress-warehouse-clearance-sale",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/full-sheets",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/futons",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/king-adjustable-base-clearance",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/king-mattresses-clearance",
+      "destination": "/collections/king-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/king-sheets",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/loveseats",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/queen-adjustable-base-clearance",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/queen-adjustable-beds",
+      "destination": "/collections/adjustable-beds",
+      "permanent": true
+    },
+    {
+      "source": "/collections/queen-mattress-warehouse-clearance-sale",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/quick-mattress-delivery",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/sheet-sets-save-on-sheets-best-prices/",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/shop-bedding-warehouse-clearance-sale",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/standard-profile-foundation",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/stearns-and-foster-bed-pillows",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/stearns-and-foster-estate-mattresses",
+      "destination": "/collections/stearns-foster-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/stearns-and-foster-reserve-mattresses",
+      "destination": "/collections/stearns-foster-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/stearns-and-foster-studio-mattresses",
+      "destination": "/collections/stearns-foster-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/stearns-and-foster-studio-mattresses.atom",
+      "destination": "/collections/stearns-foster-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/suggested-products",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-pedic-adjustable-base-beds",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-pedic-box-spring-foundation",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/tempur-pedic-luxe-mattresses",
+      "destination": "/collections/tempur-pedic-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/top-organic-mattresses",
+      "destination": "/collections/organic-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/collections/twin-mattress-clearance",
+      "destination": "/collections/twin-xl-mattress-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/twin-sheets",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/collections/twin-xl-mattress-warehouse-clearance-sale",
+      "destination": "/collections/twin-xl-mattress-sale",
+      "permanent": true
+    },
+    {
+      "source": "/collections/twin-xl-sheets",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/pages/best-organic-mattresses",
+      "destination": "/collections/organic-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/pages/collection-bundle",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/pages/la-mattress-store-subscription-terms-of-services",
+      "destination": "/pages/terms-conditions",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-accessories",
+      "destination": "/collections/pillows",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-blog",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-blog/medication",
+      "destination": "/blogs/sleep-health",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-blog/sleep-aids",
+      "destination": "/blogs/sleep-health",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-guides",
+      "destination": "/blogs/mattress-buying-guide",
+      "permanent": true
+    },
+    {
+      "source": "/pages/mattress-store-delivery",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true
+    },
+    {
+      "source": "/pages/tempur-pedic-customer-reviews",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/pages/tempur-pedic-sleep-technology",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/pages/tempur-pedic-store-locator",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/pages/terms-of-use",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/pages/trade-sleep",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/pages/year-end-mattress-sales-big-mattress-deals",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/products/aalok-mirror-in-silver",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/aalok-queen-bed-in-silver-and-warm-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alanis-mirror-in-light-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alecia-night-stand-with-usb-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alipaz-gray-flax-fabric-full-queen-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alipaz-headbaord-gray-fabric-full-queen",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alison-dresser-in-dark-walnut",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alison-night-stand-in-dark-walnut",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alison-platform-bed-gray-contemporary-led",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alissa-brown-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/allie-night-stand-in-rose-gold",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alyson-dresser-in-distressed-white-and-walnut",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alyson-mirror-in-distressed-white-and-walnut",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alzir-queen-bed-in-blue",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/alzire-mirror-in-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ampelios-dresser-in-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ampelios-night-stand-in-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/arcadia-oval-mirror-in-antique-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/arden-brown-cherry-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ariston-dresser-in-rose-gold",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ariston-queen-bed-in-rose-gold",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ariston-rose-gold-upholstered-panel-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ariston-rose-pink-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/arlette-gray-pine-wood-bunk-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/arlette-white-rustic-bunk-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/armchair-verdal-off-white-contemporary-furniture",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/arten-black-platform-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/arthur-brown-cherry-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ash-rayon-from-bamboo-pillowcase-set-by-malouf",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/athy-silver-vanity-with-stool",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/attwell-dark-gray-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/aveiro-rustic-natural-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ballarat-gray-and-silver-l-shaped-triple-twin-bunk-bed-with-desk",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/bed-white-dortmund-panel-furniture-bedroom",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/belgrade-dresser-in-rustic-natural",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/belgrade-i-queen-bed-in-rustic-natural-tone",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/belladonna-glam-led-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/belleterre-california-king-bed-in-silver",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/belleterre-eastern-king-bed-in-silver",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/belleterre-mirror-in-silver",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/belleterre-queen-bed-in-silver",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/belleterre-silver-panel-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/bianca-dark-walnut-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/bianca-dark-walnut-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/birsfelden-chest-in-white-and-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/birsfelden-queen-bed-in-white-and-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/birsfelden-queen-bed-in-white-and-gray-copy",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/birsfelden-queen-bed-with-drawers-in-white-and-gray-copy",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/blackwell-stone-gray-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/brachium-silver-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/brandi-gray-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/brandt-chest-brown-cherry",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/brandt-mirror-brown-cherry",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/brandt-nightstand-w-usb-and-power-outlet-brown-cherry",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/burleigh-cherry-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/burleigh-cherry-king-poster-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/burleigh-cherry-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/burleigh-cherry-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/burleigh-chest-in-cherry",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ca-king-diamond-lucille-medium-natural-latex-lux-euro-top-15-floor-sample-clearance-mattress-copy",
+      "destination": "/products/ca-king-diamond-lucille-firm-natural-latex-lux-euro-top-15-floor-sample-clearance-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/cal-king-platinum-terry-waterproof-mattress-protectors-10-18-by-legget-platt",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/caldicot-dark-gray-lovesea",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/caldicot-transitional-brown-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/calliope-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/calliope-nightstand-w-usb",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/camryn-chest-in-warm-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/cara-youth-platform-bed-cherry-twin",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/caren-gray-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/caren-gray-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carissa-california-king-bed-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carissa-dresser-in-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carissa-mirror-in-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carissa-queen-bed-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carissa-velvet-art-deco-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carlie-black-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carlie-black-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carlie-dresser-in-black-and-chrome",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carly-button-tufted-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/carly-california-king-bed-in-warm-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/castile-storage-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/castile-twin-bed-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/castlile-bedroom-set-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charles-black-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charles-black-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charles-gray-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charles-gray-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charles-gray-storage-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charlize-gray-tufted-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/charlize-navy-tufted-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/cheer-firm-bed-in-a-box-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/chrissy-black-dresser-bedroom-furniture-los-angeles",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/chrissy-night-stand-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/christie-high-gloss-white-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/christie-high-gloss-white-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/christie-white-platform-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/clapton-twin-bed-with-workstation",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/clementine-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/clementine-smooth-white-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/clementine-smooth-white-queen-upholstered-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/coimbra-rustic-natural-wood-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/coimbra-rustic-natural-wood-dresser-los-angeles-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/colin-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/conwy-4pc-queen-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/conwy-bed-frame",
+      "destination": "/products/deluxe-bed-frame",
+      "permanent": true
+    },
+    {
+      "source": "/products/conwy-chest-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/conwy-chests",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/conwy-dresser-gray-contemporary-la-mattress-stores",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/conwy-mirror-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/conwy-night-stand-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/conwy-queen-bed-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/copy-of-louis-philippe-cherry-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/cottage-style-white-headboard-by-rize-beds",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/daphne-gray-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/diamond-jeremiah-medium-natural-latex-luxury-euro-top-15-clearance-mattress",
+      "destination": "/products/queen-diamond-lucille-plush-natural-latex-luxury-euro-top-15-floor-sample-clearance-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/diane-mirror-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/dortmund-white-panel-bed-1",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/durango-storage-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/eastcote-gray-sectional-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/eliora-chest-in-silver",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/eliora-eastern-king-bed-in-silver",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/embrace-designer-knickerbocker-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/emmeline-eastern-king-bed-in-silver",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/emmeline-silver-upholstered-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/enguage-bed-frame-by-knickerbocker-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/erlach-queen-bed-in-white-and-chrome",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/erlach-white-gloss-led-platform-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/erlangen-bed-frame",
+      "destination": "/products/deluxe-bed-frame",
+      "permanent": true
+    },
+    {
+      "source": "/products/fierstall-twin-bed-in-red",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/flandreau-brown-california-king-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/fromberg-brown-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/fulton-bed-frame",
+      "destination": "/products/deluxe-bed-frame",
+      "permanent": true
+    },
+    {
+      "source": "/products/fulton-mirror-in-dark-oak-and-dark-walnut",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/furniture-of-america-becky-slat-am-sl110-f",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/furniture-of-america-brandt-brown-cherry-cal-king-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/furniture-of-america-california-iv-gray-twin-over-twin-bunk-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/furniture-of-america-markos-light-oak-cal-king-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/georgette-mirror-in-antique-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/gervais-mid-century-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/gervais-mid-century-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/granada-classic-cream-ivory-tufted-headboard-by-eluxury",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/grandom-cherry-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/gt-racer-full-platform-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/harlech-gray-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/head-up-ergopedic-essentials-adjustable-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/helix-astor-kids-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/helix-down-feather-pillow",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/helix-dream-pillow-set-2-pack",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/helix-waterproof-mattress-protector",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/herstal-green-fabric-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/houston-dresser-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/houston-night-stand-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ila-mahogany-full-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ila-wood-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ilene-full-memory-foam-topper-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ilene-full-nu-tex-topper-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ilene-king-memory-foam-topper-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ilene-king-nu-tex-topper-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ines-gray-sectional-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/iris-white-metal-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/jakarta-mirror-in-antique-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/janeiro-mirror-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/janeiro-rustic-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/janine-espresso-king-upholstered-platform-bed-copy",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/jodie-satin-blue-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/jodie-satin-blue-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/joyce-vanity-with-stool-in-silver",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/julianna-dark-and-light-pink-youth-panel-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/julianna-twin-bed-in-pink",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/karla-queen-bed-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/kassel-beige-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/kaylee-gray-sectional-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/keizer-6-drawer-dresser-in-dark-cherry",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/keizer-mirror-in-dark-cherry",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/lafray-metal-bunk-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/lafray-twin-bunk-bed-with-futon-base-in-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/lea-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/leeroy-tufted-headboard-ivory",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/leeroy-twin-headboard-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/lennart-black-platform-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/lennart-gray-bed-frame-by-foa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/lennart-ii-white-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/lennart-white-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/leomin-mid-century-platform-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/litchville-brown-cherry-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/loraine-silver-media-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/loraine-silver-queen-upholstered-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-philippe-cherry-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-philippe-cherry-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-philippe-cherry-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-philippe-dark-gray-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-phillippe-black-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-phillippe-black-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-phillippe-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-phillippe-gray-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/louis-phillippe-gray-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/loveseat-skyline-gray-transitional-furniture-living-room",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/loveseat-skyline-pewter-gray-transitional-furniture-living-room",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/loveseat-verdal-dark-gray-contemporary-furniture",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/loveseat-verdal-off-white-contemporary-furniture-living-room",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/low-profile-5-flat-foundation-by-stearns-foster-discontinued-clearance-model",
+      "destination": "/products/copy-of-stearns-foster-low-profile-5-flat-foundation-by-stearns-foster",
+      "permanent": true
+    },
+    {
+      "source": "/products/maddie-california-king-bed-in-pearl-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maddie-eastern-king-bed-in-pearl-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maddie-night-stand-in-pearl-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maddie-queen-bed-in-pearl-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maddison-tobacco-oak-bench",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-carlisle-charcoal-gray-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-carlisle-oat-beige-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-eastman-oat-platform-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-eastman-platform-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-hennessy-stone-grey-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-scoresby-charcoal-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malouf-watson-stone-platform-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/malte-dresser-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mandura-cherry-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mandura-cherry-king-poster-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/manvel-dark-gray-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/manzanillo-slate-blue-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/marlee-mirror-in-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maxime-dark-gray-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maxime-dark-gray-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maxime-gray-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maxime-light-gray-armchair",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maxime-light-gray-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/maxime-light-gray-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mill-creek-collection-carbo-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mill-creek-collection-carob-chesser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mill-creek-collection-carob-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mill-creek-collection-carob-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/mill-creek-collection-carob-storage-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-brownstone-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-brownstone-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-brownstone-nightstand-1",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-brownstone-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-brownstone-s-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-brownstone-sliding-door-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-brownstone-storage-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-graystone-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-graystone-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-graystone-s-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-graystone-sliding-door-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/modern-loft-collection-greystone-storage-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/monster-metal-bed-frame-by-kinckerbocker",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/nefyn-grey-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/nefyn-ivory-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/nefyn-ivory-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/neoma-light-gray-daybed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/olga-black-metal-trippel-bunk-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/olga-metal-metal-bunk-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/omnus-cherry-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/omnus-white-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/omnus-youth-dresser-cherry",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/pamphilos-california-king-bed-in-antique-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/pamphilos-chest-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/pamphilos-dresser-in-antique-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/pamphilos-queen-bed-in-antique-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/patra-acacia-and-walnut-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/patra-acacia-and-walnut-full-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/patra-acacia-and-walnut-king-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/patra-acacia-and-walnut-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/patra-acacia-and-walnut-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/patra-acacia-and-walnut-panel-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/patra-acacia-and-walnut-queen-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/pebble-brown-cherry-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/pembroke-mirror-in-white-wash",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/pollyanna-twin-over-twin-over-twin-bed-with-3-slat-kits-in-mahogany",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/priam-night-stand-in-white-and-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-diamond-dreamstage-2-0-collection-grace-quilted-medium-12-floor-sample-clearance-mattress",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-eastman-house-avalon-latex-hybrid-firm-13-floor-sample-clearance-mattress",
+      "destination": "/products/eastman-house-avalon-latex-hybrid-plush-14-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-eclipse-ice-tufted-plush-euro-top-15-floor-sample-clearance-mattress",
+      "destination": "/products/queen-eclipse-ice-tufted-firm-euro-top-15-fllor-sample-clerance-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-spring-air-tradition-collection-van-gogh-16-pillow-top-floor-sample-clearance-mattress",
+      "destination": "/products/spring-air-tradition-collection-vang-gogh-pillow-top-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-stearns-foster-lux-estate-cassatt-firm-pillow-top-discontinued-clearance-floor-sample-mattress",
+      "destination": "/products/stearns-foster-lux-estate-medium-pillow-top-16-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-stearns-foster-lux-estate-medium-14-5-floor-sample-clerance-mattress",
+      "destination": "/products/stearns-foster-lux-estate-medium-pillow-top-16-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-tempur-pedic-tempur-extend-base-powered-discontinued-floor-model-clearance",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/queen-tempur-pedic-tempur-luxebreeze-firm-13-floor-sample-clerance-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxebreeze-firm-13-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/raiden-california-king-bed-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/raiden-dresser-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/raiden-night-stand-with-usb-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rayon-from-bamboo-sheet-set-by-malouf",
+      "destination": "/products/brushed-microfiber-ash-sheet-set-by-malouf",
+      "permanent": true
+    },
+    {
+      "source": "/products/rexburg-dark-gray-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rize-contemporary-iii-18-adjustable-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rize-cottage-style-ebony-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rize-rz-cloud-memory-foam-pillow",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/roanne-twin-bed-in-gray-and-charcoal",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rockwall-gray-bed-frame-by-foa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rockwall-rustic-gray-chest",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rockwall-rustic-gray-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rockwall-rustic-white-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rockwall-white-wood-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rockwall-wire-brushed-white-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rosabelle-dary-gray-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rosabelle-tufted-wingback-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rosewood-mirror-in-dark-oak",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/rowley-metal-bunk-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/ryleigh-bed-frame",
+      "destination": "/products/deluxe-bed-frame",
+      "permanent": true
+    },
+    {
+      "source": "/products/salamanca-silver-panel-bedroom-set",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sandnes-light-oak-mid-century-storage-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sansom-eastern-king-bed-in-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sapphira-dark-grey-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/shawnette-dresser-in-antique-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sherise-gray-boucle-fabric-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sherman-black-metal-bunk-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/silvan-gray-velvet-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/silvan-gray-velvet-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sisseton-blue-transtional-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sisseton-light-gray-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sisseton-light-gray-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/skyline-gray-transtional-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/skyline-pewter-gray-transitional-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sofa-sisseton-blue-transtional",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sofa-skyline-gray-transtional-furniture-living-room",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sofa-skyline-pewter-gray-transitional-furniture-living-room",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sofa-verdal-gray-contemporary-furniture",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/somani-white-bench",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/south-yorkshire-brown-cherry-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/stearns-foster-estate-firm",
+      "destination": "/products/stearns-foster-estate-medium-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/products/stefania-eastern-king-bed-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/stephanie-vanity-set-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/susanna-gray-daybed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/susanna-navy-blue-daybed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/sybella-queen-bed-in-dark-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tawana-dresser-in-warm-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tawana-queen-bed-in-warm-gray-and-beige",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-ease-power-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-ergo-extend-smart-base",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/tempur-pedic-tempur-ergo-smart-adjustable-base-1",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/timandra-night-stand-in-rustic-natural-tone",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/triple-twin-bunk-bed-in-warm-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/twin-bed-in-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/twin-xl-savvy-rest-unity-organic-latex-pillow-top-floor-sample-clearance-mattress-10",
+      "destination": "/products/savvy-rest-serenity-organic-latex-floor-sample-clearance-mattress-10",
+      "permanent": true
+    },
+    {
+      "source": "/products/ulstein-mid-century-platform-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/vagan-chevron-gray-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/valentina-vanity-set-in-white",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/valletta-night-stand-in-champagne",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/valletta-queen-bed-in-champagne-copy",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/vanity-set-in-white-and-black",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/velda-ii-brown-cherry-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/velen-black-leatherette-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/velen-ii-black-twin-size-headboard",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/verdal-dark-gray-contemporary-loveseat",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/verdal-off-white-contemporary-sofa",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/vevey-dresser-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/viana-gray-and-light-gray-bench",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/wells-mirror-in-gray",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/wentworth-rustic-bed-frame",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/white-rayon-from-bamboo-pillowcase-set-by-malouf",
+      "destination": "/products/white-botanical-tencel-lyocell-pillowcase-set-by-malouf",
+      "permanent": true
+    },
+    {
+      "source": "/products/willamette-night-stand-in-light-oak",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/winn-park-upholstered-gray-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/winsor-espresso-mirror",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/yves-corduroy-section",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/zane-collection-chests",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/zane-collection-dresser",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/zane-collection-nightstand",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/products/zane-collection-parchment-panel-bed",
+      "destination": "/collections/mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/services/login_with_shop/authorize",
+      "destination": "/account",
+      "permanent": true
+    },
+    {
       "source": "/blogs/beds-mattresses",
       "destination": "/blogs/sleep-blog",
       "permanent": true,
       "$note": "Phase 260: bare blog index \u2014 Phase 251's :slug* wildcard does not match the empty-slug case, so the blog index page would still render. Redirect to the sleep-blog landing where the consolidated content lives."
+    },
+    {
+      "source": "/articles/:slug*",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true,
+      "$note": "Phase 273: catch-all for old Hydrogen-era /articles/* paths (207 in May GSC export). Sleep-blog is the most general consolidating destination."
     },
     {
       "source": "/blogs/beds-mattresses/:slug*",
