@@ -3862,3 +3862,73 @@ summary:focus-visible,
 @media (max-width: 760px) {
   .sale-page-hero { padding: 60px 0 80px; }
 }
+
+/* Phase 278 — Sale-page extended sections (trust strip, product grid, chips, foot CTA). */
+.sale-page-trust {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  padding: var(--s-5) 0;
+}
+.sale-page-trust-inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-5);
+  align-items: center;
+}
+.sale-page-trust-item {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+}
+.sale-page-trust-item svg { flex: 0 0 auto; color: var(--accent); margin-top: 2px; }
+.sale-page-trust-title { font-weight: 600; font-size: 15px; line-height: 1.3; }
+.sale-page-trust-sub { color: var(--text-2); font-size: 13.5px; line-height: 1.5; margin-top: 2px; }
+@media (max-width: 760px) {
+  .sale-page-trust-inner { grid-template-columns: 1fr; gap: var(--s-3); }
+}
+
+.sale-page-grid-section {
+  padding: var(--s-8) 0 var(--s-7);
+  border-bottom: 1px solid var(--line);
+}
+.sale-page-grid-head { margin-bottom: var(--s-6); max-width: 70ch; }
+.sale-page-grid-head .h2 { margin: 0 0 var(--s-2); }
+.sale-page-grid-head p { margin: 0; font-size: 15px; line-height: 1.55; }
+.sale-page-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: var(--s-4);
+}
+.sale-page-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.sale-page-chip:hover {
+  border-color: var(--accent);
+  background: #fff;
+}
+.sale-page-grid-foot {
+  margin-top: var(--s-6);
+  display: flex;
+  justify-content: center;
+}
+
+.sale-page-foot-cta {
+  padding: var(--s-8) 0;
+  background: var(--bg-2);
+  text-align: center;
+}
+.sale-page-foot-cta-inner { max-width: 60ch; margin: 0 auto; }
+.sale-page-foot-cta .h2 { margin: 0 0 var(--s-3); }
+.sale-page-foot-cta p { margin: 0 0 var(--s-5); }
+.sale-page-foot-cta .sale-page-ctas { justify-content: center; }

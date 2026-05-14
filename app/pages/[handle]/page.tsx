@@ -4,13 +4,15 @@ import Link from 'next/link';
 
 import Image from 'next/image';
 
-import { getPageByHandle } from '@/lib/shopify';
+import { getPageByHandle, getCollectionByHandle } from '@/lib/shopify';
+import type { ProductSummary } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, formatPhone, getOpenStatus, type Showroom } from '@/lib/showrooms';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_PHONE_SCHEMA } from '@/lib/site-config';
 import { Icon } from '@/app/_components/icon';
+import { PlpCard } from '@/app/_components/plp-card';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -105,7 +107,20 @@ export default async function ShopifyPage(props: Params) {
   const showroom = findShowroom(page.handle);
   if (showroom) return <ShowroomPage page={page} showroom={showroom} />;
   if (page.handle === 'mattress-store-locations') return <LocationsIndexPage page={page} />;
-  if (isSalePage(page.handle)) return <SalePage page={page} />;
+  if (isSalePage(page.handle)) {
+    // Phase 278: SalePage shows a real product grid + category chips.
+    // Fetch the first 12 from `on-sale` server-side so the page is
+    // visually substantive, not just hero + body text. If the collection
+    // is empty / unavailable, the grid section gracefully omits.
+    const saleCollection = await getCollectionByHandle({
+      handle: 'on-sale',
+      first: 12,
+      sortKey: 'BEST_SELLING',
+    }).catch(() => null);
+    const featuredProducts = saleCollection?.products.nodes ?? [];
+    const onSaleCount = saleCollection?.products.nodes.length ?? 0;
+    return <SalePage page={page} featuredProducts={featuredProducts} onSaleCount={onSaleCount} />;
+  }
 
   return <DefaultPage page={page} />;
 }
@@ -516,17 +531,45 @@ function formatHour(hhmm: string): string {
 }
 
 /**
- * Phase 277: sale-page template. Renders a full-bleed accent-color hero
- * with the page title + bodySummary as the lede, followed by the
- * merchant-authored body in a wider container, plus a sticky "Shop the
- * Sale" CTA at the foot of the hero linking to /collections/on-sale.
+ * Phase 277/278: sale-page template. Activated by handle pattern
+ * (SALE_HANDLE_PATTERNS). The layout is:
  *
- * Activated by handle pattern (see SALE_HANDLE_PATTERNS). Merchant just
- * names the page accordingly — e.g., `/pages/memorial-day-sale`,
- * `/pages/black-friday-2026` — and gets the sale layout automatically.
- * No additional Shopify-side configuration required.
+ *   1. Full-bleed navy hero — title + bodySummary lede + dual CTAs.
+ *   2. Trust strip — 3 quick reassurance points (delivery, financing,
+ *      120-night exchange) that match the homepage TrustBar.
+ *   3. Category chips — pill-shaped links into the major mattress
+ *      sub-categories so shoppers can drill in immediately.
+ *   4. Featured product grid — 12 best-selling products from the
+ *      `on-sale` collection (fetched server-side in the page handler),
+ *      using the standard PlpCard so the look matches every other PLP.
+ *   5. "See all N mattresses on sale" link to /collections/on-sale.
+ *   6. Merchant-authored body content — the long-form sale copy from
+ *      Shopify Admin (terms, brand callouts, showroom hours, etc.).
+ *   7. Footer CTA — Shop the Sale + Find a showroom buttons.
+ *
+ * The product grid + category chips + trust strip mean the page is
+ * visually substantive even when the merchant body is empty or thin.
  */
-function SalePage({ page }: { page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>> }) {
+const SALE_CATEGORY_CHIPS = [
+  { label: 'Memory foam',     href: '/collections/memory-foam-mattresses' },
+  { label: 'Hybrid',          href: '/collections/hybrid-mattresses' },
+  { label: 'Latex',           href: '/collections/latex-mattresses' },
+  { label: 'Innerspring',     href: '/collections/innerspring-mattresses' },
+  { label: 'Tempur-Pedic',    href: '/collections/tempur-pedic-mattresses' },
+  { label: 'Stearns & Foster', href: '/collections/stearns-foster-mattresses' },
+  { label: 'Helix',           href: '/collections/helix-mattresses' },
+  { label: 'Adjustable bases', href: '/collections/adjustable-beds' },
+];
+
+function SalePage({
+  page,
+  featuredProducts,
+  onSaleCount,
+}: {
+  page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
+  featuredProducts: ProductSummary[];
+  onSaleCount: number;
+}) {
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
   const url = `${SITE}/pages/${page.handle}`;
   const breadcrumbLd = {
@@ -574,13 +617,93 @@ function SalePage({ page }: { page: NonNullable<Awaited<ReturnType<typeof getPag
         </div>
       </header>
 
-      <article className="container sale-page-body">
-        {page.body ? (
+      {/* Trust strip — same trio used by the homepage TrustBar. Visible
+          immediately below the hero so the value-prop is reinforced
+          before the shopper scrolls into the grid. */}
+      <section className="sale-page-trust" aria-label="What's included with every order">
+        <div className="container sale-page-trust-inner">
+          <div className="sale-page-trust-item">
+            <Icon name="truck" size={20} />
+            <div>
+              <div className="sale-page-trust-title">Free LA delivery</div>
+              <div className="sale-page-trust-sub">White-glove on orders over $499. Same-day if you order by 4 PM.</div>
+            </div>
+          </div>
+          <div className="sale-page-trust-item">
+            <Icon name="card" size={20} />
+            <div>
+              <div className="sale-page-trust-title">0% APR financing</div>
+              <div className="sale-page-trust-sub">Synchrony or Acima on approved credit. 60-second application.</div>
+            </div>
+          </div>
+          <div className="sale-page-trust-item">
+            <Icon name="shield" size={20} />
+            <div>
+              <div className="sale-page-trust-title">120-night exchange</div>
+              <div className="sale-page-trust-sub">Sleep 30 nights, exchange for any other mattress if it&rsquo;s not right.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured product grid — first 12 best-sellers from the on-sale
+          collection. Same PlpCard component every other PLP uses, so
+          the look stays consistent and shoppers see real product cards
+          with prices, ratings, brand tags, etc. */}
+      {featuredProducts.length > 0 ? (
+        <section className="sale-page-grid-section" aria-labelledby="sale-grid-h">
+          <div className="container">
+            <header className="sale-page-grid-head">
+              <h2 id="sale-grid-h" className="h2">Featured deals</h2>
+              <p className="muted">A few of our best-selling mattresses currently on sale. {onSaleCount > 12 ? `${onSaleCount}+ models discounted in total — see all below.` : null}</p>
+              <nav className="sale-page-chips" aria-label="Shop by category">
+                {SALE_CATEGORY_CHIPS.map((chip) => (
+                  <Link key={chip.href} href={chip.href} className="sale-page-chip">
+                    {chip.label}
+                  </Link>
+                ))}
+              </nav>
+            </header>
+            <div className="plp-grid">
+              {featuredProducts.map((p, i) => (
+                <PlpCard key={p.id} product={p} priority={i < 3} />
+              ))}
+            </div>
+            <div className="sale-page-grid-foot">
+              <Link href="/collections/on-sale" className="btn btn-primary btn-lg">
+                See every mattress on sale <Icon name="arrow-right" size={16} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* Merchant-authored long-form body. Sale terms, brand callouts,
+          showroom hours, etc. — anything they type into the Shopify
+          page body renders here. */}
+      {page.body ? (
+        <article className="container sale-page-body">
           <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
-        ) : (
-          <p className="muted">More sale details coming soon.</p>
-        )}
-      </article>
+        </article>
+      ) : null}
+
+      {/* Footer CTA — repeat the primary action at the end of the page
+          so a shopper who scrolled all the way down doesn't have to
+          scroll back up to convert. */}
+      <section className="sale-page-foot-cta">
+        <div className="container sale-page-foot-cta-inner">
+          <h2 className="h2">Ready to upgrade your sleep?</h2>
+          <p className="muted">Free LA delivery, 0% APR financing, 120-night exchange. Every mattress on the floor at all 5 showrooms.</p>
+          <div className="sale-page-ctas">
+            <Link href="/collections/on-sale" className="btn btn-primary btn-lg">
+              Shop the Sale <Icon name="arrow-right" size={16} />
+            </Link>
+            <Link href="/sleep-quiz" className="btn btn-ghost btn-lg">
+              Take the 2-min quiz
+            </Link>
+          </div>
+        </div>
+      </section>
 
       <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
       <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
