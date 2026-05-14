@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   title: 'Compare mattresses',
   description: 'Side-by-side comparison of mattresses you’re considering.',
   robots: { index: false, follow: false },
+  // Phase 258: canonical to the param-free URL so crawlers don't index
+  // the explosion of `?ids=` permutations as distinct pages. /compare
+  // is noindex+nofollow but the canonical is the polite signal for
+  // crawlers that respect it even when nofollow is set.
+  alternates: { canonical: '/compare' },
 };
 
 type Search = { searchParams: Promise<{ ids?: string }> };
