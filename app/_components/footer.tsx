@@ -97,7 +97,7 @@ export function Footer() {
           <li><Link href="/pages/terms-conditions">Terms</Link></li>
           <li><Link href="/pages/data-sharing-opt-out">Accessibility</Link></li>
           <li><Link href="/pages/data-sharing-opt-out">Do Not Sell My Info</Link></li>
-          <li><Link href="/sitemap.xml">Sitemap</Link></li>
+          <li><Link href="/pages/sitemap">Sitemap</Link></li>
         </ul>
       </div>
     </footer>
