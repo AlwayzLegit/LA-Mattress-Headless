@@ -1,6 +1,6 @@
 {
-  "$schema": "Shopify URL Redirects — paths that must continue to redirect after the migration cutover.",
-  "$source": "Shopify Admin → URL Redirects export (CSV), 2026-05-05.",
+  "$schema": "Shopify URL Redirects \u2014 paths that must continue to redirect after the migration cutover.",
+  "$source": "Shopify Admin \u2192 URL Redirects export (CSV), 2026-05-05.",
   "$status": "imported",
   "$applicationNote": "Loaded by next.config.mjs at build time and emitted as Next.js redirects(). Edge-evaluated.",
   "$count": 370,
@@ -1866,6 +1866,12 @@
       "source": "/products/twin-xl-restonic-mattress-clearance-enchantment-latex-firm-13",
       "destination": "/products/twin-xl-restonic-mattress-clearance-enchantment-latex-firm-12",
       "permanent": true
+    },
+    {
+      "source": "/blogs/beds-mattresses",
+      "destination": "/blogs/sleep-blog",
+      "permanent": true,
+      "$note": "Phase 260: bare blog index \u2014 Phase 251's :slug* wildcard does not match the empty-slug case, so the blog index page would still render. Redirect to the sleep-blog landing where the consolidated content lives."
     },
     {
       "source": "/blogs/beds-mattresses/:slug*",
