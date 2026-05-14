@@ -58,6 +58,22 @@ const SHOPIFY_CDN_PREFIX = 'https://cdn.shopify.com/s/files/1/0684/1759/';
 // width / height / allowfullscreen attrs.
 const GOOGLE_MAPS_IFRAME = /<iframe\b[^>]*\bsrc=["'][^"']*(?:google\.com\/maps|maps\.google\.com)[^"']*["'][^>]*>[\s\S]*?<\/iframe>/gi;
 
+// Phase 264: strip `<a>` tags whose inner HTML has no visible anchor text
+// and no `<img>` (so links wrapping images stay intact). Several merchant
+// articles imported from the old Hydrogen site have empty link wrappers
+// like `<a href="X"><strong></strong></a>` or `<a href="X"><span class="15"></span></a>`
+// — invisible zero-width links that SEMrush flags under "Links with no
+// anchor text." Removing them is safe: a link with no visible content
+// can't be clicked or read by a screen reader anyway.
+const EMPTY_ANCHOR = /<a\b[^>]*>([\s\S]*?)<\/a>/gi;
+function stripEmptyAnchors(html: string): string {
+  return html.replace(EMPTY_ANCHOR, (match, inner: string) => {
+    if (/<img\b/i.test(inner)) return match; // image-only link → keep
+    const text = inner.replace(/<[^>]+>/g, '').replace(/&nbsp;|\s+/g, '').trim();
+    return text === '' ? '' : match;
+  });
+}
+
 export function sanitizeShopifyHtml(html: string | null | undefined): string {
   if (!html) return '';
   let out = html;
@@ -67,6 +83,7 @@ export function sanitizeShopifyHtml(html: string | null | undefined): string {
   out = out.replace(HYDROGEN_CDN_REWRITE, SHOPIFY_CDN_PREFIX + '$1/');
   for (const re of HOSTS_TO_REWRITE) out = out.replace(re, '');
   out = out.replace(GOOGLE_MAPS_IFRAME, '');
+  out = stripEmptyAnchors(out);
   // Some legacy article bodies were imported with bad encoding and contain
   // U+FFFD (the � replacement char). Drop them — they only ever render as
   // visible glyphs that look broken.
