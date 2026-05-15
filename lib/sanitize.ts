@@ -101,6 +101,47 @@ const WARRANTY_READ_MORE = /(<a\b[^>]*\bhref="\/pages\/mattress-warranty"[^>]*>)
 const MERCHANT_H1_OPEN  = /<h1(\b[^>]*)>/gi;
 const MERCHANT_H1_CLOSE = /<\/h1>/gi;
 
+// Phase 290: strip click-tracking query parameters from links in
+// merchant-authored article bodies. The May 15 SEMrush re-audit
+// flagged 64 articles with 89 "broken external links" instances.
+// Inspection of a sample showed most are URLs ending in
+// `?srsltid=AfmBOop...` — Google Shopping click-through tracking
+// tokens that merchants accidentally paste when copy-linking from
+// Google search / Shopping results. Google's tracker returns
+// non-200 status codes for non-browser User-Agents (SEMrush,
+// Bingbot, etc.), so the link counts as broken in audits.
+//
+// Stripping the param leaves the bare destination URL which works
+// for both end users (they just lose Google's tracking, which they
+// shouldn't be sending anyway) and crawlers.
+//
+// Also covers Shopify's session-tracking params (`_pos`, `_sid`,
+// `_ss`) which can appear on internal links pasted from a browser
+// session. Those are already disallowed in robots.txt (Phase 273)
+// but stripping them from rendered hrefs reduces wasted crawl
+// budget and avoids leaking session IDs into the public site.
+//
+// Idempotent — running the regex twice yields the same result. Safe
+// to call on already-clean URLs.
+const TRACKING_PARAM_LEADING = /\?(?:srsltid|_pos|_sid|_ss)=[^&"'#\s]*(&[^"'\s]*)?/g;
+const TRACKING_PARAM_FOLLOWING = /&(?:srsltid|_pos|_sid|_ss)=[^&"'#\s]*/g;
+
+function stripTrackingParams(html: string): string {
+  // Loop until stable — handles the multi-tracker case
+  // `?_pos=X&_sid=Y&_ss=Z` where one pass only strips one param. 5
+  // iterations is more than enough (longest real-world chain is 3-4).
+  let out = html;
+  for (let i = 0; i < 5; i += 1) {
+    const before = out;
+    // Strip "?<tracker>=X" or "?<tracker>=X&other=Y" — preserve "?other=Y" when other params follow.
+    out = out.replace(TRACKING_PARAM_LEADING, (_, rest) => (rest ? '?' + rest.slice(1) : ''));
+    // Strip "&<tracker>=X" — drop the param + its leading ampersand.
+    out = out.replace(TRACKING_PARAM_FOLLOWING, '');
+    if (out === before) break;
+  }
+  return out;
+}
+
 export function sanitizeShopifyHtml(html: string | null | undefined): string {
   if (!html) return '';
   let out = html;
@@ -110,6 +151,9 @@ export function sanitizeShopifyHtml(html: string | null | undefined): string {
   out = out.replace(HYDROGEN_CDN_REWRITE, SHOPIFY_CDN_PREFIX + '$1/');
   for (const re of HOSTS_TO_REWRITE) out = out.replace(re, '');
   out = out.replace(GOOGLE_MAPS_IFRAME, '');
+  // Phase 290: strip srsltid + Shopify session-tracking params from
+  // hrefs (see TRACKING_PARAM_* docstring above for rationale).
+  out = stripTrackingParams(out);
   out = stripEmptyAnchors(out);
   out = out.replace(WARRANTY_READ_MORE, '$1Mattress warranty details$2');
   out = out.replace(MERCHANT_H1_OPEN, '<h2$1>').replace(MERCHANT_H1_CLOSE, '</h2>');
