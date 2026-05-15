@@ -112,7 +112,7 @@ export const SHOWROOMS: Showroom[] = [
     geo: { latitude: 34.1493, longitude: -118.2546 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+Glendale+201+N+Central+Ave',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Glendale.jpg?v=1734092279',
-    gbpUrl: 'https://maps.app.goo.gl/GkWaCJBJXGhdZt3Z9',
+    gbpUrl: 'https://maps.app.goo.gl/ougR46TStjLaKX5u7',
   },
 ];
 
