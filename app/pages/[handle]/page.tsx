@@ -399,6 +399,10 @@ function ShowroomPage({
     ...(showroom.geo
       ? { geo: { '@type': 'GeoCoordinates', latitude: showroom.geo.latitude, longitude: showroom.geo.longitude } }
       : {}),
+    // Phase 287: link this FurnitureStore to its verified Google
+    // Business Profile / Maps entity so Google can reconcile the
+    // structured data with the GBP listing (strongest local signal).
+    ...(showroom.gbpUrl ? { sameAs: [showroom.gbpUrl] } : {}),
     openingHoursSpecification: showroom.hours.map((h) => ({
       '@type': 'OpeningHoursSpecification',
       // Phase 236: extended for Mon-Fri / Sat-Sun spans now used by all

@@ -12,6 +12,15 @@ export type Showroom = {
   mapUrl: string;
   /** Shopify CDN URL for the storefront photo. */
   imageUrl?: string;
+  /**
+   * Canonical Google Business Profile / Maps URL for this showroom.
+   * Emitted as JSON-LD `sameAs` on the per-showroom FurnitureStore and
+   * on the homepage LocalBusiness `department[]` entry, so Google can
+   * map our structured data to the verified GBP/Maps entity. Use the
+   * Maps profile share link (maps.app.goo.gl/…) or the full
+   * /maps/place/… URL — NOT the /r/…/review solicitation link.
+   */
+  gbpUrl?: string;
 };
 
 export const SHOWROOMS: Showroom[] = [
@@ -31,6 +40,7 @@ export const SHOWROOMS: Showroom[] = [
     geo: { latitude: 34.0710, longitude: -118.3092 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+Koreatown+201+S+Western+Ave',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Koreatown.jpg?v=1734092287',
+    gbpUrl: 'https://maps.app.goo.gl/3EHM8AEraMU1D8We8',
   },
   {
     handle: 'best-mattress-store-west-la',
@@ -48,6 +58,7 @@ export const SHOWROOMS: Showroom[] = [
     geo: { latitude: 34.0489, longitude: -118.4275 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+West+LA+10861+W+Pico+Blvd',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/West_LA.jpg?v=1734092103',
+    gbpUrl: 'https://maps.app.goo.gl/aE23QJizSeuaZGcp9',
   },
   {
     handle: 'best-mattress-store-la-brea',
@@ -65,6 +76,7 @@ export const SHOWROOMS: Showroom[] = [
     geo: { latitude: 34.0764, longitude: -118.3447 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+La+Brea+300+S+La+Brea+Ave',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/hancock.jpg?v=1734095213',
+    gbpUrl: 'https://maps.app.goo.gl/u5FLaDMQswWdhx8SA',
   },
   {
     handle: 'mattress-store-studio-city',
@@ -82,6 +94,7 @@ export const SHOWROOMS: Showroom[] = [
     geo: { latitude: 34.1420, longitude: -118.4040 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+Studio+City+12306+Ventura+Blvd',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Studio_City.jpg?v=1734378534',
+    gbpUrl: 'https://maps.app.goo.gl/yUc19KdUJaCK25jD6',
   },
   {
     handle: 'mattress-store-in-glendale',
@@ -99,6 +112,7 @@ export const SHOWROOMS: Showroom[] = [
     geo: { latitude: 34.1493, longitude: -118.2546 },
     mapUrl: 'https://maps.google.com/?q=LA+Mattress+Glendale+201+N+Central+Ave',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Glendale.jpg?v=1734092279',
+    gbpUrl: 'https://maps.app.goo.gl/GkWaCJBJXGhdZt3Z9',
   },
 ];
 

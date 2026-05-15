@@ -92,6 +92,10 @@ export const LOCAL_BUSINESS_LD = {
       addressCountry: 'US',
     },
     ...(s.geo ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } } : {}),
+    // Phase 287: reinforce the GBP/Maps entity association from the
+    // homepage (highest-authority page) too — each department branch
+    // points at its verified Google Business Profile.
+    ...(s.gbpUrl ? { sameAs: [s.gbpUrl] } : {}),
   })),
   parentOrganization: { '@id': `${SITE}/#organization` },
 };
