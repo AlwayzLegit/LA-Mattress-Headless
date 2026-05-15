@@ -7,6 +7,7 @@ import { useCart } from '@/app/_components/cart-context';
 import { Icon } from '@/app/_components/icon';
 import { announce } from '@/app/_components/announcer';
 import { formatMoney, formatPriceRange } from '@/lib/format';
+import { findVariant, isOptionAvailable } from '@/lib/variant-select';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { SIZE_DIMENSIONS } from './pdp-data';
 import { PdpStickyAtcBar } from './pdp-sticky-atc-bar';
@@ -40,7 +41,7 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
   useEffect(() => { setQty(1); }, [selection]);
 
   const matchingVariant = useMemo(
-    () => variants.find((v) => v.selectedOptions.every((o) => selection[o.name] === o.value)),
+    () => findVariant(variants, selection),
     [variants, selection],
   );
 
@@ -71,12 +72,7 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
   }, [matchingVariant]);
 
   function isAvailable(name: string, value: string): boolean {
-    return variants.some((v) => {
-      if (!v.availableForSale) return false;
-      return v.selectedOptions.every((o) =>
-        o.name === name ? o.value === value : selection[o.name] === o.value,
-      );
-    });
+    return isOptionAvailable(variants, selection, name, value);
   }
 
   // Find the variant that would result from clicking a chip — used to show

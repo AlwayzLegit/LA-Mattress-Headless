@@ -27,6 +27,16 @@ export const SITE_EMAIL = 'orders.lamattress@gmail.com';
 export const SITE_BRAND = 'LA Mattress Store';
 
 /**
+ * Order subtotal (USD, pre-tax) at/above which white-glove delivery is
+ * free. "$499" was previously repeated as prose in ~15 content files;
+ * this is the single numeric source the cart free-shipping bar reads.
+ * Copy files are intentionally left alone (out of scope).
+ */
+export const FREE_DELIVERY_THRESHOLD = 499;
+/** Pre-formatted threshold for UI copy. */
+export const FREE_DELIVERY_THRESHOLD_DISPLAY = '$499';
+
+/**
  * Public site URL (matches NEXT_PUBLIC_SITE_URL when set).
  *
  * The canonical host is the `www.` subdomain — the apex
