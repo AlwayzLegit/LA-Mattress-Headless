@@ -347,21 +347,26 @@ Full report: `data/cowork-reports/seo-sprint-review-20260515T083646Z.md`.
 11 of 13 findings were code-resolved in Phase 292 and are on
 `claude/seo-audit-plan-DuoHW`. Two are blocked on merchant-only data:
 
-- **MEDIUM #10 — GSC / Bing verification meta absent.** Cowork found no
-  `google-site-verification` / `msvalidate.01` meta on any page. The
-  code is correctly gated on env vars, so this is *not* a code defect.
-  Action: confirm how the properties were verified. If via DNS TXT
-  record or HTML-file upload → no action, close as informational. If
-  the meta-tag method was intended → set
-  `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` and
-  `NEXT_PUBLIC_BING_SITE_VERIFICATION` in Vercel project env and
-  redeploy.
-- **LOW #13 — Organization JSON-LD has no `sameAs`.** `SOCIAL_PROFILES`
-  in `lib/site-config.ts` is intentionally empty (no dummy URLs). The
-  builder already emits `sameAs` when it's populated. Action: provide
-  the canonical owned profile URLs (Facebook / Instagram / X / YouTube
-  / Yelp / GBP); they get uncommented in `lib/site-config.ts` and
-  `sameAs` emits on the next deploy.
+- **MEDIUM #10 — GSC / Bing verification meta absent.** ✅ Resolved
+  (merchant confirmed 2026-05-15: Google site verification is done).
+  The cowork sandbox couldn't read the live HTML (Vercel bot-block 403)
+  so it couldn't see the verification token; ownership status is
+  authoritative in the GSC dashboard itself, not the page source. Any
+  non-meta method (DNS TXT, HTML file, GA, or GSC token) is equally
+  valid and renders no meta tag — so "meta absent" is expected, not a
+  defect. No code action. (If the meta-tag method is ever preferred,
+  set `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` /
+  `NEXT_PUBLIC_BING_SITE_VERIFICATION` in Vercel and redeploy.)
+- **LOW #13 — Organization JSON-LD has no `sameAs`.** ✅ Resolved in
+  Phase 293. Merchant-confirmed profiles added to `SOCIAL_PROFILES`
+  (`lib/site-config.ts`): Facebook `facebook.com/lamattressstore`,
+  Instagram `@lamattressstores`, Yelp
+  `los-angeles-mattress-stores-los-angeles` (biz address matches the
+  West LA showroom). `sameAs` now emits on the sitewide Organization +
+  LocalBusiness JSON-LD on next deploy. **Still open:** the 5 showroom
+  Google Business Profile URLs — merchant to provide the canonical
+  `g.page` / maps share links; add them to `SOCIAL_PROFILES` (and they
+  also feed per-showroom JSON-LD `sameAs`).
 - **Post-deploy housekeeping.** After this branch ships, re-submit
   `sitemap.xml` in Google Search Console + Bing Webmaster. The URL is
   unchanged but its contents now resolve to the `www` host with no 308

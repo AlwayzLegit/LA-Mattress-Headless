@@ -74,10 +74,15 @@ export const SITE_URL = canonicalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
  * it up automatically on the next deploy.
  */
 export const SOCIAL_PROFILES: readonly string[] = [
-  // 'https://www.facebook.com/lamattressstores',
-  // 'https://www.instagram.com/lamattress',
-  // 'https://www.youtube.com/@lamattress',
-  // 'https://www.yelp.com/biz/la-mattress-store-los-angeles',
-  // 'https://www.linkedin.com/company/la-mattress-store',
-  // 'https://twitter.com/lamattress',
+  // Phase 293: confirmed owned profiles (merchant-verified 2026-05-15).
+  // Facebook: merchant-selected canonical page (lists
+  //   mattressstoreslosangeles.com as its website, Studio City base).
+  // Instagram: @lamattressstores — matches brand + catalog.
+  // Yelp: biz address 10861 W Pico Blvd == the West LA showroom in
+  //   lib/showrooms.ts (definitive ownership match).
+  'https://www.facebook.com/lamattressstore',
+  'https://www.instagram.com/lamattressstores',
+  'https://www.yelp.com/biz/los-angeles-mattress-stores-los-angeles',
+  // TODO(merchant): add the 5 showroom Google Business Profile URLs
+  // (g.page / maps share links) once provided — ideal local sameAs.
 ] as const;
