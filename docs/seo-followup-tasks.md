@@ -273,6 +273,47 @@ not code. Run continuously.
 
 ---
 
+## 9b. Convert Vercel apex → www redirect from 307 to 308 (Vercel dashboard, 2 min)
+
+The May 15 SEMrush re-audit flagged **1,134 URLs with temporary (302/307)
+redirects** — the homepage and every blog index / article URL among
+them. Our `next.config.mjs#redirects()` uses `permanent: true` (308) by
+default, and `data/url-inventory/redirects.json` has only 1 entry out
+of 1094 marked temporary. So the 1,134 temps aren't from the code —
+they're from Vercel's domain-level apex → www redirect, which by
+default emits **307 (Temporary)** instead of **308 (Permanent)**.
+
+When SEMrush starts a crawl from the apex domain (`mattressstoreslosangeles.com`)
+or follows external links pointing at the apex, every page hits one
+307 before reaching the www canonical. That's the +1 temp redirect
+per URL.
+
+**Fix (Vercel dashboard, ~2 minutes):**
+
+1. Vercel → Project → Settings → **Domains**
+2. Find the row for `mattressstoreslosangeles.com` (apex, without www).
+3. Click the row, look for the **Redirect** section.
+4. Confirm it's set to redirect to `www.mattressstoreslosangeles.com`.
+5. Find the **Status code** toggle — it should be **308 (Permanent)**, not 307 (Temporary).
+6. If currently 307, click to switch to 308. Save.
+
+**Verification (after the change propagates, ~5 min):**
+
+```bash
+curl -sI https://mattressstoreslosangeles.com/ | head -3
+```
+
+The response should be `HTTP/2 308`, not `HTTP/2 307`. If still 307,
+hard-refresh the Vercel dashboard and verify the toggle saved.
+
+Net SEO impact: the 1,134 temp-redirect flag on the next SEMrush
+re-audit drops to ~0 (or to whatever's in `redirects.json` as
+`permanent: false`, which is currently 1).
+
+No code change needed — this is purely a CDN/edge config setting.
+
+---
+
 ## 10. Deferred technical SEO (track for a future sprint)
 
 These are noted in the plan but intentionally not shipped yet. Each

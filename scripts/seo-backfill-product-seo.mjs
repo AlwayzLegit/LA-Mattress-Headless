@@ -95,24 +95,40 @@ async function pullProducts() {
   return all;
 }
 
-// Skip the vendor prefix when the title already contains the vendor
-// name anywhere in it — common in this catalog, where titles read like
-// "Diamond Diana Firm…" or "Twin XL Restonic Natural Latex…". Without
-// this dedupe the description becomes "Restonic Twin XL Restonic …".
+// Phase 283: skip the vendor prefix when the title already contains the
+// vendor name anywhere in it — common in this catalog, where titles read
+// like "Diamond Diana Firm…" or "Twin XL Restonic Natural Latex…".
+// Used by generateSeoDescription below to dedupe vendor mentions.
 function titleContainsVendor(title, vendor) {
   return Boolean(vendor) && title.toLowerCase().includes(vendor.toLowerCase());
 }
 
-function generateSeoTitle({ title, vendor }) {
-  const suffix = ' in Los Angeles · LA Mattress';
-  const vendorPrefix = vendor && !titleContainsVendor(title, vendor) ? `${vendor} ` : '';
-  const naive = `${vendorPrefix}${title}${suffix}`;
-  if (naive.length <= TITLE_MAX) return naive;
-  const noVendor = `${title}${suffix}`;
-  if (noVendor.length <= TITLE_MAX) return noVendor;
-  const budget = TITLE_MAX - suffix.length - 1;
-  const truncated = title.slice(0, budget).replace(/\s+\S*$/, '').trim();
-  return `${truncated}…${suffix}`;
+function generateSeoTitle({ title }) {
+  // Phase 290 rewrite: when seo.title is empty, set it to the product
+  // title directly (no truncation, no suffix).
+  //
+  // The earlier version of this function tried to bake a fixed
+  // "in Los Angeles · LA Mattress" suffix and truncate the product
+  // title from the right to fit a 60-char cap. That preserved the
+  // suffix at the cost of the unique variant signature — the May 15
+  // SEMrush re-audit flagged 39 products for "Duplicate title tag"
+  // because sibling variants (Tempur-Pedic ProAdapt Soft / Medium /
+  // Firm; Diamond Dreamstage Clarity Medium / Plush / Firm; etc.) all
+  // truncated to the same prefix + suffix.
+  //
+  // Phase 281 had already switched the PDP template to absolute
+  // titles, so the layout no longer appends a brand suffix — there's
+  // no rendering reason to bake one into the seo.title. Phase 290
+  // raised TITLE_MAX from 56 to 70 (lib/seo.ts), which lets nearly
+  // every catalog title preserve its unique variant signature at
+  // render time. So the cleanest thing to write into Shopify is just
+  // the product title itself.
+  //
+  // The PDP template (app/products/[handle]/page.tsx generateMetadata)
+  // will run capTitle on this and prefer the merchant's seo.title
+  // when set — so this stays a fallback that respects merchant
+  // overrides.
+  return title;
 }
 
 function generateSeoDescription({ title, vendor }) {
