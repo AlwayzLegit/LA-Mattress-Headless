@@ -2803,10 +2803,30 @@ summary:focus-visible,
   -webkit-backdrop-filter: saturate(180%) blur(12px);
   margin-left: calc(var(--gutter) * -1);
   margin-right: calc(var(--gutter) * -1);
-  padding: 0 var(--gutter);
+  /* Phase 295: the bar deliberately full-bleeds (negative margins) so
+     the blurred backdrop spans edge-to-edge. But the inner padding was
+     a flat var(--gutter), so on notched iPhones with viewport-fit=cover
+     the "Featured" sort control was pulled under the notch / rounded
+     corner (landscape + home-indicator). max() keeps content clear of
+     the safe-area inset while the blur still bleeds full-width — the
+     only sticky element that was missing this (nav/cart/.plp-filters
+     all already had safe-area handling). */
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
   border-bottom: 1px solid var(--line);
 }
 @media (max-width: 640px) { .plp-toolbar { height: 56px; gap: var(--s-2); } }
+/* Phase 295: the toolbar only restyled at <=640px while the mobile
+   filter sheet switches at <=880px; on the narrowest phones (375–430px)
+   .plp-toolbar-left could wrap to a second line and collide with the
+   sticky offset. Keep it single-line and let the count truncate. */
+@media (max-width: 430px) {
+  .plp-toolbar { gap: var(--s-2); }
+  .plp-toolbar-left { flex-wrap: nowrap; min-width: 0; }
+  .plp-toolbar-count { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
 .plp-toolbar-count { font-size: 13px; color: var(--text-3); }
 .plp-toolbar-sort {
   display: inline-flex; align-items: center; gap: var(--s-2);
