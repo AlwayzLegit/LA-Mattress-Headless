@@ -7146,5 +7146,5 @@
       ]
     }
   ],
-  "note": "Applied via Shopify Admin MCP on 2026-05-14 in 8 batches of 25 products each (last batch 19). Initial dry-run (max=135 chars, 16 vendor-doubled descriptions) was discarded; this is the patched output with SKU_MAX=50 cap + variant-equals-handle dedupe."
+  "note": "Applied via Shopify Admin MCP on 2026-05-14 in 8 batches of 25 products each (last batch 19). Initial dry-run (max=135 chars, 16 vendor-doubled descriptions) was discarded; this is the patched output with SKU_MAX=50 cap + variant-equals-handle dedupe. Two follow-up fixes applied manually: (1) dedupe of helix-luxe-collection-twilight-elite-mattress variants (Shopify returned 12 edges with 1 dup-id, fixed to 11 unique); (2) one missing variant 47242529997053 (California King + Cool Force Layer) backfilled separately. Script patched to dedupe by variantId on future runs."
 }

@@ -155,9 +155,18 @@ async function applyBatch(productId, updates) {
 
   const updates = [];
   for (const p of products) {
+    // Phase 285: dedupe variant edges by id. Shopify occasionally returns
+    // the same variant under multiple option-combination edges (the Helix
+    // Twilight Elite has 12 edges for 11 unique variants), and
+    // productVariantsBulkUpdate rejects the whole batch with "Duplicated
+    // input value" if any id appears twice. Keeping the first occurrence
+    // yields a stable, deterministic SKU per variant.
+    const seenVariantIds = new Set();
     const productUpdates = [];
     for (const e of p.variants.edges) {
       const v = e.node;
+      if (seenVariantIds.has(v.id)) continue;
+      seenVariantIds.add(v.id);
       if (v.sku && v.sku.trim()) continue;
       const sku = buildSku({ handle: p.handle, variantTitle: v.title });
       productUpdates.push({ variantId: v.id, variantTitle: v.title, newSku: sku });
