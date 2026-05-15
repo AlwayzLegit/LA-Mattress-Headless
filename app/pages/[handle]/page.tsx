@@ -51,7 +51,13 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) return { title: 'Page not found' };
-  const title = capTitle(firstNonEmpty(page.seo.title, page.title));
+  // Phase 289: same fix as blog articles — when the merchant hasn't
+  // set a custom seo.title, append " | LA Mattress" so the title
+  // differs from the H1 (H1 uses sentence-cased + brand-stripped
+  // version of page.title; without a suffix the two strings collapse
+  // to the same case-insensitive text and SEMrush flags duplicate).
+  const titleFallback = `${page.title} | LA Mattress`;
+  const title = capTitle(firstNonEmpty(page.seo.title, titleFallback));
   const description = truncDescription(
     firstNonEmpty(page.seo.description, page.bodySummary, `${page.title} — LA Mattress Store`),
   );
@@ -413,7 +419,7 @@ function ShowroomPage({
       closes: h.close,
     })),
     areaServed: ['Los Angeles', showroom.area],
-    parentOrganization: { '@type': 'Organization', name: 'LA Mattress Store', url: SITE },
+    parentOrganization: { '@id': `${SITE}/#organization` },
   };
 
   const breadcrumbLd = {
@@ -544,12 +550,22 @@ function ShowroomPage({
           // Service that has only `serviceType`. Adding `name` removed the
           // 3 errors/URL that the May SEMrush export attributed to every
           // showroom page.
+          //
+          // Phase 289: switched `provider` from full re-declaration
+          // (`{ '@type': 'FurnitureStore', '@id': url, name: ... }`) to clean
+          // `@id` reference (`{ '@id': url }`). Re-declaring @type + name
+          // creates an ambiguous entity-vs-reference and SEMrush's May 15
+          // re-audit flagged 3 errors/URL on all 5 showroom pages (15
+          // total), almost certainly from the 3 Services × 1 ambiguous
+          // provider each. Schema.org best practice is reference-by-@id;
+          // the localBusinessLd above is the canonical FurnitureStore on
+          // this page, so the Services just point at it.
           '@graph': [
             {
               '@type': 'Service',
               name: 'Free White-Glove Mattress Delivery in Los Angeles',
               serviceType: 'Free White-Glove Mattress Delivery',
-              provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
+              provider: { '@id': url },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
               description: 'Free white-glove delivery, setup, and old-mattress haul-away on orders over $499 across Los Angeles. Same-day delivery available when you order by 4pm.',
             },
@@ -557,7 +573,7 @@ function ShowroomPage({
               '@type': 'Service',
               name: '0% APR Mattress Financing',
               serviceType: '0% APR Mattress Financing',
-              provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
+              provider: { '@id': url },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
               description: '0% APR financing through Synchrony and Acima on approved credit. Terms vary by purchase amount and partner. Apply at checkout or in any showroom.',
             },
@@ -565,7 +581,7 @@ function ShowroomPage({
               '@type': 'Service',
               name: '120-Night Mattress Comfort Exchange',
               serviceType: '120-Night Comfort Exchange',
-              provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
+              provider: { '@id': url },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
               description: 'Sleep on it for at least 30 nights, then exchange for any other mattress within 120 nights of delivery.',
             },
