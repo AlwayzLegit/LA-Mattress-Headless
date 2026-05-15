@@ -79,6 +79,18 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
   const q = QUESTIONS[idx];
   const answered = answers[q.id];
 
+  // Cancel a pending auto-advance. MUST be called before any manual
+  // navigation: otherwise a timer armed by a just-tapped option fires
+  // ~½s later with a now-stale `idx` and yanks the user to the wrong
+  // question (e.g. tap option → tap Back → the stale timer still jumps
+  // forward). Manual navigation is always authoritative.
+  const cancelAdvance = () => {
+    if (advanceTimerRef.current) {
+      clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
+  };
+
   const onSelect = (optId: string) => {
     const wasAnswered = !!answers[q.id];
     setAnswers((a) => ({ ...a, [q.id]: optId }));
@@ -86,25 +98,32 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
     // the user came back to (Back button) does NOT auto-advance — that would
     // be hostile behaviour.
     if (!wasAnswered) {
-      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+      cancelAdvance();
+      // 450ms (was 250) so the selected state — accent border + check
+      // tick — visibly registers before the step swaps. 250ms read as
+      // an abrupt jump with no confirmation that the tap landed.
       advanceTimerRef.current = setTimeout(() => {
         advanceTimerRef.current = null;
         if (idx + 1 >= total) setStep('result');
         else setStep(idx + 1);
-      }, 250);
+      }, 450);
     }
   };
 
   const onNext = () => {
     if (!answered) return;
+    cancelAdvance();
     if (idx + 1 >= total) setStep('result');
     else setStep(idx + 1);
   };
 
   const onBack = () => {
     if (idx === 0) return;
+    cancelAdvance();
     setStep(idx - 1);
   };
+
+  const answeredCount = Object.keys(answers).length;
 
   return (
     <div className="quiz">
@@ -113,9 +132,18 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
       </div>
       <div className="quiz-meta">
         <span className="muted tnum">{idx + 1} / {total}</span>
-        <button type="button" className="quiz-skip-link" onClick={() => setStep('result')} aria-label="Skip remaining questions and see the best match">
-          Skip to results
-        </button>
+        {/* Only offer "skip" once there's at least one answer — skipping
+            with zero input produces a meaningless generic match. */}
+        {answeredCount > 0 ? (
+          <button
+            type="button"
+            className="quiz-skip-link"
+            onClick={() => { cancelAdvance(); setStep('result'); }}
+            aria-label="Skip remaining questions and see the best match"
+          >
+            Skip to results
+          </button>
+        ) : null}
       </div>
 
       <fieldset
