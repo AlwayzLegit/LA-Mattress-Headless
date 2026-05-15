@@ -105,6 +105,7 @@ export default function HtmlSitemapPage() {
       <section className="html-sitemap-section" aria-labelledby="hs-quiz">
         <h2 id="hs-quiz" className="h2">Tools &amp; utilities</h2>
         <ul className="html-sitemap-list">
+          <li><Link href="/blogs">Guides — all mattress &amp; sleep articles</Link></li>
           <li><Link href="/sleep-quiz">Sleep Quiz — 2-minute mattress match</Link></li>
           <li><Link href="/compare">Compare mattresses</Link></li>
           <li><Link href="/wishlist">Wishlist</Link></li>

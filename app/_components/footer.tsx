@@ -14,6 +14,7 @@ const COLS: Col[] = [
     { label: 'Deals',           href: '/collections/on-sale' },
   ]},
   { title: 'Help', links: [
+    { label: 'Mattress Guides', href: '/blogs' },
     { label: 'Financing', href: '/pages/mattress-store-financing' },
     { label: 'Delivery',  href: '/pages/mattress-store-delivery' },
     { label: 'Returns',   href: '/pages/returns' },
