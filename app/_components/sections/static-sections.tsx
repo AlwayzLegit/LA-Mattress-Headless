@@ -5,23 +5,23 @@ import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
 
 /* ───── Trust bar ─────────────────────────────────────── */
 export function TrustBar() {
-  const items: { icon: IconName; label: string; sub: string }[] = [
-    { icon: 'shield', label: '120-night comfort exchange', sub: 'Sleep on it for 4 months' },
-    { icon: 'truck',  label: 'Free white-glove delivery',   sub: 'Setup & old mattress haul-away' },
-    { icon: 'home',   label: 'Family-owned since 2012',     sub: '5 showrooms across LA' },
-    { icon: 'card',   label: '0% APR financing',             sub: 'Synchrony & Acima · no fees' },
+  const items: { icon: IconName; label: string; sub: string; href: string }[] = [
+    { icon: 'shield', label: '120-night comfort exchange', sub: 'Sleep on it for 4 months',        href: '/pages/love-your-bed-guarantee' },
+    { icon: 'truck',  label: 'Free white-glove delivery',   sub: 'Setup & old mattress haul-away',  href: '/pages/mattress-store-delivery' },
+    { icon: 'home',   label: 'Family-owned since 2012',     sub: '5 showrooms across LA',           href: '/pages/mattress-store-locations' },
+    { icon: 'card',   label: '0% APR financing',             sub: 'Synchrony & Acima · no fees',     href: '/pages/mattress-store-financing' },
   ];
   return (
     <section className="trust-bar">
       <div className="container trust-bar-inner">
         {items.map((it) => (
-          <div key={it.label} className="trust-item">
+          <Link key={it.label} href={it.href} className="trust-item">
             <div className="trust-ico"><Icon name={it.icon} size={22} stroke={1.4} /></div>
             <div>
               <div className="trust-label">{it.label}</div>
               <div className="trust-sub muted">{it.sub}</div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

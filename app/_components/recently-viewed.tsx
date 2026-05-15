@@ -8,6 +8,9 @@ import { formatPriceRange } from '@/lib/format';
 import { announce } from './announcer';
 import { createLocalStoreApi } from './use-local-store';
 import { ReviewsBadge } from './reviews-badge';
+import { RailScrollButtons } from './sections/rail-scroll-buttons';
+
+const RAIL_ID = 'recently-viewed-rail';
 
 type StoredItem = {
   handle: string;
@@ -108,13 +111,20 @@ export function RecentlyViewedRail({
             <div className="eyebrow">{eyebrow}</div>
             <h2 id="recently-viewed-heading" className="h2">{heading}</h2>
           </div>
-          <button type="button" className="link-arrow recently-viewed-clear" onClick={onClear} aria-label="Clear recently viewed history">
-            Clear history
-          </button>
+          <div className="section-head-right">
+            <button type="button" className="link-arrow recently-viewed-clear" onClick={onClear} aria-label="Clear recently viewed history">
+              Clear history
+            </button>
+            <RailScrollButtons
+              railId={RAIL_ID}
+              leftLabel="Scroll recently viewed left"
+              rightLabel="Scroll recently viewed right"
+            />
+          </div>
         </div>
       </div>
       <div className="pcard-scroll-wrap">
-        <div className="pcard-scroll no-scrollbar">
+        <div id={RAIL_ID} className="pcard-scroll no-scrollbar">
           {filtered.map((p) => {
             const summary: Pick<ProductSummary, 'priceRange'> = {
               priceRange: {

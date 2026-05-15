@@ -54,6 +54,7 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
       ]},
       { title: 'Adjacent', links: [
         { label: 'Adjustable bases',   href: '/collections/adjustable-beds' },
+        { label: 'Bed frames',         href: '/collections/bed-frames' },
         { label: 'Bedding & sheets',   href: '/collections/sheets-pillowcases' },
         { label: 'Mattress toppers',   href: '/collections/mattress-toppers' },
         { label: 'Take the sleep quiz →', href: '/sleep-quiz' },

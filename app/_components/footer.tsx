@@ -8,6 +8,7 @@ const COLS: Col[] = [
   { title: 'Shop', links: [
     { label: 'Mattresses',      href: '/collections/mattresses' },
     { label: 'Adjustable Beds', href: '/collections/adjustable-beds' },
+    { label: 'Bed Frames',      href: '/collections/bed-frames' },
     { label: 'Brands',          href: '/pages/mattress-brands' },
     { label: 'Accessories',     href: '/collections/sheets-pillowcases' },
     { label: 'Pillows',         href: '/collections/pillows' },
