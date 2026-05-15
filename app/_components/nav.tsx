@@ -30,7 +30,7 @@ const NAV_ITEMS: { label: string; mega: MegaKey | null; href: string; accent?: b
   { label: 'Stores',          mega: null,        href: '/pages/mattress-store-locations' },
   { label: 'Financing',       mega: null,        href: '/pages/mattress-store-financing' },
   { label: 'Deals',           mega: null,        href: '/collections/on-sale', accent: true },
-  { label: 'Guides',          mega: 'learn',     href: '/pages/mattress-types' },
+  { label: 'Guides',          mega: 'learn',     href: '/blogs' },
 ];
 
 const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
@@ -90,9 +90,11 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
   learn: {
     cols: [
       { title: 'Buying guides', links: [
-        { label: 'How to pick a size',                href: '/pages/mattress-sizes' },
-        { label: 'Foam vs hybrid vs spring vs latex', href: '/pages/mattress-types' },
-        { label: 'Top brands',                         href: '/pages/mattress-brands' },
+        { label: 'How to choose a mattress',  href: '/blogs/mattress-buying-guide/how-to-choose-a-mattress' },
+        { label: 'Best for back pain',        href: '/blogs/mattress-buying-guide/best-mattress-for-back-pain' },
+        { label: 'Best for side sleepers',    href: '/blogs/mattress-buying-guide/best-mattress-for-side-sleepers' },
+        { label: 'How much to spend',         href: '/blogs/mattress-buying-guide/how-much-should-you-spend-on-a-mattress' },
+        { label: 'All guides →',              href: '/blogs' },
       ]},
       { title: 'Customer support', links: [
         { label: 'Delivery & setup',     href: '/pages/mattress-store-delivery' },
@@ -107,7 +109,7 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
       ]},
     ],
     tiles: [
-      { eyebrow: 'Most-read', title: 'The 30-minute buying guide',     href: '/pages/mattress-types', img: 'lifestyle-bedroom' },
+      { eyebrow: 'Most-read', title: 'The complete mattress buying guide', href: '/blogs/mattress-buying-guide/how-to-choose-a-mattress', img: 'lifestyle-bedroom' },
       { eyebrow: 'Free',      title: 'Take the 8-question sleep quiz', href: '/sleep-quiz',           img: 'lifestyle-couple' },
     ],
   },
