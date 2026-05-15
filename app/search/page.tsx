@@ -9,6 +9,7 @@ import { formatPhone, searchShowrooms, type Showroom } from '@/lib/showrooms';
 import { Icon } from '@/app/_components/icon';
 import { CompareToggle } from '@/app/_components/compare-toggle';
 import { PcardSpecs } from '@/app/_components/pcard-specs';
+import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import {
   FilterPanel,
   FilterMobileTrigger,
@@ -292,6 +293,9 @@ export default async function SearchPage(props: Params) {
                               <div className="pcard-meta">
                                 <div className="pcard-brand">{p.vendor}</div>
                                 <div className="pcard-name">{p.title}</div>
+                                {p.reviews ? (
+                                  <div className="pcard-reviews"><ReviewsBadge reviews={p.reviews} size="inline" /></div>
+                                ) : null}
                                 <PcardSpecs specs={p.specs} />
                                 <div className="pcard-price">
                                   <span className="pcard-now tnum">
@@ -614,6 +618,9 @@ function SearchAllTab({
                   <div className="pcard-meta">
                     <div className="pcard-brand">{p.vendor}</div>
                     <div className="pcard-name">{p.title}</div>
+                    {p.reviews ? (
+                      <div className="pcard-reviews"><ReviewsBadge reviews={p.reviews} size="inline" /></div>
+                    ) : null}
                     <PcardSpecs specs={p.specs} />
                     <div className="pcard-price">
                       <span className="pcard-now tnum">
