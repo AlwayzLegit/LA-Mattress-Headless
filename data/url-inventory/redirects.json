@@ -3660,11 +3660,6 @@
       "permanent": true
     },
     {
-      "source": "/pages/mattress-store-delivery",
-      "destination": "/pages/mattress-store-locations",
-      "permanent": true
-    },
-    {
       "source": "/pages/tempur-pedic-customer-reviews",
       "destination": "/",
       "permanent": true
