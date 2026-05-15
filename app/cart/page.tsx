@@ -2,9 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { readCart } from '@/app/_actions/cart';
+import { DELIVERY_DATE_KEY } from '@/lib/cart-attributes';
 import { getProductRecommendations } from '@/lib/shopify';
 import type { ProductSummary } from '@/lib/shopify';
 import { CartLineEditor } from './cart-line-editor';
+import { DeliveryDate } from './delivery-date';
 import { CartLineVariant } from './cart-line-variant';
 import { CouponForm } from './coupon-form';
 import { OrderNote } from './order-note';
@@ -26,6 +28,8 @@ export const dynamic = 'force-dynamic';
 export default async function CartPage() {
   const cart = await readCart();
   const lines = cart?.lines.nodes ?? [];
+  const deliveryDate =
+    cart?.attributes.find((a) => a.key === DELIVERY_DATE_KEY)?.value ?? null;
 
   if (!cart || lines.length === 0) {
     return (
@@ -134,6 +138,7 @@ export default async function CartPage() {
               );
             })}
           </ul>
+          <DeliveryDate initialDate={deliveryDate} />
         </section>
 
         <aside className="cart-summary">

@@ -2604,6 +2604,48 @@ summary:focus-visible,
 .cart-note-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .cart-note-status { display: block; font-size: 12px; margin-top: 4px; min-height: 14px; }
 
+/* Cart-page preferred-delivery-date picker (Phase 298) */
+.cart-delivery {
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+}
+.cart-delivery-help {
+  font-size: 13px;
+  margin: var(--s-2) 0 var(--s-4);
+  max-width: 52ch;
+}
+.cart-delivery-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.cart-delivery-field {
+  font: inherit;
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  color: var(--text);
+  min-height: 44px;
+}
+.cart-delivery-field:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.cart-delivery-clear { min-height: 44px; }
+.cart-delivery-confirm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--s-3);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
 /* /cart full page */
 .cart-grid {
   display: grid;

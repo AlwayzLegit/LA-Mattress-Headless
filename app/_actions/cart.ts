@@ -9,10 +9,12 @@ import {
   cartLinesRemove,
   cartDiscountCodesUpdate,
   cartNoteUpdate,
+  cartAttributesUpdate,
   getCart,
   getProductByHandle,
 } from '@/lib/shopify';
 import type { Cart, CartLineInput, ProductOption, ProductVariant } from '@/lib/shopify';
+import { DELIVERY_DATE_KEY } from '@/lib/cart-attributes';
 
 const COOKIE = 'cartId';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 14; // 14 days
@@ -165,6 +167,49 @@ export async function updateCartNote(note: string): Promise<ActionResult> {
     return { ok: true, cart };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'Could not save note' };
+  }
+}
+
+/**
+ * Validates a `YYYY-MM-DD` string is a real calendar date no earlier
+ * than today and within ~3 months. The window is intentionally looser
+ * than the client picker's (tomorrow … +60d) so a valid client choice
+ * is never rejected by a timezone boundary. All comparisons are in UTC.
+ */
+function isValidDeliveryDate(s: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) {
+    return false;
+  }
+  const now = new Date();
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const max = today + 90 * 86_400_000;
+  return dt.getTime() >= today && dt.getTime() <= max;
+}
+
+/**
+ * Saves (or clears, when `date` is null) the requested delivery date as
+ * a cart attribute. Non-delivery attributes are preserved — the call to
+ * Shopify is a full replace.
+ */
+export async function setDeliveryDate(date: string | null): Promise<ActionResult> {
+  const cartId = (await cookies()).get(COOKIE)?.value;
+  if (!cartId) return { ok: false, error: 'No cart' };
+  if (date && !isValidDeliveryDate(date)) {
+    return { ok: false, error: 'Please choose a valid delivery date.' };
+  }
+  try {
+    const current = await getCart(cartId);
+    if (!current) return { ok: false, error: 'No cart' };
+    const others = current.attributes.filter((a) => a.key !== DELIVERY_DATE_KEY);
+    const next = date ? [...others, { key: DELIVERY_DATE_KEY, value: date }] : others;
+    const cart = await cartAttributesUpdate(cartId, next);
+    revalidatePath('/cart');
+    return { ok: true, cart };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'Could not save delivery date' };
   }
 }
 
