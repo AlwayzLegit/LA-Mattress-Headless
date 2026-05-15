@@ -1211,23 +1211,88 @@ summary:focus-visible,
   position: fixed; inset: 0; z-index: 100;
   background: #fff;
   display: flex; flex-direction: column;
-  animation: drawerIn 280ms var(--ease-out);
+  animation: drawerIn 240ms var(--ease-out);
 }
-@keyframes drawerIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+@keyframes drawerIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
 .mobile-drawer-hd {
   display: flex; align-items: center; justify-content: space-between;
   height: var(--nav-h); padding: 0 20px;
   border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
-.mobile-list { list-style: none; margin: 0; padding: 12px 0; flex: 1; overflow-y: auto; }
-.mobile-list a {
+
+/* Search — native GET form, full-width tap target */
+.mobile-search {
+  display: flex; align-items: center; gap: 10px;
+  margin: 16px 20px 8px;
+  padding: 0 14px;
+  height: 48px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+.mobile-search:focus-within { border-color: var(--accent); }
+.mobile-search input {
+  flex: 1; min-width: 0;
+  border: 0; background: transparent; outline: none;
+  font: inherit; font-size: 16px; color: var(--text);
+}
+
+.mobile-list {
+  list-style: none; margin: 0; padding: 8px 0 16px;
+  flex: 1; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Top-level row — shared by plain links and accordion triggers so both
+   read identically. Reset button styling so the <button> matches <a>. */
+.mobile-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 18px 20px;
-  font-size: 22px; font-weight: 500; letter-spacing: -0.01em;
-  border-bottom: 1px solid var(--line);
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 19px; font-weight: 500; letter-spacing: -0.01em;
+  color: var(--text); text-align: left;
+  background: none; border: 0; border-bottom: 1px solid var(--line);
+  font-family: inherit; cursor: pointer;
+  min-height: 56px;
 }
-.mobile-foot { display: flex; gap: 24px; padding: 20px; border-top: 1px solid var(--line); }
-.mobile-foot .topbar-link { color: var(--text); }
+.mobile-row:active { background: var(--surface-2); }
+.mobile-row > svg { color: var(--text-3); transition: transform var(--d-fast) var(--ease-out); flex-shrink: 0; }
+
+.mobile-acc.is-open > .mobile-acc-trigger { border-bottom-color: transparent; }
+.mobile-acc.is-open > .mobile-acc-trigger > svg { transform: rotate(180deg); color: var(--accent); }
+
+.mobile-acc-panel {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  padding: 4px 20px 16px;
+  animation: accIn 180ms var(--ease-out);
+}
+@keyframes accIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.mobile-acc-all {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 12px 0;
+  font-size: 15px; font-weight: 600; color: var(--accent);
+}
+.mobile-acc-group { padding-top: 8px; }
+.mobile-acc-group-title { margin: 0 0 6px; }
+.mobile-acc-group ul { list-style: none; margin: 0 0 6px; padding: 0; }
+.mobile-acc-group li a {
+  display: block;
+  padding: 11px 0;
+  font-size: 16px; color: var(--text-2);
+}
+.mobile-acc-group li a:active { color: var(--accent); }
+
+.mobile-foot {
+  display: flex; flex-wrap: wrap; gap: 16px 24px;
+  padding: 18px 20px;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.mobile-foot .topbar-link { color: var(--text); display: inline-flex; align-items: center; gap: 6px; }
 
 /* ───── Hero ───── */
 .hero { position: relative; height: clamp(560px, 85vh, 880px); background: var(--brand-navy); overflow: hidden; }

@@ -144,7 +144,13 @@ function chunkBrandCols(brands: NavBrand[]): MegaCol[] {
 export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
   const [mega, setMega] = useState<MegaKey | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  // Which mobile accordion section is expanded (by item label). Single-
+  // open: tapping a section collapses any other. Reset when the drawer
+  // closes so it reopens clean.
+  const [mobileSub, setMobileSub] = useState<string | null>(null);
   const { count, openDrawer } = useCart();
+
+  const closeMobile = () => setMobileOpen(false);
 
   const brandCols = useMemo(
     () => (brands.length ? chunkBrandCols(brands) : MEGA.brands.cols),
@@ -195,6 +201,13 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
     if (!mobileOpen) return;
     const id = requestAnimationFrame(() => mobileCloseRef.current?.focus());
     return () => cancelAnimationFrame(id);
+  }, [mobileOpen]);
+
+  // Collapse any expanded accordion section whenever the drawer closes
+  // (covers every close path: button, Esc, link tap, focus-trap) so it
+  // reopens in a clean, fully-collapsed state.
+  useEffect(() => {
+    if (!mobileOpen) setMobileSub(null);
   }, [mobileOpen]);
 
   // Escape closes the mobile drawer — completes the keyboard pattern
@@ -388,21 +401,77 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
               width={400}
               height={224}
             />
-            <button ref={mobileCloseRef} className="icon-btn" type="button" onClick={() => setMobileOpen(false)} aria-label="Close menu">
+            <button ref={mobileCloseRef} className="icon-btn" type="button" onClick={closeMobile} aria-label="Close menu">
               <Icon name="close" size={22} />
             </button>
           </div>
-          <ul className="mobile-list">
-            {NAV_ITEMS.map((i) => (
-              <li key={i.label}>
-                <Link href={i.href} onClick={() => setMobileOpen(false)}>
-                  {i.label} <Icon name="chevron-right" size={16} />
-                </Link>
-              </li>
-            ))}
-          </ul>
+
+          {/* Native GET form → /search?q=… works without JS; closing the
+              drawer is cosmetic since the submit navigates away anyway. */}
+          <form className="mobile-search" action="/search" role="search" onSubmit={closeMobile}>
+            <Icon name="search" size={18} />
+            <input
+              type="search"
+              name="q"
+              placeholder="Search mattresses, brands…"
+              aria-label="Search"
+              enterKeyHint="search"
+              autoComplete="off"
+            />
+          </form>
+
+          <nav className="mobile-list" aria-label="Primary">
+            {NAV_ITEMS.map((item) => {
+              if (!item.mega) {
+                return (
+                  <Link key={item.label} href={item.href} className="mobile-row" onClick={closeMobile}>
+                    <span>{item.label}</span>
+                    <Icon name="chevron-right" size={16} />
+                  </Link>
+                );
+              }
+              const cols = item.mega === 'brands' ? brandCols : MEGA[item.mega].cols;
+              const open = mobileSub === item.label;
+              const panelId = `mobile-sub-${item.mega}`;
+              return (
+                <div key={item.label} className={`mobile-acc${open ? ' is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="mobile-row mobile-acc-trigger"
+                    aria-expanded={open}
+                    aria-controls={panelId}
+                    onClick={() => setMobileSub(open ? null : item.label)}
+                  >
+                    <span>{item.label}</span>
+                    <Icon name="chevron-down" size={16} />
+                  </button>
+                  {open ? (
+                    <div className="mobile-acc-panel" id={panelId}>
+                      <Link href={item.href} className="mobile-acc-all" onClick={closeMobile}>
+                        Browse all {item.label.toLowerCase()} <Icon name="arrow-right" size={14} />
+                      </Link>
+                      {cols.map((c) => (
+                        <div key={c.title} className="mobile-acc-group">
+                          <div className="eyebrow mobile-acc-group-title">{c.title}</div>
+                          <ul>
+                            {c.links.map((l) => (
+                              <li key={l.label}>
+                                <Link href={l.href} onClick={closeMobile}>{l.label}</Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </nav>
+
           <div className="mobile-foot">
-            <Link href="/pages/mattress-store-locations" className="topbar-link"><Icon name="pin" size={14} /> Find a store</Link>
+            <Link href="/account" className="topbar-link" onClick={closeMobile}><Icon name="user" size={14} /> Account</Link>
+            <Link href="/pages/mattress-store-locations" className="topbar-link" onClick={closeMobile}><Icon name="pin" size={14} /> Find a store</Link>
             <a href={`tel:${SITE_PHONE_TEL}`} className="topbar-link"><Icon name="phone" size={14} /> Call</a>
           </div>
         </div>
