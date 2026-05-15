@@ -20,6 +20,8 @@ export { getActiveAnnouncement }              from './queries/announcement';
 export type { Announcement, AnnouncementStyle } from './queries/announcement';
 export { getHeroSlides }                      from './queries/hero-slides';
 export type { HeroSlideData }                 from './queries/hero-slides';
+export { getBrands }                          from './queries/brands';
+export type { Brand }                         from './queries/brands';
 export type { SearchResult, Predictive, PredictiveArticle, ArticleSearchResult } from './queries/search';
 export { cartCreate, cartLinesAdd, cartLinesUpdate, cartLinesRemove, getCart } from './mutations/cart';
 export type { CartLineInput, UserError }     from './mutations/cart';
