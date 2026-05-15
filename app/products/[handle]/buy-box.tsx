@@ -11,6 +11,7 @@ import { findVariant, isOptionAvailable } from '@/lib/variant-select';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { SIZE_DIMENSIONS } from './pdp-data';
 import { PdpStickyAtcBar } from './pdp-sticky-atc-bar';
+import { StickyVariantSheet } from './sticky-variant-sheet';
 
 type Props = {
   options: ProductOption[];
@@ -34,7 +35,13 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
 
   const [selection, setSelection] = useState<Record<string, string>>(initial);
   const [qty, setQty] = useState(1);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const { addLine, pending } = useCart();
+
+  // Whether the product has a real choice to make (>1 value on some
+  // option). Same predicate the inline picker uses. Drives the mobile
+  // sticky-bar behaviour: choices → open the sheet; none → direct add.
+  const hasChoices = options.filter((o) => o.values.length > 1).length > 0;
 
   // Reset quantity to 1 whenever the user changes the variant — total
   // shouldn't carry across selections.
@@ -269,13 +276,38 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
         ctaLabel={
           pending
             ? 'Adding…'
-            : matchingVariant?.availableForSale
-              ? 'Add'
-              : 'Out of stock'
+            : hasChoices
+              ? 'Choose options'
+              : matchingVariant?.availableForSale
+                ? 'Add'
+                : 'Out of stock'
         }
         disabled={!canBuy}
         onAdd={() => matchingVariant && addLine(matchingVariant.id, 1)}
+        onCtaClick={hasChoices ? () => setSheetOpen(true) : undefined}
       />
+
+      {hasChoices ? (
+        <StickyVariantSheet
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          options={options}
+          variants={variants}
+          selection={selection}
+          onSelect={(name, value) => setSelection((s) => ({ ...s, [name]: value }))}
+          qty={qty}
+          onQtyChange={setQty}
+          matchingVariant={matchingVariant}
+          productTitle={productTitle}
+          pending={pending}
+          onAdd={() => {
+            if (matchingVariant) {
+              addLine(matchingVariant.id, qty);
+              setSheetOpen(false);
+            }
+          }}
+        />
+      ) : null}
     </>
   );
 }

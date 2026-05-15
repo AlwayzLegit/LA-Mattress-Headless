@@ -28,6 +28,13 @@ type Props = {
   ctaLabel: string;
   disabled: boolean;
   onAdd: () => void;
+  /**
+   * When set, the CTA opens the variant bottom-sheet instead of adding
+   * directly (multi-option products on mobile, so the shopper can pick a
+   * size). Single-variant products leave this undefined and keep the
+   * fast direct-add path — no regression for pillows/accessories.
+   */
+  onCtaClick?: () => void;
 };
 
 export function PdpStickyAtcBar({
@@ -38,6 +45,7 @@ export function PdpStickyAtcBar({
   ctaLabel,
   disabled,
   onAdd,
+  onCtaClick,
 }: Props) {
   return (
     <div className={`pdp-sticky-bar${show ? ' on' : ''}`} aria-hidden={!show}>
@@ -59,8 +67,8 @@ export function PdpStickyAtcBar({
         <button
           type="button"
           className="btn btn-primary"
-          disabled={disabled}
-          onClick={onAdd}
+          disabled={disabled && !onCtaClick}
+          onClick={onCtaClick ?? onAdd}
           tabIndex={show ? 0 : -1}
         >
           {ctaLabel}
