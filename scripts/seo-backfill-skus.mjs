@@ -44,12 +44,19 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import crypto from 'node:crypto';
 
 const STORE = process.env.SHOPIFY_STORE_DOMAIN;
 const TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
 const VERSION = '2024-10';
 const APPLY = process.argv.includes('--apply');
 const BATCH = 250;
+// Phase 285: Google Merchant Center recommends SKU/id ≤50 chars; Shopify
+// allows up to 255 but anything over ~50 is unwieldy across downstream
+// systems (POS, ERP, vendor feeds). When the templated SKU exceeds this,
+// we keep the readable prefix and append a deterministic 8-char SHA-256
+// suffix so it stays unique across re-runs without growing without bound.
+const SKU_MAX = 50;
 
 if (!STORE || !TOKEN) {
   console.error('Missing SHOPIFY_STORE_DOMAIN or SHOPIFY_ADMIN_TOKEN');
@@ -97,6 +104,18 @@ async function pullProductsWithVariants() {
   return all;
 }
 
+// Phase 285: cap to SKU_MAX (industry standard ≤50 chars). When the
+// templated SKU exceeds it, keep the readable prefix and append a
+// deterministic 8-char SHA-256 suffix so the SKU stays unique and stable
+// across re-runs (re-running buildSku on the same input always produces
+// the same output, so the script remains idempotent).
+function shorten(sku) {
+  if (sku.length <= SKU_MAX) return sku;
+  const hash = crypto.createHash('sha256').update(sku).digest('hex').slice(0, 8).toUpperCase();
+  const prefix = sku.slice(0, SKU_MAX - 9).replace(/-+$/, '');
+  return `${prefix}-${hash}`;
+}
+
 function buildSku({ handle, variantTitle }) {
   const handleUp = handle.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '');
   const variantSlug = variantTitle
@@ -104,8 +123,12 @@ function buildSku({ handle, variantTitle }) {
     .replace(/[\\/]+/g, '-')
     .replace(/[^A-Z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
-  if (!variantSlug || variantSlug === 'DEFAULT-TITLE') return handleUp;
-  return `${handleUp}-${variantSlug}`;
+  // Single-variant product (Shopify default) → just the handle.
+  if (!variantSlug || variantSlug === 'DEFAULT-TITLE') return shorten(handleUp);
+  // Variant title duplicates the handle (e.g. a single named variant where
+  // the merchant repeated the product title) → don't double it up.
+  if (variantSlug === handleUp) return shorten(handleUp);
+  return shorten(`${handleUp}-${variantSlug}`);
 }
 
 async function applyBatch(productId, updates) {
@@ -132,9 +155,18 @@ async function applyBatch(productId, updates) {
 
   const updates = [];
   for (const p of products) {
+    // Phase 285: dedupe variant edges by id. Shopify occasionally returns
+    // the same variant under multiple option-combination edges (the Helix
+    // Twilight Elite has 12 edges for 11 unique variants), and
+    // productVariantsBulkUpdate rejects the whole batch with "Duplicated
+    // input value" if any id appears twice. Keeping the first occurrence
+    // yields a stable, deterministic SKU per variant.
+    const seenVariantIds = new Set();
     const productUpdates = [];
     for (const e of p.variants.edges) {
       const v = e.node;
+      if (seenVariantIds.has(v.id)) continue;
+      seenVariantIds.add(v.id);
       if (v.sku && v.sku.trim()) continue;
       const sku = buildSku({ handle: p.handle, variantTitle: v.title });
       productUpdates.push({ variantId: v.id, variantTitle: v.title, newSku: sku });
