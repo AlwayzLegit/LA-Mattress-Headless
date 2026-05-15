@@ -31,7 +31,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
 import { composeBrandTitle } from '@/lib/seo';
-import { getShopBrand, getActiveAnnouncement } from '@/lib/shopify';
+import { getShopBrand, getActiveAnnouncement, getBrands } from '@/lib/shopify';
 import { AnnouncementBar } from './_components/announcement-bar';
 import { AnalyticsGa4 } from './_components/analytics-ga4';
 
@@ -113,9 +113,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // active (enabled + in date window), it replaces the regular TopBar
   // sitewide. Two fetches run in parallel — both are fast Storefront
   // queries with 5min–1hr ISR caches.
-  const [shop, announcement] = await Promise.all([
+  const [shop, announcement, brands] = await Promise.all([
     getShopBrand(),
     getActiveAnnouncement(),
+    getBrands(),
   ]);
   const organizationLd = buildOrganizationLd(shop);
 
@@ -130,7 +131,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <CartProvider>
           {announcement ? <AnnouncementBar data={announcement} /> : <TopBar />}
-          <Nav />
+          <Nav brands={brands} />
           {/*
             Skip-link target. tabIndex={-1} is required: without it, the
             browser scrolls to #main-content on activation but keyboard

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Icon, type IconName } from '../icon';
 import { phImg } from '../images';
 import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
+import { getBrands } from '@/lib/shopify';
 
 /* ───── Trust bar ─────────────────────────────────────── */
 export function TrustBar() {
@@ -71,19 +72,24 @@ export function ShopByCategory() {
 }
 
 /* ───── Brand strip ───────────────────────────────────── */
-const BRANDS: { name: string; href: string }[] = [
-  { name: 'Tempur-Pedic',     href: '/collections/tempur-pedic-mattresses' },
-  { name: 'Stearns & Foster', href: '/collections/stearns-foster-mattresses' },
+// Fallback only — the live list comes from getBrands() (derived from
+// product vendors + verified brand collections). Used when the
+// Storefront API is unconfigured/unreachable so the row never empties.
+const FALLBACK_BRANDS: { name: string; href: string }[] = [
+  { name: 'Chattam & Wells',  href: '/collections/chattam-wells-mattresses' },
   { name: 'Diamond',          href: '/collections/diamond-mattresses' },
+  { name: 'Eastman House',    href: '/collections/eastman-house-mattresses' },
+  { name: 'Englander',        href: '/collections/englander-mattresses' },
+  { name: 'Harvest Green',    href: '/collections/harvest-mattresses' },
   { name: 'Helix',            href: '/collections/helix-mattresses' },
   { name: 'Spring Air',       href: '/collections/spring-air-mattresses' },
-  { name: 'Eastman House',    href: '/collections/eastman-house-mattresses' },
-  { name: 'Harvest Green',    href: '/collections/harvest-mattresses' },
-  { name: 'Englander',        href: '/collections/englander-mattresses' },
-  { name: 'Chattam & Wells',  href: '/collections/chattam-wells-mattresses' },
+  { name: 'Stearns & Foster', href: '/collections/stearns-foster-mattresses' },
+  { name: 'Tempur-Pedic',     href: '/collections/tempur-pedic-mattresses' },
 ];
 
-export function BrandStrip() {
+export async function BrandStrip() {
+  const live = await getBrands();
+  const brands = live.length ? live : FALLBACK_BRANDS;
   return (
     <section className="brand-strip-section">
       <div className="container">
@@ -94,8 +100,8 @@ export function BrandStrip() {
           </Link>
         </div>
         <div className="brand-strip">
-          {BRANDS.map((b) => (
-            <Link href={b.href} key={b.name} className="brand-tile">
+          {brands.map((b) => (
+            <Link href={b.href} key={b.href} className="brand-tile">
               <span className="brand-wordmark">{b.name}</span>
             </Link>
           ))}

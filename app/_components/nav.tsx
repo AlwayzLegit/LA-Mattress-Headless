@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from './icon';
@@ -115,10 +115,38 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
   },
 };
 
-export function Nav() {
+// Brands the store actually stocks — derived live from product vendors
+// in the server layout (getBrands) and passed in. When present it
+// replaces the static MEGA.brands columns so a newly-onboarded brand
+// (e.g. Sleep & Beyond) shows in the nav with no code change. Falls
+// back to the hardcoded MEGA.brands columns when the prop is empty
+// (Storefront API unconfigured / unreachable).
+type NavBrand = { name: string; href: string };
+
+function chunkBrandCols(brands: NavBrand[]): MegaCol[] {
+  const perCol = Math.ceil(brands.length / 3);
+  const cols: MegaCol[] = [];
+  for (let i = 0; i < brands.length; i += perCol) {
+    const chunk = brands.slice(i, i + perCol);
+    const first = chunk[0].name[0]?.toUpperCase() ?? '';
+    const last = chunk[chunk.length - 1].name[0]?.toUpperCase() ?? '';
+    cols.push({
+      title: first === last ? first : `${first}–${last}`,
+      links: chunk.map((b) => ({ label: b.name, href: b.href })),
+    });
+  }
+  return cols;
+}
+
+export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
   const [mega, setMega] = useState<MegaKey | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { count, openDrawer } = useCart();
+
+  const brandCols = useMemo(
+    () => (brands.length ? chunkBrandCols(brands) : MEGA.brands.cols),
+    [brands],
+  );
 
   // When the mega panel opens via keyboard (ArrowDown / Space on the
   // trigger), we need to (a) move focus from the trigger into the
@@ -320,7 +348,7 @@ export function Nav() {
           >
             <div className="container mega-inner">
               <div className="mega-cols">
-                {MEGA[mega].cols.map((c) => (
+                {(mega === 'brands' ? brandCols : MEGA[mega].cols).map((c) => (
                   <div key={c.title} className="mega-col">
                     <div className="eyebrow">{c.title}</div>
                     <ul>
