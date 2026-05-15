@@ -47,6 +47,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // and intentionally absent here.
   const home: MetadataRoute.Sitemap = [
     { url: u('/'),                            lastModified: now, changeFrequency: 'daily',   priority: 1.0 },
+    { url: u('/blogs'),                       lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
     { url: u('/sleep-quiz'),                  lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     { url: u('/pages/reviews'),               lastModified: now, changeFrequency: 'weekly',  priority: 0.55 },
     { url: u('/pages/data-sharing-opt-out'),  lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
