@@ -26,9 +26,35 @@ export const SITE_EMAIL = 'orders.lamattress@gmail.com';
 /** Brand display name. */
 export const SITE_BRAND = 'LA Mattress Store';
 
-/** Public site URL (matches NEXT_PUBLIC_SITE_URL when set). */
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.mattressstoreslosangeles.com';
+/**
+ * Public site URL (matches NEXT_PUBLIC_SITE_URL when set).
+ *
+ * The canonical host is the `www.` subdomain — the apex
+ * (`mattressstoreslosangeles.com`) 308-redirects to it at the edge.
+ * Vercel's `NEXT_PUBLIC_SITE_URL` env var has historically been set to
+ * the bare apex, which leaked into sitemap.xml + robots.txt and made
+ * every crawler hit a 308 hop (SEMrush "Temporary redirects" baseline).
+ * `canonicalizeSiteUrl` force-upgrades the apex to `www.` so a
+ * misconfigured env var can never re-introduce that regression — the
+ * sitemap/robots/canonical surfaces always emit the redirect target,
+ * not its source.
+ */
+function canonicalizeSiteUrl(raw: string | undefined): string {
+  const fallback = 'https://www.mattressstoreslosangeles.com';
+  if (!raw) return fallback;
+  try {
+    const u = new URL(raw.trim());
+    u.protocol = 'https:';
+    if (u.hostname === 'mattressstoreslosangeles.com') {
+      u.hostname = 'www.mattressstoreslosangeles.com';
+    }
+    return u.origin;
+  } catch {
+    return fallback;
+  }
+}
+
+export const SITE_URL = canonicalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 
 /**
  * Phase 277b: official social/external profiles for Schema.org `sameAs`.
@@ -48,10 +74,15 @@ export const SITE_URL =
  * it up automatically on the next deploy.
  */
 export const SOCIAL_PROFILES: readonly string[] = [
-  // 'https://www.facebook.com/lamattressstores',
-  // 'https://www.instagram.com/lamattress',
-  // 'https://www.youtube.com/@lamattress',
-  // 'https://www.yelp.com/biz/la-mattress-store-los-angeles',
-  // 'https://www.linkedin.com/company/la-mattress-store',
-  // 'https://twitter.com/lamattress',
+  // Phase 293: confirmed owned profiles (merchant-verified 2026-05-15).
+  // Facebook: merchant-selected canonical page (lists
+  //   mattressstoreslosangeles.com as its website, Studio City base).
+  // Instagram: @lamattressstores — matches brand + catalog.
+  // Yelp: biz address 10861 W Pico Blvd == the West LA showroom in
+  //   lib/showrooms.ts (definitive ownership match).
+  'https://www.facebook.com/lamattressstore',
+  'https://www.instagram.com/lamattressstores',
+  'https://www.yelp.com/biz/los-angeles-mattress-stores-los-angeles',
+  // TODO(merchant): add the 5 showroom Google Business Profile URLs
+  // (g.page / maps share links) once provided — ideal local sameAs.
 ] as const;

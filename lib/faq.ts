@@ -31,6 +31,26 @@ export const HOMEPAGE_FAQ: FaqItem[] = [
     q: 'Do you remove my old mattress?',
     a: 'Free haul-away on every white-glove delivery. We recycle responsibly so your old mattress doesn’t end up in a landfill.',
   },
+  // Phase 292 (cowork LOW#14): expanded 6 → 10 questions. Google's
+  // FAQ rich result surfaces up to ~10 entries; the extra four target
+  // high-intent search queries (cooling, sizes, bad-credit financing,
+  // brands) that weren't covered above.
+  {
+    q: 'Do you carry cooling mattresses?',
+    a: 'Yes — gel memory foam, phase-change covers, and breathable hybrids from Tempur-Pedic, Diamond, Helix and more. Tell us how hot you sleep in the 2-minute sleep quiz and we’ll narrow it down.',
+  },
+  {
+    q: 'What mattress sizes do you stock?',
+    a: 'Every standard size — Twin, Twin XL, Full, Queen, King, California King, and Split King — on the floor at all 5 LA showrooms, in most brands and comfort levels.',
+  },
+  {
+    q: 'Can I finance with bad credit?',
+    a: 'Yes. Alongside 0% APR Synchrony financing on approved credit, we offer Acima lease-to-own with no credit needed — most customers are approved in minutes in-store or at checkout.',
+  },
+  {
+    q: 'Which mattress brands do you sell?',
+    a: 'Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Helix, Englander, Chattam & Wells, Eastman House, Southerland and more — plus our own value-priced private label.',
+  },
 ];
 
 export function faqJsonLd(items: FaqItem[] = HOMEPAGE_FAQ) {

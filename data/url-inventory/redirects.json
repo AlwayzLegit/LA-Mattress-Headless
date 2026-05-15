@@ -1398,11 +1398,6 @@
       "permanent": true
     },
     {
-      "source": "/pages/mattress-store-beverly-hills",
-      "destination": "/pages/mattress-store-locations",
-      "permanent": true
-    },
-    {
       "source": "/pages/mattress-store-find-your-store",
       "destination": "/pages/mattress-store-locations",
       "permanent": true

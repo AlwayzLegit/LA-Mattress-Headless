@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { getCollectionByHandle } from '@/lib/shopify';
 import type { CollectionSort } from '@/lib/shopify';
 import { collections as inventoryCollections, findCollection } from '@/lib/inventory';
+import { getCollectionSiblings } from '@/lib/collection-siblings';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
@@ -174,6 +175,13 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
   const hasResults = collection.products.nodes.length > 0;
   const availableFilters = collection.products.filters ?? [];
 
+  // Phase 284: cross-cut sub-nav. On a single-dimension PLP (a brand,
+  // size, or type collection) surface the OTHER two dimensions so a
+  // shopper can pivot to the high-intent intersection (e.g. from the
+  // Tempur-Pedic PLP → Queen / King, or → Memory Foam / Hybrid).
+  // Returns null on `mattresses`, `on-sale`, etc. → no sub-nav.
+  const siblingGroups = getCollectionSiblings(collection.handle);
+
   return (
     <main className="container plp">
       <header className="plp-hero">
@@ -216,6 +224,29 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
           ) : null}
         </div>
       </header>
+
+      {siblingGroups ? (
+        <nav className="plp-sibling-nav" aria-label="Shop related collections">
+          {siblingGroups.map((group) => (
+            <div className="plp-sibling-group" key={group.heading}>
+              <span className="plp-sibling-heading">{group.heading}</span>
+              <ul className="plp-sibling-list">
+                {group.links.map((link) => (
+                  <li key={link.handle}>
+                    <Link
+                      href={`/collections/${link.handle}`}
+                      className="plp-sibling-chip"
+                      aria-current={link.handle === collection.handle ? 'page' : undefined}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      ) : null}
 
       <section className="section plp-section">
         <FilterShell>

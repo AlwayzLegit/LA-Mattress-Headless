@@ -14,6 +14,7 @@ import { Showrooms } from './_components/sections/showrooms';
 import { FAQ } from './_components/sections/faq';
 import { RecentlyViewedRail } from './_components/recently-viewed';
 import { faqJsonLd } from '@/lib/faq';
+import { composeBrandTitle } from '@/lib/seo';
 import { LOCAL_BUSINESS_LD } from '@/lib/structured-data';
 import { getShopBrand, getHeroSlides } from '@/lib/shopify';
 import { FALLBACK_HERO_SLIDES } from './_components/hero-slides';
@@ -27,12 +28,12 @@ const FALLBACK_DESCRIPTION =
 
 export async function generateMetadata(): Promise<Metadata> {
   const shop = await getShopBrand();
-  const title = shop?.brand?.slogan
-    ? `${shop?.name ?? 'LA Mattress'} — ${shop.brand.slogan}`
-    : FALLBACK_TITLE;
+  const title = composeBrandTitle(shop?.name ?? 'LA Mattress Store', shop?.brand?.slogan, FALLBACK_TITLE);
   const description = shop?.brand?.shortDescription ?? shop?.description ?? FALLBACK_DESCRIPTION;
   return {
-    title,
+    // `absolute` so the root layout's "%s · LA Mattress Store" template
+    // can't re-append the brand a third time (cowork LOW#12).
+    title: { absolute: title },
     description,
     alternates: { canonical: 'https://www.mattressstoreslosangeles.com/' },
   };

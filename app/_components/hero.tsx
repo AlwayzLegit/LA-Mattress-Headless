@@ -57,16 +57,26 @@ export function Hero({ slides, autoplay = true }: { slides: HeroSlide[]; autopla
                       already remove them from the a11y tree). Cowork rev-7
                       flagged SEMrush "Multiple h1 tags" on the homepage,
                       caused by all 3 slide h1s being in the DOM at once. */}
+                  {/* Phase 292 (cowork MEDIUM#11): the \n in the slide
+                      title is a visual line break (flex-column .hero-line
+                      spans). textContent — what SEMrush/Google read for
+                      the H1 — concatenates adjacent spans with NO
+                      separator, so "Up to\n60% off." surfaced as the
+                      typo "Up to60% off.". Append a trailing space to
+                      every non-last line: it collapses visually (block
+                      span, white-space:normal) but is preserved in
+                      textContent → "Up to 60% off.". aria-label was
+                      already correct. */}
                   {idx === 0 ? (
                     <h1 className="hero-title" aria-label={s.title.replace(/\n/g, ' ')}>
-                      {s.title.split('\n').map((l, j) => (
-                        <span key={j} className="hero-line">{l}</span>
+                      {s.title.split('\n').map((l, j, arr) => (
+                        <span key={j} className="hero-line">{j < arr.length - 1 ? `${l} ` : l}</span>
                       ))}
                     </h1>
                   ) : (
                     <p className="hero-title" aria-label={s.title.replace(/\n/g, ' ')}>
-                      {s.title.split('\n').map((l, j) => (
-                        <span key={j} className="hero-line">{l}</span>
+                      {s.title.split('\n').map((l, j, arr) => (
+                        <span key={j} className="hero-line">{j < arr.length - 1 ? `${l} ` : l}</span>
                       ))}
                     </p>
                   )}
