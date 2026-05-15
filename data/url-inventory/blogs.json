@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify blogs inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-05-14T21:52:09.485Z",
+  "$pulledAt": "2026-05-15T06:52:17.428Z",
   "$count": 7,
   "blogs": [
     {
@@ -2426,7 +2426,7 @@
       "handle": "mattress-buying-guide",
       "id": "gid://shopify/Blog/89331695869",
       "title": "Mattress Buying Guide | Find Your Perfect Mattress",
-      "updatedAt": "2026-05-14T06:54:34Z",
+      "updatedAt": "2026-05-14T23:19:46Z",
       "articles": [
         {
           "handle": "12-steps-buying-new-mattress-5647",
@@ -6641,6 +6641,27 @@
           "title": "Mattress Trial Period Guide: What You Need to Know Before You Buy",
           "isPublished": true,
           "publishedAt": "2026-04-07T00:43:40Z"
+        },
+        {
+          "handle": "best-mattress-for-back-pain",
+          "id": "gid://shopify/Article/600284299517",
+          "title": "Best Mattress for Back Pain in 2026 — Doctor-Approved Picks",
+          "isPublished": false,
+          "publishedAt": null
+        },
+        {
+          "handle": "where-to-buy-a-mattress-in-los-angeles",
+          "id": "gid://shopify/Article/600284332285",
+          "title": "Where to Buy a Mattress in Los Angeles — 5 Showrooms, Free LA Delivery",
+          "isPublished": false,
+          "publishedAt": null
+        },
+        {
+          "handle": "when-is-the-best-time-to-buy-a-mattress",
+          "id": "gid://shopify/Article/600284365053",
+          "title": "When Is the Best Time to Buy a Mattress? 2026 Sales Calendar",
+          "isPublished": false,
+          "publishedAt": null
         }
       ]
     },
