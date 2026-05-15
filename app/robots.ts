@@ -1,6 +1,10 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL } from '@/lib/site-config';
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.mattressstoreslosangeles.com';
+// Canonical host — never the apex. The Sitemap: directive matters: Google
+// fetches sitemap.xml from the URL declared here, so an apex value forces
+// a 308 hop on first sitemap discovery. See lib/site-config.ts.
+const SITE = SITE_URL;
 
 /**
  * robots.txt rules. Keep aligned with the per-route `metadata.robots`

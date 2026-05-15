@@ -2,8 +2,11 @@ import type { MetadataRoute } from 'next';
 import { blogs, nonEmptyCollections, products, publishedPages } from '@/lib/inventory';
 import { SHOWROOMS } from '@/lib/showrooms';
 import { NEIGHBORHOODS } from '@/lib/neighborhoods';
+import { SITE_URL } from '@/lib/site-config';
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.mattressstoreslosangeles.com';
+// Canonical host — never the apex. See lib/site-config.ts#canonicalizeSiteUrl:
+// emitting apex URLs here makes every crawler hit a 308 hop.
+const SITE = SITE_URL;
 
 /**
  * Phase 277e: showroom + neighborhood pages are high-intent local

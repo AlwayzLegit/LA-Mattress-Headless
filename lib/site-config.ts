@@ -26,9 +26,35 @@ export const SITE_EMAIL = 'orders.lamattress@gmail.com';
 /** Brand display name. */
 export const SITE_BRAND = 'LA Mattress Store';
 
-/** Public site URL (matches NEXT_PUBLIC_SITE_URL when set). */
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.mattressstoreslosangeles.com';
+/**
+ * Public site URL (matches NEXT_PUBLIC_SITE_URL when set).
+ *
+ * The canonical host is the `www.` subdomain — the apex
+ * (`mattressstoreslosangeles.com`) 308-redirects to it at the edge.
+ * Vercel's `NEXT_PUBLIC_SITE_URL` env var has historically been set to
+ * the bare apex, which leaked into sitemap.xml + robots.txt and made
+ * every crawler hit a 308 hop (SEMrush "Temporary redirects" baseline).
+ * `canonicalizeSiteUrl` force-upgrades the apex to `www.` so a
+ * misconfigured env var can never re-introduce that regression — the
+ * sitemap/robots/canonical surfaces always emit the redirect target,
+ * not its source.
+ */
+function canonicalizeSiteUrl(raw: string | undefined): string {
+  const fallback = 'https://www.mattressstoreslosangeles.com';
+  if (!raw) return fallback;
+  try {
+    const u = new URL(raw.trim());
+    u.protocol = 'https:';
+    if (u.hostname === 'mattressstoreslosangeles.com') {
+      u.hostname = 'www.mattressstoreslosangeles.com';
+    }
+    return u.origin;
+  } catch {
+    return fallback;
+  }
+}
+
+export const SITE_URL = canonicalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 
 /**
  * Phase 277b: official social/external profiles for Schema.org `sameAs`.

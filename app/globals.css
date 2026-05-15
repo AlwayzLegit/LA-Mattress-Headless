@@ -2573,6 +2573,62 @@ summary:focus-visible,
   .plp-hero-img { aspect-ratio: 16 / 9; }
 }
 
+/* Phase 284 — cross-cut sub-nav. Renders directly under the PLP hero on
+   single-dimension collections (brand / size / type) so shoppers can
+   pivot to the high-intent intersection. Internal-link cluster also
+   strengthens crawl paths between cross-cut collections. */
+.plp-sibling-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  max-width: 1200px;
+  margin: var(--s-5) auto 0;
+  padding: var(--s-5) var(--container-pad) 0;
+}
+.plp-sibling-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2) var(--s-3);
+}
+.plp-sibling-heading {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  flex: 0 0 100%;
+}
+.plp-sibling-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.plp-sibling-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  font-size: 14px;
+  color: var(--text-2);
+  text-decoration: none;
+  background: var(--surface-2);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.plp-sibling-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.plp-sibling-chip[aria-current='page'] {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* Phase 265 — below-the-grid PLP content block: category intro paragraph,
    FAQ accordion, internal links cluster. Renders on every
    /collections/[handle] via <PlpContentBlock />. Boosts text-to-HTML
