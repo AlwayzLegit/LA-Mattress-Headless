@@ -341,6 +341,36 @@ needs additional data sources or a more careful design.
 
 ---
 
+## Cowork verification 2026-05-15 — remaining merchant items
+
+Full report: `data/cowork-reports/seo-sprint-review-20260515T083646Z.md`.
+11 of 13 findings were code-resolved in Phase 292 and are on
+`claude/seo-audit-plan-DuoHW`. Two are blocked on merchant-only data:
+
+- **MEDIUM #10 — GSC / Bing verification meta absent.** Cowork found no
+  `google-site-verification` / `msvalidate.01` meta on any page. The
+  code is correctly gated on env vars, so this is *not* a code defect.
+  Action: confirm how the properties were verified. If via DNS TXT
+  record or HTML-file upload → no action, close as informational. If
+  the meta-tag method was intended → set
+  `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` and
+  `NEXT_PUBLIC_BING_SITE_VERIFICATION` in Vercel project env and
+  redeploy.
+- **LOW #13 — Organization JSON-LD has no `sameAs`.** `SOCIAL_PROFILES`
+  in `lib/site-config.ts` is intentionally empty (no dummy URLs). The
+  builder already emits `sameAs` when it's populated. Action: provide
+  the canonical owned profile URLs (Facebook / Instagram / X / YouTube
+  / Yelp / GBP); they get uncommented in `lib/site-config.ts` and
+  `sameAs` emits on the next deploy.
+- **Post-deploy housekeeping.** After this branch ships, re-submit
+  `sitemap.xml` in Google Search Console + Bing Webmaster. The URL is
+  unchanged but its contents now resolve to the `www` host with no 308
+  hop, so a re-fetch clears any "All URLs are redirects" warning. Allow
+  ~3–7 days for GSC and ~14 days for the SEMrush re-crawl deltas, then
+  re-run the cowork verification pass.
+
+---
+
 ## Quick-reference: where to find things
 
 | What | Where |
