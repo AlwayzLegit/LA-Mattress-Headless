@@ -11,6 +11,7 @@ import {
   removeDiscountCode,
   changeLineVariant,
   updateCartNote,
+  setDeliveryDate as setDeliveryDateAction,
   readCart,
 } from '@/app/_actions/cart';
 import { announce, announceAssertive } from './announcer';
@@ -30,6 +31,7 @@ type CartContextValue = {
   removeDiscount: () => Promise<void>;
   changeVariant: (lineId: string, merchandiseId: string, quantity: number) => Promise<{ ok: boolean; error?: string }>;
   setNote: (note: string) => Promise<void>;
+  setDeliveryDate: (date: string | null) => Promise<void>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -146,6 +148,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // No optimistic count change — the delivery date doesn't affect the
+  // line total. The returned cart is authoritative (it echoes the saved
+  // attributes), mirroring setNote's setCart-from-response pattern.
+  const setDeliveryDate = useCallback(async (date: string | null) => {
+    const res = await setDeliveryDateAction(date);
+    if (res.ok) {
+      setCart(res.cart);
+      announce(date ? 'Delivery date saved.' : 'Delivery date cleared.');
+    } else {
+      announceAssertive(res.error || 'Could not save delivery date.');
+    }
+  }, []);
+
   const value = useMemo<CartContextValue>(() => ({
     cart,
     count: optimisticCount,
@@ -161,7 +176,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     removeDiscount,
     changeVariant,
     setNote,
-  }), [cart, optimisticCount, drawerOpen, pending, addLine, updateLine, removeLine, applyDiscount, removeDiscount, changeVariant, setNote]);
+    setDeliveryDate,
+  }), [cart, optimisticCount, drawerOpen, pending, addLine, updateLine, removeLine, applyDiscount, removeDiscount, changeVariant, setNote, setDeliveryDate]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

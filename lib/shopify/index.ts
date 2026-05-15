@@ -23,5 +23,5 @@ export type { HeroSlideData }                 from './queries/hero-slides';
 export { getBrands }                          from './queries/brands';
 export type { Brand }                         from './queries/brands';
 export type { SearchResult, Predictive, PredictiveArticle, ArticleSearchResult } from './queries/search';
-export { cartCreate, cartLinesAdd, cartLinesUpdate, cartLinesRemove, cartDiscountCodesUpdate, cartNoteUpdate, getCart } from './mutations/cart';
+export { cartCreate, cartLinesAdd, cartLinesUpdate, cartLinesRemove, cartDiscountCodesUpdate, cartNoteUpdate, cartAttributesUpdate, getCart } from './mutations/cart';
 export type { CartLineInput, UserError }     from './mutations/cart';

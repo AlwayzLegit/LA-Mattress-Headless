@@ -271,4 +271,5 @@ export type Cart = {
     phone: string | null;
     countryCode: string | null;
   };
+  attributes: { key: string; value: string }[];
 };

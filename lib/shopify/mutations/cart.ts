@@ -17,6 +17,7 @@ const CART_FRAGMENT = /* GraphQL */ `
     discountCodes { code applicable }
     discountAllocations { discountedAmount { ...MoneyFields } }
     buyerIdentity { email phone countryCode }
+    attributes { key value }
     lines(first: 100) {
       nodes {
         id
@@ -97,6 +98,16 @@ const CART_NOTE_UPDATE = /* GraphQL */ `
   ${FRAGS}
   mutation CartNoteUpdate($cartId: ID!, $note: String!) {
     cartNoteUpdate(cartId: $cartId, note: $note) {
+      cart { ...CartFields }
+      userErrors { field message code }
+    }
+  }
+`;
+
+const CART_ATTRIBUTES_UPDATE = /* GraphQL */ `
+  ${FRAGS}
+  mutation CartAttributesUpdate($cartId: ID!, $attributes: [AttributeInput!]!) {
+    cartAttributesUpdate(cartId: $cartId, attributes: $attributes) {
       cart { ...CartFields }
       userErrors { field message code }
     }
@@ -193,6 +204,26 @@ export async function cartNoteUpdate(cartId: string, note: string): Promise<Cart
     { cache: 'no-store' },
   );
   return unwrap(data, 'cartNoteUpdate');
+}
+
+/**
+ * Replaces the cart's custom attributes. Storefront cart attributes
+ * carry through to the order as note attributes, visible to staff in
+ * the Shopify Admin order detail — that's how a requested delivery
+ * date reaches the fulfilment team without modifying the (Shopify-
+ * hosted) checkout itself. This is a full replace, so callers must
+ * pass the complete attribute set they want kept.
+ */
+export async function cartAttributesUpdate(
+  cartId: string,
+  attributes: { key: string; value: string }[],
+): Promise<Cart> {
+  const data = await shopifyFetch<{ cartAttributesUpdate: { cart: RawCart | null; userErrors: UserError[] } }>(
+    CART_ATTRIBUTES_UPDATE,
+    { cartId, attributes },
+    { cache: 'no-store' },
+  );
+  return unwrap(data, 'cartAttributesUpdate');
 }
 
 export async function getCart(cartId: string): Promise<Cart | null> {
