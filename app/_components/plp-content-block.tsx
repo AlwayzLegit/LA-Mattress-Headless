@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Icon } from './icon';
 import { categoryIntroFor, categoryFaqFor } from '@/lib/plp-content';
 import { faqJsonLd } from '@/lib/faq';
+import { renderFaqAnswer } from '@/lib/faq-render';
 
 /**
  * Below-the-product-grid content block on every /collections/[handle].
@@ -50,7 +51,7 @@ export function PlpContentBlock({
                 <span className="plp-content-faq-q">{item.q}</span>
                 <Icon name="chevron-down" size={14} aria-hidden />
               </summary>
-              <p className="plp-content-faq-a">{item.a}</p>
+              <p className="plp-content-faq-a">{renderFaqAnswer(item.a)}</p>
             </details>
           ))}
         </div>

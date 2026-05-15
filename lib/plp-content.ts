@@ -196,6 +196,36 @@ const SALE_FAQ: FaqItem[] = [
   },
 ];
 
+const ADJUSTABLE_FAQ: FaqItem[] = [
+  {
+    q: 'Will an adjustable base work with my current mattress?',
+    a: 'Most modern foam, hybrid, and latex mattresses flex with an adjustable base — that covers nearly everything we sell. Traditional innerspring mattresses with a rigid border are the exception and may not bend safely. If you tell us your mattress model when you order, we will confirm compatibility before delivery; you can also check our mattress types page for which constructions are adjustable-friendly.',
+  },
+  {
+    q: 'What does an adjustable base actually do?',
+    a: 'At minimum, independent head and foot elevation — useful for reading, TV, working in bed, easing acid reflux, reducing snoring, and taking pressure off the lower back (the zero-gravity preset is the most-requested setting). Premium bases on this page add wireless remotes, programmable presets, under-bed lighting, USB charging, and massage.',
+  },
+  {
+    q: 'Does an adjustable base replace my box spring?',
+    a: 'Yes. An adjustable base replaces your existing foundation or box spring entirely. It works inside most standard bed frames or freestanding on its own legs. Our white-glove delivery includes assembly and free haul-away of your old foundation, so there is nothing to set up yourself.',
+  },
+];
+
+const PILLOW_FAQ: FaqItem[] = [
+  {
+    q: 'How do I pick a pillow for my sleep position?',
+    a: 'Pillow loft should fill the gap between your neck and the mattress so your spine stays neutral. Side sleepers generally need a higher, firmer pillow; back sleepers a medium loft; stomach sleepers a thin, soft one. Getting this right matters as much for neck and shoulder comfort as the mattress itself — take the 2-minute sleep quiz at /sleep-quiz if you are unsure of your dominant position.',
+  },
+  {
+    q: 'What are these pillows made of?',
+    a: 'The pillows on this page span solid memory foam (contouring, supportive), shredded/adjustable foam (you can add or remove fill), natural latex (responsive and cool), down-alternative (soft and plush), and gel-infused cooling foam for hot sleepers. Each product page lists the fill and loft.',
+  },
+  {
+    q: 'How often should a pillow be replaced?',
+    a: 'Roughly every 1–3 years depending on material — down-alternative breaks down soonest, memory foam and latex last longest. Quick test: fold the pillow in half; if it stays folded instead of springing back, it has lost support and it is time to replace it.',
+  },
+];
+
 const GENERIC_FAQ: FaqItem[] = [
   {
     q: 'Can I try these mattresses in person before I buy?',
@@ -236,6 +266,12 @@ export function categoryFaqFor(handle: string): FaqItem[] {
   if (h.includes('hybrid')) return [...HYBRID_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('latex')) return [...LATEX_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('innerspring')) return [...INNERSPRING_FAQ, ...UNIVERSAL_FAQ];
+
+  // Accessory categories (adjustable bases, pillows) — were falling
+  // through to the generic mattress FAQ, which read wrong on these PLPs
+  // (merchant flagged adjustable-beds + pillows).
+  if (h.includes('adjustable')) return [...ADJUSTABLE_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('pillow')) return [...PILLOW_FAQ, ...UNIVERSAL_FAQ];
 
   // Sale / clearance
   if (h.includes('sale') || h.includes('clearance') || h.includes('floor-model')) {
@@ -294,6 +330,14 @@ export function categoryIntroFor(handle: string, title: string): string {
   }
   if (h.includes('innerspring')) {
     return `Innerspring mattresses use a steel coil support unit topped with comfort foam, fiber, or pillow-top layers — the most traditional mattress construction, with the bounce and edge support that hybrid and foam mattresses don't replicate. We stock Stearns & Foster, Englander, and Eastman House innerspring builds with pocketed coils for motion isolation and pillow-top or Euro-top comfort layers.`;
+  }
+
+  // Accessory categories
+  if (h.includes('adjustable')) {
+    return `Adjustable bases let you raise your head and feet independently — for reading, working, TV, easing acid reflux and snoring, and taking pressure off the lower back with the zero-gravity preset. The bases on this page replace your existing foundation and pair with nearly every foam, hybrid, and latex mattress we carry. White-glove delivery includes assembly and free haul-away of your old foundation; try the controls in person at any of our 5 LA showrooms.`;
+  }
+  if (h.includes('pillow')) {
+    return `The right pillow keeps your neck and spine aligned with your mattress — loft should match your sleep position (higher and firmer for side sleepers, medium for back, thin for stomach). The pillows on this page range from contouring memory foam and natural latex to adjustable shredded-fill and cooling-gel options for hot sleepers. Free delivery in Los Angeles on qualifying orders.`;
   }
 
   // Sale / clearance

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icon } from '../icon';
 import { HOMEPAGE_FAQ } from '@/lib/faq';
+import { renderFaqAnswer } from '@/lib/faq-render';
 
 /**
  * Homepage FAQ — server component using native <details>/<summary>.
@@ -45,7 +46,7 @@ export function FAQ() {
                 <span className="faq-icon faq-icon-open"><Icon name="minus" size={18} /></span>
               </summary>
               <div className="faq-a">
-                <p>{it.a}</p>
+                <p>{renderFaqAnswer(it.a)}</p>
               </div>
             </details>
           ))}
