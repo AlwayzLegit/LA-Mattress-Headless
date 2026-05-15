@@ -242,10 +242,13 @@ export type Menu = {
   items: MenuItem[];
 };
 
+export type CartDiscountAllocation = { discountedAmount: Money };
+
 export type CartLine = {
   id: string;
   quantity: number;
   cost: { totalAmount: Money; subtotalAmount: Money };
+  discountAllocations: CartDiscountAllocation[];
   merchandise: ProductVariant & { product: { handle: string; title: string; featuredImage: Image | null } };
 };
 
@@ -253,12 +256,15 @@ export type Cart = {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
+  note: string | null;
   cost: {
     subtotalAmount: Money;
     totalAmount: Money;
     totalTaxAmount: Money | null;
     totalDutyAmount: Money | null;
   };
+  discountCodes: { code: string; applicable: boolean }[];
+  discountAllocations: CartDiscountAllocation[];
   lines: { nodes: CartLine[] };
   buyerIdentity: {
     email: string | null;

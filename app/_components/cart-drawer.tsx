@@ -10,6 +10,7 @@ import { useFocusTrap } from './use-focus-trap';
 import { CartEmptyRecent } from './cart-empty-recent';
 import { announce } from './announcer';
 import { formatMoney } from '@/lib/format';
+import { FreeShippingBar } from '@/app/cart/free-shipping-bar';
 
 export function CartDrawer() {
   const { cart, drawerOpen, closeDrawer, updateLine, removeLine, pending } = useCart();
@@ -173,9 +174,7 @@ export function CartDrawer() {
             </ul>
 
             <footer className="cart-drawer-ft">
-              <div className="cart-shipping-strip" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--accent)', fontSize: 13, fontWeight: 500, marginBottom: 'var(--s-3)' }}>
-                <Icon name="truck" size={14} /> Free white-glove delivery applied.
-              </div>
+              {cart ? <FreeShippingBar subtotal={cart.cost.subtotalAmount} /> : null}
               <div className="cart-summary-row">
                 <span className="muted">Subtotal</span>
                 <span className="tnum cart-subtotal">
