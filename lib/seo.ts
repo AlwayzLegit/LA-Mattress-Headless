@@ -1,6 +1,30 @@
-// Title cap before the root layout adds " · LA Mattress" (14 chars). 56 keeps
-// the rendered <title> under ~70 chars total, the typical SEO threshold.
-const TITLE_MAX = 56;
+// Title cap.
+//
+// Originally 56, sized to keep the rendered <title> under ~70 chars
+// total once the root layout appended " · LA Mattress Store" (~20 chars).
+//
+// Phase 281 switched detail routes (PDP, PLP, blog, article, CMS) to
+// `title: { absolute: title }` which bypasses that layout template —
+// the seo.title is now the literal rendered <title>. With the 14-20
+// chars of brand suffix gone, the 56 cap was tight enough to truncate
+// long product titles like "Diamond Dreamstage 2.0 Collection Clarity
+// Medium Cool Copper Gel Memory Foam 13" Mattress" at the same
+// position across sibling variants, producing duplicate truncated
+// titles ("Diamond Dreamstage 2.0…" for both Medium and Plush
+// variants). The May 15 SEMrush re-audit flagged 41 products for
+// "Duplicate title tag" because of this.
+//
+// Phase 289 (this file) raises the cap to 70. Google's SERP display
+// truncates at ~580 pixels (typically 55-65 chars depending on letter
+// width), but the full title is indexed for ranking up to ~100 chars.
+// 70 chars is a balance: most variant differentiators sit at chars
+// 40-50, comfortably under 70 even for the longest catalog titles,
+// while still being short enough that most titles render fully in
+// SERP without "..." truncation.
+//
+// If you change this, also update the hardcoded threshold in
+// app/products/[handle]/page.tsx's titleFallback length check.
+const TITLE_MAX = 70;
 const DESCRIPTION_MAX = 160;
 
 export function capTitle(s: string, max = TITLE_MAX): string {
