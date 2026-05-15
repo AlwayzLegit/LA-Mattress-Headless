@@ -30,6 +30,7 @@ import { Announcer } from './_components/announcer';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
+import { composeBrandTitle } from '@/lib/seo';
 import { getShopBrand, getActiveAnnouncement } from '@/lib/shopify';
 import { AnnouncementBar } from './_components/announcement-bar';
 import { AnalyticsGa4 } from './_components/analytics-ga4';
@@ -54,9 +55,9 @@ const FALLBACK_OG_DESCRIPTION =
 export async function generateMetadata(): Promise<Metadata> {
   const shop = await getShopBrand();
   const siteName = shop?.name ?? 'LA Mattress Store';
-  const defaultTitle = shop?.brand?.slogan
-    ? `${siteName} — ${shop.brand.slogan}`
-    : FALLBACK_TITLE;
+  // cowork LOW#12: don't double the brand when the merchant's Brand
+  // slogan already leads with "LA Mattress …".
+  const defaultTitle = composeBrandTitle(siteName, shop?.brand?.slogan, FALLBACK_TITLE);
   const description = shop?.brand?.shortDescription ?? shop?.description ?? FALLBACK_DESCRIPTION;
   const ogImage = shop?.brand?.coverImage?.url;
   // Phase 277: Search Console + Bing Webmaster verification meta tags.

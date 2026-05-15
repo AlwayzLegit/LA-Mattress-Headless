@@ -56,7 +56,16 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // differs from the H1 (H1 uses sentence-cased + brand-stripped
   // version of page.title; without a suffix the two strings collapse
   // to the same case-insensitive text and SEMrush flags duplicate).
-  const titleFallback = `${page.title} | LA Mattress`;
+  //
+  // Phase 292 (cowork MEDIUM#5): strip any existing trailing brand
+  // suffix from page.title FIRST. The auto-created neighborhood pages
+  // are titled "Mattress Store in Burbank — LA Mattress"; appending
+  // " | LA Mattress" to that produced a doubled brand
+  // ("… — LA Mattress | LA Mattress"). stripBrandSuffix splits on the
+  // first " | " / " – " / " — " separator, so we rebrand with a single
+  // canonical " | LA Mattress" regardless of what suffix the merchant
+  // (or the page-creation script) used.
+  const titleFallback = `${stripBrandSuffix(page.title)} | LA Mattress`;
   const title = capTitle(firstNonEmpty(page.seo.title, titleFallback));
   const description = truncDescription(
     firstNonEmpty(page.seo.description, page.bodySummary, `${page.title} — LA Mattress Store`),
@@ -883,8 +892,17 @@ function NeighborhoodPage({
 
         <header className="showroom-page-hero">
           <div className="eyebrow">{neighborhood.name} · Los Angeles</div>
+          {/* Phase 292 (cowork MEDIUM#6/#7): build the H1 from the
+              proper-cased neighborhood.name + ", Los Angeles" instead of
+              toSentenceCase(page.title). The old path lowercased the
+              neighborhood ("Mattress store in burbank") and dropped any
+              LA reference. Skip the ", Los Angeles" suffix when the name
+              already contains "LA" (Downtown LA) to avoid "… LA, Los
+              Angeles". Still differs from <title> case-normalized
+              ("… | LA Mattress"), so no duplicate-H1/title regression. */}
           <h1 className="h1">
-            {toSentenceCase(stripBrandSuffix(page.title))}
+            {`Mattress store in ${neighborhood.name}`}
+            {/\bLA\b/.test(neighborhood.name) ? '' : ', Los Angeles'}
           </h1>
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
             Free white-glove delivery to {neighborhood.name} on orders over $499 — same-day if you order by 4pm.{' '}

@@ -27,9 +27,54 @@
 const TITLE_MAX = 70;
 const DESCRIPTION_MAX = 160;
 
+// Trailing brand suffix as appended by the metadata generators:
+// " | LA Mattress", " — LA Mattress Store", " - LA Mattress", etc.
+// Matches a leading-space separator (pipe / en-dash / em-dash / hyphen)
+// + "LA Mattress" + optional " Store".
+const BRAND_SUFFIX_RE = /\s[|–—-]\s*LA\s+Mattress(?:\s+Store)?\s*$/i;
+
+/**
+ * Cap a rendered <title> at `max` chars.
+ *
+ * Phase 292 (cowork MEDIUM#8): when the string overflows and the
+ * overflow is (partly) caused by a trailing " | LA Mattress" brand
+ * suffix, drop the WHOLE suffix instead of truncating into it. A
+ * half-rendered "… | LA Mattr…" looks like a broken render in SERPs.
+ * After dropping the suffix, if the base still overflows, truncate the
+ * base cleanly (no mangled suffix re-appended). Titles with no
+ * recognizable brand suffix keep the original truncate-with-ellipsis
+ * behavior.
+ */
 export function capTitle(s: string, max = TITLE_MAX): string {
   if (s.length <= max) return s;
-  return `${s.slice(0, max - 1).trimEnd()}…`;
+  const base = s.replace(BRAND_SUFFIX_RE, '');
+  if (base !== s && base.length <= max) return base;
+  const trimmable = base !== s ? base : s;
+  return `${trimmable.slice(0, max - 1).trimEnd()}…`;
+}
+
+/**
+ * Compose the homepage / site-default <title> from the Shopify Brand
+ * slogan without doubling the brand.
+ *
+ * Phase 292 (cowork LOW#12): the merchant set the Shopify Brand slogan
+ * to "LA Mattress | Shop Sales on Best Mattresses & Bedroom Furniture"
+ * — already brand-led. The old `${siteName} — ${slogan}` composition
+ * then produced "LA Mattress Store — LA Mattress | Shop Sales …" with
+ * the brand stated twice before the pipe. When the slogan already
+ * references the brand, use it verbatim; otherwise compose
+ * "<brand> — <slogan>" (the intended behavior for short taglines like
+ * "Sleep, engineered in Los Angeles.").
+ */
+export function composeBrandTitle(
+  siteName: string,
+  slogan: string | null | undefined,
+  fallback: string,
+): string {
+  const s = slogan?.trim();
+  if (!s) return fallback;
+  const brandLed = /^la\s+mattress\b/i.test(s) || s.toLowerCase().includes(siteName.toLowerCase());
+  return brandLed ? s : `${siteName} — ${s}`;
 }
 
 export function truncDescription(s: string, max = DESCRIPTION_MAX): string {
