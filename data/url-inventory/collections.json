@@ -1,8 +1,8 @@
 {
   "$schema": "Shopify collections inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-05-14T21:52:09.481Z",
-  "$count": 61,
+  "$pulledAt": "2026-05-15T06:52:17.424Z",
+  "$count": 62,
   "collections": [
     {
       "handle": "popular",
@@ -552,6 +552,15 @@
       "updatedAt": "2026-05-05T19:27:37Z",
       "seoTitle": null,
       "seoDescription": null
+    },
+    {
+      "handle": "memorial-day-sale",
+      "id": "gid://shopify/Collection/467229999357",
+      "title": "Memorial Day Mattress Sale",
+      "productsCount": 16,
+      "updatedAt": "2026-05-14T22:15:28Z",
+      "seoTitle": "Memorial Day Mattress Sale 2026 — LA Mattress Store",
+      "seoDescription": "Memorial Day sale on Tempur-Pedic, Helix, Stearns & Foster, Diamond, Spring Air, and more. Free white-glove delivery and 120-night exchange on every mattress."
     }
   ]
 }
