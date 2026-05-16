@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Icon, type IconName } from '../icon';
 import { phImg } from '../images';
 import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
 import { getBrands } from '@/lib/shopify';
+import { brandLogo } from '@/lib/brand-logos';
 
 /* ───── Trust bar ─────────────────────────────────────── */
 export function TrustBar() {
@@ -100,11 +102,25 @@ export async function BrandStrip() {
           </Link>
         </div>
         <div className="brand-strip">
-          {brands.map((b) => (
-            <Link href={b.href} key={b.href} className="brand-tile">
-              <span className="brand-wordmark">{b.name}</span>
-            </Link>
-          ))}
+          {brands.map((b) => {
+            const handle = b.href.replace('/collections/', '');
+            const logo = brandLogo(handle);
+            return (
+              <Link href={b.href} key={b.href} className="brand-tile" aria-label={b.name}>
+                {logo ? (
+                  <Image
+                    src={logo.src}
+                    alt={logo.alt ?? `${b.name} logo`}
+                    width={logo.width}
+                    height={logo.height}
+                    className="brand-tile-logo"
+                  />
+                ) : (
+                  <span className="brand-wordmark">{b.name}</span>
+                )}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
