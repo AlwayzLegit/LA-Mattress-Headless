@@ -12,6 +12,7 @@ import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
+import { PdpReviewsSection } from '@/app/_components/pdp-reviews-section';
 import { BuyBox } from './buy-box';
 import { PdpCtaRow } from './pdp-cta-row';
 import { PdpGallery } from './gallery';
@@ -60,7 +61,22 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Product' };
   const product = await getProductByHandle(params.handle).catch(() => null);
   if (!product) return { title: 'Product not found' };
-  const title = capTitle(firstNonEmpty(product.seo.title, product.title));
+  // Phase 277c: when Shopify SEO title isn't set (~35% of products per
+  // the 2026-05 audit), fall back to a local-intent variant rather than
+  // the bare product title. Otherwise the <title> would equal the H1
+  // verbatim, triggering SEMrush's "Duplicate content in h1 and title".
+  // Only append "in Los Angeles" when the result still fits in TITLE_MAX
+  // (70 chars after Phase 289 raised it from 56) so capTitle doesn't
+  // ellipsis-truncate it; long product titles fall back to the bare
+  // title and rely on the unique variant signature within the first ~70
+  // chars to differentiate sibling variants.
+  const titleFallback = `${product.title} in Los Angeles`;
+  const title = capTitle(
+    firstNonEmpty(
+      product.seo.title,
+      titleFallback.length <= 70 ? titleFallback : product.title,
+    ),
+  );
   const description = truncDescription(
     firstNonEmpty(
       product.seo.description,
@@ -70,7 +86,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   );
   const url = `/products/${product.handle}`;
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {
@@ -184,7 +200,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
   // include the sku key when at least one variant has a non-empty SKU.
   const firstSku = product.variants.find((v) => v.sku && v.sku.trim().length > 0)?.sku;
 
-  const productUrl = `https://mattressstoreslosangeles.com/products/${product.handle}`;
+  const productUrl = `https://www.mattressstoreslosangeles.com/products/${product.handle}`;
 
   const productLd = {
     '@context': 'https://schema.org',
@@ -225,8 +241,8 @@ function ProductView({ product, related }: { product: Product; related: ProductS
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home',       item: 'https://mattressstoreslosangeles.com/' },
-      { '@type': 'ListItem', position: 2, name: 'Mattresses', item: 'https://mattressstoreslosangeles.com/collections/mattresses' },
+      { '@type': 'ListItem', position: 1, name: 'Home',       item: 'https://www.mattressstoreslosangeles.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Mattresses', item: 'https://www.mattressstoreslosangeles.com/collections/mattresses' },
       { '@type': 'ListItem', position: 3, name: product.title, item: productUrl },
     ],
   };
@@ -241,26 +257,13 @@ function ProductView({ product, related }: { product: Product; related: ProductS
         <span>{product.title}</span>
       </nav>
 
-      <div className="pdp-grid pdp-grid-with-body">
-        <div className="pdp-left">
-        <PdpGallery
-          productTitle={product.title}
-          featured={product.featuredImage}
-          images={product.images}
-        />
-
-        <PdpOverview product={product} />
-        <PdpFirmness product={product} />
-        <PdpMaterials product={product} />
-        <SpecTable product={product} />
-
-        {product.descriptionHtml ? (
-          <section className="pdp-description">
-            <div className="eyebrow">Details</div>
-            <h2 className="h2">About this mattress</h2>
-            <div className="rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(product.descriptionHtml) }} />
-          </section>
-        ) : null}
+      <div className="pdp-grid">
+        <div className="pdp-gallery-area">
+          <PdpGallery
+            productTitle={product.title}
+            featured={product.featuredImage}
+            images={product.images}
+          />
         </div>
 
         <aside className="pdp-rail">
@@ -296,7 +299,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
                 <Icon name="truck" size={18} />
                 <div>
                   <div className="pdp-delivery-title">Free white-glove delivery</div>
-                  <div className="muted pdp-delivery-sub">Free setup &amp; old mattress haul-away · Same-day to 90% of LA</div>
+                  <div className="muted pdp-delivery-sub">Free setup &amp; old mattress haul-away on orders $499+ · Same-day anywhere in LA when you order by 4pm</div>
                 </div>
               </div>
               <div className="pdp-delivery-row">
@@ -310,13 +313,34 @@ function ProductView({ product, related }: { product: Product; related: ProductS
                 <Icon name="card" size={18} />
                 <div>
                   <div className="pdp-delivery-title">0% APR financing</div>
-                  <div className="muted pdp-delivery-sub">Up to 60 months on approved credit · Synchrony or Acima</div>
+                  <div className="muted pdp-delivery-sub">Synchrony or Acima · terms vary by approval · apply at checkout</div>
                 </div>
               </div>
             </div>
           </div>
         </aside>
+
+        <div className="pdp-details-area">
+          <PdpOverview product={product} />
+          <PdpFirmness product={product} />
+          <PdpMaterials product={product} />
+          <SpecTable product={product} />
+
+          {product.descriptionHtml ? (
+            <section className="pdp-description">
+              <div className="eyebrow">Details</div>
+              <h2 className="h2">About this mattress</h2>
+              <div className="rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(product.descriptionHtml) }} />
+            </section>
+          ) : null}
+        </div>
       </div>
+
+      <PdpReviewsSection
+        productGid={product.id}
+        productHandle={product.handle}
+        reviews={product.reviews}
+      />
 
       <RelatedRail products={related} />
       <RecentlyViewedRail excludeHandle={product.handle} />

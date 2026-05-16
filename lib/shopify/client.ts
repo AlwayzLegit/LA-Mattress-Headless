@@ -76,7 +76,14 @@ export async function shopifyFetch<TData = unknown, TVars = Record<string, unkno
   // Surface as a warning and return the partial data — throwing would 404
   // every page over a non-fatal field error.
   if (json.errors && json.data) {
-    console.warn('[shopify] partial GraphQL errors:', JSON.stringify(json.errors).slice(0, 500));
+    // Phase 235: NODE_ENV-gated to keep production logs clean. Partial
+    // errors are a known steady-state for the public Storefront token
+    // (e.g. inventory-scope-denied on `quantityAvailable`) and don't
+    // need to land in prod logs every request — they're useful in dev
+    // to catch newly-introduced scope-denied queries.
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[shopify] partial GraphQL errors:', JSON.stringify(json.errors).slice(0, 500));
+    }
     return json.data;
   }
   if (json.errors) {

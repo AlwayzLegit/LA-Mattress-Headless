@@ -1,3 +1,610 @@
+# Session handoff — 2026-05-12 (Phases 236–254 — launch week + post-launch closeout)
+
+## Status
+
+> **DNS cutover is live.** `mattressstoreslosangeles.com` + `www.` now serve this headless storefront. Four post-launch Cowork rounds (rev-6/7/8/9) closed all P0/P1/P2 findings. Sentry observability is wired and verified. Judge.me reviews work end-to-end after a 9-phase debugging journey. SEMrush mega-export triage cleared the structured-data + bulk-redirect tails. The launch is closed and the site is operating.
+
+| PR | Phases | Theme |
+|---|---|---|
+| #73 | 236 | Showroom canonical data — 5 phone/address/hours corrections from merchant |
+| #74 | 237 | FAQ + delivery copy — 2pm cutoff, $499 threshold, anywhere-in-LA |
+| #75 | 238 | First Judge.me wiring attempt (REST `getProductReviews`) |
+| #76 | 239 | FAQ pass 2 — 4pm cutoff (was 2pm), recycling phrasing, no "60 months" |
+| #77 | 240 | Old-mattress recycling toggle + price-match copy retained |
+| #78 | 241 | Judge.me badge from Shopify `judgeme.badge` metafield + 3-source fallback |
+| #79 | 242 | Diagnostic logging for Judge.me filter failures (deleted in #82) |
+| #80 | 243 | DNS cutover prep — add apex + www to Vercel project domains |
+| #81 | 244–246 | Judge.me filter debug (`/api/judgeme-debug`) — 9 filter variants all unfiltered |
+| #82 | 247 | Pivot Judge.me to client-side widget (server REST silently ignores filters) |
+| #83 | 248 | Judge.me widget attribute fix — `data-product-id` → `data-id` |
+| #84 | 249 | Judge.me lib pruning — `getProductReviews` + `createReview` removed |
+| #85 | 250 | Sentry wiring + `instrumentation-client.ts` + tunnel route |
+| #86 | 250 | Hero h1 — only slide 0 renders `<h1>` (SEMrush multi-h1 fix on 477 URLs) |
+| #87 | 251 | Bulk wildcard redirect for ~287 old `/blogs/beds-mattresses/*` slugs |
+| #88 | 252 | Clear SEMrush structured-data errors on showroom + locations pages |
+| #89 | 254 | Hero image quality 65 → 55 (619 KB → < 550 KB perf target) |
+
+## What shipped
+
+### Phases 236–240 — content corrections from merchant
+
+- **236** All 5 showrooms had wrong canonical data (phone numbers, addresses, hours). Replaced with verified-correct values: Koreatown 201 S Western Ave (213) 984-4654, West LA 10861 W Pico Blvd (310) 507-8024, La Brea 300 S La Brea Ave (323) 275-4715, Studio City 12306 Ventura Blvd (818) 247-7790, Glendale 201 N Central Ave (818) 275-6592. Hours Mon-Fri 10-21, Sat-Sun 10-20. Added `formatPhone` helper to render `+1-XXX-XXX-XXXX` as `(XXX) XXX-XXXX`.
+- **237** FAQ copy — initial pass: 2 PM same-day cutoff, $799 free-delivery threshold, "most of LA" coverage.
+- **239** FAQ pass 2 after merchant correction: **4 PM** cutoff (not 12 PM and not 2 PM), $499 threshold (not $799), "anywhere in LA" (not "most of"/"90%"), recycling: "doesn't end up in a landfill" (no "local LA partner" claim), Synchrony + Acima financing (no "60 months" rate claim).
+- **240** Old-mattress recycling toggle stayed in (merchant decision); price-match copy retained.
+
+### Phases 238–249 — Judge.me reviews integration (9-phase debugging journey)
+
+The merchant uses Judge.me for reviews. Server-side integration via Judge.me's Public REST API failed in a non-obvious way: every per-product filter param (`external_id`, `product_external_id`, `product_id`, `handle`, GID forms — 9 variants tested) was silently ignored. The API returned identical unfiltered store-wide results regardless of filter. After exhausting the diagnostic, we pivoted to Judge.me's client-side widget, which hits a different endpoint (`api.judge.me/reviews/reviews_for_widget`) that does respect product filters.
+
+What's running now:
+- Aggregate badge (stars + count) on PDPs + PLP cards: server-side from Shopify metafield `judgeme.badge` (3-source fallback in `parseJudgemeBadgeHtml`).
+- Per-product review list + Write-a-Review form + photo upload on PDPs: Judge.me's widget loaded from `app/_components/judgeme-widget.tsx` using the public widget token (intentionally exposed).
+- Sitewide aggregate + latest reviews on `/pages/reviews` + homepage Reviews section: `getStorefrontReviews` (this REST endpoint doesn't take filters so it works).
+
+Critical fix in #83: Judge.me's preloader keys off `data-id`, not `data-product-id`. Single-line rename.
+
+Cleanup in #84 reduced `lib/judgeme.ts` from 209 → 117 lines by removing the dead per-product server-side helpers.
+
+### Phase 250 — SEMrush multi-h1 fix (#86)
+
+SEMrush flagged 477 URLs for "Multiple h1 tags." Root cause: the homepage hero carousel renders 3 slides simultaneously and each slide had its title in an `<h1>`. The active-slide CSS hides the inactive 2, but DOM-wise they're still present. Changed slide 1+2 to render the same `.hero-title` styling on `<p>` instead of `<h1>` — visually identical when the carousel rotates client-side because `aria-hidden + inert` already remove them from the a11y tree.
+
+### Phase 251 — bulk redirect old Hydrogen blog URLs (#87)
+
+SEMrush flagged 287 4xx old `/blogs/beds-mattresses/*` URLs (and ~1,314 broken-internal-link warnings rooted at them). 136 specific entries already existed in `redirects.json` pointing to the new blog category structure; the other 287 had no equivalent in the new sitemap. Single-line wildcard `/blogs/beds-mattresses/:slug* → /blogs/sleep-blog` (permanent) appended LAST so the specific entries still win. Preserves SEO equity from any backlinks pointing at the old URLs.
+
+### Phase 252 — clear SEMrush structured-data errors (#88)
+
+SEMrush flagged 6 URLs for "Structured data that contains markup errors":
+
+- 5 showroom URLs × 3 errors each = 15 — each `Service` entry in `ld-services` had only `serviceType`, no `name`. Google's Service rich-result requires `name`. Added one.
+- `/pages/mattress-store-locations` × 1 error — its `FurnitureStore` LD had no `address`. LocalBusiness requires it. Added the canonical Studio City address (same source as sitewide `LOCAL_BUSINESS_LD`).
+
+Net: 16 errors across 6 URLs → 0.
+
+### Phase 254 — hero image quality 65 → 55 (#89)
+
+Phase 234 predicted q=65 would land the hero LCP candidate at ~510 KB. Cowork rev-7 measured 619 KB live — Unsplash JPEG compression curve isn't linear so the prediction undershot reality. Dropped to q=55. On a photographic lifestyle background overlaid with a dark gradient and foreground text the quality drop is sub-perceptual.
+
+## Cowork audit summary across 9 revs
+
+| Rev | Date | Findings | Outcome |
+|---|---|---|---|
+| rev-1 | 2026-05-10 | 2 P1, 5 P2, favicon ask | PR #62 |
+| rev-2 | 2026-05-10 | 2 P1 still failing | PR #63 |
+| rev-3 | 2026-05-10 | 0 new | GO confirmed |
+| rev-4 | 2026-05-11 | 1 P1 (delivery redirect) | PR #69 |
+| rev-5 | 2026-05-11 | 1 P3 (image weight) | PR #71 |
+| rev-6 | 2026-05-12 | 1 P0 (Judge.me widget hydrating empty) | PR #83 |
+| rev-7 | 2026-05-12 | 1 P3 (hero 619 KB still over budget) | PR #89 |
+| rev-8 | 2026-05-12 | 0 actionable (2 false P0/P1 from grep-c counting on minified HTML) | Closed |
+| rev-9 | 2026-05-12 | 1 P2 (Sentry project not visible) | Wired and verified |
+
+🟢 GO on all nine rounds.
+
+## DNS cutover
+
+- Pre-flight: added `mattressstoreslosangeles.com` + `www.mattressstoreslosangeles.com` to the Vercel project's Domains list BEFORE flipping nameservers at the registrar. (Caught this gap before cutover — domain wasn't on the project yet.)
+- Cutover: user flipped at registrar; Vercel auto-provisioned SSL on both apex + www.
+- Post-cutover verification: site loads on both apex + www, Sentry baggage headers present on `/cart` (cache-busted), Judge.me widget hydrating on PDPs.
+
+## Sentry observability
+
+User created Sentry project `la-mattress-headless` in `jetnine` org. Vercel env vars set: `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`. Verified live by inspecting `/cart` response headers (Sentry's baggage propagation visible). Source map upload during build is gated on `SENTRY_AUTH_TOKEN` so prod stack traces show original-source filenames.
+
+## SEMrush mega-export triage
+
+User pulled a full SEMrush site audit (CSV at `/root/.claude/uploads/.../2cd34c9c-mattressstoreslosangeles.com_mega_export_20260512.csv`) after DNS cutover. Findings split into:
+
+- **Hero multi-h1** (477 URLs) — Phase 250.
+- **287 missing redirects** for old Hydrogen blog URLs — Phase 251.
+- **16 structured-data errors** on 6 showroom/locations URLs — Phase 252.
+- **Apex→www currently 307**, should be 308 (permanent) for SEO equity — see "Outstanding" below.
+
+## Shopify content backfill
+
+Done in the prior session via Admin GraphQL `pageUpdate`. 4 pages updated twice during this session when the merchant's Phase 239 corrections arrived (`mattress-store-delivery`, `about`, `mattress-store-financing`, `mattress-store-in-glendale`).
+
+## Outstanding (none code-blocking)
+
+- **Phase 253 — apex→www 307→308.** The Vercel apex domain currently 307s to www (Vercel's default). 307 is *temporary* — search engines treat it differently from 308 (permanent) for link-equity transfer. Fix is a Vercel UI toggle: Project → Settings → Domains → click `mattressstoreslosangeles.com` → change redirect status from 307 to 308. No code change, no PR. Quick win for SEO equity.
+- **PSI on live URLs**: PSI quota ran out during rev-9. Run manually after a 24h cooldown. Budget LCP < 2.5s mobile, CLS < 0.1, INP < 200ms.
+- **CCPA error path → Sentry**: Phase 235c gated the logs but the catch block should still emit `Sentry.captureException` so the merchant has structured recovery for CCPA requests that fail Shopify integration. Out of scope for this closeout.
+
+## Key files added/touched this round
+
+Updated:
+- `app/_components/hero.tsx` — Phase 250 (slide 0 `<h1>`, slides 1+ `<p>`)
+- `app/_components/hero-slide-image.tsx` — Phase 254 (quality 65 → 55)
+- `app/_components/judgeme-widget.tsx` — Phases 247 + 248 (widget mount + `data-id` rename)
+- `app/_components/pdp-reviews-section.tsx` — Phase 249 (drop redundant empty-state copy)
+- `app/pages/[handle]/page.tsx` — Phase 252 (Service.name + locations LD address)
+- `data/url-inventory/redirects.json` — Phase 251 (wildcard for old blog URLs)
+- `lib/faq.ts` — Phases 237 / 239 / 240 (delivery/financing/recycling copy)
+- `lib/judgeme.ts` — Phase 249 (pruned dead helpers, 209 → 117 lines)
+- `lib/showrooms.ts` — Phase 236 (canonical data for all 5 showrooms + `formatPhone`)
+- `lib/shopify/queries/fragments.ts` + `lib/shopify/queries/product.ts` — Phase 241 (Judge.me badge metafield with 3-source fallback)
+- `instrumentation-client.ts` — Phase 250 (Sentry client init + router-transition hook)
+- `next.config.mjs` — Phase 250 (withSentryConfig wrap, tunnelRoute `/monitoring`)
+
+Added:
+- `instrumentation-client.ts` (replaces deleted `sentry.client.config.ts` for Turbopack)
+- `app/_components/judgeme-widget.tsx`
+- `app/_components/pdp-reviews-section.tsx`
+
+Deleted:
+- `app/api/judgeme-debug/route.ts` (temporary diagnostic from Phase 246, removed in Phase 247)
+- `sentry.client.config.ts` (moved to `instrumentation-client.ts` per @sentry/nextjs guidance)
+
+## Day-2 totals
+
+- **17 PRs merged** (#73–#89)
+- **19 code phases** shipped (236–254, minus 253 which is a Vercel UI action)
+- **9 Cowork audit rounds**, all 🟢
+- **1 9-phase Judge.me debugging journey** ending in a working pivot
+- **DNS cutover live**, SSL provisioned, Sentry verified
+
+---
+
+# Session handoff — 2026-05-11 cont. (Phases 228–235 — final pre-launch closeout)
+
+## Status
+
+> **Cowork rev-5 stamp (post-PR #69 + merchant content backfill + PRs #70 / #71 / #72):** All five Cowork rounds 🟢. rev-5 returned **GO for DNS cutover** with one P3 (homepage hero image weight); PR #71 closed it (~350 KB first-paint savings on homepage). Eight Shopify pages backfilled with real content via Admin GraphQL `pageUpdate` mutation. PR #72 ships the final code-quality cleanup (setTimeout cleanup, compare-remove shared store, NODE_ENV log gates). Production target alias serves the merged commit; cutover is DNS-only. **The site is launch-ready.**
+
+Eight PRs shipped in the closeout phase, plus a Shopify-side content sync. Day-1 total: **18 PRs / Phases 188–235 / 8 Shopify pages**.
+
+| PR | Phases | HEAD | Theme |
+|---|---|---|---|
+| #68 | 228–231 | `d7d3684` | PDP layout fix + showroom map dedup + sleep quiz reweighting |
+| #69 | 232 | `8839b70` | Cowork rev-4 P1 — fix mattress-store-delivery redirect destination |
+| #70 | 233 | `1f8707e` | Drop the delivery redirect (page now has real content) |
+| #71 | 234 | `590ee37` | Hero + lifestyle image weight optimization (~350 KB first-paint savings) |
+| #72 | 235a-c | _open_ | setTimeout cleanup + compare-remove shared store + NODE_ENV log gates |
+
+## What shipped
+
+### PR #68 — Phases 228–231 (user-reported visible bugs)
+
+Four issues the user surfaced via click-through that Cowork's earlier a11y-focused audits missed:
+
+- **228** PDP rail layout fix. `.pdp-rail-inner` had `max-height` + `overflow-y: auto` clamp intended to keep the ATC button visible on short desktop screens. In practice the clamp fired on every normal viewport, producing an inner scrollbar around the variant selector + title, and the scrollbar width compressed the ATC button into the wrong dimensions ("small + extra wide"). Removed the clamp + the orphan `.pdp-grid-with-body` class. Mobile already has `<PdpStickyAtcBar>` (Phase 209) for the always-visible-ATC requirement.
+- **229** Showroom duplicate maps. Studio City rendered 2 Google Maps iframes, West LA + La Brea rendered 3 each — the showroom template emits its own canonical iframe and the merchant had pasted iframes into the Shopify page body. Extended `sanitizeShopifyHtml()` to strip `<iframe>` tags whose `src` matches `google.com/maps` or `maps.google.com`. Scope is narrow — other iframes pass through.
+- **230** Tracking issue (#67) for 7 (later 8) Shopify pages with empty/stub bodies. Eventually fully resolved this session — see "Shopify content backfill" below.
+- **231** Sleep quiz "feels bogus" — algorithm was principled but mis-calibrated; tie-break order was hard-coded `['hybrid', 'foam', 'latex', 'innerspring']` so hybrid won ~60-70% of paths. Replaced with a deterministic answer-keyed pseudo-shuffle over 4 permutations; bumped firmness +1→+2 (so stated preference weighs as much as position); bumped latex on hot temp / back / joint pain (was starved); weakened material-preference override from +5 to +3. Five canonical scenarios re-traced post-fix — three now route differently from before, all to defensible alternative materials.
+
+### PR #69 — Phase 232 (Cowork rev-4 P1 closeout)
+
+Rev-4 caught `/pages/mattress-store-delivery` 301-redirecting to `/pages/love-your-bed-guarantee` — wrong destination (Love Your Bed Guarantee is the 120-night exchange page, not delivery info). The redirect came from Shopify Admin's URL Redirects export imported on 2026-05-05. Single-line edit in `data/url-inventory/redirects.json` retargeting to `/pages/mattress-store-locations` (which is the natural fit — delivery is service-area-driven).
+
+### PR #70 — Phase 233 (lift the temporary redirect)
+
+After the merchant-content backfill in this session, `mattress-store-delivery` was flipped to `isPublished: true` with substantive body content. The Phase 232 redirect fired at the edge before the page renderer, so the URL would still 301 even though real content existed. Removed the redirect entirely so the page renderer takes over (372 → 371 redirects total).
+
+### PR #71 — Phase 234 (image weight optimization)
+
+Cowork rev-5's sole P3: two homepage Unsplash JPGs were 678 KB (hero LCP candidate) + 454 KB (lifestyle section background). Two distinct code paths:
+
+- The hero passes through `next/image` with `quality={75}` — dropped to `quality={65}`. For decorative photographic backgrounds the quality drop is imperceptible. ~25% size reduction per variant.
+- Lifestyle / section URLs in `images.ts` are raw Unsplash URLs rendered as CSS `background-image` (no `next/image` pass), hardcoded at `?w=1600&q=80`. Dropped width to 1280 and quality to 65 across 14 URLs.
+
+Estimated savings: ~350 KB on homepage first paint. Real PSI numbers will come post-DNS-cutover.
+
+### PR #72 — Phases 235a–c (code-quality cleanup)
+
+Three real items from the rev-5-era code audit. None user-visible:
+
+- **235a** Sleep-quiz auto-advance `setTimeout` was fire-and-forget. React 19 silently no-ops setState after unmount, so the leak was cheap, but rapid re-clicks queued multiple advance timers racing to advance one or two steps. Tracked the timer in a `useRef`; cleared on each new click + on unmount.
+- **235b** `compare-remove.tsx` open-coded the localStorage `KEY` + `EVENT` constants and inline read/write/dispatch instead of using the shared `compare-store.ts` API from Phase 212. If the storage key, event name, or schema ever changes, the consumer would silently drift. Routed through `readCompareSet` / `writeCompareSet`.
+- **235c** `/api/newsletter` + `/api/ccpa-request` + `lib/shopify/client.ts` logged customer PII and steady-state Storefront partial-errors to Vercel's searchable, 30-day-retained log aggregator. CCPA logging was a real privacy issue (logging PII collected under a privacy regulation defeats the regulation). NODE_ENV-gated; CCPA error paths emit sanitized prod messages ("user payload not logged (PII)") so the error metadata is still visible without the payload. Pre-launch follow-up: switch CCPA error paths to `Sentry.captureException` for structured recovery.
+
+## Shopify content backfill (this session, off-PR)
+
+Eight pages tracked in Issue #67 backfilled via Shopify Admin GraphQL `pageUpdate` mutation:
+
+| Handle | Words | Notes |
+|---|---|---|
+| `about` | ~370 | Brand voice, 5 showrooms, brand promise |
+| `love-your-bed-guarantee` | ~450 | 120-night exchange mechanics, what's covered / not |
+| `mattress-sizes` | ~640 | All 6 sizes, dimensions, room recommendations |
+| `mattress-types` | ~810 | Foam / hybrid / innerspring / latex comparison with sleep-position fits |
+| `mattress-brands` | ~560 | 9 brands organized by premium / mid / value tier |
+| `mattress-store-financing` | ~530 | 0% APR financing, terms, application flow (financing partner kept generic in body for swap-friendliness) |
+| `mattress-store-delivery` | ~500 | 2 PM cutoff, 50-mile zone, white-glove, scheduling. Flipped `isPublished: true`. |
+| `mattress-store-in-glendale` | ~300 | About-this-showroom paragraph (hours/address come from canonical data). Generic-but-Glendale-aware copy — Hydrogen-side bot-blocked from sandbox so couldn't lift verbatim. |
+
+5 content choices flagged for merchant review in Issue #67's closing comment.
+
+## Cowork audit summary across 5 revs
+
+| Rev | Findings | Outcome |
+|---|---|---|
+| rev-1 | 2 P1, 5 P2, favicon ask | PR #62 closed |
+| rev-2 | 2 P1 still failing | PR #63 closed |
+| rev-3 | 0 new | GO confirmed |
+| rev-4 | 1 P1 (delivery redirect) | PR #69 closed |
+| rev-5 | 1 P3 (image weight) | PR #71 closed |
+
+🟢 GO on all five rounds. The audit series is closed.
+
+## Branch state
+
+- `main` is at the head of PR #71 (`590ee37`) with PR #72 pending merge.
+- `claude/determine-starting-point-zRYmC` is the working branch, reset to main after each merge.
+
+## Outstanding (none code-blocking)
+
+- **Merchant content review**: 5 items flagged in Issue #67's closing comment (financing partner wording, delivery zone, Glendale neighborhood claims, etc.) — merchant judgment calls.
+- **Real-device mobile spot-check at 375 / 414 px**: Cowork couldn't narrow the rendered viewport across all 5 revs. The CSS rules and DOM structure are right; what's untested is the actual rendered layout.
+- **PSI on live URLs post-DNS-cutover**: the auth-protected preview blocks external crawlers; real numbers come from `mattressstoreslosangeles.com` once DNS flips. Budget LCP < 2.5 s mobile, CLS < 0.1, INP < 200 ms. Most likely violator (if anything) is the Unsplash hero — Phase 234 should keep it under budget but real numbers will confirm.
+- **CCPA error path → Sentry**: Phase 235c gated the logs but the merchant still needs a recovery mechanism for CCPA requests that fail Shopify integration. Switch the catch block to `Sentry.captureException(err, { contexts: { request: { id } } })` so the merchant has structured alerts without PII in logs. Out of scope for the closeout PR.
+
+## Verification toolkit
+
+Unchanged from prior handoff. Notable additions this round:
+
+- **Shopify Admin MCP** `graphql_mutation` — used to push 8 page content updates via `pageUpdate` mutation. Round-trip ~1.5s per page. The host app prompts for confirmation before each mutation.
+- **Vercel MCP `web_fetch_vercel_url`** — used with the deployment-protection bypass token (`x-vercel-protection-bypass=hZc4yP0EwLuunup3whFzKzjX6nJLAEQJ` + `x-vercel-set-bypass-cookie=true`) to fetch every preview URL during the deep audit. Direct curl from the sandbox is firewalled to allowlisted hosts only; the MCP path is the only one that reaches Vercel from this environment.
+
+## Key files added/touched this round
+
+Updated:
+- `app/_components/hero-slide-image.tsx` — Phase 234 (quality 75 → 65)
+- `app/_components/images.ts` — Phase 234 (lifestyle URL params 1600/q=80 → 1280/q=65 across 14 URLs)
+- `app/_components/sanitize.ts` — Phase 229 (Google Maps iframe strip regex)
+- `app/_components/cart-drawer.tsx` — Phase 219 (focus restore on Esc)
+- `app/_components/hero-controller.tsx` — Phase 226 (native keydown handler)
+- `app/_components/nav.tsx` — Phases 221 + 227 (useLayoutEffect + warm-open branch)
+- `app/_components/header-search-overlay.tsx` — Phase 223 (useLayoutEffect for input focus)
+- `app/products/[handle]/page.tsx` — Phase 228 (dropped orphan grid class)
+- `app/globals.css` — Phase 228 (dropped sticky-rail clamp)
+- `app/pages/[handle]/page.tsx` — Phase 229 (showroom template still emits canonical map; merchant-pasted iframes now stripped at sanitize layer)
+- `app/sleep-quiz/quiz-data.ts` — Phase 231 (tie-break + weight reweighting)
+- `app/sleep-quiz/sleep-quiz.tsx` — Phase 235a (setTimeout cleanup)
+- `app/sleep-quiz/sleep-quiz-result.tsx` — Phase 220 (useLayoutEffect for Result heading focus)
+- `app/compare/compare-remove.tsx` — Phase 235b (shared compare-store)
+- `app/api/newsletter/route.ts` — Phase 235c (NODE_ENV log gates)
+- `app/api/ccpa-request/route.ts` — Phase 235c (NODE_ENV log gates + PII-sanitized prod messages)
+- `lib/shopify/client.ts` — Phase 235c (NODE_ENV log gate on Storefront partial-errors)
+- `data/url-inventory/redirects.json` — Phases 232 + 233 (added + lifted)
+
+Added in this round (cumulative across the day):
+- `app/icon.svg` — Phase 225 (brand favicon, SVG paths so no font dep)
+- `docs/PRE-LAUNCH-COWORK-PLAN.md` — Phase 218 (Cowork test plan, referenced across rounds 2-5)
+
+## Day-1 totals
+
+- **18 PRs merged** (#53–#64, #66, #68, #69, #70, #71) + 1 pending (#72) — 15 code + 3 doc
+- **48 code phases** shipped (188–235)
+- **8 Shopify pages backfilled** with real content (~4,200 words)
+- **5 Cowork audit rounds**, all 🟢
+- **2 tracking issues**: #65 (documented non-blockers, still open by design), #67 (closed)
+
+---
+
+# Session handoff — 2026-05-11 cont. (Phases 211–227 — code quality, PLP load-more, three Cowork rounds, favicon)
+
+## Status
+
+> **Cowork rev-3 stamp (post-PR #63 + #64):** Cleared on `d34ba8b`. Both rev-2 carry-overs verified fixed — A.1 hero dots full keyboard nav (full transition log: ArrowRight/Left/Home/End all move slide + focus + aria-current in lockstep, both-direction wrap works), A.2 mega menu first-link focus (warm-open + cold-open paths both work across all three triggers). Sanity sweep on rev-2's confirmed-passing items: 0 regressions. Section D fresh sweep: nothing new at any severity. Deferred items (P1-2 real-cursor sanity, P2-4 PLP price sort, P2-6 Vercel preview widget) tracked in GitHub issue. **🟢 GO for DNS cutover; production target alias already serves `d34ba8b` so the cutover is effectively pre-staged.**
+
+Five more PRs shipped after the 203–210 wave, taking day-1 total to **12 PRs merged / Phases 188–227 (40 phases) + HANDOFF doc**. Cowork rev-2 returned 🟢 GO for DNS cutover on commit `b3695f3`; rev-3 reconfirmed on `d34ba8b` with all PR #63 fixes verified clean.
+
+| PR | Phases | HEAD | Theme |
+|---|---|---|---|
+| #60 | 211–214 | `469eeb1` | Code quality — consolidate localStorage stores behind `use-local-store` |
+| #61 | 215–218 | `a66b090` | PLP "Load more" UX fix + pre-launch Cowork test plan |
+| #62 | 219–225 | `b3695f3` | Pre-launch Cowork fixes (5 a11y) + brand favicon |
+| #63 | 226–227 | `6ebf4c1` | Cowork rev-2 follow-ups — hero dots P1-1 + mega menu P2-2 |
+
+`main` HEAD is `6ebf4c1`. typecheck + lint + tests stayed green on every block.
+
+## What shipped
+
+### PR #60 — Phases 211–214 (code quality consolidation)
+
+Spotted during the open-ended audit suggested by the previous handoff: `wishlist-store.ts`, `compare-store.ts`, and `recently-viewed.ts` had near-identical localStorage-set / event-bus / cross-tab `storage` listener / `useSyncExternalStore` plumbing duplicated three times. Extracted to one hook + tightened the call sites.
+
+- **211** `app/_components/use-local-store.ts` — new shared hook. `useLocalStore<T>(key, parse, serialize, event)` returns `[value, setValue]` with cross-tab sync and same-tab event broadcast. Wishlist/compare/recently-viewed all switched to it.
+- **212** Deleted the per-store hook variants. Net −163 LOC across the three files. No behavior change; all three still emit their original events (`wishlist:update`, `compare:update`, `recently-viewed:update`) so any external consumers (header badges, drawer counts) keep working unchanged.
+- **213** Tightened five `as` casts in `cart-context.tsx` + `header-search.tsx` + `quiz-state.ts` to narrowed types or explicit guards. No runtime change.
+- **214** Dead-code scan past Phase 184: removed two unused exports and one unused param. Bundle parity.
+
+Net: −163 LOC, three files less to maintain, one well-tested abstraction for any future localStorage-backed UI state.
+
+### PR #61 — Phases 215–218 (PLP load-more + Cowork plan)
+
+PLP "Load more" was scrolling the page back to the first new product on each click — Phase 217 fixes that. Phase 218 stages the pre-launch a11y/UX testing plan for Cowork.
+
+- **215** PLP `useEffect` was re-anchoring `window.scrollTo` to the first newly-appended product node. Removed.
+- **216** Pulled product-card mount into a stable identity (`useMemo` keyed on cursor) so React doesn't unmount/remount cards on each fetch — also kills the visible flicker.
+- **217** Verified cumulative append semantics in `plp-grid.tsx`: items concat, no replace; URL query stays clean (load-more is in-memory pagination, no `?page=` mutation). Documented in commit body so the Shopify-paginated `endCursor` flow stays the source of truth.
+- **218** `docs/PRE-LAUNCH-COWORK-PLAN.md` — verbatim prompt for Cowork (preview URL, 9 test areas, P1/P2/P3 severity rubric, pass criteria per check). Plan covers PDP buy box, cart drawer, mega menu kbd nav, search overlay focus, quiz a11y, PLP filters/sort/load-more, footer signup, checkout handoff, baseline a11y sweep.
+
+### PR #62 — Phases 219–225 (Cowork rev-1 fixes + favicon)
+
+Cowork rev-1 returned with 2 P1s, 5 P2s, 1 nice-to-have (favicon). Real bugs were fixed; one was a Cowork tooling false-positive (P1-1 hero dots — addressed properly in PR #63 below); P2-3 and P2-6 were already correct in source. Three of the P2 fixes converged on the same root cause.
+
+- **219** Cart drawer Esc → focus restore. Belt-and-braces: capture `document.activeElement` on drawer open, restore to it one rAF after close. The `useFocusTrap` cleanup was supposed to do this but Cowork's repro caught it dropping focus to BODY. P1-2.
+- **220** Sleep-quiz Result heading focus on mount. Was `useEffect` + `requestAnimationFrame` (race against browser's own focus fallback). Switched to `useLayoutEffect` for synchronous post-commit focus. P2-1.
+- **221** Mega menu first-link focus on ArrowDown — converted Phase 191's rAF to `useLayoutEffect`. *Note: PR #63 later found this only fixed the cold-open path; the warm-open path (panel already opened by `onFocus`) needed an additional fix.* P2-2.
+- **222** PLP `?sort=PRICE` Shopify quirk — documented in a docstring on `plp-grid.tsx`. Shopify's `PRICE` sortKey doesn't sort by `priceRange.minVariantPrice` (the displayed FROM-price) for multi-variant mattresses. Client-side full re-sort would regress load-more semantics. Documenting > pretending to fix. P2-4.
+- **223** Search overlay input auto-focus on open — same rAF race as 220/221. `useLayoutEffect` lands focus deterministically after portal mount. P2-5.
+- **224** Favicon placeholder using existing logo (intermediate step toward 225).
+- **225** Replaced with `app/icon.svg` — hand-coded SVG matching the user's attached brand favicon (navy block left ~78%, red bar right ~22%, white serif "LA" baked as paths so cross-browser rendering is identical). Next.js metadata convention auto-emits the right `<link>` tags.
+
+The "fragile rAF focus pattern" appeared three times (220, 221, 223). Documented in commit bodies: when a `useEffect` + `requestAnimationFrame` + `ref.current?.focus()` doesn't reliably land focus on mount, `useLayoutEffect` is the right escape hatch.
+
+### PR #63 — Phases 226–227 (Cowork rev-2 follow-ups)
+
+Cowork rev-2 audit against `b3695f3` returned 🟢 **GO for DNS cutover**, with three previous P2s closed (P2-1, P2-3, P2-5 verified fixed), favicon green, and two items still failing:
+
+- **226** P1-1 hero dots Arrow/Home/End — Cowork reproduced cleanly across two audit runs. My prior false-positive call (attributing it to programmatic-`KeyboardEvent` not routing through React's synthetic event system) was wrong; the right move was defense-in-depth. Converted `onKeyDown` on the `.hero-progress` wrapper to a native `addEventListener` via `useEffect`. Same logic, same deps. Fires regardless of how the event was created.
+- **227** P2-2 mega menu first-link focus — found the actual bug. The trigger has `onFocus={() => setMega(item.mega)}` which opens the panel as soon as the user Tabs onto it. By the time ArrowDown fires, `mega` is already `item.mega`, so `setMega(item.mega)` in the keydown handler is a no-op state update; React bails on the re-render and the `useLayoutEffect([mega])` from Phase 221 never re-fires. Fix: branch in the keydown handler on `mega === item.mega`. If already open, imperatively focus the first link directly from the live panel ref. If not, fall back to the deferred-focus path (still works for the cold-open case).
+
+## Outstanding Cowork findings (none blocking)
+
+- **P1-2** (cart drawer real-cursor focus restoration) — Cowork explicitly noted "not strictly the spec'd behavior, but no longer dropping focus to BODY." Worst-case is closed; the unverified part is a JS-dispatched-click limitation in their test harness, not a bug. Recommended: one real-cursor sanity click before DNS cutover.
+- **P2-4** (PLP price sort) — documented Shopify-API quirk. No clean fix without regressing load-more or doing client-side full re-sort. Live with it.
+- **P2-6** (Vercel preview widget console errors) — preview-only artifact, not in production.
+
+## Branch state
+
+- `main` is at `6ebf4c1`.
+- `claude/determine-starting-point-zRYmC` is the working branch (reset to main after each merge).
+
+## Suggested next directions
+
+1. **Cowork rev-3** — confirm 226/227 land in a real browser preview. Same prompt from `docs/PRE-LAUNCH-COWORK-PLAN.md` against the new deploy. P2-4 not retestable (documented quirk).
+2. **SEO audit comparison** — side-by-side of headless deploy vs. the live custom-domain Hydrogen site (`mattressstoreslosangeles.com`). Find any meta/structured-data/sitemap gaps before the cutover. The `data/seo-audit/mattressstoreslosangeles.com_mega_export_20260504.csv` file already has a Hydrogen-side audit to compare against.
+3. **Browser-level tests** — Playwright is still blocked in this sandbox; first thing to unblock once Chromium is available. Would have caught both Cowork rev-1 P2-2 (warm-open mega menu) and rev-2 P1-1 (hero dots) without the round trips.
+4. **`useLayoutEffect` audit** — three uses converged from the rAF anti-pattern in PR #62. Worth a sweep for any remaining `useEffect` + `requestAnimationFrame` + `.focus()` triplets that should be `useLayoutEffect`. Quick grep, ~5 LOC of fixes each if any are found.
+5. **Bundle perf round 4** — diminishing returns acknowledged in the prior handoff. Skip unless a fresh audit surfaces a concrete target.
+
+## Verification toolkit
+
+Unchanged from prior handoff. Notable for this round:
+
+- **Vercel MCP** — `web_fetch_vercel_url` confirmed favicon `<link>` injection and PDP / collection assertions during 222 / 225 validation.
+- **GitHub MCP** — `subscribe_pr_activity` used for all 5 PRs; surfaces CI status, review comments, and merge events as `<github-webhook-activity>` messages.
+- **Cowork** — user-triggered (not invokable by Claude); cycles take ~30 min per round trip. Prompt and pass criteria live at `docs/PRE-LAUNCH-COWORK-PLAN.md`.
+
+## Key files added/touched this round
+
+Added:
+- `app/_components/use-local-store.ts` — Phase 211 (shared localStorage hook)
+- `app/icon.svg` — Phase 225 (brand favicon)
+- `docs/PRE-LAUNCH-COWORK-PLAN.md` — Phase 218 (Cowork test plan)
+
+Updated (Cowork a11y fixes touch the same handful of components):
+- `app/_components/cart-drawer.tsx` — Phase 219 (focus restore on Esc)
+- `app/_components/hero-controller.tsx` — Phase 226 (native keydown handler)
+- `app/_components/nav.tsx` — Phases 221 + 227 (useLayoutEffect for first-link focus + already-open branch)
+- `app/_components/header-search-overlay.tsx` — Phase 223 (useLayoutEffect for input focus)
+- `app/sleep-quiz/sleep-quiz-result.tsx` — Phase 220 (useLayoutEffect for Result heading focus)
+- `app/(catalog)/collections/[handle]/plp-grid.tsx` — Phases 215 / 216 / 217 / 222
+- `app/_components/wishlist-store.ts`, `compare-store.ts`, `recently-viewed.ts` — Phase 212 (use-local-store consolidation)
+
+---
+
+# Session handoff — 2026-05-11 cont. (Phases 203–210 — Shopify-aware tests + bundle perf round 3)
+
+## Status
+
+Two more blocks shipped after the 188–202 wave:
+
+| PR | Phases | HEAD | Theme |
+|---|---|---|---|
+| #57 | 203–207 | `c4b0d4d` | Shopify-aware test coverage (26 new assertions, skip-tolerant) |
+| #58 | 208–210 | `12024ba` | Bundle perf round 3 — PDP component splits + sleep-quiz Result defer |
+
+`main` HEAD is `12024ba`. Combined day-1 tally: **6 PRs merged, Phases 188–210 (23 phases) shipped.** typecheck + lint + build all clean. `npm test` passes 20/46 locally (26 Shopify-gated tests skip cleanly until secrets are added; see PR #57 setup steps below).
+
+## What shipped, what's verified, what isn't
+
+### PR #57 — Phases 203–207 (Shopify-aware test coverage)
+
+Closes the last empirical-verification gap inherent to the test infrastructure from PR #55 — the previous suite covered `/` and `/sleep-quiz` only because Shopify-dependent routes (`/products/*`, `/collections/*`, `/blogs/*/*`, `/pages/*`) `notFound()` without env vars. PR #57 makes the workflow Shopify-aware.
+
+- **203** `tests/ssr/_helpers.mjs` exports `SHOPIFY_CONFIGURED` + `SHOPIFY_SKIP` + `parseJsonLd($, scriptId)`. `.github/workflows/test.yml` forwards `SHOPIFY_STORE_DOMAIN` + `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` from repo Actions secrets to `npm test`. Empty secrets → tests skip with a clear message ("Shopify env vars not set — …"). Non-Shopify suites (smoke, hero, structured-data, og-meta, a11y) run regardless. So the workflow stays green today and starts validating PDP / PLP / article / CMS routes the moment the secrets are added.
+- **204** PDP Product LD on `/products/tempur-pedic-tempur-proadapt-medium-hybrid` — 6 assertions: `@id` ending `#product`, canonical `url`, non-empty `category` (Shopify productType), `offers.itemCondition === "https://schema.org/NewCondition"`, breadcrumb position-3 `item` URL. Validated against production preview HTML via Vercel MCP at sha `d3d203b3`.
+- **205** CollectionPage LD on `/collections/mattresses` + OG fallback on `/collections/sheets-pillowcases` — 6 assertions: CollectionPage `@type` + canonical url, `inLanguage='en-US'`, ItemList `mainEntity` + `numberOfItems > 0`, breadcrumb position-2 URL; plus coverless OG fires `/opengraph-image` with width/height.
+- **206** BlogPosting LD on `/blogs/sleep-blog/how-to-elevate-crib-mattress-for-congestion` — 7 assertions: BlogPosting `@type`, `articleSection`, `wordCount > 0`, `inLanguage`, `mainEntityOfPage @id`, breadcrumb position-3 URL. **Intentionally does NOT assert `keywords`** — it's derived from `article.tags` and many real articles have no tags (this one's `keywords` key is omitted from the LD).
+- **207** CMS page LD + Phase 188 OG fallback on `/pages/mattress-store-financing` — 7 assertions: Phase 188 fallback fires; WebPage `@type` + canonical url; `inLanguage`; parseable `datePublished`/`dateModified`; `isPartOf` WebSite; breadcrumb position-2 URL.
+
+**26 new Shopify-gated assertions; 46 total. Local validation: 20 pass / 26 skip (expected, no Shopify) / 0 fail / 14s.** CI validation matched on the first run.
+
+#### To flip the 26 skip-gated assertions ON
+
+Add two repo secrets at `https://github.com/AlwayzLegit/LA-Mattress-Headless/settings/secrets/actions`:
+
+- `SHOPIFY_STORE_DOMAIN` — the `.myshopify.com` value
+- `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` — the public storefront access token
+
+Same values production already uses. Public-ish (storefront token is browser-exposed by design). Once set, the next workflow run executes all 46 assertions instead of skipping 26 of them. No code change needed.
+
+#### Brittleness notes (also in commit bodies)
+
+- **Phase 205's `sheets-pillowcases`** — if the merchant adds a cover image to this collection, the og:image assertion will fail loudly. Swap to another known-coverless collection at that point.
+- **Phase 206's article handle** — 2024-era long-form article. If deleted, swap to another always-live article (assertions are structural).
+- **Phase 207's CMS handle** — 2023-era marketing page on the DefaultPage branch (not showroom / locations). If deleted, swap to another DefaultPage-branch handle.
+
+### PR #58 — Phases 208–210 (bundle perf round 3)
+
+Audit found that buy-box, filter-panel, and the quiz state machine are all genuinely state-driven (unlike Phase 195's Hero, which had static-content-wrapped-in-state). The Hero server-shell pattern doesn't transfer cleanly to these. **Original plan was 5 phases; reduced to 3 — only shipped what produced real change or clean architecture.**
+
+- **208** Extract `SIZE_DIMENSIONS` lookup from `buy-box.tsx` to a no-deps `pdp-data.ts` module. Foundation. Bundle neutral.
+- **209** Extract the PDP sticky mobile ATC bar into a presentational `'use client' PdpStickyAtcBar` component. **Failed `next/dynamic` first** — that was a regression (`/products/[handle]` jumped 7.79 → 8.57 kB, +0.78 kB, because the `next/dynamic` wrapper overhead exceeded the deferred bytes for a component this size). Switched to static import — neutral (+70 B, noise). **Architectural win only**, not a bundle win.
+- **210** Sleep-quiz `Result` → own file (`sleep-quiz-result.tsx`) + `next/dynamic({ ssr: false })` import. **Real defer**: chunk `3686.<hash>.js` is 4,103 bytes, lazy-loaded only when `step === 'result'`. Quiz abandoners (40–70% of starters per industry norms on guided-selling flows) never download it. Route-Size column shows `/sleep-quiz` unchanged at 5.71 kB because that column doesn't surface lazy chunks; confirmed by direct inspection of `.next/static/chunks/`.
+
+What was dropped from the original 5-phase plan, with reasons:
+
+- **PDP gallery server-shell split** — gallery has both an interactive thumbnail tab pattern AND a selected-image swap. Hero pattern would force pre-loading all 8 hero images instead of one — net regression.
+- **PLP filter panel split** — `usePathname` / `useSearchParams` / `useRouter` / `useTransition` interleaved throughout. No clean server/client boundary.
+- **A speculative "PDP data audit" phase 211** — couldn't find a fifth concrete win without padding.
+
+#### Key takeaway for future bundle work
+
+`next/dynamic` has a meaningful wrapper overhead — ~600-800 bytes per dynamic-imported component for the Suspense boundary, loadable registration, and chunk manifest. Below ~1.5 kB of deferred code, dynamic-importing is a net loss. The sleep-quiz `Result` (~4 kB) cleared this bar; the PDP sticky bar (~600 B) did not.
+
+## Branch state
+
+- `main` is at `12024ba`.
+- `claude/determine-starting-point-zRYmC` is the working branch (equal to main after the post-#58 reset).
+
+## Suggested next directions
+
+1. **Code quality / hook extraction** — sweep for repeated patterns: drawer scaffolding across cart / nav / search, focus-trap consumers, the wishlist + compare localStorage stores share a near-identical shape (`readSet` / `writeSet` / `EVENT` / `KEY` pattern from `compare-store.ts` could be generalized). Extract reusable hooks. Tighten `as` casts. Dead-code scan beyond Phase 184.
+2. **Widen SSR test coverage on non-Shopify routes** — `/cart` structural, `/wishlist` empty state, `/search` empty query, `/pages/data-sharing-opt-out`, `/pages/reviews`, `/compare` empty CTA, `manifest.webmanifest`. Easy wins now that the harness exists; protects against silent regressions in those template SEO/a11y attrs.
+3. **Browser-level tests** — Playwright is unblocked the moment a Chromium-capable CI environment is available. The deferred work from PR #55: Phase 186 kbd shortcuts, Phase 191 mega-menu focus, Phase 193 cart announce / search groups (post-mount), Phase 189 focus rings, Phase 195 Hero rotation.
+4. **Bundle perf round 4** — fewer obvious targets remain. Wishlist view (186 LOC) could split empty/populated states. CartDrawer (186 LOC) is similar. Marginal gains.
+5. **Fresh open-ended audit** — read the codebase end-to-end and surface what catches your eye. Historically high-yield (Phase 90s design-realign came from one of these).
+
+## Verification toolkit (no change from prior handoff except CI is now Shopify-aware)
+
+- **`npm test`** — 46 SSR assertions. 20 always run; 26 skip until Shopify secrets are added. ~14s local / ~63s CI.
+- **Vercel MCP** — `list_deployments`, `get_deployment_build_logs`, `get_access_to_vercel_url`, `web_fetch_vercel_url`, `get_runtime_logs`. Used for empirical OG / structured-data verification on preview URLs.
+- **Sentry MCP** — `search_issues`, `search_events`, `analyze_issue_with_seer`. Use `firstSeen:-24h` on `jetnine` org for post-deploy regression sweep.
+- **Shopify MCP** — admin GraphQL for product / metafield checks.
+- **GitHub MCP** — PRs, comments, CI status, merge. `subscribe_pr_activity` for live event stream.
+- **Not available**: Claude in Chrome / Playwright browser MCP (Chromium binary download is firewalled in the sandbox).
+
+## Key files added this round
+
+- `tests/ssr/pdp.test.mjs` — Phase 204 (PDP Product LD assertions)
+- `tests/ssr/collection.test.mjs` — Phase 205 (CollectionPage LD + OG fallback)
+- `tests/ssr/article.test.mjs` — Phase 206 (BlogPosting LD)
+- `tests/ssr/cms-page.test.mjs` — Phase 207 (CMS page LD + OG fallback)
+- `app/products/[handle]/pdp-data.ts` — Phase 208 (`SIZE_DIMENSIONS`)
+- `app/products/[handle]/pdp-sticky-atc-bar.tsx` — Phase 209 (sticky mobile ATC component)
+- `app/sleep-quiz/sleep-quiz-result.tsx` — Phase 210 (lazy-loaded result page)
+
+Updated:
+- `tests/ssr/_helpers.mjs` — Phase 203 (`SHOPIFY_CONFIGURED` / `SHOPIFY_SKIP` / `parseJsonLd`)
+- `.github/workflows/test.yml` — Phase 203 (Shopify secrets forwarding)
+- `app/products/[handle]/buy-box.tsx` — Phases 208 + 209 (data extraction + sticky-bar component swap)
+- `app/sleep-quiz/sleep-quiz.tsx` — Phase 210 (dynamic-import shim, Result function deleted)
+
+---
+
+# Session handoff — 2026-05-11 (Phases 188–202 — four blocks merged, test infrastructure live)
+
+## Status
+
+Four PRs shipped this session, all merged into `main`:
+
+| PR | Phases | HEAD | Theme |
+|---|---|---|---|
+| #53 | 188–193 | `641e24c` | OG fallback hotfix + a11y deep-dive block |
+| #54 | 194–197 | `0577b81` | Bundle perf round 2 — Hero server-shell split + Compare module separation |
+| #55 | 198–202 | `d3d203b` | SSR test infrastructure + 20 regression assertions |
+
+`main` HEAD is `d3d203b`. typecheck + lint + build all clean. `npm test` exists and passes (20/20 assertions, ~14s local / ~63s CI).
+
+## What shipped, what's verified, what isn't
+
+### PR #53 — Phases 188–193 (OG fallback hotfix + a11y deep-dive)
+
+- **188** OG image fallback extended to coverless `/blogs/[blog]` (blog index), `/pages/[handle]` (CMS pages), `/sleep-quiz`. Same Phase 176/180 shape — explicit `images: [{ url: '/opengraph-image', width: 1200, height: 630 }]`. **Empirically verified** during PR-#54 prep against the preview deployment: `/blogs/sleep-blog`, `/pages/mattress-store-financing`, `/sleep-quiz` all emit `og:image=https://mattressstoreslosangeles.com/opengraph-image`.
+- **189** Restored visible `:focus-visible` ring on `.quiz-step-title` (was explicitly suppressed with `outline: none`, so JS-focus on each step transition was invisible to keyboard users). Added inset `outline-offset: -2px` for `.cart-qty-btn` so its `:focus-visible` ring survives the parent `.cart-qty` `overflow: hidden` clipping.
+- **190** Sleep-quiz fieldset gets `aria-describedby` linking to helper paragraph (when present). Result page section labels (`"Why this match"`, `"Worth comparing"`) promoted from `<div className="eyebrow">` to `<h3 className="eyebrow" style={{ margin: 0 }}>` for SR heading-rotor navigation.
+- **191** Mega menu keyboard entry: on ArrowDown / Space the panel now auto-focuses its first link (was leaving focus on the trigger). Esc restores focus to the originating trigger (tracked via `megaTriggerRef` captured at kbd-open time).
+- **192** `/compare` table: visible `<caption>` describing structure (dynamic with product count) + sr-only `aria-describedby` scroll hint on the `tabIndex={0}` wrap. Caption inline-styled `caption-side: top`.
+- **193** Search overlay result groups (Products / Collections / Showrooms / Articles) wrapped in `role="group"` + `aria-label`, visible eyebrow `aria-hidden`. Cart drawer announces "Shopping cart opened. N items." via the polite live region on `drawerOpen` transition (read inline so deps don't re-trigger on cart mutation).
+
+Verification: 188 empirically OK in production HTML. 189–193 are code-PASS, browser-PENDING — interactive a11y can't be HTTP-verified. SSR-shape attrs (190's `aria-describedby`, hero `aria-label` etc.) are now protected by Phase 202 tests.
+
+### PR #54 — Phases 194–197 (bundle perf round 2)
+
+- **194** Extract `HERO_SLIDES` + `HeroSlide` type to `app/_components/hero-slides.ts`. No-deps data module. Sets up 195.
+- **195** **Hero server-shell + client-island split.** Hero (`hero.tsx`) drops `'use client'` and becomes a server component that renders the static slide DOM (3 slides, slide 0 `.on`, slides 1+2 `aria-hidden`/`inert`, each tagged `data-hero-slide={idx}`). New `'use client' HeroController` (`hero-controller.tsx`) wraps the slide DOM as children, owns `i` / `paused` state, autoplay timer, dot picker with roving tabindex, counter, play/pause, pause-on-hover/focus. Slide DOM updated via `querySelectorAll('[data-hero-slide]')` on every `i` change. Wrapper uses `display: contents` so layout chain (`.hero` positioned ancestor → `.hero-stack` absolute) stays byte-identical. New `'use client' HeroSlideImage` (`hero-slide-image.tsx`) preserves Phase 162 image deferral: slide 0 SSRs `<Image>` with `priority`/`fetchPriority="high"`, slides 1+2 mount only after hydration.
+- **196** Extract Compare store helpers (`COMPARE_STORAGE_KEY` / `COMPARE_MAX` / `COMPARE_EVENT` / `CompareSnapshot` / `readCompareSet` / `writeCompareSet` / `isShoppingRoute`) to `app/_components/compare-store.ts`. Sets up 197.
+- **197** Split `CompareToggle` and `CompareTray` into separate files (`compare-toggle.tsx`, `compare-tray.tsx`). Imports updated in `layout.tsx`, `search/page.tsx`, `collections/[handle]/page.tsx`. `compare.tsx` deleted.
+
+Bundle impact (next build, local): `/` route-specific chunk dropped from **7.87 kB → 6.08 kB (-22.7%)**, First Load JS 199 → 197 kB. Shared chunk unchanged. Phase 197 was bundle-neutral in practice (webpack was already function-tree-shaking the single module) — kept for architectural clarity. Hero behavior preserved end-to-end: autoplay, dot picker, roving tabindex, Home/End jumps, pause-on-hover, pause-on-focus, blur re-resume only when focus exits subtree, counter, play/pause `aria-pressed`, image deferral / LCP priority.
+
+### PR #55 — Phases 198–202 (test infrastructure)
+
+- **198** First-ever test infrastructure. `tests/run.mjs` spawns `next dev` on port 3100, polls until ready, runs `node --test --test-reporter=spec 'tests/ssr/**/*.test.mjs'`, kills server. `cheerio` devDep. Smoke test (`/` and `/sleep-quiz` render 200 with `<title>`). `npm test` script. `.github/workflows/test.yml` runs on every PR + push to main (Node 22 + npm cache, ~63s CI wall-clock).
+- **199** OG meta assertions — homepage og:image inheritance, twitter card, og:title/og:url (Phase 169); `/sleep-quiz` explicit `/opengraph-image` fallback with width/height + matching twitter:image (Phase 188).
+- **200** Hero SSR shape — `<section.hero>` carousel a11y, 3 `[data-hero-slide]`, slide 0 `.on`/no-inert/no-aria-hidden, slides 1+2 inert+aria-hidden, **Phase 162 image deferral** (slide 0 SSRs `<img>`, slides 1+2 don't), 3 hero-dot buttons + counter "01 / 03".
+- **201** JSON-LD assertions — `ld-organization`, `ld-website`, `ld-localbusiness-home` with 5-entry `department[]` (Phase 171), `ld-sleep-quiz` Quiz `@type` + `inLanguage='en-US'` (Phase 179), BreadcrumbList final-item `item` URL (Phase 173).
+- **202** A11y SSR attrs — sleep-quiz fieldset `aria-describedby` + radiogroup `aria-labelledby` (Phase 190), hero h1 normalized `aria-label` (Phase 174 — no `\n`, no run-together words), `<nav.lp-breadcrumbs aria-label="Breadcrumb">` on /sleep-quiz.
+
+20 assertions across 5 test files. Local validation: 20/20 in 14.1s; CI validation: 20/20 in 63s.
+
+**Test surface is intentionally narrow.** SSR-only — the dev sandbox can't install Chromium (firewalled), so anything requiring a real browser (kbd shortcuts, focus shifts, autoplay rotation, fetched products, post-mount live regions) is NOT covered. Routes requiring Shopify env vars (`if (!SHOPIFY_CONFIGURED) notFound()`) — `/collections/*`, `/products/*`, `/blogs/*`, `/pages/*` — are not testable here either; their empirical verification stays manual until Shopify-enabled CI lands.
+
+## Branch state
+
+- `main` is at `d3d203b` — four squash merges this session.
+- `claude/determine-starting-point-zRYmC` is the working branch (currently equal to main after the post-#55 reset). Force-push allowed for reset-to-main between blocks.
+
+## What's NOT in scope / deferred per HANDOFF history
+
+Same as the 169–187 handoff — `/account` dashboard (Customer Account API), hero CMS metaobjects, review provider decision, Article `dateModified`, DNS cutover, Vercel env vars. See README pre-launch checklist.
+
+Two new deferrals from this session:
+
+- **Browser-level smoke tests** — Playwright was attempted in PR #55 prep, but the sandbox blocks Chromium binary downloads. Switched to SSR-only HTTP tests with cheerio. When a Chromium-capable CI environment is available, add `@playwright/test` and write the interactive tests (kbd shortcuts, focus management, autoplay rotation, post-mount live regions).
+- **Shopify-enabled CI** — test suite currently covers `/`, `/sleep-quiz`, and other non-Shopify routes only. With `SHOPIFY_STORE_DOMAIN` + `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` set in CI secrets, the suite could extend to `/collections/[handle]`, `/products/[handle]`, `/blogs/[blog]/[article]`, `/pages/[handle]`.
+
+## Suggested next directions
+
+1. **Extend the SSR test suite** — add coverage for routes already passing (cart structural, wishlist, /search empty state, /pages/data-sharing-opt-out, /pages/reviews, /compare empty state). Easy wins now that the harness exists; protects against silent regressions in template SEO/a11y attrs.
+2. **Code quality / hook extraction** — sweep for repeated patterns (drawer scaffolding across cart / nav / search, focus-trap consumers, stored-state hooks like `useFocusTrap`, `useBodyScrollLock`, the `wishlist` / `compare` local-storage hooks), tighten `as` casts, scan for dead code beyond Phase 184's `.reveal` removal.
+3. **Bundle perf round 3** — Sleep quiz is `'use client'` (~250 LOC of state machine + result rendering). PDP buybox is heavy. PLP filter shell is `'use client'`. Each is a candidate for a Phase-195-style split.
+4. **A11y deep dive round 2** — the SSR-shape gaps are protected by Phase 202 tests; remaining interactive gaps (mega menu arrow navigation through panel links, focus order audit on /compare, cart-drawer aria-live for quantity changes) are real-browser work.
+5. **Fresh open-ended audit** — read the codebase end-to-end and surface what catches your eye.
+
+## Verification toolkit available to the new session
+
+- **`npm test`** — 20 SSR assertions, 14s local / 63s CI. Run on every PR via `.github/workflows/test.yml`.
+- **Vercel MCP** — `list_deployments`, `get_deployment_build_logs`, `get_access_to_vercel_url`, `web_fetch_vercel_url`, `get_runtime_logs`. Used for empirical OG / structured-data verification on preview URLs.
+- **Sentry MCP** — `search_issues`, `search_events`, `analyze_issue_with_seer`. Use `firstSeen:-24h` on `jetnine` org for post-deploy regression sweep.
+- **Shopify MCP** — admin GraphQL for product / metafield checks.
+- **GitHub MCP** — PRs, comments, CI status, merge. `subscribe_pr_activity` for live event stream.
+- Static-content tooling — Read, Bash grep, Edit, WebFetch.
+- **Not available in this sandbox**: Claude in Chrome / Playwright browser MCP (Chromium binary download is firewalled). Anything requiring real-browser empirical verification needs a different environment.
+
+## Key files to know (additions from this session)
+
+- `tests/run.mjs` — `next dev` orchestration + test runner spawn (Phase 198)
+- `tests/ssr/_helpers.mjs` — shared `fetchHtml(path)` + `expect200(res, path)` (Phase 198)
+- `tests/ssr/smoke.test.mjs` — homepage / sleep-quiz render-200 baseline (Phase 198)
+- `tests/ssr/og-meta.test.mjs` — Phases 169 / 188 OG inheritance + fallback (Phase 199)
+- `tests/ssr/hero.test.mjs` — Phase 195 SSR shape + Phase 162 image deferral (Phase 200)
+- `tests/ssr/structured-data.test.mjs` — Phases 170 / 171 / 173 / 179 JSON-LD (Phase 201)
+- `tests/ssr/a11y.test.mjs` — Phases 190 / 174 / 173 SSR a11y attrs (Phase 202)
+- `.github/workflows/test.yml` — CI wiring (Phase 198)
+- `app/_components/hero-slides.ts` — slide data module (Phase 194)
+- `app/_components/hero.tsx` — server-rendered hero shell (Phase 195)
+- `app/_components/hero-controller.tsx` — client-side carousel state (Phase 195)
+- `app/_components/hero-slide-image.tsx` — per-slide image deferral wrapper (Phase 195)
+- `app/_components/compare-store.ts` — shared store helpers (Phase 196)
+- `app/_components/compare-toggle.tsx` — PLP/search card button (Phase 197)
+- `app/_components/compare-tray.tsx` — layout-rendered floating pill (Phase 197)
+
+Continuing from prior handoff:
+
+- `app/_components/header-search.tsx` — trigger + keyboard shortcuts + dynamic import (Phase 183/186)
+- `app/_components/header-search-overlay.tsx` — overlay with group labels (Phase 183/193)
+- `instrumentation-client.ts` — Sentry client init + onRouterTransitionStart export (Phase 185/187)
+- `app/products/[handle]/page.tsx` — Product LD with all the Phase 170/177/180 enrichments
+- `app/collections/[handle]/page.tsx` — CollectionPage LD + breadcrumb + OG fallback + inLanguage
+- `app/blogs/[blog]/page.tsx` — Blog index with Phase 188 OG fallback
+- `app/blogs/[blog]/[article]/page.tsx` — BlogPosting LD + OG fallback
+- `app/pages/[handle]/page.tsx` — CMS pages + showroom branch with Phase 188 OG fallback
+- `app/sleep-quiz/page.tsx` — Quiz LD + BreadcrumbList + Phase 188 OG fallback
+- `app/sleep-quiz/sleep-quiz.tsx` — quiz form with Phase 190 a11y
+- `app/compare/page.tsx` — comparison table with Phase 192 caption + scroll hint
+- `app/_components/cart-drawer.tsx` — cart drawer with Phase 193 open announcement
+- `lib/structured-data.ts` — sitewide ORGANIZATION_LD / LOCAL_BUSINESS_LD (Phase 171) / WEBSITE_LD
+- `app/globals.css` — Phase 184 `.reveal` removal + Phase 189 focus-visible foundation + Phase 192 caption styling
+
+---
+
 # Session handoff — 2026-05-11 (Phases 169–187 — three merged blocks, two phases pending verification)
 
 ## Status

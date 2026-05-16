@@ -1,0 +1,125 @@
+name: Refresh URL inventory snapshot
+
+# Phase 277b. Runs scripts/pull-inventory.mjs against the live Shopify
+# Admin API and opens a PR if the snapshot under data/url-inventory/
+# changed. Keeps sitemap.xml + generateStaticParams + redirects.json
+# fresh without anyone having to remember to run the script locally.
+#
+# Schedule: daily at 04:00 UTC (≈21:00 PT) — after the day's product
+# updates have settled, before merchant logs in next morning.
+#
+# Manual trigger: Actions → "Refresh URL inventory snapshot" → Run
+# workflow. Useful right after a big catalog edit or for a smoke
+# check that the Admin token is still valid.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   SHOPIFY_STORE_DOMAIN          — e.g. la-mattress.myshopify.com
+#   SHOPIFY_ADMIN_TOKEN           — Admin API token with read_products,
+#                                    read_content, read_online_store_pages,
+#                                    read_themes.
+#
+# The PR is opened against `main` via peter-evans/create-pull-request,
+# which uses the default GITHUB_TOKEN — no extra PAT needed.
+#
+# Cost: ~30s of Actions runtime per day, fully within the free tier
+# even with the SSR test workflow running on every PR.
+
+on:
+  schedule:
+    # 04:00 UTC = 21:00 PT (PDT) / 20:00 PT (PST). Avoids overlap with
+    # the typical 09:00–17:00 PT window when merchant edits happen, so
+    # the snapshot reflects an end-of-day state rather than a mid-edit
+    # transient.
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      # The pull-inventory script only uses node built-ins (node:fs/promises,
+      # node:path, node:url, global fetch), no npm deps — but checking out
+      # via `npm ci` would still be cheap. Skipping it keeps the job fast.
+
+      - name: Snapshot inventory
+        run: node scripts/pull-inventory.mjs
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+
+      - name: Detect changes
+        id: changes
+        run: |
+          if [ -n "$(git status --porcelain data/url-inventory)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Inventory diff:"
+            git diff --stat data/url-inventory
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No inventory changes."
+          fi
+
+      - name: Open PR
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/refresh-inventory
+          # Reuse a single rolling branch — the action force-pushes new
+          # commits onto it and updates the same PR rather than spamming
+          # a new PR every day. If the prior PR was merged or closed, a
+          # new one is opened.
+          delete-branch: false
+          title: 'chore: refresh URL inventory snapshot'
+          commit-message: |
+            chore: refresh URL inventory snapshot
+
+            Automated daily snapshot from scripts/pull-inventory.mjs.
+            Re-pulled from Shopify Admin API to keep sitemap.xml,
+            generateStaticParams, and redirects.json in sync with the
+            live catalog.
+          body: |
+            Automated daily refresh of `data/url-inventory/*` from the
+            live Shopify Admin API. Keeps these in sync with the
+            catalog:
+
+            - `app/sitemap.ts` URL list (homepage, products, collections,
+              pages, blogs, articles)
+            - `generateStaticParams` in PDP/PLP/article/page routes
+            - `next.config.mjs#redirects()` pipeline (legacy Hydrogen
+              URLs → new paths)
+
+            **Review checklist before merging:**
+
+            - [ ] Removed handles look intentional (no accidental
+                  un-publishes). Check `products.json` + `collections.json` diff.
+            - [ ] Redirect entries added/changed in `redirects.json` are
+                  expected. A redirect deletion would 404 a previously-redirected
+                  URL.
+            - [ ] No `pages.json` row lost `seo.title` /
+                  `seo.description` (would be a merchant edit, not a script
+                  bug).
+
+            If the diff is empty after a merchant claims to have added a
+            product, check that the product is `Published` to the Online
+            Store sales channel — the snapshot filters by that.
+
+            ---
+
+            Workflow: `.github/workflows/refresh-inventory.yml`.
+            Manual rerun: Actions → "Refresh URL inventory snapshot" →
+            Run workflow.
+          labels: |
+            seo
+            automated

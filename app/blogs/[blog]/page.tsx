@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getBlogByHandle } from '@/lib/shopify';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
+import { blogIntroFor } from '@/lib/blog-content';
 import { Icon } from '@/app/_components/icon';
 
 type Params = {
@@ -17,7 +18,7 @@ type Params = {
 export const dynamic = 'force-dynamic';
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 const PER_PAGE = 12;
 
 export function generateStaticParams() {
@@ -36,10 +37,21 @@ export async function generateMetadata(props: { params: Promise<Params['params']
   );
   const url = `/blogs/${blog.handle}`;
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
-    openGraph: { type: 'website', url, title, description },
+    openGraph: {
+      type: 'website',
+      url,
+      title,
+      description,
+      // Blog index has no per-blog cover image. Reference the
+      // file-system OG convention (app/opengraph-image.tsx) explicitly
+      // so coverless blog landing pages still serve the brand card —
+      // matches the Phase 180 fallback already on collection / article /
+      // PDP routes.
+      images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
+    },
   };
 }
 
@@ -96,9 +108,15 @@ export default async function BlogIndexPage(props: Params) {
             <div className="lp-hero-copy">
               <div className="eyebrow">Articles · {displayTitle}</div>
               <h1 className="h-display">{displayTitle}</h1>
-              <p className="lp-hero-lede">
-                Buying guides and sleep advice from the team that fits mattresses for a living. No SEO fluff —
-                this is what we tell shoppers when they walk into the showroom.
+              {/* Phase 260c: per-blog descriptive intro replaces the prior
+                  generic "Buying guides and sleep advice" lede. Gives each
+                  blog index unique category copy (boosts text-to-HTML
+                  ratio, clears SEMrush low-word-count flag on
+                  /blogs/sleep-health and adjacent indexes) and gives
+                  crawlers a clear category signal. Sourced from
+                  lib/blog-content.ts. */}
+              <p className="lp-hero-lede" style={{ maxWidth: '72ch' }}>
+                {blogIntroFor(blog.handle)}
               </p>
               <div className="lp-hero-meta">
                 <span><strong>{articles.length}</strong> articles on this page</span>

@@ -4,13 +4,18 @@ import Link from 'next/link';
 
 import Image from 'next/image';
 
-import { getPageByHandle } from '@/lib/shopify';
+import { getPageByHandle, getCollectionByHandle } from '@/lib/shopify';
+import type { ProductSummary } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
-import { SHOWROOMS, findShowroom, getOpenStatus, type Showroom } from '@/lib/showrooms';
+import { SHOWROOMS, findShowroom, formatPhone, getOpenStatus, type Showroom } from '@/lib/showrooms';
+import { findNeighborhood, getNearestShowrooms, type Neighborhood } from '@/lib/neighborhoods';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_PHONE_SCHEMA } from '@/lib/site-config';
+import { faqJsonLd } from '@/lib/faq';
+import { getShowroomFaq, getCmsPageFaq } from '@/lib/faq-extra';
 import { Icon } from '@/app/_components/icon';
+import { PlpCard } from '@/app/_components/plp-card';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -34,7 +39,7 @@ export const revalidate = 600;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 export function generateStaticParams() {
   if (!SHOPIFY_CONFIGURED) return [];
@@ -46,17 +51,69 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) return { title: 'Page not found' };
-  const title = capTitle(firstNonEmpty(page.seo.title, page.title));
+  // Phase 289: same fix as blog articles — when the merchant hasn't
+  // set a custom seo.title, append " | LA Mattress" so the title
+  // differs from the H1 (H1 uses sentence-cased + brand-stripped
+  // version of page.title; without a suffix the two strings collapse
+  // to the same case-insensitive text and SEMrush flags duplicate).
+  //
+  // Phase 292 (cowork MEDIUM#5): strip any existing trailing brand
+  // suffix from page.title FIRST. The auto-created neighborhood pages
+  // are titled "Mattress Store in Burbank — LA Mattress"; appending
+  // " | LA Mattress" to that produced a doubled brand
+  // ("… — LA Mattress | LA Mattress"). stripBrandSuffix splits on the
+  // first " | " / " – " / " — " separator, so we rebrand with a single
+  // canonical " | LA Mattress" regardless of what suffix the merchant
+  // (or the page-creation script) used.
+  const titleFallback = `${stripBrandSuffix(page.title)} | LA Mattress`;
+  const title = capTitle(firstNonEmpty(page.seo.title, titleFallback));
   const description = truncDescription(
     firstNonEmpty(page.seo.description, page.bodySummary, `${page.title} — LA Mattress Store`),
   );
   const url = `/pages/${page.handle}`;
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
-    openGraph: { type: 'article', url, title, description },
+    openGraph: {
+      type: 'article',
+      url,
+      title,
+      description,
+      // Most CMS pages (locations, contact, financing, returns…) have
+      // no associated cover. Reference app/opengraph-image.tsx so a
+      // share renders the brand card instead of nothing — matches the
+      // Phase 180 fallback already on collection / article / PDP.
+      images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
+    },
   };
+}
+
+/**
+ * Phase 277: handle-based detection for sale-template pages. Storefront
+ * API doesn't expose `Page.templateSuffix`, so we use a handle
+ * convention: any page whose handle contains a sale-related keyword
+ * (memorial-day, black-friday, july-4, etc.) renders the SalePage
+ * layout instead of the default CMS template. Merchants just need to
+ * name pages with the convention; no additional Shopify configuration.
+ */
+const SALE_HANDLE_PATTERNS = [
+  /(^|-)sale(-|$)/i,
+  /memorial-day/i,
+  /labor-day/i,
+  /presidents-?day/i,
+  /mlk-?day/i,
+  /july-?4|fourth-of-july|independence-day/i,
+  /black-friday/i,
+  /cyber-monday/i,
+  /christmas/i,
+  /new-year/i,
+  /spring-sale|summer-sale|fall-sale|winter-sale/i,
+  /clearance/i,
+  /deals?-event/i,
+];
+function isSalePage(handle: string): boolean {
+  return SALE_HANDLE_PATTERNS.some((p) => p.test(handle));
 }
 
 export default async function ShopifyPage(props: Params) {
@@ -68,6 +125,46 @@ export default async function ShopifyPage(props: Params) {
   const showroom = findShowroom(page.handle);
   if (showroom) return <ShowroomPage page={page} showroom={showroom} />;
   if (page.handle === 'mattress-store-locations') return <LocationsIndexPage page={page} />;
+  if (isSalePage(page.handle)) {
+    // Phase 278: SalePage shows a real product grid + category chips.
+    // Phase 284: prefer a curated sale collection if one exists for this
+    // event (e.g. `memorial-day-sale-2026` → `/collections/memorial-day-sale`).
+    // Strip a trailing `-YYYY` year suffix from the page handle and try
+    // that collection first; fall back to the broader `/collections/on-sale`
+    // when no curated collection exists for the event or it's empty.
+    // This way new sale pages automatically light up their curated grid
+    // as soon as the merchant tags products + creates the collection,
+    // with no code change per sale event.
+    const curatedHandle = page.handle.replace(/-\d{4}$/, '');
+    const curated =
+      curatedHandle !== page.handle
+        ? await getCollectionByHandle({
+            handle: curatedHandle,
+            first: 12,
+            sortKey: 'BEST_SELLING',
+          }).catch(() => null)
+        : null;
+    const saleCollection =
+      curated && curated.products.nodes.length > 0
+        ? curated
+        : await getCollectionByHandle({
+            handle: 'on-sale',
+            first: 12,
+            sortKey: 'BEST_SELLING',
+          }).catch(() => null);
+    const featuredProducts = saleCollection?.products.nodes ?? [];
+    const onSaleCount = saleCollection?.products.nodes.length ?? 0;
+    return <SalePage page={page} featuredProducts={featuredProducts} onSaleCount={onSaleCount} />;
+  }
+  // Phase 277e: neighborhood pages (mattress-store-beverly-hills, etc.)
+  // render the NeighborhoodPage template — physically distinct from a
+  // showroom (no own address), serves an LA neighborhood from the
+  // 1–2 nearest physical showrooms via FurnitureStore.areaServed.
+  // Checked after the sale-page dispatch because none of the neighborhood
+  // handles match SALE_HANDLE_PATTERNS, but the sale check is the cheaper
+  // early-exit for the more common path.
+  const neighborhood = findNeighborhood(page.handle);
+  if (neighborhood) return <NeighborhoodPage page={page} neighborhood={neighborhood} />;
 
   return <DefaultPage page={page} />;
 }
@@ -152,6 +249,21 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
       </article>
       <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
       <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      {/* Phase 277c: FAQPage JSON-LD on CMS pages with a curated FAQ set
+          (shipping/delivery, financing, warranty). getCmsPageFaq returns
+          null for handles without a set, so the script is skipped on
+          most pages. Visual FAQ UI is intentionally unchanged — the
+          schema is emitted from a structured-data-only source. */}
+      {(() => {
+        const faqs = getCmsPageFaq(page.handle);
+        return faqs ? (
+          <script
+            id="ld-faq-page"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faqs)) }}
+          />
+        ) : null;
+      })()}
     </main>
   );
 }
@@ -169,6 +281,18 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
     telephone: SITE_PHONE_SCHEMA,
     priceRange: '$$$',
     image: `${SITE}/assets/la-mattress-logo.png`,
+    // Phase 252: LocalBusiness requires `address` — SEMrush flagged this LD
+    // for the 1 missing-required-property error on /pages/mattress-store-locations.
+    // Reuse the canonical Studio City corporate address (same source as the
+    // sitewide LOCAL_BUSINESS_LD in lib/structured-data.ts).
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '12306 Ventura Blvd',
+      addressLocality: 'Studio City',
+      addressRegion: 'CA',
+      postalCode: '91604',
+      addressCountry: 'US',
+    },
     areaServed: { '@type': 'City', name: 'Los Angeles' },
     department: SHOWROOMS.map((s) => ({
       '@type': 'FurnitureStore',
@@ -224,7 +348,7 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
                   <div>{s.city}, {s.region} {s.postalCode}</div>
                 </address>
                 <div className="location-card-actions">
-                  <span className="location-card-phone tnum">{s.phone.replace('+1-', '(').replace(/-/, ') ').replace(/-/, '-')}</span>
+                  <span className="location-card-phone tnum">{formatPhone(s.phone)}</span>
                   <span className="link-arrow">Store details <Icon name="arrow-right" size={14} /></span>
                 </div>
               </div>
@@ -284,19 +408,31 @@ function ShowroomPage({
     ...(showroom.geo
       ? { geo: { '@type': 'GeoCoordinates', latitude: showroom.geo.latitude, longitude: showroom.geo.longitude } }
       : {}),
+    // Phase 287: link this FurnitureStore to its verified Google
+    // Business Profile / Maps entity so Google can reconcile the
+    // structured data with the GBP listing (strongest local signal).
+    ...(showroom.gbpUrl ? { sameAs: [showroom.gbpUrl] } : {}),
     openingHoursSpecification: showroom.hours.map((h) => ({
       '@type': 'OpeningHoursSpecification',
+      // Phase 236: extended for Mon-Fri / Sat-Sun spans now used by all
+      // five showrooms (replaced the older Mon-Sat / Sun split).
       dayOfWeek:
-        h.day === 'Mon-Sat'
-          ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-          : h.day === 'Sun'
-            ? 'Sunday'
-            : h.day,
+        h.day === 'Mon-Fri'
+          ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+          : h.day === 'Sat-Sun'
+            ? ['Saturday', 'Sunday']
+            : h.day === 'Mon-Sat'
+              ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+              : h.day === 'Sun'
+                ? 'Sunday'
+                : h.day === 'Sat'
+                  ? 'Saturday'
+                  : h.day,
       opens: h.open,
       closes: h.close,
     })),
     areaServed: ['Los Angeles', showroom.area],
-    parentOrganization: { '@type': 'Organization', name: 'LA Mattress Store', url: SITE },
+    parentOrganization: { '@id': `${SITE}/#organization` },
   };
 
   const breadcrumbLd = {
@@ -353,7 +489,7 @@ function ShowroomPage({
               <div>{showroom.city}, {showroom.region} {showroom.postalCode}</div>
             </address>
             <a href={`tel:${showroom.phone.replace(/[^+\d]/g, '')}`} className="showroom-info-phone">
-              <Icon name="phone" size={14} /> {showroom.phone}
+              <Icon name="phone" size={14} /> {formatPhone(showroom.phone)}
             </a>
             <ul className="showroom-info-hours">
               {showroom.hours.map((h) => (
@@ -409,28 +545,56 @@ function ShowroomPage({
       </article>
       <script id="ld-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
       <script id="ld-breadcrumb-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      {/* Phase 277c: per-showroom FAQPage JSON-LD. Q&As are templated
+          from the showroom's neighborhood/street/hours so each of the
+          5 pages emits genuinely unique FAQ content (avoids the
+          "near-duplicate body" footprint Semrush flagged on the
+          legacy crawl). */}
+      <script
+        id="ld-faq-showroom"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(getShowroomFaq(showroom))) }}
+      />
       <script id="ld-services" type="application/ld+json" dangerouslySetInnerHTML={{
         __html: JSON.stringify({
           '@context': 'https://schema.org',
+          // Phase 252: each Service must declare `name` — Google's rich-result
+          // requirements and SEMrush structured-data validator both flag a
+          // Service that has only `serviceType`. Adding `name` removed the
+          // 3 errors/URL that the May SEMrush export attributed to every
+          // showroom page.
+          //
+          // Phase 289: switched `provider` from full re-declaration
+          // (`{ '@type': 'FurnitureStore', '@id': url, name: ... }`) to clean
+          // `@id` reference (`{ '@id': url }`). Re-declaring @type + name
+          // creates an ambiguous entity-vs-reference and SEMrush's May 15
+          // re-audit flagged 3 errors/URL on all 5 showroom pages (15
+          // total), almost certainly from the 3 Services × 1 ambiguous
+          // provider each. Schema.org best practice is reference-by-@id;
+          // the localBusinessLd above is the canonical FurnitureStore on
+          // this page, so the Services just point at it.
           '@graph': [
             {
               '@type': 'Service',
+              name: 'Free White-Glove Mattress Delivery in Los Angeles',
               serviceType: 'Free White-Glove Mattress Delivery',
-              provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
+              provider: { '@id': url },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
-              description: 'Free white-glove delivery and setup with old-mattress haul-away across Los Angeles.',
+              description: 'Free white-glove delivery, setup, and old-mattress haul-away on orders over $499 across Los Angeles. Same-day delivery available when you order by 4pm.',
             },
             {
               '@type': 'Service',
+              name: '0% APR Mattress Financing',
               serviceType: '0% APR Mattress Financing',
-              provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
+              provider: { '@id': url },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
-              description: 'Up to 60 months 0% APR financing on approved credit, no prepayment penalty, no origination fees.',
+              description: '0% APR financing through Synchrony and Acima on approved credit. Terms vary by purchase amount and partner. Apply at checkout or in any showroom.',
             },
             {
               '@type': 'Service',
+              name: '120-Night Mattress Comfort Exchange',
               serviceType: '120-Night Comfort Exchange',
-              provider: { '@type': 'FurnitureStore', '@id': url, name: showroom.name },
+              provider: { '@id': url },
               areaServed: { '@type': 'City', name: 'Los Angeles' },
               description: 'Sleep on it for at least 30 nights, then exchange for any other mattress within 120 nights of delivery.',
             },
@@ -447,4 +611,371 @@ function formatHour(hhmm: string): string {
   const ampm = h >= 12 ? 'pm' : 'am';
   const h12 = ((h + 11) % 12) + 1;
   return m ? `${h12}:${String(m).padStart(2, '0')}${ampm}` : `${h12}${ampm}`;
+}
+
+/**
+ * Phase 277/278: sale-page template. Activated by handle pattern
+ * (SALE_HANDLE_PATTERNS). The layout is:
+ *
+ *   1. Full-bleed navy hero — title + bodySummary lede + dual CTAs.
+ *   2. Trust strip — 3 quick reassurance points (delivery, financing,
+ *      120-night exchange) that match the homepage TrustBar.
+ *   3. Category chips — pill-shaped links into the major mattress
+ *      sub-categories so shoppers can drill in immediately.
+ *   4. Featured product grid — 12 best-selling products from the
+ *      `on-sale` collection (fetched server-side in the page handler),
+ *      using the standard PlpCard so the look matches every other PLP.
+ *   5. "See all N mattresses on sale" link to /collections/on-sale.
+ *   6. Merchant-authored body content — the long-form sale copy from
+ *      Shopify Admin (terms, brand callouts, showroom hours, etc.).
+ *   7. Footer CTA — Shop the Sale + Find a showroom buttons.
+ *
+ * The product grid + category chips + trust strip mean the page is
+ * visually substantive even when the merchant body is empty or thin.
+ */
+const SALE_CATEGORY_CHIPS = [
+  { label: 'Memory foam',     href: '/collections/memory-foam-mattresses' },
+  { label: 'Hybrid',          href: '/collections/hybrid-mattresses' },
+  { label: 'Latex',           href: '/collections/latex-mattresses' },
+  { label: 'Innerspring',     href: '/collections/innerspring-mattresses' },
+  { label: 'Tempur-Pedic',    href: '/collections/tempur-pedic-mattresses' },
+  { label: 'Stearns & Foster', href: '/collections/stearns-foster-mattresses' },
+  { label: 'Helix',           href: '/collections/helix-mattresses' },
+  { label: 'Adjustable bases', href: '/collections/adjustable-beds' },
+];
+
+function SalePage({
+  page,
+  featuredProducts,
+  onSaleCount,
+}: {
+  page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
+  featuredProducts: ProductSummary[];
+  onSaleCount: number;
+}) {
+  const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
+  const url = `${SITE}/pages/${page.handle}`;
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
+      { '@type': 'ListItem', position: 2, name: cleanTitle, item: url },
+    ],
+  };
+  const webPageLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: cleanTitle,
+    url,
+    description: firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined,
+    isPartOf: { '@type': 'WebSite', url: SITE },
+    inLanguage: 'en-US',
+    datePublished: page.createdAt || undefined,
+    dateModified: page.updatedAt || undefined,
+  };
+
+  return (
+    <main>
+      <header className="sale-page-hero">
+        <div className="container sale-page-hero-inner">
+          <nav className="lp-breadcrumbs sale-page-breadcrumbs" aria-label="Breadcrumb">
+            <Link href="/">Home</Link>
+            <span className="sep" aria-hidden="true">/</span>
+            <span>{cleanTitle}</span>
+          </nav>
+          <div className="eyebrow eyebrow-on-dark sale-page-eyebrow">Limited-time event</div>
+          <h1 className="sale-page-title">{cleanTitle}</h1>
+          {page.bodySummary ? (
+            <p className="sale-page-lede">{page.bodySummary}</p>
+          ) : null}
+          <div className="sale-page-ctas">
+            <Link href="/collections/on-sale" className="btn btn-lg btn-on-dark">
+              Shop the Sale <Icon name="arrow-right" size={16} />
+            </Link>
+            <Link href="/pages/mattress-store-locations" className="btn btn-lg btn-ghost-on-dark">
+              Find a showroom
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Trust strip — same trio used by the homepage TrustBar. Visible
+          immediately below the hero so the value-prop is reinforced
+          before the shopper scrolls into the grid. */}
+      <section className="sale-page-trust" aria-label="What's included with every order">
+        <div className="container sale-page-trust-inner">
+          <div className="sale-page-trust-item">
+            <Icon name="truck" size={20} />
+            <div>
+              <div className="sale-page-trust-title">Free LA delivery</div>
+              <div className="sale-page-trust-sub">White-glove on orders over $499. Same-day if you order by 4 PM.</div>
+            </div>
+          </div>
+          <div className="sale-page-trust-item">
+            <Icon name="card" size={20} />
+            <div>
+              <div className="sale-page-trust-title">0% APR financing</div>
+              <div className="sale-page-trust-sub">Synchrony or Acima on approved credit. 60-second application.</div>
+            </div>
+          </div>
+          <div className="sale-page-trust-item">
+            <Icon name="shield" size={20} />
+            <div>
+              <div className="sale-page-trust-title">120-night exchange</div>
+              <div className="sale-page-trust-sub">Sleep 30 nights, exchange for any other mattress if it&rsquo;s not right.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured product grid — first 12 best-sellers from the on-sale
+          collection. Same PlpCard component every other PLP uses, so
+          the look stays consistent and shoppers see real product cards
+          with prices, ratings, brand tags, etc. */}
+      {featuredProducts.length > 0 ? (
+        <section className="sale-page-grid-section" aria-labelledby="sale-grid-h">
+          <div className="container">
+            <header className="sale-page-grid-head">
+              <h2 id="sale-grid-h" className="h2">Featured deals</h2>
+              <p className="muted">A few of our best-selling mattresses currently on sale. {onSaleCount > 12 ? `${onSaleCount}+ models discounted in total — see all below.` : null}</p>
+              <nav className="sale-page-chips" aria-label="Shop by category">
+                {SALE_CATEGORY_CHIPS.map((chip) => (
+                  <Link key={chip.href} href={chip.href} className="sale-page-chip">
+                    {chip.label}
+                  </Link>
+                ))}
+              </nav>
+            </header>
+            <div className="plp-grid">
+              {featuredProducts.map((p, i) => (
+                <PlpCard key={p.id} product={p} priority={i < 3} />
+              ))}
+            </div>
+            <div className="sale-page-grid-foot">
+              <Link href="/collections/on-sale" className="btn btn-primary btn-lg">
+                See every mattress on sale <Icon name="arrow-right" size={16} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* Merchant-authored long-form body. Sale terms, brand callouts,
+          showroom hours, etc. — anything they type into the Shopify
+          page body renders here. */}
+      {page.body ? (
+        <article className="container sale-page-body">
+          <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
+        </article>
+      ) : null}
+
+      {/* Footer CTA — repeat the primary action at the end of the page
+          so a shopper who scrolled all the way down doesn't have to
+          scroll back up to convert. */}
+      <section className="sale-page-foot-cta">
+        <div className="container sale-page-foot-cta-inner">
+          <h2 className="h2">Ready to upgrade your sleep?</h2>
+          <p className="muted">Free LA delivery, 0% APR financing, 120-night exchange. Every mattress on the floor at all 5 showrooms.</p>
+          <div className="sale-page-ctas">
+            <Link href="/collections/on-sale" className="btn btn-primary btn-lg">
+              Shop the Sale <Icon name="arrow-right" size={16} />
+            </Link>
+            <Link href="/sleep-quiz" className="btn btn-ghost btn-lg">
+              Take the 2-min quiz
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
+      <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+    </main>
+  );
+}
+
+/**
+ * Phase 277e: LA-neighborhood page template (Beverly Hills, Santa Monica,
+ * DTLA, Pasadena, Burbank, Sherman Oaks, Hollywood, Long Beach). Each
+ * page targets "mattress store {neighborhood}" search intent without
+ * pretending to be a physical store of its own — there's no address,
+ * no own hours, no map embed. Instead, the page positions the 1–2
+ * nearest physical showrooms with drive-time context and a clear
+ * "Visit our nearest showroom" CTA.
+ *
+ * Renders only when the merchant has created a Shopify Page with one
+ * of the handles defined in lib/neighborhoods.ts NEIGHBORHOODS. If the
+ * Shopify page body is empty, the neighborhood's `defaultBlurb` fills
+ * in (≥150 words to avoid thin-content flags).
+ *
+ * Schema: FurnitureStore with `areaServed` set to the neighborhood
+ * (not `address` — see lib/neighborhoods.ts comments) and `department`
+ * listing the nearest physical showrooms so Google can still see the
+ * real stores behind this landing page.
+ */
+function NeighborhoodPage({
+  page,
+  neighborhood,
+}: {
+  page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
+  neighborhood: Neighborhood;
+}) {
+  const url = `${SITE}/pages/${page.handle}`;
+  const nearest = getNearestShowrooms(neighborhood);
+  const primaryShowroom = nearest[0]; // first listed is the "primary" CTA
+
+  const localBusinessLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FurnitureStore',
+    '@id': url,
+    name: `LA Mattress Store — ${neighborhood.name}`,
+    url,
+    telephone: SITE_PHONE_SCHEMA,
+    priceRange: '$$$',
+    image: primaryShowroom?.imageUrl ?? `${SITE}/assets/la-mattress-logo.png`,
+    // No `address` — this isn't a physical store. areaServed handles the
+    // local-search signal without misrepresenting location.
+    areaServed: {
+      '@type': 'Place',
+      name: neighborhood.name,
+      ...(neighborhood.geo
+        ? {
+            geo: {
+              '@type': 'GeoCoordinates',
+              latitude: neighborhood.geo.latitude,
+              longitude: neighborhood.geo.longitude,
+            },
+          }
+        : {}),
+    },
+    // Surface the real physical stores so the entity graph stays accurate.
+    department: nearest.map((s) => ({
+      '@type': 'FurnitureStore',
+      name: s.name,
+      url: `${SITE}/pages/${s.handle}`,
+      telephone: s.phone,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: s.street,
+        addressLocality: s.city,
+        addressRegion: s.region,
+        postalCode: s.postalCode,
+        addressCountry: 'US',
+      },
+      ...(s.geo
+        ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } }
+        : {}),
+    })),
+    parentOrganization: { '@id': `${SITE}/#organization` },
+  };
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: 'Stores', item: `${SITE}/pages/mattress-store-locations` },
+      { '@type': 'ListItem', position: 3, name: neighborhood.name, item: url },
+    ],
+  };
+
+  return (
+    <main className="container">
+      <article className="cms-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
+        <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
+          <Link href="/">Home</Link>
+          <span className="sep" aria-hidden="true">/</span>
+          <Link href="/pages/mattress-store-locations">Stores</Link>
+          <span className="sep" aria-hidden="true">/</span>
+          <span>{neighborhood.name}</span>
+        </nav>
+
+        <header className="showroom-page-hero">
+          <div className="eyebrow">{neighborhood.name} · Los Angeles</div>
+          {/* Phase 292 (cowork MEDIUM#6/#7): build the H1 from the
+              proper-cased neighborhood.name + ", Los Angeles" instead of
+              toSentenceCase(page.title). The old path lowercased the
+              neighborhood ("Mattress store in burbank") and dropped any
+              LA reference. Skip the ", Los Angeles" suffix when the name
+              already contains "LA" (Downtown LA) to avoid "… LA, Los
+              Angeles". Still differs from <title> case-normalized
+              ("… | LA Mattress"), so no duplicate-H1/title regression. */}
+          <h1 className="h1">
+            {`Mattress store in ${neighborhood.name}`}
+            {/\bLA\b/.test(neighborhood.name) ? '' : ', Los Angeles'}
+          </h1>
+          <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
+            Free white-glove delivery to {neighborhood.name} on orders over $499 — same-day if you order by 4pm.{' '}
+            {primaryShowroom
+              ? `Visit our ${primaryShowroom.area} showroom to try every mattress in person.`
+              : 'Visit any of our 5 LA showrooms to try every mattress in person.'}
+          </p>
+        </header>
+
+        {page.body ? (
+          <div
+            className="rte cms-body"
+            style={{ marginTop: 'var(--s-5)' }}
+            dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }}
+          />
+        ) : (
+          <div className="rte cms-body" style={{ marginTop: 'var(--s-5)' }}>
+            <p>{neighborhood.defaultBlurb}</p>
+          </div>
+        )}
+
+        {nearest.length > 0 ? (
+          <section className="section" style={{ marginTop: 'var(--s-7)' }}>
+            <div className="eyebrow">Nearest showrooms</div>
+            <h2 className="h2">
+              {nearest.length === 1
+                ? `Visit our ${nearest[0].area} mattress store`
+                : `Two showrooms near ${neighborhood.name}`}
+            </h2>
+            <div className="nf-grid" style={{ marginTop: 'var(--s-5)' }}>
+              {nearest.map((s) => (
+                <Link key={s.handle} href={`/pages/${s.handle}`} className="nf-tile">
+                  <div className="nf-tile-label">{s.name}</div>
+                  <div className="nf-tile-sub muted">
+                    {s.street}, {s.city} · {formatPhone(s.phone)}
+                  </div>
+                  <Icon name="arrow-right" size={16} />
+                </Link>
+              ))}
+            </div>
+            <p className="muted" style={{ marginTop: 'var(--s-5)', maxWidth: '60ch' }}>
+              Prefer to see all 5 showrooms?{' '}
+              <Link href="/pages/mattress-store-locations" className="link-arrow">
+                View every Los Angeles location <Icon name="arrow-right" size={14} />
+              </Link>
+              .
+            </p>
+          </section>
+        ) : null}
+
+        <section className="section" style={{ marginTop: 'var(--s-7)' }}>
+          <div className="eyebrow">Skip the drive</div>
+          <h2 className="h2">Take the 2-minute sleep quiz</h2>
+          <p className="muted" style={{ maxWidth: '60ch' }}>
+            Eight questions, one recommendation. We&rsquo;ll match you to a mattress, then deliver it free anywhere in LA.
+          </p>
+          <div style={{ marginTop: 'var(--s-4)' }}>
+            <Link href="/sleep-quiz" className="btn btn-primary">
+              Start the quiz <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+        </section>
+      </article>
+      <script
+        id="ld-neighborhood"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
+      />
+      <script
+        id="ld-breadcrumb-neighborhood"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+    </main>
+  );
 }

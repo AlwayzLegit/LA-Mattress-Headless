@@ -6,9 +6,11 @@ import Image from 'next/image';
 import type { Product, ProductSummary } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
 import { announce } from './announcer';
+import { createLocalStoreApi } from './use-local-store';
+import { ReviewsBadge } from './reviews-badge';
+import { RailScrollButtons } from './sections/rail-scroll-buttons';
 
-const KEY = 'la-mattress.recently-viewed.v1';
-const MAX = 12;
+const RAIL_ID = 'recently-viewed-rail';
 
 type StoredItem = {
   handle: string;
@@ -18,28 +20,25 @@ type StoredItem = {
   imgAlt: string | null;
   priceMin: { amount: string; currencyCode: string };
   priceMax: { amount: string; currencyCode: string };
+  /** Phase 242: snapshot review aggregates at click time so the rail
+   *  can render the star badge without an extra Shopify fetch. */
+  rating?: number | null;
+  reviewCount?: number | null;
   ts: number;
 };
 
-function readStore(): StoredItem[] {
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw) as unknown;
-    if (!Array.isArray(arr)) return [];
-    return arr.filter((x): x is StoredItem => typeof x === 'object' && x != null && 'handle' in x);
-  } catch {
-    return [];
-  }
-}
-
-function writeStore(items: StoredItem[]) {
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX)));
-  } catch {
-    // localStorage quota or disabled — silently no-op.
-  }
-}
+// Phase 214: migrated to shared use-local-store helpers. Unlike
+// compare-store and wishlist-store, recently-viewed has no
+// cross-component reads (only PDP mount writes; only the rail reads
+// on its own mount), so the custom event below exists for symmetry +
+// future cross-tab updates rather than current need.
+const RECENTLY_VIEWED_API = createLocalStoreApi<StoredItem>({
+  key: 'la-mattress.recently-viewed.v1',
+  event: 'la-mattress:recently-viewed-change',
+  max: 12,
+  isValid: (x): x is StoredItem =>
+    typeof x === 'object' && x != null && 'handle' in x,
+});
 
 /**
  * Records the current PDP into recently-viewed localStorage on mount.
@@ -61,10 +60,12 @@ export function RecordRecentlyViewed({ product }: { product: Product }) {
         amount: product.priceRange.maxVariantPrice.amount,
         currencyCode: product.priceRange.maxVariantPrice.currencyCode,
       },
+      rating: product.reviews?.rating ?? null,
+      reviewCount: product.reviews?.count ?? null,
       ts: Date.now(),
     };
-    const existing = readStore().filter((p) => p.handle !== product.handle);
-    writeStore([item, ...existing]);
+    const existing = RECENTLY_VIEWED_API.read().filter((p) => p.handle !== product.handle);
+    RECENTLY_VIEWED_API.write([item, ...existing]);
   }, [product]);
   return null;
 }
@@ -88,7 +89,7 @@ export function RecentlyViewedRail({
   const [items, setItems] = useState<StoredItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
-    setItems(readStore());
+    setItems(RECENTLY_VIEWED_API.read());
     setHydrated(true);
   }, []);
 
@@ -97,7 +98,7 @@ export function RecentlyViewedRail({
   if (filtered.length < 2) return null;
 
   const onClear = () => {
-    try { window.localStorage.removeItem(KEY); } catch { /* ignore */ }
+    RECENTLY_VIEWED_API.write([]);
     setItems([]);
     announce('Cleared recently viewed history');
   };
@@ -110,13 +111,20 @@ export function RecentlyViewedRail({
             <div className="eyebrow">{eyebrow}</div>
             <h2 id="recently-viewed-heading" className="h2">{heading}</h2>
           </div>
-          <button type="button" className="link-arrow recently-viewed-clear" onClick={onClear} aria-label="Clear recently viewed history">
-            Clear history
-          </button>
+          <div className="section-head-right">
+            <button type="button" className="link-arrow recently-viewed-clear" onClick={onClear} aria-label="Clear recently viewed history">
+              Clear history
+            </button>
+            <RailScrollButtons
+              railId={RAIL_ID}
+              leftLabel="Scroll recently viewed left"
+              rightLabel="Scroll recently viewed right"
+            />
+          </div>
         </div>
       </div>
       <div className="pcard-scroll-wrap">
-        <div className="pcard-scroll no-scrollbar">
+        <div id={RAIL_ID} className="pcard-scroll no-scrollbar">
           {filtered.map((p) => {
             const summary: Pick<ProductSummary, 'priceRange'> = {
               priceRange: {
@@ -142,6 +150,11 @@ export function RecentlyViewedRail({
                 <div className="pcard-meta">
                   <div className="pcard-brand">{p.vendor}</div>
                   <div className="pcard-name">{p.title}</div>
+                  {typeof p.rating === 'number' && typeof p.reviewCount === 'number' && p.reviewCount > 0 ? (
+                    <div className="pcard-reviews">
+                      <ReviewsBadge reviews={{ rating: p.rating, count: p.reviewCount }} size="inline" />
+                    </div>
+                  ) : null}
                   <div className="pcard-price">
                     <span className="pcard-now tnum">
                       {formatPriceRange(summary.priceRange.minVariantPrice, summary.priceRange.maxVariantPrice)}

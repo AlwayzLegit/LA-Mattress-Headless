@@ -1,14 +1,30 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import type { ProductSummary } from '@/lib/shopify';
 import { Icon } from '@/app/_components/icon';
-import { announce } from '@/app/_components/announcer';
 import { QUESTIONS, recommend, type Answers, type Recommendation } from './quiz-data';
+
+// Phase 210: result-page rendering (~95 LOC including rationale list,
+// alt collection links, <details> answer summary, restart button,
+// announce() call, headingRef focus shift) is dynamic-imported so its
+// JS doesn't ship in the initial /sleep-quiz bundle. Quiz abandoners
+// don't pay for the result chunk. `ssr: false` because the result is
+// conditional on client-side `step === 'result'` state that hasn't
+// materialized at SSR time. Net bundle: -20 B on the initial route
+// chunk vs static import (next/dynamic wrapper overhead ~equals the
+// deferred bytes for a component this size). The deferral itself is
+// still real — the Result chunk lives in a separate file that's only
+// fetched once `setStep('result')` fires.
+const SleepQuizResult = dynamic(
+  () => import('./sleep-quiz-result').then((m) => m.SleepQuizResult),
+  { ssr: false },
+);
 
 const PERSIST_KEY = 'la-mattress.sleep-quiz.v1';
 
-export function SleepQuiz() {
+export function SleepQuiz({ productPicks }: { productPicks: Record<string, ProductSummary> }) {
   // Step 0..QUESTIONS.length-1 = questions, then "result" = done.
   const [step, setStep] = useState<number | 'result'>(0);
   const [answers, setAnswers] = useState<Answers>({});
@@ -45,11 +61,35 @@ export function SleepQuiz() {
     heading?.focus();
   }, [step]);
 
-  if (step === 'result' && result) return <Result result={result} answers={answers} onRestart={() => { setStep(0); setAnswers({}); }} />;
+  // Phase 235: track the auto-advance setTimeout so we can clear it on
+  // unmount (user navigates away mid-quiz) or on a rapid second click
+  // (prevents two pending advances racing). React 19 silently no-ops
+  // setState after unmount, but the leak is still cheap to avoid and
+  // the rapid-click race is a real UX risk.
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    };
+  }, []);
+
+  if (step === 'result' && result) return <SleepQuizResult result={result} answers={answers} productPicks={productPicks} onRestart={() => { setStep(0); setAnswers({}); }} />;
 
   const idx = step as number;
   const q = QUESTIONS[idx];
   const answered = answers[q.id];
+
+  // Cancel a pending auto-advance. MUST be called before any manual
+  // navigation: otherwise a timer armed by a just-tapped option fires
+  // ~½s later with a now-stale `idx` and yanks the user to the wrong
+  // question (e.g. tap option → tap Back → the stale timer still jumps
+  // forward). Manual navigation is always authoritative.
+  const cancelAdvance = () => {
+    if (advanceTimerRef.current) {
+      clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
+  };
 
   const onSelect = (optId: string) => {
     const wasAnswered = !!answers[q.id];
@@ -58,23 +98,32 @@ export function SleepQuiz() {
     // the user came back to (Back button) does NOT auto-advance — that would
     // be hostile behaviour.
     if (!wasAnswered) {
-      setTimeout(() => {
+      cancelAdvance();
+      // 450ms (was 250) so the selected state — accent border + check
+      // tick — visibly registers before the step swaps. 250ms read as
+      // an abrupt jump with no confirmation that the tap landed.
+      advanceTimerRef.current = setTimeout(() => {
+        advanceTimerRef.current = null;
         if (idx + 1 >= total) setStep('result');
         else setStep(idx + 1);
-      }, 250);
+      }, 450);
     }
   };
 
   const onNext = () => {
     if (!answered) return;
+    cancelAdvance();
     if (idx + 1 >= total) setStep('result');
     else setStep(idx + 1);
   };
 
   const onBack = () => {
     if (idx === 0) return;
+    cancelAdvance();
     setStep(idx - 1);
   };
+
+  const answeredCount = Object.keys(answers).length;
 
   return (
     <div className="quiz">
@@ -83,16 +132,31 @@ export function SleepQuiz() {
       </div>
       <div className="quiz-meta">
         <span className="muted tnum">{idx + 1} / {total}</span>
-        <button type="button" className="quiz-skip-link" onClick={() => setStep('result')} aria-label="Skip remaining questions and see the best match">
-          Skip to results
-        </button>
+        {/* Only offer "skip" once there's at least one answer — skipping
+            with zero input produces a meaningless generic match. */}
+        {answeredCount > 0 ? (
+          <button
+            type="button"
+            className="quiz-skip-link"
+            onClick={() => { cancelAdvance(); setStep('result'); }}
+            aria-label="Skip remaining questions and see the best match"
+          >
+            Skip to results
+          </button>
+        ) : null}
       </div>
 
-      <fieldset key={q.id} className="quiz-step">
+      <fieldset
+        key={q.id}
+        className="quiz-step"
+        aria-describedby={q.helper ? 'quiz-question-helper' : undefined}
+      >
         <legend className="h2 quiz-step-title" id="quiz-question-title" tabIndex={-1}>
           {q.title}
         </legend>
-        {q.helper ? <p className="muted quiz-step-helper">{q.helper}</p> : null}
+        {q.helper ? (
+          <p id="quiz-question-helper" className="muted quiz-step-helper">{q.helper}</p>
+        ) : null}
 
         <div className="quiz-options" role="radiogroup" aria-labelledby="quiz-question-title">
           {q.options.map((o) => (
@@ -141,98 +205,3 @@ export function SleepQuiz() {
   );
 }
 
-function Result({
-  result,
-  answers,
-  onRestart,
-}: {
-  result: Recommendation;
-  answers: Answers;
-  onRestart: () => void;
-}) {
-  const headingRef = useRef<HTMLHeadingElement>(null);
-
-  // When the result page swaps in, focus has just been on a now-unmounted
-  // button (Next / See my match / Skip to results / auto-advance timer).
-  // Move it to the result heading so keyboard + SR users land on something
-  // meaningful instead of having focus dropped to <body>. Same pattern as
-  // newsletter-form and opt-out-form. The announce() also fires the polite
-  // live region so the transition isn't silent.
-  useEffect(() => {
-    announce(`Your match: ${result.type}. We'd shortlist ${result.primary.label} first.`);
-    const id = requestAnimationFrame(() => headingRef.current?.focus());
-    return () => cancelAnimationFrame(id);
-  }, [result.type, result.primary.label]);
-
-  return (
-    <div className="quiz quiz-result">
-      <div className="quiz-result-head">
-        <div className="eyebrow">Your match</div>
-        <h2
-          ref={headingRef}
-          className="h1"
-          style={{ margin: 'var(--s-3) 0 var(--s-3)' }}
-          tabIndex={-1}
-        >
-          {result.type}
-        </h2>
-        <p className="lp-hero-lede" style={{ marginBottom: 'var(--s-5)' }}>
-          Based on how you sleep, we&rsquo;d shortlist <strong>{result.primary.label.toLowerCase()}</strong> first. You can come try them at any LA showroom.
-        </p>
-        <div className="quiz-result-cta">
-          <Link href={`/collections/${result.primary.handle}`} className="btn btn-primary btn-lg">
-            See {result.primary.label} <Icon name="arrow-right" size={14} />
-          </Link>
-          <Link href="/pages/mattress-store-locations" className="btn btn-ghost">
-            Find a showroom
-          </Link>
-        </div>
-      </div>
-
-      {result.rationale.length ? (
-        <div className="quiz-result-rationale">
-          <div className="eyebrow">Why this match</div>
-          <ul>
-            {result.rationale.map((r, i) => <li key={i}>{r}</li>)}
-          </ul>
-        </div>
-      ) : null}
-
-      <div className="quiz-result-alts">
-        <div className="eyebrow">Worth comparing</div>
-        <ul>
-          {result.alternates.map((a) => (
-            <li key={a.handle}>
-              <Link href={`/collections/${a.handle}`} className="link-arrow">
-                {a.label} <Icon name="arrow-right" size={14} />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <details className="quiz-result-answers">
-        <summary>Your answers ({Object.keys(answers).length})</summary>
-        <dl>
-          {QUESTIONS.map((q) => {
-            const ans = answers[q.id];
-            if (!ans) return null;
-            const opt = q.options.find((o) => o.id === ans);
-            return (
-              <div key={q.id} className="quiz-result-answer-row">
-                <dt>{q.title}</dt>
-                <dd>{opt?.label ?? ans}</dd>
-              </div>
-            );
-          })}
-        </dl>
-      </details>
-
-      <div className="quiz-result-foot">
-        <button type="button" className="btn btn-ghost" onClick={onRestart}>
-          <Icon name="arrow-left" size={14} /> Retake the quiz
-        </button>
-      </div>
-    </div>
-  );
-}

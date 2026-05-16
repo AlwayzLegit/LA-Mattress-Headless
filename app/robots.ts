@@ -1,6 +1,10 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL } from '@/lib/site-config';
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mattressstoreslosangeles.com';
+// Canonical host — never the apex. The Sitemap: directive matters: Google
+// fetches sitemap.xml from the URL declared here, so an apex value forces
+// a 308 hop on first sitemap discovery. See lib/site-config.ts.
+const SITE = SITE_URL;
 
 /**
  * robots.txt rules. Keep aligned with the per-route `metadata.robots`
@@ -19,6 +23,21 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mattressstoreslosangel
  *   /search?            — query-string driven; the no-q recovery grid is
  *                         all the indexable content here
  *   /api/               — JSON endpoints + webhook receivers
+ *
+ * Phase 275: query-param disallows scoped to TRACKING-only params per
+ * Google's official guidance
+ * (developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls):
+ * "Don't use robots.txt disallow to handle duplicates — use canonical
+ * tags." Content-distinguishing params (`?variant=` on PDPs,
+ * `?after=` pagination) are now handled via canonical alone so Google
+ * can crawl them, read the canonical, and consolidate signals properly.
+ * The patterns below are crawl-budget-only tracking params with no
+ * unique content:
+ *
+ *   /*?srsltid=*  — Google Search click-through tracking (Google's own
+ *                   tracking redirect; safe to block).
+ *   /*?_pos=*, /*?_sid=*, /*?_ss=*  — Shopify search-source/session
+ *                   tracking params. No content value.
  */
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -34,6 +53,10 @@ export default function robots(): MetadataRoute.Robots {
           '/compare',
           '/search?',
           '/api/',
+          '/*?srsltid=*',
+          '/*?_pos=*',
+          '/*?_sid=*',
+          '/*?_ss=*',
         ],
       },
     ],

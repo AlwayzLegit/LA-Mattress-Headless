@@ -5,10 +5,11 @@ import Image from 'next/image';
 import { searchProducts, searchArticles } from '@/lib/shopify';
 import type { ProductSummary, PredictiveArticle } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
-import { searchShowrooms, type Showroom } from '@/lib/showrooms';
+import { formatPhone, searchShowrooms, type Showroom } from '@/lib/showrooms';
 import { Icon } from '@/app/_components/icon';
-import { CompareToggle } from '@/app/_components/compare';
+import { CompareToggle } from '@/app/_components/compare-toggle';
 import { PcardSpecs } from '@/app/_components/pcard-specs';
+import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import {
   FilterPanel,
   FilterMobileTrigger,
@@ -52,6 +53,13 @@ export const metadata: Metadata = {
   title: 'Search — LA Mattress Store',
   description: 'Search mattresses, adjustable beds, bedding, and more at LA Mattress Store.',
   robots: { index: false, follow: true },
+  // Phase 258: /search is noindex but should still declare a clean
+  // canonical pointing to the param-free URL. Without it, parameterized
+  // permutations (?q=tempur&tab=mattresses&filter.size=Queen&sort=...)
+  // each look like separate URLs to crawlers that respect canonical but
+  // not noindex. The robots noindex covers Google; canonical covers
+  // everyone else (SEMrush "Too many URL parameters" flag).
+  alternates: { canonical: '/search' },
 };
 
 /**
@@ -285,6 +293,9 @@ export default async function SearchPage(props: Params) {
                               <div className="pcard-meta">
                                 <div className="pcard-brand">{p.vendor}</div>
                                 <div className="pcard-name">{p.title}</div>
+                                {p.reviews ? (
+                                  <div className="pcard-reviews"><ReviewsBadge reviews={p.reviews} size="inline" /></div>
+                                ) : null}
                                 <PcardSpecs specs={p.specs} />
                                 <div className="pcard-price">
                                   <span className="pcard-now tnum">
@@ -346,7 +357,7 @@ export default async function SearchPage(props: Params) {
                           {s.city}, {s.region} {s.postalCode}
                         </address>
                         <div className="search-showroom-foot">
-                          <span className="muted">{s.phone}</span>
+                          <span className="muted">{formatPhone(s.phone)}</span>
                           <span className="link-arrow">View <Icon name="arrow-right" size={14} /></span>
                         </div>
                       </div>
@@ -607,6 +618,9 @@ function SearchAllTab({
                   <div className="pcard-meta">
                     <div className="pcard-brand">{p.vendor}</div>
                     <div className="pcard-name">{p.title}</div>
+                    {p.reviews ? (
+                      <div className="pcard-reviews"><ReviewsBadge reviews={p.reviews} size="inline" /></div>
+                    ) : null}
                     <PcardSpecs specs={p.specs} />
                     <div className="pcard-price">
                       <span className="pcard-now tnum">
@@ -652,7 +666,7 @@ function SearchAllTab({
                     {s.city}, {s.region} {s.postalCode}
                   </address>
                   <div className="search-showroom-foot">
-                    <span className="muted">{s.phone}</span>
+                    <span className="muted">{formatPhone(s.phone)}</span>
                     <span className="link-arrow">View <Icon name="arrow-right" size={14} /></span>
                   </div>
                 </div>

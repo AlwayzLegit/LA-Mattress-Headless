@@ -3,7 +3,17 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useOptimistic, useState, useTransition } from 'react';
 import type { ReactNode } from 'react';
 import type { Cart } from '@/lib/shopify';
-import { addToCart as addAction, updateCartLine, removeCartLine, readCart } from '@/app/_actions/cart';
+import {
+  addToCart as addAction,
+  updateCartLine,
+  removeCartLine,
+  applyDiscountCode,
+  removeDiscountCode,
+  changeLineVariant,
+  updateCartNote,
+  setDeliveryDate as setDeliveryDateAction,
+  readCart,
+} from '@/app/_actions/cart';
 import { announce, announceAssertive } from './announcer';
 
 type CartContextValue = {
@@ -17,6 +27,11 @@ type CartContextValue = {
   addLine: (variantId: string, quantity?: number) => Promise<void>;
   updateLine: (lineId: string, quantity: number) => Promise<void>;
   removeLine: (lineId: string) => Promise<void>;
+  applyDiscount: (code: string) => Promise<{ ok: boolean; error?: string }>;
+  removeDiscount: () => Promise<void>;
+  changeVariant: (lineId: string, merchandiseId: string, quantity: number) => Promise<{ ok: boolean; error?: string }>;
+  setNote: (note: string) => Promise<void>;
+  setDeliveryDate: (date: string | null) => Promise<void>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -91,6 +106,61 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cart, setOptimisticCount]);
 
+  const applyDiscount = useCallback(async (code: string) => {
+    const res = await applyDiscountCode(code);
+    if (res.ok) {
+      setCart(res.cart);
+      announce('Discount applied.');
+      return { ok: true };
+    }
+    announceAssertive(res.error);
+    return { ok: false, error: res.error };
+  }, []);
+
+  const removeDiscount = useCallback(async () => {
+    const res = await removeDiscountCode();
+    if (res.ok) {
+      setCart(res.cart);
+      announce('Discount removed.');
+    } else {
+      announceAssertive('Could not remove discount.');
+    }
+  }, []);
+
+  const changeVariant = useCallback(async (lineId: string, merchandiseId: string, quantity: number) => {
+    const res = await changeLineVariant(lineId, merchandiseId, quantity);
+    if (res.ok) {
+      setCart(res.cart);
+      announce('Option updated.');
+      return { ok: true };
+    }
+    announceAssertive(res.error);
+    return { ok: false, error: res.error };
+  }, []);
+
+  const setNote = useCallback(async (note: string) => {
+    const res = await updateCartNote(note);
+    if (res.ok) {
+      setCart(res.cart);
+      announce('Order note saved.');
+    } else {
+      announceAssertive('Could not save note.');
+    }
+  }, []);
+
+  // No optimistic count change — the delivery date doesn't affect the
+  // line total. The returned cart is authoritative (it echoes the saved
+  // attributes), mirroring setNote's setCart-from-response pattern.
+  const setDeliveryDate = useCallback(async (date: string | null) => {
+    const res = await setDeliveryDateAction(date);
+    if (res.ok) {
+      setCart(res.cart);
+      announce(date ? 'Delivery date saved.' : 'Delivery date cleared.');
+    } else {
+      announceAssertive(res.error || 'Could not save delivery date.');
+    }
+  }, []);
+
   const value = useMemo<CartContextValue>(() => ({
     cart,
     count: optimisticCount,
@@ -102,7 +172,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     addLine,
     updateLine,
     removeLine,
-  }), [cart, optimisticCount, drawerOpen, pending, addLine, updateLine, removeLine]);
+    applyDiscount,
+    removeDiscount,
+    changeVariant,
+    setNote,
+    setDeliveryDate,
+  }), [cart, optimisticCount, drawerOpen, pending, addLine, updateLine, removeLine, applyDiscount, removeDiscount, changeVariant, setNote, setDeliveryDate]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

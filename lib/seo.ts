@@ -1,11 +1,80 @@
-// Title cap before the root layout adds " · LA Mattress" (14 chars). 56 keeps
-// the rendered <title> under ~70 chars total, the typical SEO threshold.
-const TITLE_MAX = 56;
+// Title cap.
+//
+// Originally 56, sized to keep the rendered <title> under ~70 chars
+// total once the root layout appended " · LA Mattress Store" (~20 chars).
+//
+// Phase 281 switched detail routes (PDP, PLP, blog, article, CMS) to
+// `title: { absolute: title }` which bypasses that layout template —
+// the seo.title is now the literal rendered <title>. With the 14-20
+// chars of brand suffix gone, the 56 cap was tight enough to truncate
+// long product titles like "Diamond Dreamstage 2.0 Collection Clarity
+// Medium Cool Copper Gel Memory Foam 13" Mattress" at the same
+// position across sibling variants, producing duplicate truncated
+// titles ("Diamond Dreamstage 2.0…" for both Medium and Plush
+// variants). The May 15 SEMrush re-audit flagged 41 products for
+// "Duplicate title tag" because of this.
+//
+// Phase 289 (this file) raises the cap to 70. Google's SERP display
+// truncates at ~580 pixels (typically 55-65 chars depending on letter
+// width), but the full title is indexed for ranking up to ~100 chars.
+// 70 chars is a balance: most variant differentiators sit at chars
+// 40-50, comfortably under 70 even for the longest catalog titles,
+// while still being short enough that most titles render fully in
+// SERP without "..." truncation.
+//
+// If you change this, also update the hardcoded threshold in
+// app/products/[handle]/page.tsx's titleFallback length check.
+const TITLE_MAX = 70;
 const DESCRIPTION_MAX = 160;
 
+// Trailing brand suffix as appended by the metadata generators:
+// " | LA Mattress", " — LA Mattress Store", " - LA Mattress", etc.
+// Matches a leading-space separator (pipe / en-dash / em-dash / hyphen)
+// + "LA Mattress" + optional " Store".
+const BRAND_SUFFIX_RE = /\s[|–—-]\s*LA\s+Mattress(?:\s+Store)?\s*$/i;
+
+/**
+ * Cap a rendered <title> at `max` chars.
+ *
+ * Phase 292 (cowork MEDIUM#8): when the string overflows and the
+ * overflow is (partly) caused by a trailing " | LA Mattress" brand
+ * suffix, drop the WHOLE suffix instead of truncating into it. A
+ * half-rendered "… | LA Mattr…" looks like a broken render in SERPs.
+ * After dropping the suffix, if the base still overflows, truncate the
+ * base cleanly (no mangled suffix re-appended). Titles with no
+ * recognizable brand suffix keep the original truncate-with-ellipsis
+ * behavior.
+ */
 export function capTitle(s: string, max = TITLE_MAX): string {
   if (s.length <= max) return s;
-  return `${s.slice(0, max - 1).trimEnd()}…`;
+  const base = s.replace(BRAND_SUFFIX_RE, '');
+  if (base !== s && base.length <= max) return base;
+  const trimmable = base !== s ? base : s;
+  return `${trimmable.slice(0, max - 1).trimEnd()}…`;
+}
+
+/**
+ * Compose the homepage / site-default <title> from the Shopify Brand
+ * slogan without doubling the brand.
+ *
+ * Phase 292 (cowork LOW#12): the merchant set the Shopify Brand slogan
+ * to "LA Mattress | Shop Sales on Best Mattresses & Bedroom Furniture"
+ * — already brand-led. The old `${siteName} — ${slogan}` composition
+ * then produced "LA Mattress Store — LA Mattress | Shop Sales …" with
+ * the brand stated twice before the pipe. When the slogan already
+ * references the brand, use it verbatim; otherwise compose
+ * "<brand> — <slogan>" (the intended behavior for short taglines like
+ * "Sleep, engineered in Los Angeles.").
+ */
+export function composeBrandTitle(
+  siteName: string,
+  slogan: string | null | undefined,
+  fallback: string,
+): string {
+  const s = slogan?.trim();
+  if (!s) return fallback;
+  const brandLed = /^la\s+mattress\b/i.test(s) || s.toLowerCase().includes(siteName.toLowerCase());
+  return brandLed ? s : `${siteName} — ${s}`;
 }
 
 export function truncDescription(s: string, max = DESCRIPTION_MAX): string {

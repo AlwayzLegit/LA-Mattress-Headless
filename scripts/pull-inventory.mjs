@@ -27,6 +27,21 @@
  * Re-run whenever the catalog changes. Output is checked into the repo so the
  * Next.js app can use it for generateStaticParams + sitemap generation
  * without hitting Shopify on every build.
+ *
+ * Required Admin scopes (Shopify Admin → Settings → Apps and sales channels
+ * → Develop apps → [your app] → Configuration → Admin API access scopes):
+ *
+ *   read_products              — products + variants
+ *   read_content               — articles, blogs, comments
+ *   read_online_store_pages    — Shopify Pages (the /pages/X routes)
+ *   read_url_redirects         — URL redirects (separate scope from themes
+ *                                in API version 2024-10+; the script
+ *                                gracefully skips redirects + preserves the
+ *                                existing redirects.json if this scope is
+ *                                missing, so the pull still succeeds).
+ *
+ * read_themes is NOT required despite older guidance saying so — redirects
+ * moved to their own dedicated scope in 2024-10.
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -220,11 +235,31 @@ async function pullRedirects() {
         pageInfo { hasNextPage endCursor }
       }
     }`;
-  const nodes = await paginate(async (after) => {
-    const d = await gql(Q, { first: 50, after });
-    return d.urlRedirects;
-  });
-  return nodes.map((n) => ({ id: n.id, path: n.path, target: n.target }));
+  try {
+    const nodes = await paginate(async (after) => {
+      const d = await gql(Q, { first: 50, after });
+      return d.urlRedirects;
+    });
+    return nodes.map((n) => ({ id: n.id, path: n.path, target: n.target }));
+  } catch (err) {
+    // urlRedirects requires the read_url_redirects scope (separate from
+    // read_themes in Admin API 2024-10+). Rather than failing the entire
+    // pull when the scope is missing, return null so main() preserves the
+    // existing redirects.json on disk — the alternative is overwriting
+    // 1000+ entries with [] and silently breaking every legacy redirect.
+    if (/access\s*denied|ACCESS_DENIED/i.test(err?.message ?? '')) {
+      console.warn(
+        '\n[warning] urlRedirects access denied — token is missing the\n' +
+        '          `read_url_redirects` scope. Skipping redirects pull;\n' +
+        '          existing data/url-inventory/redirects.json is preserved.\n' +
+        '          Add the scope in Shopify Admin → Develop apps →\n' +
+        '          [app] → Configuration → API access scopes and reinstall\n' +
+        '          to re-issue the token.\n',
+      );
+      return null;
+    }
+    throw err;
+  }
 }
 
 function csvEscape(s) {
@@ -270,11 +305,17 @@ async function main() {
   const prdFile = await writeJson('products', products);
   const pgFile  = await writeJson('pages', pages);
   const blFile  = await writeJson('blogs', blogs);
-  const rdFile  = await writeJson('redirects', redirects);
+  // redirects === null means pullRedirects() bailed out (missing
+  // read_url_redirects scope). Preserve the existing redirects.json +
+  // redirects.csv on disk in that case — overwriting with [] would
+  // silently break every legacy redirect.
+  const rdFile  = redirects === null ? null : await writeJson('redirects', redirects);
 
-  const csv = redirectsToCsv(redirects);
-  const csvFile = resolve(OUT_DIR, 'redirects.csv');
-  await writeFile(csvFile, csv, 'utf8');
+  if (redirects !== null) {
+    const csv = redirectsToCsv(redirects);
+    const csvFile = resolve(OUT_DIR, 'redirects.csv');
+    await writeFile(csvFile, csv, 'utf8');
+  }
 
   const dt = ((Date.now() - t0) / 1000).toFixed(1);
   console.log(`\nWrote in ${dt}s:`);
@@ -282,8 +323,12 @@ async function main() {
   console.log(`  ${prdFile} — ${products.length} active+published products`);
   console.log(`  ${pgFile} — ${pages.length} pages (filter on isPublished in app)`);
   console.log(`  ${blFile} — ${blogs.length} blogs (${blogs.reduce((a, b) => a + b.articles.length, 0)} articles)`);
-  console.log(`  ${rdFile} — ${redirects.length} redirects`);
-  console.log(`  ${csvFile} — same redirects, Shopify Admin import format`);
+  if (redirects !== null) {
+    console.log(`  ${rdFile} — ${redirects.length} redirects`);
+    console.log(`  ${resolve(OUT_DIR, 'redirects.csv')} — same redirects, Shopify Admin import format`);
+  } else {
+    console.log(`  data/url-inventory/redirects.json — preserved (read_url_redirects scope missing)`);
+  }
 }
 
 main().catch((err) => {

@@ -181,8 +181,8 @@ summary:focus-visible,
 .btn:active { transform: translateY(1px); }
 .btn-primary { background: var(--accent); color: var(--accent-fg); }
 .btn-primary:hover { background: var(--accent-2); }
-.btn-secondary { background: var(--text); color: #fff; }
-.btn-secondary:hover { background: #2A2A2A; }
+.btn-secondary { background: var(--accent); color: var(--accent-fg); }
+.btn-secondary:hover { background: var(--accent-2); }
 .btn-ghost { background: transparent; color: var(--text); border-color: var(--line-strong); }
 .btn-ghost:hover { border-color: var(--text); }
 .btn-on-dark { background: #fff; color: #0A0A0A; }
@@ -311,6 +311,33 @@ summary:focus-visible,
 .topbar-link { display: inline-flex; align-items: center; gap: 6px; color: #fff; transition: opacity var(--d-fast); }
 .topbar-link:hover { opacity: 0.7; }
 .topbar-sep { width: 1px; height: 12px; background: rgba(255,255,255,0.18); }
+
+/* Phase 266 — sitewide announcement bar. Replaces (does not stack with)
+   the regular topbar when an active announcement metaobject exists.
+   Visible at every viewport size, including mobile, because sales are
+   the highest-value thing for mobile shoppers to see. */
+.announcement-bar {
+  background: var(--brand-navy); color: #fff;
+  font-size: 13px; line-height: 1.3;
+  height: var(--top-bar-h); display: flex; align-items: center;
+}
+.announcement-bar-accent { background: var(--accent); color: #fff; }
+.announcement-bar-urgent { background: #b91c1c; color: #fff; }
+.announcement-bar-inner {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; height: 100%; flex-wrap: wrap;
+}
+.announcement-bar-message { font-weight: 500; text-align: center; }
+.announcement-bar-cta {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: inherit; text-decoration: underline; text-underline-offset: 3px;
+  font-weight: 600;
+}
+.announcement-bar-cta:hover { opacity: 0.85; }
+@media (max-width: 640px) {
+  .announcement-bar { height: auto; min-height: var(--top-bar-h); padding: 6px var(--container-pad); font-size: 12.5px; }
+  .announcement-bar-inner { padding: 0; }
+}
 
 /* Breadcrumbs — `<nav class="lp-breadcrumbs">` followed by Link / .sep / span.
    The inline `/` separators need breathing room so "Home / Mattresses / X"
@@ -465,6 +492,21 @@ summary:focus-visible,
   -webkit-overflow-scrolling: touch;
   border: 1px solid var(--line);
   border-radius: var(--r-3);
+  /* `position: relative` so the absolutely-positioned sr-only scroll
+     hint span is anchored here instead of escaping to the document. */
+  position: relative;
+}
+/* Visible table caption — accessible name for the comparison table, also
+   a small subtitle for sighted users. Slightly muted so it doesn't
+   compete with the page h1 above. */
+.compare-table-caption {
+  caption-side: top;
+  text-align: left;
+  padding: var(--s-3) var(--s-4);
+  font-size: 13px;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
 }
 .compare-table {
   width: 100%;
@@ -1169,23 +1211,88 @@ summary:focus-visible,
   position: fixed; inset: 0; z-index: 100;
   background: #fff;
   display: flex; flex-direction: column;
-  animation: drawerIn 280ms var(--ease-out);
+  animation: drawerIn 240ms var(--ease-out);
 }
-@keyframes drawerIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+@keyframes drawerIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
 .mobile-drawer-hd {
   display: flex; align-items: center; justify-content: space-between;
   height: var(--nav-h); padding: 0 20px;
   border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
-.mobile-list { list-style: none; margin: 0; padding: 12px 0; flex: 1; overflow-y: auto; }
-.mobile-list a {
+
+/* Search — native GET form, full-width tap target */
+.mobile-search {
+  display: flex; align-items: center; gap: 10px;
+  margin: 16px 20px 8px;
+  padding: 0 14px;
+  height: 48px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+.mobile-search:focus-within { border-color: var(--accent); }
+.mobile-search input {
+  flex: 1; min-width: 0;
+  border: 0; background: transparent; outline: none;
+  font: inherit; font-size: 16px; color: var(--text);
+}
+
+.mobile-list {
+  list-style: none; margin: 0; padding: 8px 0 16px;
+  flex: 1; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Top-level row — shared by plain links and accordion triggers so both
+   read identically. Reset button styling so the <button> matches <a>. */
+.mobile-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 18px 20px;
-  font-size: 22px; font-weight: 500; letter-spacing: -0.01em;
-  border-bottom: 1px solid var(--line);
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 19px; font-weight: 500; letter-spacing: -0.01em;
+  color: var(--text); text-align: left;
+  background: none; border: 0; border-bottom: 1px solid var(--line);
+  font-family: inherit; cursor: pointer;
+  min-height: 56px;
 }
-.mobile-foot { display: flex; gap: 24px; padding: 20px; border-top: 1px solid var(--line); }
-.mobile-foot .topbar-link { color: var(--text); }
+.mobile-row:active { background: var(--surface-2); }
+.mobile-row > svg { color: var(--text-3); transition: transform var(--d-fast) var(--ease-out); flex-shrink: 0; }
+
+.mobile-acc.is-open > .mobile-acc-trigger { border-bottom-color: transparent; }
+.mobile-acc.is-open > .mobile-acc-trigger > svg { transform: rotate(180deg); color: var(--accent); }
+
+.mobile-acc-panel {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  padding: 4px 20px 16px;
+  animation: accIn 180ms var(--ease-out);
+}
+@keyframes accIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.mobile-acc-all {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 12px 0;
+  font-size: 15px; font-weight: 600; color: var(--accent);
+}
+.mobile-acc-group { padding-top: 8px; }
+.mobile-acc-group-title { margin: 0 0 6px; }
+.mobile-acc-group ul { list-style: none; margin: 0 0 6px; padding: 0; }
+.mobile-acc-group li a {
+  display: block;
+  padding: 11px 0;
+  font-size: 16px; color: var(--text-2);
+}
+.mobile-acc-group li a:active { color: var(--accent); }
+
+.mobile-foot {
+  display: flex; flex-wrap: wrap; gap: 16px 24px;
+  padding: 18px 20px;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.mobile-foot .topbar-link { color: var(--text); display: inline-flex; align-items: center; gap: 6px; }
 
 /* ───── Hero ───── */
 .hero { position: relative; height: clamp(560px, 85vh, 880px); background: var(--brand-navy); overflow: hidden; }
@@ -1245,8 +1352,13 @@ summary:focus-visible,
 /* ───── Trust bar ───── */
 .trust-bar { background: #fff; border-bottom: 1px solid var(--line); }
 .trust-bar-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 28px 0; }
-.trust-item { display: flex; align-items: center; gap: 14px; padding: 0 var(--s-5); border-right: 1px solid var(--line); }
+.trust-item { display: flex; align-items: center; gap: 14px; padding: 0 var(--s-5); border-right: 1px solid var(--line); color: inherit; text-decoration: none; transition: transform var(--d-fast) var(--ease); }
 .trust-item:last-child { border-right: 0; }
+.trust-item:hover { transform: translateY(-1px); }
+.trust-item:hover .trust-ico { background: var(--accent); color: var(--accent-fg); }
+.trust-item:hover .trust-label { color: var(--accent); }
+.trust-ico { transition: background var(--d-fast) var(--ease), color var(--d-fast) var(--ease); }
+.trust-label { transition: color var(--d-fast) var(--ease); }
 .trust-ico {
   width: 40px; height: 40px;
   background: var(--surface-2);
@@ -1314,6 +1426,17 @@ summary:focus-visible,
   padding: 16px 16px 20px;
   transition: transform var(--d-base) var(--ease), box-shadow var(--d-base) var(--ease), border-color var(--d-base) var(--ease);
 }
+/* Phase 302 fix — cards inside a horizontal rail must keep a fixed
+   flex-basis. `.plp-card { flex: initial }` (added for the PLP CSS
+   grid, where flex must be neutral) globally overrode `.pcard`'s rail
+   width, so PlpCard inside `.pcard-scroll` (homepage Popular, PDP
+   "Pairs well with", recently-viewed, cart cross-sell) collapsed and
+   crammed together on every viewport. Scoping to `.pcard-scroll .pcard`
+   (specificity 0,2,0) beats `.plp-card` (0,1,0) in rails only; the PLP
+   grid keeps `flex: initial`. */
+.pcard-scroll .pcard { flex: 0 0 320px; }
+@media (max-width: 640px) { .pcard-scroll .pcard { flex: 0 0 78vw; max-width: 300px; } }
+
 /* Phase 156: cards on PLP and search results wrap with <article
    className="pcard plp-card"> + an inner Link with this class so the
    CompareToggle button can be a sibling of the Link rather than
@@ -1375,6 +1498,7 @@ summary:focus-visible,
 .pcard-rating svg { color: var(--text); }
 .pcard-reviews { font-size: 12px; }
 .pcard-price { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.pcard-reviews { display: inline-flex; align-items: center; margin-top: 2px; min-height: 18px; }
 .pcard-was { font-size: 13px; color: var(--text-3); text-decoration: line-through; }
 .pcard-now { font-size: 17px; font-weight: 600; }
 .pcard-fin { font-size: 12px; }
@@ -1431,7 +1555,7 @@ summary:focus-visible,
   transition: transform var(--d-base) var(--ease);
 }
 .showroom-card:hover { transform: translateY(-2px); }
-.showroom-img { aspect-ratio: 4/3; border-radius: var(--r-3); margin-bottom: 14px; }
+.showroom-img { position: relative; overflow: hidden; aspect-ratio: 4/3; border-radius: var(--r-3); margin-bottom: 14px; background: var(--surface-2); }
 .showroom-meta { display: flex; flex-direction: column; gap: 6px; }
 .showroom-meta-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .showroom-idx { font-size: 11px; opacity: 0.5; }
@@ -1707,19 +1831,47 @@ summary:focus-visible,
 /* PDP layout — design handoff (pdp-showroom.css §PDP grid).
    Gallery on left in 1fr, sticky buybox on right at 440px. */
 .pdp { padding-top: 0; }
+/* Phase 279: grid-template-areas split the PDP into three regions
+   (gallery / buy-box rail / details) so the mobile order matches
+   industry-standard PDP UX: gallery → title+price+variant+ATC →
+   details. On desktop, gallery stacks above details in the left
+   column while the rail sticks alongside on the right.
+
+   Before Phase 279, the markup was `.pdp-left` (gallery + details all
+   together) and `.pdp-rail` (buy box) — on mobile this rendered the
+   buy box AFTER every spec section, forcing shoppers to scroll the
+   entire page to find variant + add-to-cart. */
 .pdp-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 440px;
-  gap: var(--s-8);
+  grid-template-areas:
+    "gallery rail"
+    "details rail";
+  column-gap: var(--s-8);
+  row-gap: var(--s-7);
   align-items: start;
   padding-bottom: var(--s-9);
 }
-@media (max-width: 1024px) { .pdp-grid { grid-template-columns: 1fr; gap: var(--s-6); } }
+@media (max-width: 1024px) {
+  .pdp-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "gallery"
+      "rail"
+      "details";
+    gap: var(--s-6);
+  }
+}
 
-/* Gallery + description + spec table all live in the left column so the
-   buy box sticks through the whole scroll. */
-.pdp-left { display: flex; flex-direction: column; gap: var(--s-7); min-width: 0; }
-@media (max-width: 1024px) { .pdp-left { gap: var(--s-5); } }
+.pdp-gallery-area { grid-area: gallery; min-width: 0; }
+.pdp-details-area {
+  grid-area: details;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-7);
+  min-width: 0;
+}
+@media (max-width: 1024px) { .pdp-details-area { gap: var(--s-5); } }
 
 /* PDP Gallery — design handoff §Gallery.
    .pdp-gallery > .pdp-gallery-main (1:1 r-4 with counter overlay) +
@@ -1775,19 +1927,21 @@ summary:focus-visible,
 
 /* PDP rail — design handoff §Buy box. The aside is the column shell; the
    inner is what actually sticks. No card border / radius / padding around
-   the inner — content sits naturally in the column. */
+   the inner — content sits naturally in the column.
+   Phase 228: removed the max-height + overflow-y: auto clamp. The intent
+   was to keep the ATC button visible on short laptop screens, but the
+   clamp produced an inner scrollbar on every normal viewport, which
+   reserved scrollbar width and squished the ATC button + variant
+   selector into the wrong dimensions. Mobile's always-visible ATC
+   requirement is already covered by <PdpStickyAtcBar> (Phase 209). */
 .pdp-rail { position: relative; }
 .pdp-rail-inner {
   position: sticky;
   top: calc(var(--nav-h) + var(--s-5));
   display: flex; flex-direction: column; gap: var(--s-4);
-  /* Clamp to viewport so a tall buybox doesn't push the ATC out of view on
-     short laptop screens. Reserves 88px for the floating compare tray. */
-  max-height: calc(100vh - var(--nav-h) - var(--s-5) - 88px);
-  overflow-y: auto;
 }
 @media (max-width: 1024px) {
-  .pdp-rail-inner { position: static; max-height: none; overflow: visible; }
+  .pdp-rail-inner { position: static; }
 }
 .pdp-brand-mark {
   font-size: 11px; font-weight: 600;
@@ -1830,6 +1984,53 @@ summary:focus-visible,
 }
 @media (max-width: 880px) { .pdp-sticky-bar { display: block; } }
 .pdp-sticky-bar.on { transform: translateY(0); }
+
+/* Phase 294: mobile sticky-ATC variant bottom sheet. Only reachable via
+   the sticky bar, which is itself mobile-only (display:block <=880px),
+   so the open state is effectively mobile-only — but gate the visible
+   chrome at <=880px defensively and hide above it. */
+.pdp-variant-scrim {
+  position: fixed; inset: 0; z-index: 59;
+  background: rgba(0,0,0,0.45);
+}
+.pdp-variant-sheet {
+  position: fixed; inset: auto 0 0 0;
+  width: 100%; max-height: min(85dvh, 720px);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.18);
+  z-index: 60;
+  display: flex; flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.pdp-variant-sheet::before {
+  content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 36px; height: 4px; background: var(--line-strong);
+  border-radius: 999px; pointer-events: none;
+}
+.pdp-variant-sheet-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px var(--s-4) var(--s-3);
+  border-bottom: 1px solid var(--line);
+}
+.pdp-variant-sheet-title { font-weight: 600; font-size: 15px; padding-right: var(--s-4); }
+.pdp-variant-sheet-close { display: inline-flex; padding: 4px; color: var(--text-3); }
+.pdp-variant-sheet-close:hover { color: var(--text); }
+.pdp-variant-sheet-body {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--s-4);
+  display: flex; flex-direction: column; gap: var(--s-5);
+}
+.pdp-variant-sheet-foot {
+  border-top: 1px solid var(--line);
+  padding: var(--s-4);
+}
+.pdp-variant-sheet-foot .btn { width: 100%; }
+@media (min-width: 881px) {
+  .pdp-variant-scrim, .pdp-variant-sheet { display: none; }
+}
 .pdp-sticky-bar__inner {
   display: flex; align-items: center; gap: var(--s-3);
   padding: var(--s-3) var(--s-4);
@@ -1980,7 +2181,8 @@ summary:focus-visible,
 /* PDP below-the-fold sections — design handoff (pdp-showroom.css §Sections).
    Each .pdp-section has a section-head (eyebrow + h2 left, optional lede
    right) and section-specific content underneath. Sections sit inside
-   pdp-left so the buybox stays sticky next to them. */
+   .pdp-details-area so the buybox stays sticky next to them on desktop
+   and renders above them on mobile (Phase 279 grid-template-areas). */
 .pdp-section { padding: var(--s-7) 0 0; }
 .pdp-section-head {
   display: grid;
@@ -2205,7 +2407,7 @@ summary:focus-visible,
 }
 .pdp-trust li { display: inline-flex; align-items: center; gap: 8px; }
 
-/* Inline within pdp-left — spacing handled by parent flex gap, not own padding. */
+/* Inline within .pdp-details-area — spacing handled by parent flex gap, not own padding. */
 .pdp-description { padding: 0; }
 
 /* RTE — Shopify-authored body HTML */
@@ -2392,6 +2594,16 @@ summary:focus-visible,
 }
 .cart-qty-btn:hover:not(:disabled) { background: var(--surface-2); }
 .cart-qty-btn:disabled { opacity: 0.4; cursor: wait; }
+/* The parent `.cart-qty` (line ~2377) has `overflow: hidden` so the
+   default `:focus-visible` ring (outline-offset: 2px outside the
+   button) is clipped to the pill border and disappears. Use an inset
+   offset so the ring is drawn inside the 32x32 button, where it
+   survives the parent's clipping. */
+.cart-qty-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--r-pill);
+}
 .cart-qty-val {
   min-width: 32px; text-align: center;
   font-size: 14px; font-weight: 500;
@@ -2409,6 +2621,109 @@ summary:focus-visible,
   font-size: 14px; padding: 4px 0;
 }
 .cart-subtotal { font-size: 18px; font-weight: 600; }
+
+/* Phase 293: cart feature suite */
+.cart-freeship-bar { margin-top: var(--s-4); }
+.cart-freeship-msg { font-size: 13px; line-height: 1.4; margin: 0 0 6px; }
+.cart-freeship-bar[data-unlocked="true"] .cart-freeship-msg { color: var(--accent); }
+.cart-freeship-track { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.cart-freeship-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width var(--d-fast) var(--ease); }
+
+.cart-coupon { margin-top: var(--s-4); }
+.cart-coupon-label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.cart-coupon-row { display: flex; gap: 8px; }
+.cart-coupon-input {
+  flex: 1; min-width: 0; height: 40px; padding: 0 12px;
+  border: 1px solid var(--line-strong); border-radius: var(--r-2);
+  font-size: 14px; background: #fff; color: var(--text);
+}
+.cart-coupon-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cart-coupon-apply { height: 40px; flex-shrink: 0; }
+.cart-coupon-error { color: var(--sale); font-size: 12px; margin: 6px 0 0; }
+.cart-coupon-applied { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.cart-coupon-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface-2); color: var(--text);
+  padding: 6px 10px; border-radius: 999px; font-size: 13px; font-weight: 600;
+}
+.cart-coupon-remove { display: inline-flex; padding: 2px; color: var(--text-3); }
+.cart-coupon-remove:hover { color: var(--sale); }
+.cart-discount-row { color: var(--accent); font-weight: 500; }
+
+.cart-line-variant { margin: 4px 0 8px; }
+.cart-line-variant-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cart-line-variant-summary { font-size: 13px; }
+.cart-line-variant-toggle {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+}
+.cart-line-variant-toggle:hover { text-decoration: underline; }
+.cart-line-variant-panel { margin-top: 8px; display: grid; gap: 10px; }
+.cart-line-variant-opt .eyebrow { display: block; margin-bottom: 4px; }
+.cart-line-variant-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cart-line-variant-chip {
+  border: 1px solid var(--line-strong); border-radius: var(--r-2);
+  padding: 5px 10px; font-size: 12px; background: #fff; color: var(--text);
+}
+.cart-line-variant-chip.on { border-color: var(--accent); background: var(--accent); color: var(--accent-fg); }
+.cart-line-variant-chip.unavailable { opacity: 0.4; }
+.cart-line-variant-chip:disabled { cursor: default; }
+
+.cart-line-save { font-size: 13px; color: var(--text-3); }
+.cart-line-save:hover:not(:disabled) { color: var(--accent); }
+.cart-line-save:disabled { opacity: 0.5; cursor: wait; }
+
+.cart-note { margin-top: var(--s-4); }
+.cart-note-summary { font-size: 13px; font-weight: 600; cursor: pointer; }
+.cart-note-input {
+  width: 100%; margin-top: 8px; padding: 10px 12px;
+  border: 1px solid var(--line-strong); border-radius: var(--r-2);
+  font-size: 14px; font-family: inherit; resize: vertical; background: #fff; color: var(--text);
+}
+.cart-note-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cart-note-status { display: block; font-size: 12px; margin-top: 4px; min-height: 14px; }
+
+/* Cart-page preferred-delivery-date picker (Phase 298) */
+.cart-delivery {
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+}
+.cart-delivery-help {
+  font-size: 13px;
+  margin: var(--s-2) 0 var(--s-4);
+  max-width: 52ch;
+}
+.cart-delivery-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.cart-delivery-field {
+  font: inherit;
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  color: var(--text);
+  min-height: 44px;
+}
+.cart-delivery-field:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.cart-delivery-clear { min-height: 44px; }
+.cart-delivery-confirm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--s-3);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+}
 
 /* /cart full page */
 .cart-grid {
@@ -2492,6 +2807,110 @@ summary:focus-visible,
   .plp-hero-img { aspect-ratio: 16 / 9; }
 }
 
+/* Phase 284 — cross-cut sub-nav. Renders directly under the PLP hero on
+   single-dimension collections (brand / size / type) so shoppers can
+   pivot to the high-intent intersection. Internal-link cluster also
+   strengthens crawl paths between cross-cut collections. */
+.plp-sibling-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  max-width: 1200px;
+  margin: var(--s-5) auto 0;
+  padding: var(--s-5) var(--container-pad) 0;
+}
+.plp-sibling-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2) var(--s-3);
+}
+.plp-sibling-heading {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  flex: 0 0 100%;
+}
+.plp-sibling-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.plp-sibling-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  font-size: 14px;
+  color: var(--text-2);
+  text-decoration: none;
+  background: var(--surface-2);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.plp-sibling-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.plp-sibling-chip[aria-current='page'] {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Phase 265 — below-the-grid PLP content block: category intro paragraph,
+   FAQ accordion, internal links cluster. Renders on every
+   /collections/[handle] via <PlpContentBlock />. Boosts text-to-HTML
+   ratio on PLP routes (SEMrush rev-1 flagged 941 low-ratio pages) and
+   emits FAQPage JSON-LD for featured-snippet eligibility. */
+.plp-content {
+  max-width: 1200px; margin: var(--s-7) auto var(--s-8);
+  padding: 0 var(--container-pad);
+}
+.plp-content-intro { margin-bottom: var(--s-6); max-width: 70ch; }
+.plp-content-title { margin: 0 0 var(--s-3); font-size: clamp(22px, 2.4vw, 28px); }
+.plp-content-lede { font-size: 16px; line-height: 1.65; color: var(--text-2); margin: 0; }
+.plp-content-eyebrow { margin: 0 0 var(--s-3); display: block; }
+.plp-content-grid {
+  display: grid; grid-template-columns: 1.4fr 1fr;
+  gap: var(--s-6);
+  padding-top: var(--s-5); border-top: 1px solid var(--line);
+}
+.plp-content-faq { display: flex; flex-direction: column; gap: 0; }
+.plp-content-faq-item {
+  border-bottom: 1px solid var(--line); padding: var(--s-3) 0;
+}
+.plp-content-faq-item:first-of-type { padding-top: var(--s-2); }
+.plp-content-faq-item summary {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-3); cursor: pointer; list-style: none;
+  font-weight: 500; font-size: 15px; line-height: 1.4;
+}
+.plp-content-faq-item summary::-webkit-details-marker { display: none; }
+.plp-content-faq-item summary:hover { color: var(--accent); }
+.plp-content-faq-item[open] summary svg { transform: rotate(180deg); }
+.plp-content-faq-item summary svg { transition: transform 150ms ease; flex: 0 0 auto; }
+.plp-content-faq-q { flex: 1 1 auto; }
+.plp-content-faq-a {
+  margin: var(--s-2) 0 var(--s-1); padding-right: var(--s-5);
+  font-size: 14.5px; line-height: 1.6; color: var(--text-2);
+}
+.plp-content-links { padding-left: var(--s-2); }
+.plp-content-link-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: var(--s-3);
+  font-size: 15px;
+}
+@media (max-width: 760px) {
+  .plp-content-grid { grid-template-columns: 1fr; gap: var(--s-5); }
+  .plp-content-links { padding-left: 0; padding-top: var(--s-4); border-top: 1px solid var(--line); }
+}
+
 /* PLP toolbar — sticky to nav, with backdrop-blur on scroll. Filter
    button + result count on the left, sort dropdown on the right. */
 .plp-toolbar {
@@ -2505,10 +2924,30 @@ summary:focus-visible,
   -webkit-backdrop-filter: saturate(180%) blur(12px);
   margin-left: calc(var(--gutter) * -1);
   margin-right: calc(var(--gutter) * -1);
-  padding: 0 var(--gutter);
+  /* Phase 295: the bar deliberately full-bleeds (negative margins) so
+     the blurred backdrop spans edge-to-edge. But the inner padding was
+     a flat var(--gutter), so on notched iPhones with viewport-fit=cover
+     the "Featured" sort control was pulled under the notch / rounded
+     corner (landscape + home-indicator). max() keeps content clear of
+     the safe-area inset while the blur still bleeds full-width — the
+     only sticky element that was missing this (nav/cart/.plp-filters
+     all already had safe-area handling). */
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
   border-bottom: 1px solid var(--line);
 }
 @media (max-width: 640px) { .plp-toolbar { height: 56px; gap: var(--s-2); } }
+/* Phase 295: the toolbar only restyled at <=640px while the mobile
+   filter sheet switches at <=880px; on the narrowest phones (375–430px)
+   .plp-toolbar-left could wrap to a second line and collide with the
+   sticky offset. Keep it single-line and let the count truncate. */
+@media (max-width: 430px) {
+  .plp-toolbar { gap: var(--s-2); }
+  .plp-toolbar-left { flex-wrap: nowrap; min-width: 0; }
+  .plp-toolbar-count { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
 .plp-toolbar-count { font-size: 13px; color: var(--text-3); }
 .plp-toolbar-sort {
   display: inline-flex; align-items: center; gap: var(--s-2);
@@ -2887,8 +3326,19 @@ summary:focus-visible,
   animation: quizStepIn 220ms var(--ease-out);
 }
 @keyframes quizStepIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-.quiz-step-title { margin: 0; outline: none; }
-.quiz-step-title:focus-visible { outline: none; }
+/* Heading is keyboard-focused via tabIndex={-1} on every step change
+   (sleep-quiz.tsx focuses #quiz-question-title in a useEffect). The
+   prior `outline: none` on `:focus-visible` made that focus shift
+   completely invisible to keyboard users — the heading would receive
+   focus, but the SR announcement was the only feedback. Restore the
+   default ring on keyboard focus and keep mouse focus silent. */
+.quiz-step-title { margin: 0; }
+.quiz-step-title:focus { outline: none; }
+.quiz-step-title:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
 .quiz-step-helper { margin: var(--s-3) 0 var(--s-5); max-width: 56ch; font-size: 14px; }
 
 .quiz-options { display: grid; gap: var(--s-3); margin: var(--s-4) 0 var(--s-5); }
@@ -2945,6 +3395,36 @@ summary:focus-visible,
 .quiz-result-answer-row dt { color: var(--text-3); font-size: 13px; }
 .quiz-result-answer-row dd { margin: 0; font-weight: 500; }
 .quiz-result-foot { margin-top: var(--s-5); padding-top: var(--s-4); border-top: 1px solid var(--line); display: flex; justify-content: flex-end; }
+
+/* Phase 255 — quiz result product hero card. Horizontal layout: image on
+   the left, brand / title / reviews / price / CTA on the right. Stacks
+   vertically below 720px so it stays usable on phones. */
+.quiz-result-product {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--s-5);
+  margin-top: var(--s-6);
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg-2);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.quiz-result-product:hover { border-color: var(--accent); box-shadow: 0 4px 18px rgb(0 0 0 / 5%); }
+.quiz-result-product:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.quiz-result-product-img { position: relative; border-radius: 10px; overflow: hidden; }
+.quiz-result-product-meta { display: flex; flex-direction: column; gap: var(--s-2); }
+.quiz-result-product-brand { font-size: 13px; color: var(--text-3); letter-spacing: 0.04em; text-transform: uppercase; }
+.quiz-result-product-title { font-size: 20px; font-weight: 600; line-height: 1.25; margin: 0; }
+.quiz-result-product-reviews { margin-top: 2px; }
+.quiz-result-product-price { display: flex; align-items: baseline; gap: var(--s-2); margin-top: var(--s-2); font-size: 18px; }
+.quiz-result-product-cta { margin-top: var(--s-3); }
+@media (max-width: 720px) {
+  .quiz-result-product { grid-template-columns: 1fr; }
+  .quiz-result-product-img { aspect-ratio: 4 / 3; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .quiz-progress-fill,
@@ -3478,4 +3958,356 @@ summary:focus-visible,
   display: flex; align-items: center; justify-content: center;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PDP customer reviews — Phase 238.
+   Server-rendered list of latest reviews + inline Write-a-Review form.
+   ─────────────────────────────────────────────────────────────────────── */
+
+.pdp-reviews {
+  margin: var(--s-9) auto 0;
+  max-width: 880px;
+  padding: 0 var(--s-5);
+}
+.pdp-reviews-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--line);
+}
+.pdp-reviews-title { margin: 0; }
+.pdp-reviews-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+.pdp-reviews-avg { font-weight: 600; font-size: 22px; }
+.pdp-reviews-empty { margin: 0; font-size: 14px; }
+.pdp-reviews-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--s-5) 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+}
+@media (max-width: 760px) {
+  .pdp-reviews-list { grid-template-columns: 1fr; }
+}
+.pdp-review-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  padding: var(--s-4);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pdp-review-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.pdp-review-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.pdp-review-title { margin: 4px 0 0; font-size: 15px; font-weight: 600; line-height: 1.35; }
+.pdp-review-body { margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-2); }
+.pdp-review-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.pdp-review-stars { display: inline-flex; gap: 2px; }
+.pdp-review-star-on  { color: var(--accent); }
+.pdp-review-star-off { color: var(--line-strong); }
+
+/* ─── Write a review CTA + form ────────────────────────────────────────── */
+.pdp-review-cta-row {
+  margin-top: var(--s-5);
+  display: flex;
+  justify-content: center;
+}
+.pdp-review-cta-btn { min-width: 220px; }
+.pdp-review-form {
+  margin-top: var(--s-5);
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+.pdp-review-form-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pdp-review-form-title { margin: 0; }
+.pdp-review-form-cancel {
+  background: transparent;
+  border: 0;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-3);
+}
+.pdp-review-form-cancel:hover { color: var(--text); }
+.pdp-review-form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.pdp-review-form-field input,
+.pdp-review-form-field textarea {
+  width: 100%;
+  appearance: none;
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-2);
+  background: var(--background);
+  color: var(--text);
+  transition: border-color var(--d-fast), box-shadow var(--d-fast);
+}
+.pdp-review-form-field input:focus,
+.pdp-review-form-field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(20,40,160,0.12);
+  outline: none;
+}
+.pdp-review-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+@media (max-width: 600px) {
+  .pdp-review-form-row { grid-template-columns: 1fr; }
+}
+.pdp-review-form-stars { border: 0; padding: 0; margin: 0; }
+.pdp-review-form-stars-row {
+  display: inline-flex;
+  gap: 2px;
+}
+.pdp-review-form-star {
+  background: transparent;
+  border: 0;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--line-strong);
+  transition: color var(--d-fast);
+}
+.pdp-review-form-star:hover,
+.pdp-review-form-star.is-on,
+.pdp-review-form-star:focus-visible { color: var(--accent); }
+.pdp-review-form-star:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.pdp-review-form-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--sale);
+  background: rgba(224, 0, 0, 0.06);
+  padding: 8px 12px;
+  border-radius: var(--r-2);
+}
+.pdp-review-form-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.pdp-review-form-fine { font-size: 12px; margin: 0; max-width: 36ch; }
+.pdp-review-form-success {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+  padding: var(--s-4);
+  background: rgba(20, 160, 80, 0.06);
+  border: 1px solid rgba(20, 160, 80, 0.3);
+  border-radius: var(--r-3);
+  color: var(--text);
+}
+.pdp-review-form-success-title { font-weight: 600; }
+.pdp-review-form-success-body { margin: 4px 0 0; font-size: 14px; line-height: 1.55; }
+
+/* ===========================================================================
+   Phase 277 — Sale-page template (/pages/memorial-day-sale, /pages/black-friday-...)
+   Triggered by handle pattern. Full-bleed navy hero with eyebrow/title/lede/CTAs,
+   then merchant body in a wider container below.
+   =========================================================================== */
+.sale-page-hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--brand-navy) 0%, #1B2C5E 50%, #2a3f7a 100%);
+  color: #fff;
+  padding: clamp(60px, 10vw, 120px) 0 clamp(80px, 12vw, 140px);
+  margin-bottom: var(--s-7);
+  overflow: hidden;
+}
+.sale-page-hero::before {
+  /* Subtle radial highlight for depth without an image — keeps page fast
+     and lets the merchant focus on copy + the existing /collections/on-sale
+     thumbnail grid in the body. */
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at top right, rgb(255 255 255 / 8%) 0%, transparent 60%);
+  pointer-events: none;
+}
+.sale-page-hero-inner { position: relative; z-index: 1; max-width: 900px; }
+.sale-page-breadcrumbs { color: rgb(255 255 255 / 70%); margin-bottom: var(--s-5); }
+.sale-page-breadcrumbs a { color: inherit; }
+.sale-page-breadcrumbs a:hover { color: #fff; }
+.sale-page-eyebrow { color: rgb(255 255 255 / 85%); margin-bottom: var(--s-3); }
+.sale-page-title {
+  margin: 0 0 var(--s-4);
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.sale-page-lede {
+  margin: 0 0 var(--s-6);
+  font-size: clamp(17px, 1.6vw, 21px);
+  line-height: 1.5;
+  color: rgb(255 255 255 / 92%);
+  max-width: 60ch;
+}
+.sale-page-ctas { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+.sale-page-body {
+  max-width: 880px;
+  padding-bottom: var(--s-9);
+}
+.sale-page-body .rte { font-size: 17px; line-height: 1.7; }
+@media (max-width: 760px) {
+  .sale-page-hero { padding: 60px 0 80px; }
+}
+
+/* Phase 278 — Sale-page extended sections (trust strip, product grid, chips, foot CTA). */
+.sale-page-trust {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  padding: var(--s-5) 0;
+}
+.sale-page-trust-inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-5);
+  align-items: center;
+}
+.sale-page-trust-item {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+}
+.sale-page-trust-item svg { flex: 0 0 auto; color: var(--accent); margin-top: 2px; }
+.sale-page-trust-title { font-weight: 600; font-size: 15px; line-height: 1.3; }
+.sale-page-trust-sub { color: var(--text-2); font-size: 13.5px; line-height: 1.5; margin-top: 2px; }
+@media (max-width: 760px) {
+  .sale-page-trust-inner { grid-template-columns: 1fr; gap: var(--s-3); }
+}
+
+.sale-page-grid-section {
+  padding: var(--s-8) 0 var(--s-7);
+  border-bottom: 1px solid var(--line);
+}
+.sale-page-grid-head { margin-bottom: var(--s-6); max-width: 70ch; }
+.sale-page-grid-head .h2 { margin: 0 0 var(--s-2); }
+.sale-page-grid-head p { margin: 0; font-size: 15px; line-height: 1.55; }
+.sale-page-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: var(--s-4);
+}
+.sale-page-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.sale-page-chip:hover {
+  border-color: var(--accent);
+  background: #fff;
+}
+.sale-page-grid-foot {
+  margin-top: var(--s-6);
+  display: flex;
+  justify-content: center;
+}
+
+.sale-page-foot-cta {
+  padding: var(--s-8) 0;
+  background: var(--bg-2);
+  text-align: center;
+}
+.sale-page-foot-cta-inner { max-width: 60ch; margin: 0 auto; }
+.sale-page-foot-cta .h2 { margin: 0 0 var(--s-3); }
+.sale-page-foot-cta p { margin: 0 0 var(--s-5); }
+.sale-page-foot-cta .sale-page-ctas { justify-content: center; }
+
+/* Phase 282 — HTML sitemap page (/pages/sitemap). Footer-linked
+   directory of every collection / page / blog article / product. Exists
+   so SEMrush + similar crawlers find every sitemap.xml entry from a
+   single landing page without paginating PLPs / blog indexes deeply. */
+.html-sitemap {
+  padding: var(--s-7) var(--container-pad) var(--s-9);
+  max-width: 1200px;
+}
+.html-sitemap-head { margin-bottom: var(--s-7); max-width: 75ch; }
+.html-sitemap-head .h1 { margin: var(--s-3) 0 var(--s-4); }
+.html-sitemap-lede { font-size: 16px; line-height: 1.6; }
+.html-sitemap-section { margin-top: var(--s-7); border-top: 1px solid var(--line); padding-top: var(--s-5); }
+.html-sitemap-section .h2 {
+  margin: 0 0 var(--s-4);
+  font-size: clamp(20px, 2vw, 24px);
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.html-sitemap-section .h2 a { color: inherit; text-decoration: none; }
+.html-sitemap-section .h2 a:hover { color: var(--accent); }
+.html-sitemap-count { font-size: 14px; font-weight: 400; }
+.html-sitemap-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px 24px;
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+.html-sitemap-list li { padding: 4px 0; }
+.html-sitemap-list a { color: var(--text); text-decoration: none; }
+.html-sitemap-list a:hover { color: var(--accent); text-decoration: underline; }
+@media (max-width: 760px) {
+  .html-sitemap-list { grid-template-columns: 1fr; gap: 6px 0; }
 }

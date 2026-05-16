@@ -8,14 +8,17 @@ const COLS: Col[] = [
   { title: 'Shop', links: [
     { label: 'Mattresses',      href: '/collections/mattresses' },
     { label: 'Adjustable Beds', href: '/collections/adjustable-beds' },
+    { label: 'Bed Frames',      href: '/collections/bed-frames' },
     { label: 'Brands',          href: '/pages/mattress-brands' },
     { label: 'Accessories',     href: '/collections/sheets-pillowcases' },
     { label: 'Pillows',         href: '/collections/pillows' },
+    { label: 'Rize Pillows',    href: '/collections/rize-pillows' },
     { label: 'Comforters',      href: '/collections/comforters' },
     { label: 'Mattress Protectors', href: '/collections/mattress-protector' },
     { label: 'Deals',           href: '/collections/on-sale' },
   ]},
   { title: 'Help', links: [
+    { label: 'Mattress Guides', href: '/blogs' },
     { label: 'Financing', href: '/pages/mattress-store-financing' },
     { label: 'Delivery',  href: '/pages/mattress-store-delivery' },
     { label: 'Returns',   href: '/pages/returns' },
@@ -99,7 +102,7 @@ export function Footer() {
           <li><Link href="/pages/terms-conditions">Terms</Link></li>
           <li><Link href="/pages/data-sharing-opt-out">Accessibility</Link></li>
           <li><Link href="/pages/data-sharing-opt-out">Do Not Sell My Info</Link></li>
-          <li><Link href="/sitemap.xml">Sitemap</Link></li>
+          <li><Link href="/pages/sitemap">Sitemap</Link></li>
         </ul>
       </div>
     </footer>

@@ -1,14 +1,28 @@
 /**
  * Judge.me Reviews API — server-side fetch helpers.
  *
- * We pull individual review records (not just the aggregate metafields,
- * which we already render on PDPs via the ProductReviews type). Server-side
- * fetch keeps the public API token off the client, lets Next.js cache the
- * response per ISR config, and gives us SSR'd markup that's good for SEO.
+ * Used for two surfaces only:
+ *   - /pages/reviews — aggregate header + latest-reviews carousel
+ *     across the entire store
+ *   - homepage Reviews section (static-sections.tsx) — same data,
+ *     subset of items
  *
- * Setup:
+ * Per-product review fetch was removed in Phase 247 because Judge.me's
+ * REST API silently ignores every per-product filter on this token
+ * tier (verified in Phases 245/246 diagnostic — all of `external_id`,
+ * `product_external_id`, `product_id`, `handle` return identical
+ * unfiltered results). Phase 247 pivoted PDP reviews to Judge.me's
+ * official client-side widget instead. See `<JudgemeWidget>` in
+ * app/_components.
+ *
+ * Phase 249: pruned `getProductReviews`, `createReview`, and the
+ * `CreateReviewPayload` / `CreateReviewResult` types that those used.
+ * `shopifyProductIdFromGid` stays — still used by the PDP reviews
+ * section to wire the widget's `data-id`.
+ *
+ * Setup (unchanged):
  *   1. Log into Judge.me → Settings → Public API → reveal token.
- *   2. Set Vercel env vars (Production + Preview):
+ *   2. Set Vercel env vars (Production + Preview + Development):
  *        JUDGEME_API_TOKEN=<that token>
  *        JUDGEME_SHOP_DOMAIN=<your-shop>.myshopify.com
  *   3. Redeploy.
@@ -70,6 +84,19 @@ export async function getStorefrontReviews({ perPage = 12, page = 1, minRating =
   } catch {
     return [];
   }
+}
+
+/**
+ * Extract the numeric Shopify product ID from a Storefront API gid string
+ * (e.g. `gid://shopify/Product/7894217031836` → `7894217031836`). Returns
+ * null for malformed input so callers can short-circuit cleanly.
+ *
+ * Used by the PDP reviews section to derive the value for Judge.me's
+ * widget `data-id` attribute (Phase 248).
+ */
+export function shopifyProductIdFromGid(gid: string): string | null {
+  const m = /\/Product\/(\d+)/.exec(gid);
+  return m ? m[1] : null;
 }
 
 /**

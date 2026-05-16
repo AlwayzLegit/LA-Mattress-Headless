@@ -4,11 +4,18 @@
 // Per-page templates (PDP, PLP, blog, locations index, per-showroom) emit
 // their OWN, more specific JSON-LD with a distinct `@id` — Schema.org
 // allows multiple of the same @type on a page so long as @id differs.
+//
+// Phase 268: Organization name + logo now read from `shop.brand` via
+// `buildOrganizationLd(shopBrand)`. Hardcoded constants stay as the
+// fallback when shop data isn't available (Shopify unconfigured, or
+// merchant hasn't filled out Brand assets).
 
-import { SITE_BRAND, SITE_PHONE_SCHEMA } from './site-config';
+import { SITE_BRAND, SITE_PHONE_SCHEMA, SOCIAL_PROFILES } from './site-config';
 import { SHOWROOMS } from './showrooms';
+import type { ShopBrand } from './shopify/queries/shop';
 
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
+const FALLBACK_LOGO = `${SITE}/assets/la-mattress-logo.png`;
 
 export const ORGANIZATION_LD = {
   '@context': 'https://schema.org',
@@ -16,9 +23,32 @@ export const ORGANIZATION_LD = {
   '@id': `${SITE}/#organization`,
   name: SITE_BRAND,
   url: `${SITE}/`,
-  logo: `${SITE}/assets/la-mattress-logo.png`,
+  logo: FALLBACK_LOGO,
   telephone: SITE_PHONE_SCHEMA,
+  // Phase 277b: include sameAs only when configured — emitting an empty
+  // array produces an invalid Organization in some validators.
+  ...(SOCIAL_PROFILES.length > 0 ? { sameAs: [...SOCIAL_PROFILES] } : {}),
 };
+
+/**
+ * Phase 268: build the Organization JSON-LD using Shopify Brand data
+ * when available, falling back to the static ORGANIZATION_LD above for
+ * any fields the merchant hasn't filled out.
+ */
+export function buildOrganizationLd(shop: ShopBrand | null) {
+  const logo = shop?.brand?.logo?.url ?? FALLBACK_LOGO;
+  const name = shop?.name ?? SITE_BRAND;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE}/#organization`,
+    name,
+    url: `${SITE}/`,
+    logo,
+    telephone: SITE_PHONE_SCHEMA,
+    ...(SOCIAL_PROFILES.length > 0 ? { sameAs: [...SOCIAL_PROFILES] } : {}),
+  };
+}
 
 export const LOCAL_BUSINESS_LD = {
   '@context': 'https://schema.org',
@@ -29,12 +59,18 @@ export const LOCAL_BUSINESS_LD = {
   telephone: SITE_PHONE_SCHEMA,
   priceRange: '$$$',
   image: `${SITE}/assets/la-mattress-logo.png`,
+  // Phase 236: top-level FurnitureStore address uses the Studio City
+  // showroom (12306 Ventura Blvd) — that's the Shopify shop.billingAddress,
+  // i.e. the canonical corporate address. Previously hardcoded to an
+  // unrelated `3550 Wilshire Blvd 90010` that didn't match any showroom.
+  // Each individual showroom is still emitted as a `department` below,
+  // so Google sees both the corporate anchor and the 5 branch locations.
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '3550 Wilshire Blvd',
-    addressLocality: 'Los Angeles',
+    streetAddress: '12306 Ventura Blvd',
+    addressLocality: 'Studio City',
     addressRegion: 'CA',
-    postalCode: '90010',
+    postalCode: '91604',
     addressCountry: 'US',
   },
   areaServed: { '@type': 'City', name: 'Los Angeles' },
@@ -56,6 +92,10 @@ export const LOCAL_BUSINESS_LD = {
       addressCountry: 'US',
     },
     ...(s.geo ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } } : {}),
+    // Phase 287: reinforce the GBP/Maps entity association from the
+    // homepage (highest-authority page) too — each department branch
+    // points at its verified Google Business Profile.
+    ...(s.gbpUrl ? { sameAs: [s.gbpUrl] } : {}),
   })),
   parentOrganization: { '@id': `${SITE}/#organization` },
 };

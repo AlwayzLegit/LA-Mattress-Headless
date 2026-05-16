@@ -7,24 +7,11 @@ import { useCart } from '@/app/_components/cart-context';
 import { Icon } from '@/app/_components/icon';
 import { announce } from '@/app/_components/announcer';
 import { formatMoney, formatPriceRange } from '@/lib/format';
+import { findVariant, isOptionAvailable } from '@/lib/variant-select';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
-
-// Standard mattress size dimensions for the per-size sublabel in the
-// design's `.pdp-size` cards. Independent of brand — these are industry-
-// standard sizes. Falls back to no sublabel for unrecognized values.
-const SIZE_DIMENSIONS: Record<string, string> = {
-  'Twin':                 '38" × 75"',
-  'Twin XL':              '38" × 80"',
-  'Full':                 '54" × 75"',
-  'Full XL':              '54" × 80"',
-  'Queen':                '60" × 80"',
-  'King':                 '76" × 80"',
-  'California King':      '72" × 84"',
-  'Cal King':             '72" × 84"',
-  'Split King':           'Two 38" × 80"',
-  'Split California King': 'Two 36" × 84"',
-  'Split Cal King':       'Two 36" × 84"',
-};
+import { SIZE_DIMENSIONS } from './pdp-data';
+import { PdpStickyAtcBar } from './pdp-sticky-atc-bar';
+import { StickyVariantSheet } from './sticky-variant-sheet';
 
 type Props = {
   options: ProductOption[];
@@ -48,14 +35,20 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
 
   const [selection, setSelection] = useState<Record<string, string>>(initial);
   const [qty, setQty] = useState(1);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const { addLine, pending } = useCart();
+
+  // Whether the product has a real choice to make (>1 value on some
+  // option). Same predicate the inline picker uses. Drives the mobile
+  // sticky-bar behaviour: choices → open the sheet; none → direct add.
+  const hasChoices = options.filter((o) => o.values.length > 1).length > 0;
 
   // Reset quantity to 1 whenever the user changes the variant — total
   // shouldn't carry across selections.
   useEffect(() => { setQty(1); }, [selection]);
 
   const matchingVariant = useMemo(
-    () => variants.find((v) => v.selectedOptions.every((o) => selection[o.name] === o.value)),
+    () => findVariant(variants, selection),
     [variants, selection],
   );
 
@@ -86,12 +79,7 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
   }, [matchingVariant]);
 
   function isAvailable(name: string, value: string): boolean {
-    return variants.some((v) => {
-      if (!v.availableForSale) return false;
-      return v.selectedOptions.every((o) =>
-        o.name === name ? o.value === value : selection[o.name] === o.value,
-      );
-    });
+    return isOptionAvailable(variants, selection, name, value);
   }
 
   // Find the variant that would result from clicking a chip — used to show
@@ -276,35 +264,50 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
         </p>
       ) : null}
 
-      <div className={`pdp-sticky-bar${showSticky ? ' on' : ''}`} aria-hidden={!showSticky}>
-        <div className="pdp-sticky-bar__inner">
-          {productImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={productImage.url}
-              alt={productImage.altText ?? productTitle}
-              className="pdp-sticky-bar__img"
-              width={48}
-              height={48}
-            />
-          ) : null}
-          <div className="pdp-sticky-bar__text">
-            <div className="pdp-sticky-bar__title">{productTitle}</div>
-            <div className="pdp-sticky-bar__price tnum">
-              {matchingVariant ? formatMoney(matchingVariant.price) : formatMoney(priceRange.minVariantPrice)}
-            </div>
-          </div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={!canBuy}
-            onClick={() => matchingVariant && addLine(matchingVariant.id, 1)}
-            tabIndex={showSticky ? 0 : -1}
-          >
-            {pending ? 'Adding…' : matchingVariant?.availableForSale ? 'Add' : 'Out of stock'}
-          </button>
-        </div>
-      </div>
+      <PdpStickyAtcBar
+        show={showSticky}
+        productTitle={productTitle}
+        productImage={productImage}
+        price={
+          matchingVariant
+            ? formatMoney(matchingVariant.price)
+            : formatMoney(priceRange.minVariantPrice)
+        }
+        ctaLabel={
+          pending
+            ? 'Adding…'
+            : hasChoices
+              ? 'Choose options'
+              : matchingVariant?.availableForSale
+                ? 'Add'
+                : 'Out of stock'
+        }
+        disabled={!canBuy}
+        onAdd={() => matchingVariant && addLine(matchingVariant.id, 1)}
+        onCtaClick={hasChoices ? () => setSheetOpen(true) : undefined}
+      />
+
+      {hasChoices ? (
+        <StickyVariantSheet
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          options={options}
+          variants={variants}
+          selection={selection}
+          onSelect={(name, value) => setSelection((s) => ({ ...s, [name]: value }))}
+          qty={qty}
+          onQtyChange={setQty}
+          matchingVariant={matchingVariant}
+          productTitle={productTitle}
+          pending={pending}
+          onAdd={() => {
+            if (matchingVariant) {
+              addLine(matchingVariant.id, qty);
+              setSheetOpen(false);
+            }
+          }}
+        />
+      ) : null}
     </>
   );
 }

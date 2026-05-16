@@ -2,26 +2,27 @@ import Link from 'next/link';
 import { Icon, type IconName } from '../icon';
 import { phImg } from '../images';
 import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
+import { getBrands } from '@/lib/shopify';
 
 /* ───── Trust bar ─────────────────────────────────────── */
 export function TrustBar() {
-  const items: { icon: IconName; label: string; sub: string }[] = [
-    { icon: 'shield', label: '120-night comfort exchange', sub: 'Sleep on it for 4 months' },
-    { icon: 'truck',  label: 'Free white-glove delivery',   sub: 'Setup & old mattress haul-away' },
-    { icon: 'home',   label: 'Family-owned since 2012',     sub: '5 showrooms across LA' },
-    { icon: 'card',   label: '0% APR financing',             sub: 'Up to 60 months, no fees' },
+  const items: { icon: IconName; label: string; sub: string; href: string }[] = [
+    { icon: 'shield', label: '120-night comfort exchange', sub: 'Sleep on it for 4 months',        href: '/pages/love-your-bed-guarantee' },
+    { icon: 'truck',  label: 'Free white-glove delivery',   sub: 'Setup & old mattress haul-away',  href: '/pages/mattress-store-delivery' },
+    { icon: 'home',   label: 'Family-owned since 2012',     sub: '5 showrooms across LA',           href: '/pages/mattress-store-locations' },
+    { icon: 'card',   label: '0% APR financing',             sub: 'Synchrony & Acima · no fees',     href: '/pages/mattress-store-financing' },
   ];
   return (
     <section className="trust-bar">
       <div className="container trust-bar-inner">
         {items.map((it) => (
-          <div key={it.label} className="trust-item">
+          <Link key={it.label} href={it.href} className="trust-item">
             <div className="trust-ico"><Icon name={it.icon} size={22} stroke={1.4} /></div>
             <div>
               <div className="trust-label">{it.label}</div>
               <div className="trust-sub muted">{it.sub}</div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
@@ -71,19 +72,24 @@ export function ShopByCategory() {
 }
 
 /* ───── Brand strip ───────────────────────────────────── */
-const BRANDS: { name: string; href: string }[] = [
-  { name: 'Tempur-Pedic',     href: '/collections/tempur-pedic-mattresses' },
-  { name: 'Stearns & Foster', href: '/collections/stearns-foster-mattresses' },
+// Fallback only — the live list comes from getBrands() (derived from
+// product vendors + verified brand collections). Used when the
+// Storefront API is unconfigured/unreachable so the row never empties.
+const FALLBACK_BRANDS: { name: string; href: string }[] = [
+  { name: 'Chattam & Wells',  href: '/collections/chattam-wells-mattresses' },
   { name: 'Diamond',          href: '/collections/diamond-mattresses' },
+  { name: 'Eastman House',    href: '/collections/eastman-house-mattresses' },
+  { name: 'Englander',        href: '/collections/englander-mattresses' },
+  { name: 'Harvest Green',    href: '/collections/harvest-mattresses' },
   { name: 'Helix',            href: '/collections/helix-mattresses' },
   { name: 'Spring Air',       href: '/collections/spring-air-mattresses' },
-  { name: 'Eastman House',    href: '/collections/eastman-house-mattresses' },
-  { name: 'Harvest Green',    href: '/collections/harvest-mattresses' },
-  { name: 'Englander',        href: '/collections/englander-mattresses' },
-  { name: 'Chattam & Wells',  href: '/collections/chattam-wells-mattresses' },
+  { name: 'Stearns & Foster', href: '/collections/stearns-foster-mattresses' },
+  { name: 'Tempur-Pedic',     href: '/collections/tempur-pedic-mattresses' },
 ];
 
-export function BrandStrip() {
+export async function BrandStrip() {
+  const live = await getBrands();
+  const brands = live.length ? live : FALLBACK_BRANDS;
   return (
     <section className="brand-strip-section">
       <div className="container">
@@ -94,8 +100,8 @@ export function BrandStrip() {
           </Link>
         </div>
         <div className="brand-strip">
-          {BRANDS.map((b) => (
-            <Link href={b.href} key={b.name} className="brand-tile">
+          {brands.map((b) => (
+            <Link href={b.href} key={b.href} className="brand-tile">
               <span className="brand-wordmark">{b.name}</span>
             </Link>
           ))}
@@ -108,9 +114,9 @@ export function BrandStrip() {
 /* ───── Why LA Mattress ───────────────────────────────── */
 export function WhyUs() {
   const items = [
-    { n: '01', title: 'Local for 14 years.',         body: 'Family-owned and operated since 2012. Five showrooms, one phone number, real people.' },
+    { n: '01', title: 'Local for 14 years.',         body: 'Family-owned and operated since 2012. Five LA showrooms, real people on every call — no chatbots, no overseas support.' },
     { n: '02', title: 'No pressure, no script.',     body: 'Our consultants work on salary — not commission. Lie down as long as you want, leave when you want.' },
-    { n: '03', title: 'Same-day to most of LA.',     body: 'White glove delivery, mattress setup, and old mattress haul-away — included on every order over $799.' },
+    { n: '03', title: 'Same-day to all of LA.',      body: 'White-glove delivery, mattress setup, and old mattress haul-away — all included on every order over $499. Order by 4pm for same-day.' },
     { n: '04', title: 'Real return policy.',         body: '120 nights to decide. If it’s not right, we’ll exchange it for free — no restocking fee.' },
   ];
   return (

@@ -12,6 +12,15 @@ export type Showroom = {
   mapUrl: string;
   /** Shopify CDN URL for the storefront photo. */
   imageUrl?: string;
+  /**
+   * Canonical Google Business Profile / Maps URL for this showroom.
+   * Emitted as JSON-LD `sameAs` on the per-showroom FurnitureStore and
+   * on the homepage LocalBusiness `department[]` entry, so Google can
+   * map our structured data to the verified GBP/Maps entity. Use the
+   * Maps profile share link (maps.app.goo.gl/…) or the full
+   * /maps/place/… URL — NOT the /r/…/review solicitation link.
+   */
+  gbpUrl?: string;
 };
 
 export const SHOWROOMS: Showroom[] = [
@@ -19,88 +28,106 @@ export const SHOWROOMS: Showroom[] = [
     handle: 'koreatown-best-mattress-store',
     name: 'LA Mattress — Koreatown',
     area: 'Koreatown',
-    street: '3624 W 6th St',
+    street: '201 S Western Ave',
     city: 'Los Angeles',
     region: 'CA',
-    postalCode: '90020',
-    phone: '+1-800-218-3578',
+    postalCode: '90004',
+    phone: '+1-213-984-4654',
     hours: [
-      { day: 'Mon-Sat', open: '10:00', close: '20:00' },
-      { day: 'Sun',     open: '11:00', close: '19:00' },
+      { day: 'Mon-Fri', open: '10:00', close: '21:00' },
+      { day: 'Sat-Sun', open: '10:00', close: '20:00' },
     ],
-    geo: { latitude: 34.0639, longitude: -118.3046 },
-    mapUrl: 'https://maps.google.com/?q=LA+Mattress+Koreatown',
+    geo: { latitude: 34.0710, longitude: -118.3092 },
+    mapUrl: 'https://maps.google.com/?q=LA+Mattress+Koreatown+201+S+Western+Ave',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Koreatown.jpg?v=1734092287',
+    gbpUrl: 'https://maps.app.goo.gl/AP9dPkHdzvqrbvQJ9',
   },
   {
     handle: 'best-mattress-store-west-la',
     name: 'LA Mattress — West LA',
     area: 'West Los Angeles',
-    street: '11340 W Pico Blvd',
+    street: '10861 W Pico Blvd',
     city: 'Los Angeles',
     region: 'CA',
     postalCode: '90064',
-    phone: '+1-800-218-3578',
+    phone: '+1-310-507-8024',
     hours: [
-      { day: 'Mon-Sat', open: '10:00', close: '20:00' },
-      { day: 'Sun',     open: '11:00', close: '19:00' },
+      { day: 'Mon-Fri', open: '10:00', close: '21:00' },
+      { day: 'Sat-Sun', open: '10:00', close: '20:00' },
     ],
-    geo: { latitude: 34.0407, longitude: -118.4499 },
-    mapUrl: 'https://maps.google.com/?q=LA+Mattress+West+LA',
+    geo: { latitude: 34.0489, longitude: -118.4275 },
+    mapUrl: 'https://maps.google.com/?q=LA+Mattress+West+LA+10861+W+Pico+Blvd',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/West_LA.jpg?v=1734092103',
+    gbpUrl: 'https://maps.app.goo.gl/eDQTqrYae2KvwhmS9',
   },
   {
     handle: 'best-mattress-store-la-brea',
     name: 'LA Mattress — La Brea / Hancock Park',
     area: 'La Brea',
-    street: '700 N La Brea Ave',
+    street: '300 S La Brea Ave',
     city: 'Los Angeles',
     region: 'CA',
-    postalCode: '90038',
-    phone: '+1-800-218-3578',
+    postalCode: '90036',
+    phone: '+1-323-275-4715',
     hours: [
-      { day: 'Mon-Sat', open: '10:00', close: '20:00' },
-      { day: 'Sun',     open: '11:00', close: '19:00' },
+      { day: 'Mon-Fri', open: '10:00', close: '21:00' },
+      { day: 'Sat-Sun', open: '10:00', close: '20:00' },
     ],
-    geo: { latitude: 34.0830, longitude: -118.3441 },
-    mapUrl: 'https://maps.google.com/?q=LA+Mattress+La+Brea',
+    geo: { latitude: 34.0764, longitude: -118.3447 },
+    mapUrl: 'https://maps.google.com/?q=LA+Mattress+La+Brea+300+S+La+Brea+Ave',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/hancock.jpg?v=1734095213',
+    gbpUrl: 'https://maps.app.goo.gl/sCRKKqhXvtKzQcrm8',
   },
   {
     handle: 'mattress-store-studio-city',
     name: 'LA Mattress — Studio City',
     area: 'Studio City',
-    street: '12136 Ventura Blvd',
+    street: '12306 Ventura Blvd',
     city: 'Studio City',
     region: 'CA',
     postalCode: '91604',
-    phone: '+1-800-218-3578',
+    phone: '+1-818-247-7790',
     hours: [
-      { day: 'Mon-Sat', open: '10:00', close: '20:00' },
-      { day: 'Sun',     open: '11:00', close: '19:00' },
+      { day: 'Mon-Fri', open: '10:00', close: '21:00' },
+      { day: 'Sat-Sun', open: '10:00', close: '20:00' },
     ],
-    geo: { latitude: 34.1426, longitude: -118.4014 },
-    mapUrl: 'https://maps.google.com/?q=LA+Mattress+Studio+City',
+    geo: { latitude: 34.1420, longitude: -118.4040 },
+    mapUrl: 'https://maps.google.com/?q=LA+Mattress+Studio+City+12306+Ventura+Blvd',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Studio_City.jpg?v=1734378534',
+    gbpUrl: 'https://maps.app.goo.gl/xSZXdWrFyk65VELGA',
   },
   {
     handle: 'mattress-store-in-glendale',
     name: 'LA Mattress — Glendale',
     area: 'Glendale',
-    street: '344 N Brand Blvd',
+    street: '201 N Central Ave',
     city: 'Glendale',
     region: 'CA',
     postalCode: '91203',
-    phone: '+1-800-218-3578',
+    phone: '+1-818-275-6592',
     hours: [
-      { day: 'Mon-Sat', open: '10:00', close: '20:00' },
-      { day: 'Sun',     open: '11:00', close: '19:00' },
+      { day: 'Mon-Fri', open: '10:00', close: '21:00' },
+      { day: 'Sat-Sun', open: '10:00', close: '20:00' },
     ],
-    geo: { latitude: 34.1502, longitude: -118.2551 },
-    mapUrl: 'https://maps.google.com/?q=LA+Mattress+Glendale',
+    geo: { latitude: 34.1493, longitude: -118.2546 },
+    mapUrl: 'https://maps.google.com/?q=LA+Mattress+Glendale+201+N+Central+Ave',
     imageUrl: 'https://cdn.shopify.com/s/files/1/0684/1759/files/Glendale.jpg?v=1734092279',
+    gbpUrl: 'https://maps.app.goo.gl/ougR46TStjLaKX5u7',
   },
 ];
+
+/**
+ * Display-format a stored RFC 3966 phone (`+1-213-984-4654`) into the
+ * common North American visible form `(213) 984-4654`. Stored format
+ * is preserved so `tel:` href construction and JSON-LD `telephone`
+ * still consume the canonical string. Phase 236.
+ */
+export function formatPhone(phone: string): string {
+  // Strip `+1-` prefix if present, then format the remaining digits.
+  const digits = phone.replace(/^\+1-?/, '').replace(/[^\d]/g, '');
+  if (digits.length !== 10) return phone; // unexpected — surface as-is
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
 
 export function findShowroom(handle: string): Showroom | undefined {
   return SHOWROOMS.find((s) => s.handle === handle);
@@ -196,8 +223,10 @@ function matchHoursForDay(
 ): { open: string; close: string } | null {
   for (const h of hours) {
     if (h.day === 'Mon-Sat' && dayIdx >= 1 && dayIdx <= 6) return h;
-    if (h.day === 'Sun' && dayIdx === 0) return h;
     if (h.day === 'Mon-Fri' && dayIdx >= 1 && dayIdx <= 5) return h;
+    // Phase 236: weekend spans the boundary (Sat=6, Sun=0).
+    if (h.day === 'Sat-Sun' && (dayIdx === 0 || dayIdx === 6)) return h;
+    if (h.day === 'Sun' && dayIdx === 0) return h;
     if (h.day === 'Sat' && dayIdx === 6) return h;
     if (h.day === DAY_NAMES[dayIdx]) return h;
   }

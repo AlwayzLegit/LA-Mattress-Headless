@@ -2,9 +2,18 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { readCart } from '@/app/_actions/cart';
+import { DELIVERY_DATE_KEY } from '@/lib/cart-attributes';
+import { getProductRecommendations } from '@/lib/shopify';
+import type { ProductSummary } from '@/lib/shopify';
 import { CartLineEditor } from './cart-line-editor';
+import { DeliveryDate } from './delivery-date';
+import { CartLineVariant } from './cart-line-variant';
+import { CouponForm } from './coupon-form';
+import { OrderNote } from './order-note';
+import { FreeShippingBar } from './free-shipping-bar';
 import { Icon } from '@/app/_components/icon';
 import { RecentlyViewedRail } from '@/app/_components/recently-viewed';
+import { RelatedRail } from '@/app/products/[handle]/related-rail';
 import { formatMoney } from '@/lib/format';
 
 export const metadata: Metadata = {
@@ -19,6 +28,8 @@ export const dynamic = 'force-dynamic';
 export default async function CartPage() {
   const cart = await readCart();
   const lines = cart?.lines.nodes ?? [];
+  const deliveryDate =
+    cart?.attributes.find((a) => a.key === DELIVERY_DATE_KEY)?.value ?? null;
 
   if (!cart || lines.length === 0) {
     return (
@@ -45,6 +56,21 @@ export default async function CartPage() {
       </>
     );
   }
+
+  // Cross-sell off the priciest line's product (best anchor for
+  // "you may also like"). Resilient: any failure → no rail.
+  const anchor = [...lines].sort(
+    (a, b) => Number.parseFloat(b.cost.totalAmount.amount) - Number.parseFloat(a.cost.totalAmount.amount),
+  )[0];
+  const crossSell: ProductSummary[] = anchor
+    ? await getProductRecommendations(anchor.merchandise.product.handle).catch(() => [] as ProductSummary[])
+    : [];
+  // Sum line + cart-level discount allocations for a single "Discount" row.
+  const discountTotal = [
+    ...cart.discountAllocations,
+    ...lines.flatMap((l) => l.discountAllocations),
+  ].reduce((sum, d) => sum + (Number.parseFloat(d.discountedAmount.amount) || 0), 0);
+  const discountCurrency = cart.cost.totalAmount.currencyCode;
 
   return (
     <main className="container cart-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
@@ -84,10 +110,26 @@ export default async function CartPage() {
                     <Link href={`/products/${v.product.handle}`} className="cart-page-line-title">
                       {v.product.title}
                     </Link>
-                    <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
-                      {v.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(' · ')}
-                    </div>
-                    <CartLineEditor lineId={line.id} initialQuantity={line.quantity} productTitle={v.product.title} />
+                    <CartLineVariant
+                      lineId={line.id}
+                      handle={v.product.handle}
+                      quantity={line.quantity}
+                      selectedOptions={v.selectedOptions}
+                    />
+                    <CartLineEditor
+                      lineId={line.id}
+                      initialQuantity={line.quantity}
+                      productTitle={v.product.title}
+                      saveSnapshot={{
+                        handle: v.product.handle,
+                        title: v.product.title,
+                        vendor: null,
+                        imageUrl: v.product.featuredImage?.url ?? null,
+                        imageAlt: v.product.featuredImage?.altText ?? null,
+                        priceAmount: line.cost.totalAmount.amount,
+                        priceCurrency: line.cost.totalAmount.currencyCode,
+                      }}
+                    />
                   </div>
                   <div className="cart-page-line-price">
                     <span className="tnum">{formatMoney(line.cost.totalAmount)}</span>
@@ -96,14 +138,24 @@ export default async function CartPage() {
               );
             })}
           </ul>
+          <DeliveryDate initialDate={deliveryDate} />
         </section>
 
         <aside className="cart-summary">
           <div className="eyebrow">Order summary</div>
+          <FreeShippingBar subtotal={cart.cost.subtotalAmount} />
           <div className="cart-summary-row" style={{ marginTop: 'var(--s-4)' }}>
             <span className="muted">Subtotal</span>
             <span className="tnum">{formatMoney(cart.cost.subtotalAmount)}</span>
           </div>
+          {discountTotal > 0 ? (
+            <div className="cart-summary-row cart-discount-row">
+              <span>Discount</span>
+              <span className="tnum">
+                −{formatMoney({ amount: discountTotal.toFixed(2), currencyCode: discountCurrency })}
+              </span>
+            </div>
+          ) : null}
           <div className="cart-summary-row" style={{ color: 'var(--accent)', fontWeight: 500 }}>
             <span><Icon name="truck" size={14} /> White-glove delivery</span>
             <span className="tnum">Free</span>
@@ -121,14 +173,31 @@ export default async function CartPage() {
           <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-2)' }}>
             Tax &amp; shipping calculated at checkout.
           </p>
+          <CouponForm />
           <a className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: 'var(--s-4)' }} href={cart.checkoutUrl}>
             Checkout <Icon name="arrow-right" size={16} />
           </a>
+          <OrderNote />
           <ul className="pdp-trust" style={{ marginTop: 'var(--s-4)', borderTop: '1px solid var(--line)', paddingTop: 'var(--s-4)' }}>
             <li><Icon name="lock" size={16} /> Secure checkout — encrypted by Shopify</li>
+            <li><Icon name="shield" size={16} /> 120-night Love Your Bed exchange</li>
+            <li><Icon name="truck" size={16} /> Free white-glove delivery on $499+</li>
           </ul>
         </aside>
       </div>
+
+      {/* "You may also like" reuses the PDP cross-sell rail. railId is
+          intentionally omitted: it's added by PR1 (RelatedRail scroll
+          buttons) which is an independent branch. Once PR1 lands the
+          cart instance gets the default rail id — collision-free since
+          the cart page never co-renders the PDP rail. */}
+      {crossSell.length > 0 ? (
+        <RelatedRail
+          products={crossSell}
+          heading="You may also like"
+          eyebrow="Complete your order"
+        />
+      ) : null}
     </main>
   );
 }

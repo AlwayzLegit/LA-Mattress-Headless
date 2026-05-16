@@ -26,6 +26,73 @@ export const SITE_EMAIL = 'orders.lamattress@gmail.com';
 /** Brand display name. */
 export const SITE_BRAND = 'LA Mattress Store';
 
-/** Public site URL (matches NEXT_PUBLIC_SITE_URL when set). */
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mattressstoreslosangeles.com';
+/**
+ * Order subtotal (USD, pre-tax) at/above which white-glove delivery is
+ * free. "$499" was previously repeated as prose in ~15 content files;
+ * this is the single numeric source the cart free-shipping bar reads.
+ * Copy files are intentionally left alone (out of scope).
+ */
+export const FREE_DELIVERY_THRESHOLD = 499;
+/** Pre-formatted threshold for UI copy. */
+export const FREE_DELIVERY_THRESHOLD_DISPLAY = '$499';
+
+/**
+ * Public site URL (matches NEXT_PUBLIC_SITE_URL when set).
+ *
+ * The canonical host is the `www.` subdomain — the apex
+ * (`mattressstoreslosangeles.com`) 308-redirects to it at the edge.
+ * Vercel's `NEXT_PUBLIC_SITE_URL` env var has historically been set to
+ * the bare apex, which leaked into sitemap.xml + robots.txt and made
+ * every crawler hit a 308 hop (SEMrush "Temporary redirects" baseline).
+ * `canonicalizeSiteUrl` force-upgrades the apex to `www.` so a
+ * misconfigured env var can never re-introduce that regression — the
+ * sitemap/robots/canonical surfaces always emit the redirect target,
+ * not its source.
+ */
+function canonicalizeSiteUrl(raw: string | undefined): string {
+  const fallback = 'https://www.mattressstoreslosangeles.com';
+  if (!raw) return fallback;
+  try {
+    const u = new URL(raw.trim());
+    u.protocol = 'https:';
+    if (u.hostname === 'mattressstoreslosangeles.com') {
+      u.hostname = 'www.mattressstoreslosangeles.com';
+    }
+    return u.origin;
+  } catch {
+    return fallback;
+  }
+}
+
+export const SITE_URL = canonicalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
+
+/**
+ * Phase 277b: official social/external profiles for Schema.org `sameAs`.
+ *
+ * Surfaces the brand's social presence to Google's Knowledge Graph so the
+ * Organization entity in our JSON-LD links to authoritative external pages
+ * (Facebook, Instagram, YouTube, Yelp, GBP, etc.). Google uses sameAs to
+ * disambiguate Organization entities and to populate the social-icons row
+ * in the brand knowledge panel.
+ *
+ * Add URLs as they're confirmed. Empty array = no sameAs emitted (no
+ * empty/dummy URLs ever — that's worse than nothing). Each entry should be
+ * the canonical, owned profile URL (not a UTM-tagged or geo-redirect one).
+ *
+ * Update process: replace this constant when marketing confirms the
+ * canonical URL for each surface. The Organization JSON-LD builder picks
+ * it up automatically on the next deploy.
+ */
+export const SOCIAL_PROFILES: readonly string[] = [
+  // Phase 293: confirmed owned profiles (merchant-verified 2026-05-15).
+  // Facebook: merchant-selected canonical page (lists
+  //   mattressstoreslosangeles.com as its website, Studio City base).
+  // Instagram: @lamattressstores — matches brand + catalog.
+  // Yelp: biz address 10861 W Pico Blvd == the West LA showroom in
+  //   lib/showrooms.ts (definitive ownership match).
+  'https://www.facebook.com/lamattressstore',
+  'https://www.instagram.com/lamattressstores',
+  'https://www.yelp.com/biz/los-angeles-mattress-stores-los-angeles',
+  // TODO(merchant): add the 5 showroom Google Business Profile URLs
+  // (g.page / maps share links) once provided — ideal local sameAs.
+] as const;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -110,11 +110,17 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
 
   useBodyScrollLock(true);
 
-  // Auto-focus the input on mount. Wait one frame so the portal has
-  // attached and the input ref is wired.
-  useEffect(() => {
-    const id = requestAnimationFrame(() => inputRef.current?.focus());
-    return () => cancelAnimationFrame(id);
+  // Phase 223: focus the input synchronously after the portal mounts.
+  // The previous Phase 183 implementation used `useEffect` +
+  // `requestAnimationFrame`, but the pre-launch Cowork audit flagged
+  // the input not reliably auto-focusing on open — the rAF was racing
+  // the portal-attach + browser focus fallback. `useLayoutEffect`
+  // runs after the portal has rendered and the ref is attached, but
+  // before paint, so focus lands deterministically. Same fix shape as
+  // Phase 220's quiz Result heading and Phase 221's mega menu first
+  // link.
+  useLayoutEffect(() => {
+    inputRef.current?.focus();
   }, []);
 
   // Debounced predictive fetch on query change.
@@ -327,8 +333,8 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
           ) : (
             <>
               {results && results.products.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Products</div>
+                <div className="header-search-group" role="group" aria-label="Products">
+                  <div className="eyebrow header-search-group-label" aria-hidden="true">Products</div>
                   <ul>
                     {results.products.slice(0, 6).map((p, i) => {
                       const idx = i;
@@ -369,8 +375,8 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
               {results && results.collections.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Collections</div>
+                <div className="header-search-group" role="group" aria-label="Collections">
+                  <div className="eyebrow header-search-group-label" aria-hidden="true">Collections</div>
                   <ul>
                     {results.collections.slice(0, 4).map((c, i) => {
                       const idx = Math.min(results.products.length, 6) + i;
@@ -393,8 +399,8 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
               {showroomMatches.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Showrooms</div>
+                <div className="header-search-group" role="group" aria-label="Showrooms">
+                  <div className="eyebrow header-search-group-label" aria-hidden="true">Showrooms</div>
                   <ul>
                     {showroomMatches.slice(0, 4).map((s, i) => {
                       const productCount = Math.min(results?.products.length ?? 0, 6);
@@ -420,8 +426,8 @@ export function HeaderSearchOverlay({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
               {results && results.articles.length > 0 ? (
-                <div className="header-search-group">
-                  <div className="eyebrow header-search-group-label">Articles</div>
+                <div className="header-search-group" role="group" aria-label="Articles">
+                  <div className="eyebrow header-search-group-label" aria-hidden="true">Articles</div>
                   <ul>
                     {results.articles.slice(0, 4).map((a, i) => {
                       const idx =

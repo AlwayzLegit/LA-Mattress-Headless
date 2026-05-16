@@ -7,9 +7,14 @@ import {
   cartLinesAdd,
   cartLinesUpdate,
   cartLinesRemove,
+  cartDiscountCodesUpdate,
+  cartNoteUpdate,
+  cartAttributesUpdate,
   getCart,
+  getProductByHandle,
 } from '@/lib/shopify';
-import type { Cart, CartLineInput } from '@/lib/shopify';
+import type { Cart, CartLineInput, ProductOption, ProductVariant } from '@/lib/shopify';
+import { DELIVERY_DATE_KEY } from '@/lib/cart-attributes';
 
 const COOKIE = 'cartId';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 14; // 14 days
@@ -99,5 +104,129 @@ export async function removeCartLine(lineId: string): Promise<ActionResult> {
     return { ok: true, cart };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'Remove failed' };
+  }
+}
+
+export async function applyDiscountCode(code: string): Promise<ActionResult> {
+  const cartId = (await cookies()).get(COOKIE)?.value;
+  if (!cartId) return { ok: false, error: 'No cart' };
+  const trimmed = code.trim();
+  if (!trimmed) return { ok: false, error: 'Enter a code' };
+  try {
+    const cart = await cartDiscountCodesUpdate(cartId, [trimmed]);
+    // Storefront returns empty userErrors for an invalid code — it just
+    // marks it inapplicable. Verify the code actually took.
+    const applied = cart.discountCodes.some(
+      (d) => d.applicable && d.code.toLowerCase() === trimmed.toLowerCase(),
+    );
+    if (!applied) {
+      return { ok: false, error: "That code isn't valid for the items in your cart." };
+    }
+    revalidatePath('/cart');
+    return { ok: true, cart };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'Could not apply code' };
+  }
+}
+
+export async function removeDiscountCode(): Promise<ActionResult> {
+  const cartId = (await cookies()).get(COOKIE)?.value;
+  if (!cartId) return { ok: false, error: 'No cart' };
+  try {
+    const cart = await cartDiscountCodesUpdate(cartId, []);
+    revalidatePath('/cart');
+    return { ok: true, cart };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'Could not remove code' };
+  }
+}
+
+export async function changeLineVariant(
+  lineId: string,
+  merchandiseId: string,
+  quantity: number,
+): Promise<ActionResult> {
+  const cartId = (await cookies()).get(COOKIE)?.value;
+  if (!cartId) return { ok: false, error: 'No cart' };
+  if (!merchandiseId) return { ok: false, error: 'Missing variant' };
+  try {
+    const cart = await cartLinesUpdate(cartId, [{ id: lineId, quantity, merchandiseId }]);
+    revalidatePath('/cart');
+    return { ok: true, cart };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'Could not change option' };
+  }
+}
+
+export async function updateCartNote(note: string): Promise<ActionResult> {
+  const cartId = (await cookies()).get(COOKIE)?.value;
+  if (!cartId) return { ok: false, error: 'No cart' };
+  try {
+    const cart = await cartNoteUpdate(cartId, note);
+    revalidatePath('/cart');
+    return { ok: true, cart };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'Could not save note' };
+  }
+}
+
+/**
+ * Validates a `YYYY-MM-DD` string is a real calendar date no earlier
+ * than today and within ~3 months. The window is intentionally looser
+ * than the client picker's (tomorrow … +60d) so a valid client choice
+ * is never rejected by a timezone boundary. All comparisons are in UTC.
+ */
+function isValidDeliveryDate(s: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) {
+    return false;
+  }
+  const now = new Date();
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const max = today + 90 * 86_400_000;
+  return dt.getTime() >= today && dt.getTime() <= max;
+}
+
+/**
+ * Saves (or clears, when `date` is null) the requested delivery date as
+ * a cart attribute. Non-delivery attributes are preserved — the call to
+ * Shopify is a full replace.
+ */
+export async function setDeliveryDate(date: string | null): Promise<ActionResult> {
+  const cartId = (await cookies()).get(COOKIE)?.value;
+  if (!cartId) return { ok: false, error: 'No cart' };
+  if (date && !isValidDeliveryDate(date)) {
+    return { ok: false, error: 'Please choose a valid delivery date.' };
+  }
+  try {
+    const current = await getCart(cartId);
+    if (!current) return { ok: false, error: 'No cart' };
+    const others = current.attributes.filter((a) => a.key !== DELIVERY_DATE_KEY);
+    const next = date ? [...others, { key: DELIVERY_DATE_KEY, value: date }] : others;
+    const cart = await cartAttributesUpdate(cartId, next);
+    revalidatePath('/cart');
+    return { ok: true, cart };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'Could not save delivery date' };
+  }
+}
+
+/**
+ * Lazy-fetch the option matrix for a cart line's product so the in-cart
+ * variant editor can offer a swap WITHOUT bloating every cart read with
+ * full product options/variants. Returns null on any failure (the
+ * editor just hides the "change" affordance).
+ */
+export async function getLineSwapOptions(
+  handle: string,
+): Promise<{ options: ProductOption[]; variants: ProductVariant[] } | null> {
+  try {
+    const product = await getProductByHandle(handle);
+    if (!product) return null;
+    return { options: product.options, variants: product.variants };
+  } catch {
+    return null;
   }
 }

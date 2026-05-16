@@ -1,7 +1,44 @@
 import type { MetadataRoute } from 'next';
 import { blogs, nonEmptyCollections, products, publishedPages } from '@/lib/inventory';
+import { SHOWROOMS } from '@/lib/showrooms';
+import { NEIGHBORHOODS } from '@/lib/neighborhoods';
+import { SITE_URL } from '@/lib/site-config';
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mattressstoreslosangeles.com';
+// Canonical host — never the apex. See lib/site-config.ts#canonicalizeSiteUrl:
+// emitting apex URLs here makes every crawler hit a 308 hop.
+const SITE = SITE_URL;
+
+/**
+ * Phase 277e: showroom + neighborhood pages are high-intent local
+ * landing pages — they should signal more importance to crawlers than
+ * a generic CMS page (warranty / financing / returns). Bumped from
+ * the default 0.7 to 0.85, matching collections.
+ *
+ * Locations index gets the same treatment for the same reason.
+ */
+const LOCAL_LANDING_HANDLES = new Set<string>([
+  ...SHOWROOMS.map((s) => s.handle),
+  ...NEIGHBORHOODS.map((n) => n.handle),
+  'mattress-store-locations',
+]);
+
+/**
+ * Phase 260: blog handles that exist in the inventory snapshot but are
+ * deprecated — every URL under them now 301/308-redirects, so listing
+ * them in the sitemap signals stale content to crawlers and triggers
+ * SEMrush's "Incorrect pages found in sitemap.xml" flag.
+ *
+ * `beds-mattresses` is the old Hydrogen-era blog. Phase 251 added a
+ * wildcard redirect (`/blogs/beds-mattresses/:slug* → /blogs/sleep-blog`)
+ * for its 184 articles; this phase removes the blog from the sitemap
+ * entirely and adds a redirect for the bare blog index (no slug —
+ * not caught by the wildcard).
+ *
+ * When the inventory is regenerated from Shopify, the dead blog will
+ * likely re-appear (Shopify still exposes it). Keeping the filter here
+ * is durable across regenerations.
+ */
+const DEPRECATED_BLOG_HANDLES = new Set(['beds-mattresses']);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -13,6 +50,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // and intentionally absent here.
   const home: MetadataRoute.Sitemap = [
     { url: u('/'),                            lastModified: now, changeFrequency: 'daily',   priority: 1.0 },
+    { url: u('/blogs'),                       lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
     { url: u('/sleep-quiz'),                  lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     { url: u('/pages/reviews'),               lastModified: now, changeFrequency: 'weekly',  priority: 0.55 },
     { url: u('/pages/data-sharing-opt-out'),  lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
@@ -36,21 +74,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  const pageEntries: MetadataRoute.Sitemap = publishedPages.map((p) => ({
-    url: u(`/pages/${p.handle}`),
-    lastModified: new Date(p.updatedAt),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }));
+  const pageEntries: MetadataRoute.Sitemap = publishedPages.map((p) => {
+    const isLocalLanding = LOCAL_LANDING_HANDLES.has(p.handle);
+    return {
+      url: u(`/pages/${p.handle}`),
+      lastModified: new Date(p.updatedAt),
+      changeFrequency: isLocalLanding ? ('weekly' as const) : ('monthly' as const),
+      priority: isLocalLanding ? 0.85 : 0.7,
+    };
+  });
 
-  const blogEntries: MetadataRoute.Sitemap = blogs.map((b) => ({
+  const liveBlogs = blogs.filter((b) => !DEPRECATED_BLOG_HANDLES.has(b.handle));
+
+  const blogEntries: MetadataRoute.Sitemap = liveBlogs.map((b) => ({
     url: u(`/blogs/${b.handle}`),
     lastModified: now,
     changeFrequency: 'weekly',
     priority: 0.6,
   }));
 
-  const articleEntries: MetadataRoute.Sitemap = blogs.flatMap((b) =>
+  const articleEntries: MetadataRoute.Sitemap = liveBlogs.flatMap((b) =>
     (b.articles ?? []).map((a) => ({
       url: u(`/blogs/${b.handle}/${a.handle}`),
       lastModified: a.publishedAt ? new Date(a.publishedAt) : now,

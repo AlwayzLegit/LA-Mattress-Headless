@@ -75,7 +75,15 @@ export async function POST(request: Request) {
   const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
 
   if (!adminToken || !storeDomain) {
-    console.log('[ccpa-request] (no admin token)', { name, email, zip, requests, notes });
+    // Dev-only fallback log. In production, logging the PII payload to
+    // Vercel logs (searchable, retained 30+ days) is a privacy issue
+    // — the request payload is what the user is asking to keep
+    // private. Phase 235 NODE_ENV-gates this; pre-launch follow-up is
+    // to route real CCPA requests through Sentry-as-structured-log
+    // with PII scrubbing.
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[ccpa-request] (no admin token)', { name, email, zip, requests, notes });
+    }
     return NextResponse.json({ ok: true, queued: true });
   }
 
@@ -115,15 +123,26 @@ export async function POST(request: Request) {
     const errors = data.data?.customerCreate?.userErrors ?? [];
     const onlyDup = errors.length > 0 && errors.every((e) => /already been taken/i.test(e.message));
     if (errors.length > 0 && !onlyDup) {
-      // Even if we can't create the Shopify record, log the request so the
-      // merchant can recover it. Don't surface a hard failure to the user —
-      // they shouldn't suffer because our integration glitched.
-      console.warn('[ccpa-request] customerCreate errors:', errors, { name, email, zip, requests, notes });
+      // Don't surface a hard failure to the user — they shouldn't suffer
+      // because our integration glitched. In dev, log the request so the
+      // engineer can debug. In prod, log only the error metadata
+      // (no PII) — a Sentry alert with the request ID is the proper
+      // recovery path; relying on prod log scraping with PII is a
+      // privacy regression. Phase 235.
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[ccpa-request] customerCreate errors:', errors, { name, email, zip, requests, notes });
+      } else {
+        console.warn('[ccpa-request] customerCreate failed; user payload not logged (PII)');
+      }
       return NextResponse.json({ ok: true, queued: true });
     }
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.warn('[ccpa-request] admin api failed:', err, { name, email, zip, requests, notes });
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[ccpa-request] admin api failed:', err, { name, email, zip, requests, notes });
+    } else {
+      console.warn('[ccpa-request] admin api failed; user payload not logged (PII)');
+    }
     return NextResponse.json({ ok: true, queued: true });
   }
 }

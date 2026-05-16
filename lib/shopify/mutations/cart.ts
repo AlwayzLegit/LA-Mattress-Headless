@@ -7,13 +7,17 @@ const CART_FRAGMENT = /* GraphQL */ `
     id
     checkoutUrl
     totalQuantity
+    note
     cost {
       subtotalAmount { ...MoneyFields }
       totalAmount { ...MoneyFields }
       totalTaxAmount { ...MoneyFields }
       totalDutyAmount { ...MoneyFields }
     }
+    discountCodes { code applicable }
+    discountAllocations { discountedAmount { ...MoneyFields } }
     buyerIdentity { email phone countryCode }
+    attributes { key value }
     lines(first: 100) {
       nodes {
         id
@@ -22,6 +26,7 @@ const CART_FRAGMENT = /* GraphQL */ `
           totalAmount { ...MoneyFields }
           subtotalAmount { ...MoneyFields }
         }
+        discountAllocations { discountedAmount { ...MoneyFields } }
         merchandise {
           ... on ProductVariant {
             ...VariantFields
@@ -73,6 +78,36 @@ const CART_LINES_REMOVE = /* GraphQL */ `
   ${FRAGS}
   mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+      cart { ...CartFields }
+      userErrors { field message code }
+    }
+  }
+`;
+
+const CART_DISCOUNT_CODES_UPDATE = /* GraphQL */ `
+  ${FRAGS}
+  mutation CartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
+    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+      cart { ...CartFields }
+      userErrors { field message code }
+    }
+  }
+`;
+
+const CART_NOTE_UPDATE = /* GraphQL */ `
+  ${FRAGS}
+  mutation CartNoteUpdate($cartId: ID!, $note: String!) {
+    cartNoteUpdate(cartId: $cartId, note: $note) {
+      cart { ...CartFields }
+      userErrors { field message code }
+    }
+  }
+`;
+
+const CART_ATTRIBUTES_UPDATE = /* GraphQL */ `
+  ${FRAGS}
+  mutation CartAttributesUpdate($cartId: ID!, $attributes: [AttributeInput!]!) {
+    cartAttributesUpdate(cartId: $cartId, attributes: $attributes) {
       cart { ...CartFields }
       userErrors { field message code }
     }
@@ -142,6 +177,53 @@ export async function cartLinesRemove(cartId: string, lineIds: string[]): Promis
     { cache: 'no-store' },
   );
   return unwrap(data, 'cartLinesRemove');
+}
+
+/**
+ * Apply or clear discount codes. Pass `[]` to clear all codes.
+ *
+ * Caveat: the Storefront API returns EMPTY userErrors even when a code
+ * is invalid/inapplicable — it just sets `cart.discountCodes[].applicable
+ * = false` silently. So `unwrap()` will NOT throw on a bad code; the
+ * caller (server action) must inspect `cart.discountCodes` to decide
+ * whether the code actually took.
+ */
+export async function cartDiscountCodesUpdate(cartId: string, codes: string[]): Promise<Cart> {
+  const data = await shopifyFetch<{ cartDiscountCodesUpdate: { cart: RawCart | null; userErrors: UserError[] } }>(
+    CART_DISCOUNT_CODES_UPDATE,
+    { cartId, discountCodes: codes },
+    { cache: 'no-store' },
+  );
+  return unwrap(data, 'cartDiscountCodesUpdate');
+}
+
+export async function cartNoteUpdate(cartId: string, note: string): Promise<Cart> {
+  const data = await shopifyFetch<{ cartNoteUpdate: { cart: RawCart | null; userErrors: UserError[] } }>(
+    CART_NOTE_UPDATE,
+    { cartId, note },
+    { cache: 'no-store' },
+  );
+  return unwrap(data, 'cartNoteUpdate');
+}
+
+/**
+ * Replaces the cart's custom attributes. Storefront cart attributes
+ * carry through to the order as note attributes, visible to staff in
+ * the Shopify Admin order detail — that's how a requested delivery
+ * date reaches the fulfilment team without modifying the (Shopify-
+ * hosted) checkout itself. This is a full replace, so callers must
+ * pass the complete attribute set they want kept.
+ */
+export async function cartAttributesUpdate(
+  cartId: string,
+  attributes: { key: string; value: string }[],
+): Promise<Cart> {
+  const data = await shopifyFetch<{ cartAttributesUpdate: { cart: RawCart | null; userErrors: UserError[] } }>(
+    CART_ATTRIBUTES_UPDATE,
+    { cartId, attributes },
+    { cache: 'no-store' },
+  );
+  return unwrap(data, 'cartAttributesUpdate');
 }
 
 export async function getCart(cartId: string): Promise<Cart | null> {

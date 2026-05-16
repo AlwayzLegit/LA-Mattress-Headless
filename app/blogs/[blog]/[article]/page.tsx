@@ -20,7 +20,7 @@ export const revalidate = 600;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
-const SITE = 'https://mattressstoreslosangeles.com';
+const SITE = 'https://www.mattressstoreslosangeles.com';
 
 // Pre-render the published article handles from the inventory snapshot.
 // `dynamicParams = true` still serves articles published since the last
@@ -38,7 +38,24 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Article' };
   const article = await getArticleByHandle(params.blog, params.article).catch(() => null);
   if (!article) return { title: 'Article not found' };
-  const title = capTitle(firstNonEmpty(article.seo.title, article.title));
+  // Phase 289: when the merchant hasn't set a custom seo.title (the
+  // common case for legacy articles), append " | LA Mattress" so the
+  // <title> text differs from the H1.
+  //
+  // Phase 281 switched articles to `title: { absolute: title }` which
+  // dropped the layout's " · LA Mattress Store" suffix and fixed
+  // "Title too long". Side effect: the title text became identical
+  // to the H1 modulo case (H1 sentence-cases stripped brand;
+  // title used the original Title Case). The May 15 SEMrush re-audit
+  // flagged 323 blog articles for "Duplicate content in h1 and title"
+  // — case-insensitive comparison sees them as the same string.
+  //
+  // Adding the " | LA Mattress" suffix to the title fallback (NOT to
+  // the H1) makes them distinct content after case normalization.
+  // Merchant-set seo.title takes precedence as before — this fallback
+  // only fires when seo.title is empty.
+  const titleFallback = `${article.title} | LA Mattress`;
+  const title = capTitle(firstNonEmpty(article.seo.title, titleFallback));
   const description = truncDescription(
     firstNonEmpty(
       article.seo.description,
@@ -48,7 +65,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   );
   const url = `/blogs/${article.blog.handle}/${article.handle}`;
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {

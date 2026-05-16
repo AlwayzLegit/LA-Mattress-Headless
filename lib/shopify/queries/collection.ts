@@ -8,6 +8,7 @@ import type {
 import {
   IMAGE_FRAGMENT, MONEY_FRAGMENT, SEO_FRAGMENT, PRODUCT_SUMMARY_FRAGMENT,
 } from './fragments';
+import { parseReviewsMetafields } from './product';
 
 export type CollectionSort =
   | 'MANUAL'
@@ -52,10 +53,16 @@ const GET_COLLECTION = /* GraphQL */ `
   }
 `;
 
-type RawSummary = ProductSummary & {
-  firmnessMetafield?: { value: string } | null;
-  heightMetafield?:   { value: string } | null;
-  materialMetafield?: { value: string } | null;
+type RawSpecMetafield = { value: string } | null;
+type RawReviewMetafield = { value: string; type: string } | null;
+
+type RawSummary = Omit<ProductSummary, 'reviews'> & {
+  firmnessMetafield?: RawSpecMetafield;
+  heightMetafield?:   RawSpecMetafield;
+  materialMetafield?: RawSpecMetafield;
+  ratingMetafield?:        RawReviewMetafield;
+  ratingCountMetafield?:   RawReviewMetafield;
+  judgemeBadgeMetafield?:  RawReviewMetafield;
 };
 
 type Raw = {
@@ -70,10 +77,15 @@ type Raw = {
     | null;
 };
 
-/** Lifts the three summary spec metafields off a raw node into a clean
- * ProductSummary.specs object. */
+/** Lifts the summary spec + review metafields off a raw node into clean
+ * ProductSummary.specs + ProductSummary.reviews objects. Phase 242
+ * extended this to populate reviews alongside specs. */
 function liftSummarySpecs(n: RawSummary): ProductSummary {
-  const { firmnessMetafield, heightMetafield, materialMetafield, ...rest } = n;
+  const {
+    firmnessMetafield, heightMetafield, materialMetafield,
+    ratingMetafield, ratingCountMetafield, judgemeBadgeMetafield,
+    ...rest
+  } = n;
   const heightStr = heightMetafield?.value;
   const heightNum = heightStr ? Number.parseFloat(heightStr) : NaN;
   return {
@@ -83,6 +95,7 @@ function liftSummarySpecs(n: RawSummary): ProductSummary {
       heightInches: Number.isFinite(heightNum) ? heightNum : null,
       materialType: materialMetafield?.value || null,
     },
+    reviews: parseReviewsMetafields(ratingMetafield, ratingCountMetafield, judgemeBadgeMetafield),
   };
 }
 

@@ -2,11 +2,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ProductSummary } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
+import { ReviewsBadge } from '@/app/_components/reviews-badge';
+import { RailScrollButtons } from '@/app/_components/sections/rail-scroll-buttons';
 
 type Props = {
   products: ProductSummary[];
   heading?: string;
   eyebrow?: string;
+  /**
+   * Element id for the scroll container, used by RailScrollButtons to
+   * target it via getElementById. Must be unique per page — this rail
+   * can render twice (PDP "Pairs well with" + cart cross-sell), so the
+   * caller passes a distinct id for each.
+   */
+  railId?: string;
 };
 
 /**
@@ -17,7 +26,12 @@ type Props = {
  * styles as the PLP grid for visual consistency, and a horizontal
  * scrolling overflow for mobile (CSS `.pcard-scroll`).
  */
-export function RelatedRail({ products, heading = 'Pairs well with', eyebrow = 'Complete Your Bedroom' }: Props) {
+export function RelatedRail({
+  products,
+  heading = 'Pairs well with',
+  eyebrow = 'Complete Your Bedroom',
+  railId = 'pdp-related-rail',
+}: Props) {
   if (!products.length) return null;
   return (
     <section className="section pdp-related" aria-labelledby="pdp-related-heading">
@@ -27,10 +41,17 @@ export function RelatedRail({ products, heading = 'Pairs well with', eyebrow = '
             <div className="eyebrow">{eyebrow}</div>
             <h2 id="pdp-related-heading" className="h2">{heading}</h2>
           </div>
+          <div className="section-head-right">
+            <RailScrollButtons
+              railId={railId}
+              leftLabel={`Scroll ${heading} left`}
+              rightLabel={`Scroll ${heading} right`}
+            />
+          </div>
         </div>
       </div>
       <div className="pcard-scroll-wrap">
-        <div className="pcard-scroll no-scrollbar">
+        <div id={railId} className="pcard-scroll no-scrollbar">
           {products.map((p) => (
             <Link key={p.id} href={`/products/${p.handle}`} className="pcard pcard-rail">
               <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
@@ -49,6 +70,9 @@ export function RelatedRail({ products, heading = 'Pairs well with', eyebrow = '
               <div className="pcard-meta">
                 <div className="pcard-brand">{p.vendor}</div>
                 <div className="pcard-name">{p.title}</div>
+                {p.reviews ? (
+                  <div className="pcard-reviews"><ReviewsBadge reviews={p.reviews} size="inline" /></div>
+                ) : null}
                 <div className="pcard-price">
                   <span className="pcard-now tnum">
                     {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
