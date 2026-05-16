@@ -1537,8 +1537,8 @@ summary:focus-visible,
 .cat-tile:hover .cat-tile-arrow { transform: translate(2px, -2px); }
 
 /* ───── Showrooms ───── */
-.showrooms { padding-bottom: var(--s-9); position: relative; overflow: hidden; }
-.showrooms-head { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: end; margin-bottom: 64px; padding-bottom: 0; }
+.showrooms { padding-top: var(--s-7); padding-bottom: var(--s-7); position: relative; overflow: hidden; }
+.showrooms-head { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: end; margin-bottom: 36px; padding-bottom: 0; }
 .showrooms-head h2 { margin: 0; }
 .showrooms-head-right { display: flex; flex-direction: column; gap: 24px; align-items: flex-end; }
 .showrooms-lede { font-size: 16px; max-width: 480px; text-align: right; }

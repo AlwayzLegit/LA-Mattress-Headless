@@ -45,12 +45,12 @@ export function Showrooms() {
       <div className="container showrooms-head">
         <div>
           <div className="eyebrow eyebrow-on-dark">Try before you buy</div>
-          <h2 className="h-display">Five showrooms.<br />One Los Angeles.</h2>
+          <h2 className="h2">Five mattress showrooms<br />across Los Angeles.</h2>
         </div>
         <div className="showrooms-head-right">
           <p className="muted showrooms-lede">
-            Every mattress on this site is on the floor at one of our locations. Lie down for as long as
-            you want — no appointments, no pressure.
+            Every mattress we sell is on the floor at one of our five Los Angeles
+            showrooms. Lie down as long as you want — no appointments, no pressure.
           </p>
           <RailScrollButtons
             railId={RAIL_ID}
@@ -71,7 +71,7 @@ export function Showrooms() {
                 {imageUrl ? (
                   <Image
                     src={imageUrl}
-                    alt={`LA Mattress — ${s.name} showroom`}
+                    alt={`${s.name} mattress store showroom — ${s.address}, Los Angeles`}
                     fill
                     sizes="(max-width: 880px) 78vw, 360px"
                     style={{ objectFit: 'cover' }}
@@ -85,7 +85,7 @@ export function Showrooms() {
                   <span className="mono showroom-idx">{s.idx} / 05</span>
                   <ShowroomOpenNowBadge canonicalHandle={s.canonicalHandle} />
                 </div>
-                <h3 className="showroom-name">{s.name}</h3>
+                <h3 className="showroom-name">{s.name} Mattress Store</h3>
                 <div className="showroom-area muted">{s.area}</div>
                 <div className="showroom-line">
                   <span className="muted">{s.address}</span>
