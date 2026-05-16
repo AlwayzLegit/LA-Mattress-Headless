@@ -1426,6 +1426,17 @@ summary:focus-visible,
   padding: 16px 16px 20px;
   transition: transform var(--d-base) var(--ease), box-shadow var(--d-base) var(--ease), border-color var(--d-base) var(--ease);
 }
+/* Phase 302 fix — cards inside a horizontal rail must keep a fixed
+   flex-basis. `.plp-card { flex: initial }` (added for the PLP CSS
+   grid, where flex must be neutral) globally overrode `.pcard`'s rail
+   width, so PlpCard inside `.pcard-scroll` (homepage Popular, PDP
+   "Pairs well with", recently-viewed, cart cross-sell) collapsed and
+   crammed together on every viewport. Scoping to `.pcard-scroll .pcard`
+   (specificity 0,2,0) beats `.plp-card` (0,1,0) in rails only; the PLP
+   grid keeps `flex: initial`. */
+.pcard-scroll .pcard { flex: 0 0 320px; }
+@media (max-width: 640px) { .pcard-scroll .pcard { flex: 0 0 78vw; max-width: 300px; } }
+
 /* Phase 156: cards on PLP and search results wrap with <article
    className="pcard plp-card"> + an inner Link with this class so the
    CompareToggle button can be a sibling of the Link rather than
