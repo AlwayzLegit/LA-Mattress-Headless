@@ -1452,7 +1452,7 @@ summary:focus-visible,
   box-shadow: var(--sh-card-hover);
   border-color: transparent;
 }
-.pcard-img { aspect-ratio: 1; border-radius: var(--r-2); position: relative; overflow: hidden; }
+.pcard-img { aspect-ratio: 1; border-radius: var(--r-2); position: relative; overflow: hidden; background: var(--surface); }
 .pcard-tag {
   position: absolute; top: 12px; left: 12px;
   background: var(--text); color: #fff;
@@ -1883,7 +1883,10 @@ summary:focus-visible,
   width: 100%;
   aspect-ratio: 1;
   border-radius: var(--r-4);
-  background: var(--surface-2);
+  /* White so studio product shots (white bg) blend seamlessly into the
+     object-fit: contain letterbox — matches the design system's
+     .ph[data-img][data-fit="contain"] convention. */
+  background: var(--surface);
   overflow: hidden;
 }
 .pdp-gallery-controls {
@@ -1906,7 +1909,7 @@ summary:focus-visible,
 .pdp-thumb {
   position: relative;
   aspect-ratio: 1;
-  appearance: none; padding: 0; border: 0; background: var(--surface-2); cursor: pointer;
+  appearance: none; padding: 0; border: 0; background: var(--surface); cursor: pointer;
   border-radius: var(--r-3);
   overflow: hidden;
 }
