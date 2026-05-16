@@ -11,6 +11,8 @@ const COLS: Col[] = [
     { label: 'Brands',          href: '/pages/mattress-brands' },
     { label: 'Accessories',     href: '/collections/sheets-pillowcases' },
     { label: 'Pillows',         href: '/collections/pillows' },
+    { label: 'Comforters',      href: '/collections/comforters' },
+    { label: 'Mattress Protectors', href: '/collections/mattress-protector' },
     { label: 'Deals',           href: '/collections/on-sale' },
   ]},
   { title: 'Help', links: [

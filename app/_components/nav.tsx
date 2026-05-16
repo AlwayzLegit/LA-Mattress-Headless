@@ -53,9 +53,12 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         { label: 'Size guide →',    href: '/pages/mattress-sizes' },
       ]},
       { title: 'Adjacent', links: [
+        { label: 'Pillows',            href: '/collections/pillows' },
         { label: 'Adjustable bases',   href: '/collections/adjustable-beds' },
         { label: 'Bedding & sheets',   href: '/collections/sheets-pillowcases' },
         { label: 'Mattress toppers',   href: '/collections/mattress-toppers' },
+        { label: 'Comforters',         href: '/collections/comforters' },
+        { label: 'Mattress protectors', href: '/collections/mattress-protector' },
         { label: 'Take the sleep quiz →', href: '/sleep-quiz' },
       ]},
     ],
@@ -80,6 +83,7 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         { label: 'Eastman House',  href: '/collections/eastman-house-mattresses' },
         { label: 'Harvest Green',  href: '/collections/harvest-mattresses' },
         { label: 'Englander',      href: '/collections/englander-mattresses' },
+        { label: 'Sleep & Beyond', href: '/collections/sleep-beyond' },
       ]},
     ],
     tiles: [

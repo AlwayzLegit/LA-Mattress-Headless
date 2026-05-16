@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify collections inventory — fields the storefront needs for sitemap generation, generateStaticParams, and SEO defaults.",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via MCP, 2026-05-04. Re-runnable via scripts/pull-inventory.ts.",
-  "$count": 61,
+  "$count": 63,
   "collections": [
     { "handle": "popular", "id": "gid://shopify/Collection/210011139", "title": "Popular Mattresses", "productsCount": 40, "updatedAt": "2026-05-03T21:10:27Z", "seoTitle": "Popular Mattresses | Top Picks & Customer Favorites | LA Mattress Store", "seoDescription": "Shop our most popular mattresses - the top-rated models customers trust most. Memory foam, hybrid, and innerspring across all budgets. Free white glove delivery." },
     { "handle": "mattresses", "id": "gid://shopify/Collection/232154947", "title": "Mattresses", "productsCount": 148, "updatedAt": "2026-05-03T21:10:27Z", "seoTitle": "Mattresses | All Brands & Comfort Levels | LA Mattress Store", "seoDescription": "Browse 169+ mattresses from Tempur-Pedic, Stearns & Foster, Diamond, and Helix. Memory foam, hybrid, latex, and innerspring in every size. Free LA delivery." },
@@ -63,6 +63,8 @@
     { "handle": "bed-frames", "id": "gid://shopify/Collection/465770447101", "title": "Bed Frames - Bedding Support", "productsCount": 8, "updatedAt": "2026-05-03T21:10:30Z", "seoTitle": null, "seoDescription": null },
     { "handle": "rize-pillows", "id": "gid://shopify/Collection/465770479869", "title": "Rize - Pillows", "productsCount": 5, "updatedAt": "2026-05-03T21:10:30Z", "seoTitle": null, "seoDescription": null },
     { "handle": "rize-mattress-protection", "id": "gid://shopify/Collection/465770512637", "title": "Rize - Mattress Protection", "productsCount": 4, "updatedAt": "2026-05-03T21:10:30Z", "seoTitle": null, "seoDescription": null },
-    { "handle": "split-king-mattresses", "id": "gid://shopify/Collection/465982161149", "title": "Split King Mattresses", "productsCount": 22, "updatedAt": "2026-05-03T21:10:31Z", "seoTitle": null, "seoDescription": null }
+    { "handle": "split-king-mattresses", "id": "gid://shopify/Collection/465982161149", "title": "Split King Mattresses", "productsCount": 22, "updatedAt": "2026-05-03T21:10:31Z", "seoTitle": null, "seoDescription": null },
+    { "handle": "comforters", "id": "gid://shopify/Collection/467326304509", "title": "Comforters", "productsCount": 2, "updatedAt": "2026-05-16T00:00:00Z", "seoTitle": "Comforters | Washable Wool & Organic | LA Mattress Store", "seoDescription": "Shop washable wool and organic comforters - breathable, temperature-regulating, hypoallergenic, and machine washable. Lightweight and all-season options. Free delivery in LA." },
+    { "handle": "sleep-beyond", "id": "gid://shopify/Collection/467326337277", "title": "Sleep & Beyond", "productsCount": 8, "updatedAt": "2026-05-16T00:00:00Z", "seoTitle": "Sleep & Beyond | Organic Wool & Cotton Bedding | LA Mattress Store", "seoDescription": "Shop Sleep & Beyond organic wool and cotton bedding - washable wool pillows, mattress toppers, comforters, organic cotton sheets, and waterproof protectors. Free LA delivery." }
   ]
 }
