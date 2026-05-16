@@ -38,6 +38,9 @@ export type Brand = { name: string; handle: string; href: string };
 const VENDOR_OVERRIDES: Record<string, { name: string; handle: string }> = {
   'Helix Sleep': { name: 'Helix', handle: 'helix-mattresses' },
   'Harvest Green': { name: 'Harvest Green', handle: 'harvest-mattresses' },
+  // Bedding brand — its collection is `sleep-beyond` (it stocks no
+  // mattresses, so it doesn't follow the `…-mattresses` convention).
+  'Sleep & Beyond': { name: 'Sleep & Beyond', handle: 'sleep-beyond' },
 };
 
 function slugify(s: string): string {

@@ -54,13 +54,19 @@ export function PlpCount({ initial, total, hasFiltersApplied }: Props) {
   }
 
   const productWord = `product${rendered === 1 ? '' : 's'}`;
-  const totalWord = total != null ? `product${total === 1 ? '' : 's'}` : productWord;
+  // The inventory snapshot's productsCount drifts below reality when a
+  // product is added to the collection after the last pull (e.g. the new
+  // SKUs that joined the smart "pillows" collection — snapshot said 1,
+  // live was 15). Only show "of N" when the snapshot total genuinely
+  // exceeds what's rendered; otherwise it produced "Showing 15 of 1".
+  const safeTotal = total != null && total > rendered ? total : null;
+  const totalWord = safeTotal != null ? `product${safeTotal === 1 ? '' : 's'}` : productWord;
 
   return (
     <span className="plp-toolbar-count" aria-live="polite">
-      {hasFiltersApplied || total == null
+      {hasFiltersApplied || safeTotal == null
         ? `Showing ${rendered} ${productWord}`
-        : `Showing ${rendered} of ${total} ${totalWord}`}
+        : `Showing ${rendered} of ${safeTotal} ${totalWord}`}
     </span>
   );
 }

@@ -13,6 +13,8 @@ const COLS: Col[] = [
     { label: 'Accessories',     href: '/collections/sheets-pillowcases' },
     { label: 'Pillows',         href: '/collections/pillows' },
     { label: 'Rize Pillows',    href: '/collections/rize-pillows' },
+    { label: 'Comforters',      href: '/collections/comforters' },
+    { label: 'Mattress Protectors', href: '/collections/mattress-protector' },
     { label: 'Deals',           href: '/collections/on-sale' },
   ]},
   { title: 'Help', links: [

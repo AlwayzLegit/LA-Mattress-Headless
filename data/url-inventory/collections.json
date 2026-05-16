@@ -2,7 +2,7 @@
   "$schema": "Shopify collections inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-05-15T06:52:17.424Z",
-  "$count": 62,
+  "$count": 64,
   "collections": [
     {
       "handle": "popular",
@@ -116,7 +116,7 @@
       "handle": "adjustable-beds",
       "id": "gid://shopify/Collection/364349059",
       "title": "Adjustable Beds & Bases",
-      "productsCount": 4,
+      "productsCount": 8,
       "updatedAt": "2026-05-04T11:15:45Z",
       "seoTitle": "Adjustable Beds & Bases | Head & Foot Elevation | LA Mattress Store",
       "seoDescription": "Shop adjustable beds and bases that let you elevate your head or feet for back pain relief, reduced snoring, and better circulation. Tempur-Pedic, Leggett & Platt, and more. Free white glove delivery."
@@ -125,7 +125,7 @@
       "handle": "pillows",
       "id": "gid://shopify/Collection/14771748893",
       "title": "Pillows",
-      "productsCount": 1,
+      "productsCount": 15,
       "updatedAt": "2026-05-04T11:15:45Z",
       "seoTitle": "Pillows | Memory Foam, Latex, Down & Cooling Options | LA Mattress Store",
       "seoDescription": "Shop premium pillows in memory foam, latex, down alternative, and cooling gel fill. Every sleep position covered - back, side, and stomach sleepers. Top brands in standard, queen, and king sizes."
@@ -134,7 +134,7 @@
       "handle": "tempur-pedic-adjustable-bases",
       "id": "gid://shopify/Collection/89613729882",
       "title": "Tempur-Pedic Adjustable Bases",
-      "productsCount": 0,
+      "productsCount": 4,
       "updatedAt": "2026-05-04T11:15:45Z",
       "seoTitle": "Tempur-Pedic Adjustable Bases | TEMPUR-Ergo Smart Bases | LA Mattress Store",
       "seoDescription": "Shop Tempur-Pedic adjustable bases from TEMPUR-Ergo to the smart base with sleep tracking and snore response. Authorized dealer. Free white glove delivery and installation."
@@ -152,7 +152,7 @@
       "handle": "mattress-protector",
       "id": "gid://shopify/Collection/400254435581",
       "title": "Mattress Protectors",
-      "productsCount": 1,
+      "productsCount": 2,
       "updatedAt": "2026-05-04T11:15:45Z",
       "seoTitle": "Mattress Protectors | Waterproof & Allergen Protection | LA Mattress Store",
       "seoDescription": "Shop mattress protectors to guard against spills, allergens, dust mites, and wear. Waterproof, breathable options that preserve your mattress warranty. All sizes available. Free shipping."
@@ -161,7 +161,7 @@
       "handle": "mattress-toppers",
       "id": "gid://shopify/Collection/401028972797",
       "title": "Mattress Toppers",
-      "productsCount": 0,
+      "productsCount": 1,
       "updatedAt": "2026-05-04T11:15:45Z",
       "seoTitle": "Mattress Toppers - Memory Foam, Latex and Cooling | LA",
       "seoDescription": "Upgrade your sleep with mattress toppers from top brands. Memory foam, latex, gel and organic options. Free delivery in LA with mattress purchase. Try in-store at 5 showrooms."
@@ -476,7 +476,7 @@
       "handle": "sheets-pillowcases",
       "id": "gid://shopify/Collection/465222631677",
       "title": "Sheets & Pillowcases",
-      "productsCount": 19,
+      "productsCount": 20,
       "updatedAt": "2026-05-04T11:15:47Z",
       "seoTitle": null,
       "seoDescription": null
@@ -494,7 +494,7 @@
       "handle": "cooling-pillows",
       "id": "gid://shopify/Collection/465227907325",
       "title": "Cooling Pillows",
-      "productsCount": 7,
+      "productsCount": 9,
       "updatedAt": "2026-05-05T19:25:38Z",
       "seoTitle": null,
       "seoDescription": null
@@ -561,6 +561,24 @@
       "updatedAt": "2026-05-14T22:15:28Z",
       "seoTitle": "Memorial Day Mattress Sale 2026 — LA Mattress Store",
       "seoDescription": "Memorial Day sale on Tempur-Pedic, Helix, Stearns & Foster, Diamond, Spring Air, and more. Free white-glove delivery and 120-night exchange on every mattress."
+    },
+    {
+      "handle": "comforters",
+      "id": "gid://shopify/Collection/467326304509",
+      "title": "Comforters",
+      "productsCount": 2,
+      "updatedAt": "2026-05-16T00:00:00Z",
+      "seoTitle": "Comforters | Washable Wool & Organic | LA Mattress Store",
+      "seoDescription": "Shop washable wool and organic comforters - breathable, temperature-regulating, hypoallergenic, and machine washable. Lightweight and all-season options. Free delivery in LA."
+    },
+    {
+      "handle": "sleep-beyond",
+      "id": "gid://shopify/Collection/467326337277",
+      "title": "Sleep & Beyond",
+      "productsCount": 8,
+      "updatedAt": "2026-05-16T00:00:00Z",
+      "seoTitle": "Sleep & Beyond | Organic Wool & Cotton Bedding | LA Mattress Store",
+      "seoDescription": "Shop Sleep & Beyond organic wool and cotton bedding - washable wool pillows, mattress toppers, comforters, organic cotton sheets, and waterproof protectors. Free LA delivery."
     }
   ]
 }
