@@ -20,9 +20,9 @@ export type HeroSlide = HeroSlideData;
 
 export const FALLBACK_HERO_SLIDES: HeroSlide[] = [
   {
-    eyebrow: '5 LA Showrooms',
-    title: 'Try before\nyou buy.',
-    body: 'Los Angeles mattress stores in Koreatown, West LA, Hancock Park, Studio City & Glendale — lie down on every mattress we sell, in person. Free white-glove delivery citywide.',
+    eyebrow: 'Try before you buy · 5 LA showrooms',
+    title: 'The Los Angeles\nmattress store.',
+    body: 'Lie down on every mattress we sell, in person — showrooms in Koreatown, West LA, Hancock Park, Studio City & Glendale. Free white-glove delivery across Los Angeles.',
     primary:   { label: 'Find a store',         icon: 'pin',         href: '/pages/mattress-store-locations' },
     secondary: { label: 'Book an appointment',                       href: '/pages/mattress-store-contact' },
     bgImage: { url: imgUrl('hero-showroom'), altText: 'Koreatown showroom interior' },
@@ -30,7 +30,7 @@ export const FALLBACK_HERO_SLIDES: HeroSlide[] = [
   {
     eyebrow: 'Premium Brands · Same-Day Delivery',
     title: 'Sleep, engineered\nin Los Angeles.',
-    body: 'Tempur-Pedic, Stearns & Foster, Helix, Diamond and more — delivered to your door, often the same day.',
+    body: 'Tempur-Pedic, Stearns & Foster, Helix, Diamond and more — delivered across Los Angeles, often the same day.',
     primary:   { label: 'Shop mattresses',     icon: 'arrow-right', href: '/collections/mattresses' },
     secondary: { label: 'Take the 2-min quiz',                      href: '/sleep-quiz' },
     bgImage: { url: imgUrl('lifestyle-bedroom'), altText: 'Brand lifestyle bedroom' },

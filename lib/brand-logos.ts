@@ -17,10 +17,29 @@
  */
 export type BrandLogo = { src: string; width: number; height: number; alt?: string };
 
+// Sourced via the Clearbit Logo API (hotlink-designed, returns the
+// brand's logo by domain). Domains verified by search. The `<BrandLogo>`
+// client component falls back to the text wordmark on any load error,
+// so a missing/!200 logo never shows a broken image. These are interim
+// — replace per-brand with official press-kit assets on our CDN when
+// available (see BRAND_LOGO_SOURCING_BRIEF.md); no component change.
+const CLEARBIT = (domain: string): BrandLogo => ({
+  src: `https://logo.clearbit.com/${domain}?size=256`,
+  width: 256,
+  height: 256,
+});
+
 const LOGOS: Record<string, BrandLogo> = {
-  // 'tempur-pedic-mattresses':   { src: 'https://cdn.shopify.com/s/files/1/0684/1759/files/brand-tempur-pedic.svg', width: 240, height: 64 },
-  // 'stearns-foster-mattresses': { src: '…', width: 240, height: 64 },
-  // 'sleep-beyond':              { src: '…', width: 240, height: 64 },
+  'tempur-pedic-mattresses':   CLEARBIT('tempurpedic.com'),
+  'stearns-foster-mattresses': CLEARBIT('stearnsandfoster.com'),
+  'chattam-wells-mattresses':  CLEARBIT('chattamandwells.com'),
+  'helix-mattresses':          CLEARBIT('helixsleep.com'),
+  'diamond-mattresses':        CLEARBIT('diamondmattress.com'),
+  'spring-air-mattresses':     CLEARBIT('springair.com'),
+  'eastman-house-mattresses':  CLEARBIT('eastmanhousemattress.com'),
+  'harvest-mattresses':        CLEARBIT('harvestgreenmattress.com'),
+  'englander-mattresses':      CLEARBIT('englander.com'),
+  'sleep-beyond':              CLEARBIT('sleepandbeyond.com'),
 };
 
 export function brandLogo(handle: string): BrandLogo | undefined {

@@ -6,10 +6,10 @@
 // lib/brand-logos.ts registry with a text-wordmark fallback.
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { getBrands } from '@/lib/shopify';
 import type { Brand } from '@/lib/shopify';
 import { brandLogo } from '@/lib/brand-logos';
+import { BrandLogo } from '../brand-logo';
 import { Icon } from '../icon';
 
 // Used only when the Storefront API is unconfigured/unreachable so the
@@ -50,11 +50,12 @@ export async function BrandDirectory() {
             <Link href={b.href} key={b.handle} className="brand-card">
               <div className="brand-card-logo">
                 {logo ? (
-                  <Image
+                  <BrandLogo
                     src={logo.src}
                     alt={logo.alt ?? `${b.name} logo`}
                     width={logo.width}
                     height={logo.height}
+                    name={b.name}
                   />
                 ) : (
                   <span className="brand-card-wordmark">{b.name}</span>

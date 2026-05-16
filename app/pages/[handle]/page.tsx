@@ -222,6 +222,12 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
             <time dateTime={page.updatedAt}>Last updated {updatedLabel}</time>
           </p>
         ) : null}
+        {/* Hard-coded on-brand brand directory, rendered ABOVE the
+            merchant-authored CMS body for /pages/mattress-brands: the
+            scannable logo/link grid (live from getBrands(), so new
+            brands like Sleep & Beyond appear automatically) leads, with
+            the tiered editorial guide as supporting depth below. */}
+        {page.handle === 'mattress-brands' ? <BrandDirectory /> : null}
         {page.body ? (
           <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
         ) : (
@@ -248,11 +254,6 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
           </div>
         )}
       </article>
-      {/* Hard-coded on-brand brand directory rendered beneath the
-          merchant-authored CMS body for /pages/mattress-brands. Live
-          from getBrands() so new brands (e.g. Sleep & Beyond) appear
-          with no content edit. */}
-      {page.handle === 'mattress-brands' ? <BrandDirectory /> : null}
       <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
       <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       {/* Phase 277c: FAQPage JSON-LD on CMS pages with a curated FAQ set

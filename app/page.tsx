@@ -22,9 +22,9 @@ import { FALLBACK_HERO_SLIDES } from './_components/hero-slides';
 // Phase 268: homepage title + description now read from Shopify Brand
 // (Settings → Store details → Brand) when available, with hardcoded
 // fallbacks for unconfigured stores or empty Brand fields.
-const FALLBACK_TITLE = 'LA Mattress — Sleep, engineered in Los Angeles.';
+const FALLBACK_TITLE = 'Mattress Store in Los Angeles | LA Mattress — 5 Showrooms';
 const FALLBACK_DESCRIPTION =
-  'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white-glove delivery & 0% APR financing.';
+  'Family-owned Los Angeles mattress store with 5 showrooms — Koreatown, West LA, Hancock Park, Studio City & Glendale. Shop Tempur-Pedic, Stearns & Foster, Helix & Diamond with free white-glove delivery and 0% APR financing.';
 
 export async function generateMetadata(): Promise<Metadata> {
   const shop = await getShopBrand();
