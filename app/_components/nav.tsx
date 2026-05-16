@@ -25,7 +25,7 @@ type MegaKey = 'mattresses' | 'brands' | 'learn';
 const NAV_ITEMS: { label: string; mega: MegaKey | null; href: string; accent?: boolean }[] = [
   { label: 'Mattresses',     mega: 'mattresses', href: '/collections/mattresses' },
   { label: 'Adjustable Beds', mega: null,        href: '/collections/adjustable-beds' },
-  { label: 'Brands',          mega: 'brands',    href: '/collections/mattresses' },
+  { label: 'Brands',          mega: 'brands',    href: '/pages/mattress-brands' },
   { label: 'Bedding',         mega: null,        href: '/collections/sheets-pillowcases' },
   { label: 'Stores',          mega: null,        href: '/pages/mattress-store-locations' },
   { label: 'Financing',       mega: null,        href: '/pages/mattress-store-financing' },
