@@ -1607,16 +1607,11 @@ summary:focus-visible,
 }
 .brand-tile:hover { border-color: var(--text); color: var(--text); }
 .brand-wordmark { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
-.brand-tile-logo {
-  max-height: 26px; width: auto; height: auto; max-width: 80%;
-  object-fit: contain;
-  filter: grayscale(1); opacity: 0.65;
-  transition: filter var(--d-fast), opacity var(--d-fast);
-}
-.brand-tile:hover .brand-tile-logo { filter: grayscale(0); opacity: 1; }
-
-/* Brands directory page (/pages/mattress-brands) — design-system card
-   grid mirroring .gd-card; logo area falls back to a wordmark. */
+/* Brands directory grid injected into the CMS /pages/mattress-brands
+   page — design-system card grid mirroring .gd-card; logo area falls
+   back to a wordmark. */
+.brand-directory { border-top: 1px solid var(--line); margin-top: var(--s-7); }
+.brand-directory .eyebrow { display: block; margin-bottom: var(--s-3); }
 .brands-page-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
