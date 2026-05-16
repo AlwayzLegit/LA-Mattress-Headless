@@ -1610,7 +1610,9 @@ summary:focus-visible,
 /* Brands directory grid injected into the CMS /pages/mattress-brands
    page — design-system card grid mirroring .gd-card; logo area falls
    back to a wordmark. */
-.brand-directory { border-top: 1px solid var(--line); margin-top: var(--s-7); }
+/* Sits above the CMS editorial body; separates from it with a bottom
+   rule rather than a top one. */
+.brand-directory { margin-top: var(--s-5); padding-bottom: var(--s-7); border-bottom: 1px solid var(--line); margin-bottom: var(--s-7); }
 .brand-directory .eyebrow { display: block; margin-bottom: var(--s-3); }
 .brands-page-grid {
   display: grid;
