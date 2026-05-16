@@ -189,6 +189,14 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
   const hasResults = collection.products.nodes.length > 0;
   const availableFilters = collection.products.filters ?? [];
 
+  // The snapshot productsCount drifts below reality when a product is added
+  // to the collection after the last inventory pull (e.g. the 18 new SKUs
+  // joined the smart "pillows" collection). Never display a total smaller
+  // than what we're actually rendering — that produced "Showing 15 of 1".
+  const shownCount = collection.products.nodes.length;
+  const safeTotal =
+    totalInCollection != null ? Math.max(totalInCollection, shownCount) : null;
+
   return (
     <main className="container plp">
       <header className="plp-hero">
@@ -237,7 +245,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
           <div className="plp-layout">
             <FilterPanel
               availableFilters={availableFilters}
-              resultCount={hasFiltersApplied ? collection.products.nodes.length : (totalInCollection ?? collection.products.nodes.length)}
+              resultCount={hasFiltersApplied ? shownCount : (safeTotal ?? shownCount)}
             />
             <div className="plp-main">
               <div className="plp-toolbar">
@@ -247,10 +255,10 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                     {!hasResults
                       ? 'No products match your filters'
                       : after
-                      ? `Showing ${collection.products.nodes.length} more product${collection.products.nodes.length === 1 ? '' : 's'}`
-                      : hasFiltersApplied || !totalInCollection
-                      ? `Showing ${collection.products.nodes.length} product${collection.products.nodes.length === 1 ? '' : 's'}`
-                      : `Showing ${collection.products.nodes.length} of ${totalInCollection} product${totalInCollection === 1 ? '' : 's'}`}
+                      ? `Showing ${shownCount} more product${shownCount === 1 ? '' : 's'}`
+                      : hasFiltersApplied || safeTotal == null || safeTotal <= shownCount
+                      ? `Showing ${shownCount} product${shownCount === 1 ? '' : 's'}`
+                      : `Showing ${shownCount} of ${safeTotal} product${safeTotal === 1 ? '' : 's'}`}
                   </span>
                 </div>
                 <SortControl
