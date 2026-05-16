@@ -37,7 +37,6 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'cdn.shopify.com' },
       { protocol: 'https', hostname: 'mattressstoreslosangeles.com' },
-      { protocol: 'https', hostname: 'logo.clearbit.com' },
     ],
   },
   async redirects() {
