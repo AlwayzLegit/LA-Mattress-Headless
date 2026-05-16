@@ -1314,9 +1314,11 @@ summary:focus-visible,
    elsewhere (cart, FAQ, search, sleep quiz, account, location cards)
    intentionally don't carry the bar. */
 .hero-copy .eyebrow,
-.plp-hero-copy .eyebrow { margin-bottom: 24px; display: inline-flex; align-items: center; }
+.plp-hero-copy .eyebrow,
+.lp-hero-copy .eyebrow { margin-bottom: 24px; display: inline-flex; align-items: center; }
 .hero-copy .eyebrow::before,
-.plp-hero-copy .eyebrow::before {
+.plp-hero-copy .eyebrow::before,
+.lp-hero-copy .eyebrow::before {
   content: '';
   display: inline-block;
   width: 24px; height: 2px;
@@ -1605,6 +1607,51 @@ summary:focus-visible,
 }
 .brand-tile:hover { border-color: var(--text); color: var(--text); }
 .brand-wordmark { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+/* Brands directory grid injected into the CMS /pages/mattress-brands
+   page — design-system card grid mirroring .gd-card; logo area falls
+   back to a wordmark. */
+.brand-directory { border-top: 1px solid var(--line); margin-top: var(--s-7); }
+.brand-directory .eyebrow { display: block; margin-bottom: var(--s-3); }
+.brands-page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+.brand-card {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--text);
+  overflow: hidden;
+  transition: border-color var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+}
+.brand-card:hover { border-color: var(--text); transform: translateY(-2px); }
+.brand-card-logo {
+  display: flex; align-items: center; justify-content: center;
+  aspect-ratio: 16 / 7;
+  background: var(--surface-2);
+  padding: var(--s-5);
+}
+.brand-card-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.brand-card-wordmark {
+  font-size: 18px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--text-2); text-align: center;
+}
+.brand-card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--s-4) var(--s-5);
+  border-top: 1px solid var(--line);
+}
+.brand-card-name { font-size: 15px; font-weight: 600; }
+.brand-card-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text-3);
+  transition: color var(--d-fast), gap var(--d-fast);
+}
+.brand-card:hover .brand-card-cta { color: var(--accent); gap: 9px; }
 
 /* ───── Why us ───── */
 .why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; border-top: 1px solid var(--line); padding-top: 48px; }
@@ -3526,7 +3573,7 @@ summary:focus-visible,
   letter-spacing: -0.01em;
   color: var(--text);
 }
-.gd-card:hover h3 { color: var(--text); }
+.gd-card:hover h3 { color: var(--accent); }
 .gd-card-excerpt {
   margin: 0;
   color: var(--text-2);
@@ -3565,15 +3612,25 @@ summary:focus-visible,
   text-transform: uppercase;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--s-2) var(--s-4);
   margin-bottom: var(--s-4);
 }
+/* Brand signature: the red accent bar the hero/PLP eyebrows carry, so
+   the article header reads as the same editorial system. */
+.gd-head-meta::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 2px;
+  background: var(--brand-red);
+  flex: 0 0 auto;
+}
 .gd-head-meta-sep { opacity: 0.5; }
 .gd-head h1 {
-  font-size: clamp(34px, 5vw, 56px);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.05;
+  font-size: var(--t-h1);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.03;
   margin: 0 0 var(--s-4);
   text-wrap: balance;
 }

@@ -16,6 +16,7 @@ import { faqJsonLd } from '@/lib/faq';
 import { getShowroomFaq, getCmsPageFaq } from '@/lib/faq-extra';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
+import { BrandDirectory } from '@/app/_components/sections/brand-directory';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -247,6 +248,11 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
           </div>
         )}
       </article>
+      {/* Hard-coded on-brand brand directory rendered beneath the
+          merchant-authored CMS body for /pages/mattress-brands. Live
+          from getBrands() so new brands (e.g. Sleep & Beyond) appear
+          with no content edit. */}
+      {page.handle === 'mattress-brands' ? <BrandDirectory /> : null}
       <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
       <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       {/* Phase 277c: FAQPage JSON-LD on CMS pages with a curated FAQ set
