@@ -3,6 +3,7 @@ import { blogs, nonEmptyCollections, products, publishedPages } from '@/lib/inve
 import { SHOWROOMS } from '@/lib/showrooms';
 import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { SITE_URL } from '@/lib/site-config';
+import { isNoindexArticle } from '@/lib/noindex-articles';
 
 // Canonical host — never the apex. See lib/site-config.ts#canonicalizeSiteUrl:
 // emitting apex URLs here makes every crawler hit a 308 hop.
@@ -94,12 +95,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   const articleEntries: MetadataRoute.Sitemap = liveBlogs.flatMap((b) =>
-    (b.articles ?? []).map((a) => ({
-      url: u(`/blogs/${b.handle}/${a.handle}`),
-      lastModified: a.publishedAt ? new Date(a.publishedAt) : now,
-      changeFrequency: 'monthly' as const,
-      priority: 0.55,
-    })),
+    (b.articles ?? [])
+      // Keep noindexed doorway-style posts out of the sitemap so we
+      // don't ask Google to crawl pages we've told it not to index.
+      .filter((a) => !isNoindexArticle(b.handle, a.handle))
+      .map((a) => ({
+        url: u(`/blogs/${b.handle}/${a.handle}`),
+        lastModified: a.publishedAt ? new Date(a.publishedAt) : now,
+        changeFrequency: 'monthly' as const,
+        priority: 0.55,
+      })),
   );
 
   return [...home, ...productEntries, ...collectionEntries, ...pageEntries, ...blogEntries, ...articleEntries];
