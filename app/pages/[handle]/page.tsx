@@ -67,7 +67,12 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // first " | " / " – " / " — " separator, so we rebrand with a single
   // canonical " | LA Mattress" regardless of what suffix the merchant
   // (or the page-creation script) used.
-  const titleFallback = `${stripBrandSuffix(page.title)} | LA Mattress`;
+  // Suffix with the primary ranking phrase "LA Mattress Store" (not a
+  // bare " | LA Mattress" brand append) so the <title> is keyword-
+  // bearing AND distinct from the H1 rather than reading as H1 +
+  // boilerplate. stripBrandSuffix first so a page title that already
+  // carries a brand suffix isn't double-branded.
+  const titleFallback = `${stripBrandSuffix(page.title)} | LA Mattress Store`;
   const title = capTitle(firstNonEmpty(page.seo.title, titleFallback));
   const description = truncDescription(
     firstNonEmpty(page.seo.description, page.bodySummary, `${page.title} — LA Mattress Store`),
