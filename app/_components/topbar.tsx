@@ -3,20 +3,15 @@ import { Icon } from './icon';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export function TopBar() {
-  // Per the design system handoff: navy utility bar with trust trio on the
-  // left + Find a store / phone on the right. Hidden on <=768px viewports
-  // (the .topbar { display: none } media rule); on mobile the trust info
-  // lives in the in-page TrustBar section below the hero.
+  // Slim navy utility bar: Find a store + phone only. The trust claims
+  // that used to sit on the left now live in the sitewide <TrustStrip>
+  // rendered under the nav on every page (de-duped to avoid the same
+  // three claims appearing twice on desktop). Hidden on <=768px
+  // viewports via the `.topbar { display: none }` media rule.
   return (
     <div className="topbar">
       <div className="container topbar-inner">
-        <div className="topbar-marquee">
-          <span><Icon name="truck" size={14} /> Free white-glove delivery</span>
-          <span className="topbar-dot" aria-hidden="true">·</span>
-          <span><Icon name="card" size={14} /> 0% APR financing available</span>
-          <span className="topbar-dot" aria-hidden="true">·</span>
-          <span><Icon name="shield" size={14} /> 120-night comfort exchange</span>
-        </div>
+        <span className="topbar-tagline">Los Angeles&rsquo; mattress store &mdash; 5 showrooms, family-owned since 2012</span>
         <div className="topbar-right">
           <Link href="/pages/mattress-store-locations" className="topbar-link"><Icon name="pin" size={13} /> Find a store</Link>
           <span className="topbar-sep" />

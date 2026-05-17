@@ -4,31 +4,6 @@ import { phImg } from '../images';
 import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
 import { getBrands } from '@/lib/shopify';
 
-/* ───── Trust bar ─────────────────────────────────────── */
-export function TrustBar() {
-  const items: { icon: IconName; label: string; sub: string; href: string }[] = [
-    { icon: 'shield', label: '120-night comfort exchange', sub: 'Sleep on it for 4 months',        href: '/pages/love-your-bed-guarantee' },
-    { icon: 'truck',  label: 'Free white-glove delivery',   sub: 'Setup & old mattress haul-away',  href: '/pages/mattress-store-delivery' },
-    { icon: 'home',   label: 'Family-owned since 2012',     sub: '5 showrooms across LA',           href: '/pages/mattress-store-locations' },
-    { icon: 'card',   label: '0% APR financing',             sub: 'Synchrony & Acima · no fees',     href: '/pages/mattress-store-financing' },
-  ];
-  return (
-    <section className="trust-bar">
-      <div className="container trust-bar-inner">
-        {items.map((it) => (
-          <Link key={it.label} href={it.href} className="trust-item">
-            <div className="trust-ico"><Icon name={it.icon} size={22} stroke={1.4} /></div>
-            <div>
-              <div className="trust-label">{it.label}</div>
-              <div className="trust-sub muted">{it.sub}</div>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 /* ───── Shop by category ──────────────────────────────── */
 const CATEGORIES: { name: string; meta: string; img: string; label: string; href: string }[] = [
   { name: 'Memory Foam', meta: '24 styles', img: 'cat-memory-foam', label: '[Memory foam]',   href: '/collections/memory-foam-mattresses' },

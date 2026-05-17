@@ -1,15 +1,15 @@
 /**
  * Page-specific JSON-LD for the /pages/[handle] route.
  *
- * Rendered by app/pages/[handle]/layout.tsx — i.e. OUTSIDE the
- * loading.tsx Suspense boundary that wraps the page. Emitting these
- * inside the streamed page subtree left React's hidden streaming
- * source node (<div hidden id="S:0">) in the DOM on hard load, so the
- * id-bearing <script> tags duplicated (cowork QA P1-2). Layouts are
- * not Suspense-wrapped — same reason the layout's Organization/WebSite
- * scripts never duplicated — so emitting here is duplication-proof and
- * also fixes the soft-nav stale-schema leak (the layout re-renders per
- * handle).
+ * Rendered by app/pages/[handle]/layout.tsx, not inside page.tsx.
+ * page.tsx used to be wrapped by a route-level loading.tsx Suspense
+ * fallback; on hard load the streamed page subtree left React's hidden
+ * streaming-source node (<div hidden id="S:0">) in the DOM, so the
+ * id-bearing <script> tags duplicated (cowork QA P1-2). loading.tsx
+ * has since been removed, but the layout remains the durable home for
+ * this: it re-renders per handle on client nav (fixes the soft-nav
+ * stale-schema leak) and is structurally immune if a Suspense boundary
+ * is ever reintroduced.
  *
  * The objects below are reproduced verbatim from the previous inline
  * construction in page.tsx; the dispatch order matches ShopifyPage

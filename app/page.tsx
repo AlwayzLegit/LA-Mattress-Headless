@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 
 import { Hero } from './_components/hero';
 import {
-  TrustBar,
   ShopByCategory,
   BrandStrip,
   WhyUs,
@@ -55,7 +54,6 @@ export default async function Home() {
   return (
     <main>
       <Hero slides={slides} />
-      <TrustBar />
       <RecentlyViewedRail heading="Welcome back" eyebrow="Pick up where you left off" />
       <PopularProducts />
       <ShopByCategory />
