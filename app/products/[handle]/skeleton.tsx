@@ -7,7 +7,7 @@
 
 export function ProductSkeleton() {
   return (
-    <main className="container" style={{ padding: 'var(--s-6) 0 var(--s-9)' }} aria-busy="true">
+    <main className="container" style={{ paddingTop: 'var(--s-6)', paddingBottom: 'var(--s-9)' }} aria-busy="true">
       <div className="skel skel-line" style={{ width: 240, marginBottom: 'var(--s-5)' }} aria-hidden>&nbsp;</div>
       <div
         style={{

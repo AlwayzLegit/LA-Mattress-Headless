@@ -23,7 +23,7 @@ const CATEGORIES: { label: string; href: string; sub?: string }[] = [
 export default function NotFound() {
   return (
     <>
-      <main className="container" style={{ padding: 'var(--s-8) 0 var(--s-7)' }}>
+      <main className="container" style={{ paddingTop: 'var(--s-8)', paddingBottom: 'var(--s-7)' }}>
         <div style={{ maxWidth: 720 }}>
           <div className="eyebrow">404</div>
           <h1 className="h-display" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>
