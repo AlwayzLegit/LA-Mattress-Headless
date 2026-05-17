@@ -1,9 +1,9 @@
 {
-  "$schema": "Shopify URL Redirects \u2014 paths that must continue to redirect after the migration cutover.",
-  "$source": "Shopify Admin \u2192 URL Redirects export (CSV), 2026-05-05.",
+  "$schema": "Shopify URL Redirects — paths that must continue to redirect after the migration cutover.",
+  "$source": "Shopify Admin → URL Redirects export (CSV), 2026-05-05.",
   "$status": "imported",
   "$applicationNote": "Loaded by next.config.mjs at build time and emitted as Next.js redirects(). Edge-evaluated.",
-  "$count": 370,
+  "$count": 1092,
   "$importedAt": "2026-05-05T09:22:35.804Z",
   "$importStats": {
     "csvRows": 372,
@@ -104,7 +104,7 @@
     },
     {
       "source": "/blogs/beds-mattresses/stress-sleep-better",
-      "destination": "/products/royale-ii-extra-firm-gel-mattress",
+      "destination": "/collections/mattresses",
       "permanent": true
     },
     {
@@ -169,7 +169,7 @@
     },
     {
       "source": "/blogs/beds-mattresses/what-is-egg-crate-foam",
-      "destination": "/blogs/mattress-buying-guide/what-is-egg-crate-foam",
+      "destination": "/blogs/mattress-buying-guide/egg-crate-mattress-topper-complete-guide",
       "permanent": true
     },
     {
@@ -479,7 +479,7 @@
     },
     {
       "source": "/blogs/pages/financing-credit-card-la-mattress",
-      "destination": "/blogs/pages/financing-1",
+      "destination": "/pages/mattress-store-financing",
       "permanent": true
     },
     {
@@ -889,12 +889,12 @@
     },
     {
       "source": "/collections/bedroom-furniture/brand_bed-in-a-box",
-      "destination": "/collections/bed-in-a-box-mattress",
+      "destination": "/collections/bed-in-a-box-mattresses",
       "permanent": true
     },
     {
       "source": "/collections/best-la-furniture-sale-la-mattress-free-delivery-save-best-deals",
-      "destination": "/collections/los-angeles-furniture-sale",
+      "destination": "/collections/mattresses",
       "permanent": true
     },
     {
@@ -979,7 +979,7 @@
     },
     {
       "source": "/collections/furniture",
-      "destination": "/collections/sofas",
+      "destination": "/collections/mattresses",
       "permanent": true
     },
     {
@@ -1009,7 +1009,7 @@
     },
     {
       "source": "/collections/innerspring-twin-size-mattresses",
-      "destination": "/collections/twin",
+      "destination": "/collections/twin-size-mattresses",
       "permanent": true
     },
     {
@@ -1174,7 +1174,7 @@
     },
     {
       "source": "/collections/sofa-furniture-best-prices-free-delivery-la-mattress-stores",
-      "destination": "/collections/sofas",
+      "destination": "/collections/mattresses",
       "permanent": true
     },
     {
@@ -1189,12 +1189,12 @@
     },
     {
       "source": "/collections/southerland-queen-mattresses",
-      "destination": "/collections/southerland-mattress",
+      "destination": "/collections/southerland-mattresses",
       "permanent": true
     },
     {
       "source": "/collections/southerland-twin-memory-foam-mattresses",
-      "destination": "/collections/southerland-mattress",
+      "destination": "/collections/southerland-mattresses",
       "permanent": true
     },
     {
@@ -1334,7 +1334,7 @@
     },
     {
       "source": "/pages/free-120-night-comfort-guarantee",
-      "destination": "/blogs/pages/free-120-night-comfort-guarantee",
+      "destination": "/pages/love-your-bed-guarantee",
       "permanent": true
     },
     {
@@ -1385,7 +1385,7 @@
     {
       "source": "/pages/mattress-faq",
       "destination": "/pages/mattress-store-contact",
-      "permanent": false
+      "permanent": true
     },
     {
       "source": "/pages/mattress-sale",
@@ -1414,7 +1414,7 @@
     },
     {
       "source": "/pages/mattress-store-sale",
-      "destination": "/pages/mattress-sale",
+      "destination": "/collections/on-sale",
       "permanent": true
     },
     {
@@ -1489,7 +1489,7 @@
     },
     {
       "source": "/pages/sale",
-      "destination": "/pages/mattress-sale",
+      "destination": "/collections/on-sale",
       "permanent": true
     },
     {
@@ -1574,12 +1574,12 @@
     },
     {
       "source": "/products/ca-king-tempur-pedic-clearnce-mattress-tempur-proadapt-medium-12",
-      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
       "permanent": true
     },
     {
       "source": "/products/copy-of-sealy-posturepedic-performance-hybrid-copper-ii-plush-13-floor-model-clearance-mattress",
-      "destination": "/products/sealy-mattress-clearance-posturepedic-performance-hybrid-copper-ii-plush-13",
+      "destination": "/collections/mattresses",
       "permanent": true
     },
     {
@@ -1589,7 +1589,7 @@
     },
     {
       "source": "/products/diamond-lois-medium-natural-latex-hybrid-14-mattress",
-      "destination": "/products/lois-medium-natural-latex-hybrid-by-diamond-mattress",
+      "destination": "/products/medium-lucille-luxury-natural-latex-diamond-mattress",
       "permanent": true
     },
     {
@@ -1609,7 +1609,7 @@
     },
     {
       "source": "/products/harvest-green-original-pillow-top-natural-latex-by-harvest-green-mattress",
-      "destination": "/products/harvest-pillow-top-latex-by-harvest-green-mattress",
+      "destination": "/products/harvest-green-essential-natural-latex-by-harvest-green-mattress",
       "permanent": true
     },
     {
@@ -1624,7 +1624,7 @@
     },
     {
       "source": "/products/janeiro-platform-bed-frame",
-      "destination": "/products/janeiro-gray-platform-bed-frame",
+      "destination": "/collections/mattresses",
       "permanent": true
     },
     {
@@ -1649,7 +1649,7 @@
     },
     {
       "source": "/products/premium-comfort-lyric-firm-mattress-scandinavian",
-      "destination": "/products/premium-comfort-prelude-firm-mattress-scandinavian",
+      "destination": "/collections/mattresses",
       "permanent": true
     },
     {
@@ -1684,12 +1684,12 @@
     },
     {
       "source": "/products/sealy-posturepedic-performance-hybrid-kelburn-ii-medium-13-clearance-mattress",
-      "destination": "/products/sealy-mattress-clearance-posturepedic-performance-hybrid-copper-ii-plush-13",
+      "destination": "/collections/mattresses",
       "permanent": true
     },
     {
       "source": "/products/serta-icomfort-blue-max-touch-3000-plush-mattress",
-      "destination": "/products/ca-king-serta-mattress-clearance-icomfort-blue-max-touch-3000-plush-mattress",
+      "destination": "/collections/mattresses",
       "permanent": true
     },
     {
@@ -1714,17 +1714,17 @@
     },
     {
       "source": "/products/tempur-luxeadapt-soft",
-      "destination": "/products/tempur-pedic-tempur-luxeadapt-soft-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-firm-mattress",
       "permanent": true
     },
     {
       "source": "/products/tempur-pedic-tempur-adapt-medium-hybrid",
-      "destination": "/products/tempur-pedic-adapt-medium-hybrid-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
       "permanent": true
     },
     {
       "source": "/products/tempur-pedic-tempur-adapt-medium-hybrid-mattress",
-      "destination": "/products/tempur-pedic-adapt-medium-hybrid-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
       "permanent": true
     },
     {
@@ -1734,7 +1734,7 @@
     },
     {
       "source": "/products/tempur-pedic-tempur-luxeadapt-soft",
-      "destination": "/products/tempur-pedic-tempur-luxeadapt-soft-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-firm-mattress",
       "permanent": true
     },
     {
@@ -1744,7 +1744,7 @@
     },
     {
       "source": "/products/tempur-pedic-tempur-proadapt-medium",
-      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
       "permanent": true
     },
     {
@@ -1764,12 +1764,12 @@
     },
     {
       "source": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-3-cooler",
-      "destination": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-12-mattress",
+      "destination": "/products/tempur-pedic-tempur-probreeze-medium-12-mattress",
       "permanent": true
     },
     {
       "source": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-mattress",
-      "destination": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-12-mattress",
+      "destination": "/products/tempur-pedic-tempur-probreeze-medium-12-mattress",
       "permanent": true
     },
     {
@@ -1779,7 +1779,7 @@
     },
     {
       "source": "/products/tempur-pro-adapt-medium",
-      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
       "permanent": true
     },
     {
@@ -1799,7 +1799,7 @@
     },
     {
       "source": "/products/tempur-proadapt-medium",
-      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
       "permanent": true
     },
     {
@@ -1809,12 +1809,12 @@
     },
     {
       "source": "/products/tempur-probreeze-medium-hybrid-3-cooler",
-      "destination": "/products/tempur-pedic-tempur-probreeze-medium-hybrid-12-mattress",
+      "destination": "/products/tempur-pedic-tempur-probreeze-medium-12-mattress",
       "permanent": true
     },
     {
       "source": "/products/tempurpedic-tempur-adapt-11-medium-hybrid-mattress",
-      "destination": "/products/tempur-pedic-adapt-medium-hybrid-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
       "permanent": true
     },
     {
@@ -1829,12 +1829,12 @@
     },
     {
       "source": "/products/tempurpedic-tempurluxebreeze-soft-13-mattress",
-      "destination": "/products/tempur-pedic-tempur-luxeadapt-soft-mattress",
+      "destination": "/products/tempur-pedic-tempur-luxeadapt-firm-mattress",
       "permanent": true
     },
     {
       "source": "/products/tempurpedic-tempurproadapt-medium-12-mattress",
-      "destination": "/products/tempur-pedic-tempur-proadapt-medium-mattress",
+      "destination": "/products/tempur-pedic-tempur-adapt-medium-mattress",
       "permanent": true
     },
     {
@@ -1844,7 +1844,7 @@
     },
     {
       "source": "/products/the-buckingham-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
-      "destination": "/products/the-windsor-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
+      "destination": "/products/ashford-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
       "permanent": true
     },
     {
@@ -1866,7 +1866,7 @@
       "source": "/blogs/mattress-buying-guide/articles",
       "destination": "/blogs/mattress-buying-guide",
       "permanent": true,
-      "$note": "Phase 261: 282 4xx URLs from May SEMrush export \u2014 fuzzy-matched to nearest live product/collection, or routed to /collections/mattresses (products) / /blogs/<category> (article slugs) as the safe fallback to preserve link equity. Bulk-generated; specific overrides applied for pillow/protector/Tempur/Helix/sale variants."
+      "$note": "Phase 261: 282 4xx URLs from May SEMrush export — fuzzy-matched to nearest live product/collection, or routed to /collections/mattresses (products) / /blogs/<category> (article slugs) as the safe fallback to preserve link equity. Bulk-generated; specific overrides applied for pillow/protector/Tempur/Helix/sale variants."
     },
     {
       "source": "/blogs/mattress-buying-guide/comfortcare-limited-smart-mattress",
@@ -3277,7 +3277,7 @@
       "source": "/$",
       "destination": "/",
       "permanent": true,
-      "$note": "Phase 273: 438 GSC 404 URLs (May 14 export) \u2014 fuzzy-matched to nearest live product/collection/page, or safely defaulted to /collections/mattresses / /blogs/sleep-blog / homepage."
+      "$note": "Phase 273: 438 GSC 404 URLs (May 14 export) — fuzzy-matched to nearest live product/collection/page, or safely defaulted to /collections/mattresses / /blogs/sleep-blog / homepage."
     },
     {
       "source": "/accessibility",
@@ -5463,7 +5463,7 @@
       "source": "/blogs/beds-mattresses",
       "destination": "/blogs/sleep-blog",
       "permanent": true,
-      "$note": "Phase 260: bare blog index \u2014 Phase 251's :slug* wildcard does not match the empty-slug case, so the blog index page would still render. Redirect to the sleep-blog landing where the consolidated content lives."
+      "$note": "Phase 260: bare blog index — Phase 251's :slug* wildcard does not match the empty-slug case, so the blog index page would still render. Redirect to the sleep-blog landing where the consolidated content lives."
     },
     {
       "source": "/articles/:slug*",
@@ -5477,5 +5477,6 @@
       "permanent": true,
       "$note": "Phase 251: catch-all for ~287 old Hydrogen blog slugs not covered by specific redirects above. Ordered LAST so the specific entries win first; this wildcard only fires for unmatched slugs."
     }
-  ]
+  ],
+  "$auditNote": "Redirect chains flattened to single-hop and stray 302s normalized to 301 on 2026-05-17 (SEMrush audit)."
 }
