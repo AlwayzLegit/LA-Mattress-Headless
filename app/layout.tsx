@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { TopBar } from './_components/topbar';
+import { TrustStrip } from './_components/trust-strip';
 
 const geistSans = Geist({
   subsets: ['latin'],
@@ -132,6 +133,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <CartProvider>
           {announcement ? <AnnouncementBar data={announcement} /> : <TopBar />}
           <Nav brands={brands} />
+          {/* Slim sitewide trust bar with interlinks, directly under
+              the header (static — scrolls away). De-duped from TopBar. */}
+          <TrustStrip />
           {/*
             Skip-link target. tabIndex={-1} is required: without it, the
             browser scrolls to #main-content on activation but keyboard
