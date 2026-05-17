@@ -142,48 +142,11 @@ async function ArticleBody({ blog, article }: { blog: string; article: string })
  * On <=980px the side rails collapse and the article is single-column.
  */
 function ArticleView({ article }: { article: Article }) {
-  const url = `${SITE}/blogs/${article.blog.handle}/${article.handle}`;
   const sanitized = sanitizeShopifyHtml(article.contentHtml);
   const { html: bodyHtml, headings } = injectHeadingIds(sanitized);
   const wordCount = countWordsFromHtml(article.contentHtml);
   const readMinutes = wordCount ? Math.max(1, Math.round(wordCount / 220)) : 0;
   const related = findRelatedArticles(article);
-
-  const ldDescription = firstNonEmpty(
-    article.seo.description,
-    article.excerpt,
-    article.title,
-  );
-
-  const articleLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
-    inLanguage: 'en-US',
-    headline: article.title,
-    ...(ldDescription ? { description: ldDescription } : {}),
-    datePublished: article.publishedAt,
-    image: article.image ? [article.image.url] : undefined,
-    author: article.author ? { '@type': 'Person', name: article.author.name } : undefined,
-    publisher: {
-      '@type': 'Organization',
-      name: 'LA Mattress Store',
-      logo: { '@type': 'ImageObject', url: `${SITE}/assets/la-mattress-logo.png` },
-    },
-    articleSection: article.blog.title,
-    ...(wordCount ? { wordCount } : {}),
-    ...(article.tags.length ? { keywords: article.tags.join(', ') } : {}),
-  };
-
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
-      { '@type': 'ListItem', position: 2, name: article.blog.title, item: `${SITE}/blogs/${article.blog.handle}` },
-      { '@type': 'ListItem', position: 3, name: article.title, item: url },
-    ],
-  };
 
   const articleDisplayTitle = toSentenceCase(stripBrandSuffix(article.title));
   const blogDisplayTitle = toSentenceCase(stripBrandSuffix(article.blog.title));
@@ -279,8 +242,6 @@ function ArticleView({ article }: { article: Article }) {
         </div>
       </section>
 
-      <script id="ld-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
-      <script id="ld-breadcrumb-article" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </>
   );
 }

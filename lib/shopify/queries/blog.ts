@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { shopifyFetch } from '../client';
 import type { Article, ArticleSummary, BlogWithArticles } from '../types';
 import { IMAGE_FRAGMENT, SEO_FRAGMENT } from './fragments';
@@ -97,7 +98,9 @@ type RawArticle = {
   } | null;
 };
 
-export async function getArticleByHandle(blogHandle: string, articleHandle: string): Promise<Article | null> {
+// Memoized so the blogs/[blog]/[article] segment layout (JSON-LD) and
+// the page's ArticleBody share a single Storefront request per render.
+export const getArticleByHandle = cache(async (blogHandle: string, articleHandle: string): Promise<Article | null> => {
   const data = await shopifyFetch<RawArticle>(
     GET_ARTICLE,
     { blogHandle, articleHandle },
@@ -110,4 +113,4 @@ export async function getArticleByHandle(blogHandle: string, articleHandle: stri
     author: authorV2,
     blog: { handle: data.blog.handle, title: data.blog.title },
   };
-}
+});

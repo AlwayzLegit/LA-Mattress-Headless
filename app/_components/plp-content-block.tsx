@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Icon } from './icon';
 import { categoryIntroFor, categoryFaqFor } from '@/lib/plp-content';
-import { faqJsonLd } from '@/lib/faq';
 import { renderFaqAnswer } from '@/lib/faq-render';
 
 /**
@@ -70,12 +69,6 @@ export function PlpContentBlock({
           </ul>
         </aside>
       </div>
-
-      <script
-        type="application/ld+json"
-        id={`ld-plp-faq-${handle}`}
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faqItems)) }}
-      />
     </section>
   );
 }
