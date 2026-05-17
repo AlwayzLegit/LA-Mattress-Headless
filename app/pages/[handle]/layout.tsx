@@ -3,16 +3,17 @@ import { getPageJsonLd } from '@/lib/page-jsonld';
 
 /**
  * Segment layout for /pages/[handle]. Its only job is to emit the
- * page-specific JSON-LD HERE — in the layout, which is NOT wrapped by
- * loading.tsx's Suspense boundary — instead of inside page.tsx.
+ * page-specific JSON-LD HERE — in the layout, not inside page.tsx.
  *
- * When the id-bearing <script> tags lived in the streamed page subtree,
- * React's hidden streaming-source node (<div hidden id="S:0">) was left
- * in the DOM on hard load, duplicating every script (cowork QA P1-2,
- * template-wide). Rendering them from the layout is duplication-proof
- * (same reason the root layout's Organization/WebSite scripts never
- * duplicated) and the layout re-renders per handle on client nav, which
- * also clears the stale-schema-on-soft-nav leak.
+ * History: page.tsx used to be wrapped by a route-level loading.tsx
+ * Suspense fallback. On hard load the streamed page subtree left
+ * React's hidden streaming-source node (<div hidden id="S:0">) in the
+ * DOM, duplicating every id-bearing <script> (cowork QA P1-2,
+ * template-wide). loading.tsx has since been removed (so SSR HTML
+ * matches the client and there's no #S:0), but keeping the JSON-LD in
+ * the layout remains the durable choice: layouts re-render per handle
+ * on client nav (clears the stale-schema-on-soft-nav leak) and it's
+ * structurally immune if a Suspense boundary is ever reintroduced.
  *
  * getPageByHandle is React.cache()-memoized, so this and page.tsx share
  * a single Storefront request per render.
