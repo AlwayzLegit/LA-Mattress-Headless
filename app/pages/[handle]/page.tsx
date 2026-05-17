@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { getPageByHandle, getCollectionByHandle } from '@/lib/shopify';
 import type { ProductSummary } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
-import { SHOWROOMS, findShowroom, formatPhone, getOpenStatus, type Showroom } from '@/lib/showrooms';
+import { SHOWROOMS, findShowroom, formatPhone, type Showroom } from '@/lib/showrooms';
 import { findNeighborhood, getNearestShowrooms, type Neighborhood } from '@/lib/neighborhoods';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
@@ -18,6 +18,7 @@ import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 import { BrandDirectory } from '@/app/_components/sections/brand-directory';
 import { ShowroomDetail } from '@/app/_components/sections/showroom-detail';
+import { ShowroomOpenStatus } from '@/app/_components/showroom-open-status';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -396,7 +397,6 @@ function ShowroomPage({
   showroom: Showroom;
 }) {
   const url = `${SITE}/pages/${page.handle}`;
-  const openStatus = getOpenStatus(showroom);
   const mapEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(
     `${showroom.street}, ${showroom.city}, ${showroom.region} ${showroom.postalCode}`,
   )}&z=15&output=embed`;
@@ -472,9 +472,7 @@ function ShowroomPage({
         <header className="showroom-page-hero">
           <div className="eyebrow">{showroom.area} · Los Angeles</div>
           <h1 className="h1">{toSentenceCase(stripBrandSuffix(page.title))}</h1>
-          <div className={`showroom-open-status${openStatus.isOpen ? ' is-open' : ''}`}>
-            <span className="showroom-open-dot" aria-hidden /> {openStatus.message}
-          </div>
+          <ShowroomOpenStatus showroom={showroom} />
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
             Visit our {showroom.area} showroom — try every mattress, talk with our local team, and walk out the same day with free white-glove delivery on most beds.
           </p>
