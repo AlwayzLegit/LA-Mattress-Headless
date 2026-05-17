@@ -17,6 +17,7 @@ import { getShowroomFaq, getCmsPageFaq } from '@/lib/faq-extra';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 import { BrandDirectory } from '@/app/_components/sections/brand-directory';
+import { ShowroomDetail } from '@/app/_components/sections/showroom-detail';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -531,13 +532,10 @@ function ShowroomPage({
                 allowFullScreen
               />
             </div>
-            {page.body ? (
-              <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
-            ) : (
-              <p className="muted">More information about this showroom is coming soon.</p>
-            )}
           </div>
         </section>
+
+        <ShowroomDetail showroom={showroom} cmsBody={page.body ?? null} />
 
         <section className="section">
           <div className="eyebrow">Other LA showrooms</div>
