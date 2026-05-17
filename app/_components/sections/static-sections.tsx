@@ -87,6 +87,10 @@ const FALLBACK_BRANDS: { name: string; href: string }[] = [
   { name: 'Tempur-Pedic',     href: '/collections/tempur-pedic-mattresses' },
 ];
 
+// NOTE: the homepage brand strip is intentionally text-wordmark only
+// (no logos) — a deliberate "leave homepage as-is" product decision.
+// Logos live on /pages/mattress-brands instead. Do not "fix" the
+// missing <img>s here; it is not a regression (QA P0-1).
 export async function BrandStrip() {
   const live = await getBrands();
   const brands = live.length ? live : FALLBACK_BRANDS;

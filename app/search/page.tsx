@@ -50,7 +50,9 @@ function parseTab(raw: string | undefined): Tab {
 }
 
 export const metadata: Metadata = {
-  title: 'Search — LA Mattress Store',
+  // `absolute` so the root layout's "%s · LA Mattress Store" template
+  // can't append a second brand (QA: double-brand title).
+  title: { absolute: 'Search · LA Mattress Store' },
   description: 'Search mattresses, adjustable beds, bedding, and more at LA Mattress Store.',
   robots: { index: false, follow: true },
   // Phase 258: /search is noindex but should still declare a clean

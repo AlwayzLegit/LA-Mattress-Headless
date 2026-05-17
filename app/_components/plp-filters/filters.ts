@@ -27,14 +27,23 @@ export type FilterSelection = {
   price: { min?: number; max?: number } | null;
 };
 
-const splitCsv = (raw: string | undefined) =>
-  (raw ?? '')
+// Next.js passes a string[] when a query key repeats (?vendor=a&vendor=b)
+// or `undefined` when absent — never trust the narrowed string type.
+// Flatten arrays so `.split` can't blow up (Sentry LA-MATTRESS-HEADLESS-3:
+// "(a ?? "").split is not a function").
+type ParamValue = string | string[] | undefined;
+
+const splitCsv = (raw: ParamValue) =>
+  (Array.isArray(raw) ? raw.join(',') : raw ?? '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
 
-export function parseFilterSelection(searchParams: Record<string, string | undefined>): FilterSelection {
-  const priceRaw = searchParams.price;
+export function parseFilterSelection(
+  searchParams: Record<string, ParamValue>,
+): FilterSelection {
+  const priceParam = searchParams.price;
+  const priceRaw = Array.isArray(priceParam) ? priceParam[0] : priceParam;
   let price: FilterSelection['price'] = null;
   if (priceRaw) {
     const m = /^(\d+(?:\.\d+)?)?-(\d+(?:\.\d+)?)?$/.exec(priceRaw);

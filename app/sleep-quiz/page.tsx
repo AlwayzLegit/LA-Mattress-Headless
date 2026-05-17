@@ -5,7 +5,9 @@ import { allQuizPickHandles } from './quiz-data';
 import { getQuizPicks } from '@/lib/shopify';
 
 export const metadata: Metadata = {
-  title: 'Sleep Quiz — LA Mattress Store',
+  // `absolute` so the layout's "%s · LA Mattress Store" template
+  // can't append a second brand (QA: double-brand title).
+  title: { absolute: 'Mattress Sleep Quiz · LA Mattress Store' },
   description: 'Answer 8 quick questions and get a mattress recommendation tailored to how you sleep. Free, takes under 2 minutes.',
   alternates: { canonical: '/sleep-quiz' },
   openGraph: {

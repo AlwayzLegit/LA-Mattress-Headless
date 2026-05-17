@@ -6,7 +6,7 @@ import { AccountSavedCount } from './saved-count';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export const metadata: Metadata = {
-  title: 'Account — LA Mattress Store',
+  title: { absolute: 'Your Account · LA Mattress Store' },
   description: 'Manage your LA Mattress Store orders and account.',
   robots: { index: false, follow: false },
   alternates: { canonical: '/account' },
