@@ -50,11 +50,14 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // flagged 323 blog articles for "Duplicate content in h1 and title"
   // — case-insensitive comparison sees them as the same string.
   //
-  // Adding the " | LA Mattress" suffix to the title fallback (NOT to
-  // the H1) makes them distinct content after case normalization.
-  // Merchant-set seo.title takes precedence as before — this fallback
-  // only fires when seo.title is empty.
-  const titleFallback = `${article.title} | LA Mattress`;
+  // Suffix the title fallback (NOT the H1) with the primary ranking
+  // phrase "LA Mattress Store" so the <title> is both distinct from the
+  // H1 (which is the brand-stripped, sentence-cased article title) and
+  // keyword-bearing — a bare " | LA Mattress" brand append still reads
+  // as H1 + boilerplate (SEMrush near-duplicate). stripBrandSuffix
+  // first so an article title that already carries a brand suffix
+  // doesn't end up double-branded. Merchant-set seo.title still wins.
+  const titleFallback = `${stripBrandSuffix(article.title)} | LA Mattress Store`;
   const title = capTitle(firstNonEmpty(article.seo.title, titleFallback));
   const description = truncDescription(
     firstNonEmpty(

@@ -3826,9 +3826,9 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 .gd-side-card-stack a:first-of-type { border-top: 0; }
 .gd-side-card a:hover { color: var(--text); }
 .gd-side-card-dark {
-  background: var(--text);
+  background: var(--accent);
   color: var(--text-on-inv);
-  border-color: var(--text);
+  border-color: var(--accent);
 }
 .gd-side-card-dark h4 { color: #fff; }
 .gd-side-card-dark p { margin: 0 0 var(--s-3); color: rgba(255,255,255,0.72); font-size: 13px; line-height: 1.5; }
