@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { WishlistView } from './wishlist-view';
 
 export const metadata: Metadata = {
-  title: 'Saved mattresses — LA Mattress Store',
+  title: { absolute: 'Saved Mattresses · LA Mattress Store' },
   description: 'Mattresses you’ve saved on this device. No account needed.',
   robots: { index: false, follow: false },
   alternates: { canonical: '/wishlist' },

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { getProductByHandle, getProductRecommendations } from '@/lib/shopify';
 import type { Product, ProductSummary } from '@/lib/shopify';
 import { products as inventoryProducts, findProduct } from '@/lib/inventory';
-import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
+import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
@@ -71,12 +71,20 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // title and rely on the unique variant signature within the first ~70
   // chars to differentiate sibling variants.
   const titleFallback = `${product.title} in Los Angeles`;
-  const title = capTitle(
+  let title = capTitle(
     firstNonEmpty(
       product.seo.title,
       titleFallback.length <= 70 ? titleFallback : product.title,
     ),
   );
+  // Guard: the H1 is the bare product.title. If the resolved title
+  // collapses to that same string (long product name → fallback to
+  // bare title, or a merchant seo.title set identical to the product
+  // name), the <title> would duplicate the H1 with no brand. Append
+  // the canonical brand suffix so it stays distinct + brand-bearing.
+  if (stripBrandSuffix(title).trim().toLowerCase() === product.title.trim().toLowerCase()) {
+    title = capTitle(`${product.title} · LA Mattress Store`);
+  }
   const description = truncDescription(
     firstNonEmpty(
       product.seo.description,

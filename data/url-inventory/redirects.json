@@ -3,7 +3,7 @@
   "$source": "Shopify Admin → URL Redirects export (CSV), 2026-05-05.",
   "$status": "imported",
   "$applicationNote": "Loaded by next.config.mjs at build time and emitted as Next.js redirects(). Edge-evaluated.",
-  "$count": 1092,
+  "$count": 1093,
   "$importedAt": "2026-05-05T09:22:35.804Z",
   "$importStats": {
     "csvRows": 372,
@@ -5476,6 +5476,12 @@
       "destination": "/blogs/sleep-blog",
       "permanent": true,
       "$note": "Phase 251: catch-all for ~287 old Hydrogen blog slugs not covered by specific redirects above. Ordered LAST so the specific entries win first; this wildcard only fires for unmatched slugs."
+    },
+    {
+      "source": "/pages/sleep-quiz",
+      "destination": "/sleep-quiz",
+      "permanent": true,
+      "$note": "Legacy /pages/ slug for the quiz → canonical app route (QA P1-4)."
     }
   ],
   "$auditNote": "Redirect chains flattened to single-hop and stray 302s normalized to 301 on 2026-05-17 (SEMrush audit)."
