@@ -11,9 +11,8 @@ import { SHOWROOMS, findShowroom, formatPhone, type Showroom } from '@/lib/showr
 import { findNeighborhood, getNearestShowrooms, type Neighborhood } from '@/lib/neighborhoods';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
-import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_PHONE_SCHEMA } from '@/lib/site-config';
-import { faqJsonLd } from '@/lib/faq';
-import { getShowroomFaq, getCmsPageFaq } from '@/lib/faq-extra';
+import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
+import { isSalePage } from '@/lib/page-jsonld';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 import { BrandDirectory } from '@/app/_components/sections/brand-directory';
@@ -105,24 +104,9 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
  * layout instead of the default CMS template. Merchants just need to
  * name pages with the convention; no additional Shopify configuration.
  */
-const SALE_HANDLE_PATTERNS = [
-  /(^|-)sale(-|$)/i,
-  /memorial-day/i,
-  /labor-day/i,
-  /presidents-?day/i,
-  /mlk-?day/i,
-  /july-?4|fourth-of-july|independence-day/i,
-  /black-friday/i,
-  /cyber-monday/i,
-  /christmas/i,
-  /new-year/i,
-  /spring-sale|summer-sale|fall-sale|winter-sale/i,
-  /clearance/i,
-  /deals?-event/i,
-];
-function isSalePage(handle: string): boolean {
-  return SALE_HANDLE_PATTERNS.some((p) => p.test(handle));
-}
+// SALE_HANDLE_PATTERNS / isSalePage now live in lib/page-jsonld.ts so the
+// /pages/[handle] template dispatch has a single source of truth shared
+// with the segment layout's JSON-LD builder.
 
 export default async function ShopifyPage(props: Params) {
   const params = await props.params;
@@ -185,7 +169,6 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
   // template was emitting none, so cms pages had no rich-result eligibility
   // beyond the generic site-wide Organization/WebSite from layout.tsx.
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
-  const url = `${SITE}/pages/${page.handle}`;
   // "Last updated" feels like clutter on most marketing copy but it's
   // load-bearing on warranty / policy / returns pages where freshness
   // matters legally and for SEO. Show it on all cms pages — it's a
@@ -195,25 +178,6 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
   const updatedLabel = page.updatedAt
     ? new Date(page.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : null;
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
-      { '@type': 'ListItem', position: 2, name: cleanTitle, item: url },
-    ],
-  };
-  const webPageLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: cleanTitle,
-    url,
-    description: firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined,
-    isPartOf: { '@type': 'WebSite', url: SITE },
-    inLanguage: 'en-US',
-    datePublished: page.createdAt || undefined,
-    dateModified: page.updatedAt || undefined,
-  };
 
   return (
     <main className="container">
@@ -261,79 +225,11 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
           </div>
         )}
       </article>
-      <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
-      <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-      {/* Phase 277c: FAQPage JSON-LD on CMS pages with a curated FAQ set
-          (shipping/delivery, financing, warranty). getCmsPageFaq returns
-          null for handles without a set, so the script is skipped on
-          most pages. Visual FAQ UI is intentionally unchanged — the
-          schema is emitted from a structured-data-only source. */}
-      {(() => {
-        const faqs = getCmsPageFaq(page.handle);
-        return faqs ? (
-          <script
-            id="ld-faq-page"
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faqs)) }}
-          />
-        ) : null;
-      })()}
     </main>
   );
 }
 
 function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>> }) {
-  const url = `${SITE}/pages/${page.handle}`;
-
-  // Top-level LocalBusiness w/ each showroom as a department/branch.
-  const localBusinessLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FurnitureStore',
-    '@id': url,
-    name: 'LA Mattress Store',
-    url,
-    telephone: SITE_PHONE_SCHEMA,
-    priceRange: '$$$',
-    image: `${SITE}/assets/la-mattress-logo.png`,
-    // Phase 252: LocalBusiness requires `address` — SEMrush flagged this LD
-    // for the 1 missing-required-property error on /pages/mattress-store-locations.
-    // Reuse the canonical Studio City corporate address (same source as the
-    // sitewide LOCAL_BUSINESS_LD in lib/structured-data.ts).
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '12306 Ventura Blvd',
-      addressLocality: 'Studio City',
-      addressRegion: 'CA',
-      postalCode: '91604',
-      addressCountry: 'US',
-    },
-    areaServed: { '@type': 'City', name: 'Los Angeles' },
-    department: SHOWROOMS.map((s) => ({
-      '@type': 'FurnitureStore',
-      name: s.name,
-      url: `${SITE}/pages/${s.handle}`,
-      telephone: s.phone,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: s.street,
-        addressLocality: s.city,
-        addressRegion: s.region,
-        postalCode: s.postalCode,
-        addressCountry: 'US',
-      },
-      ...(s.geo ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } } : {}),
-    })),
-  };
-
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
-      { '@type': 'ListItem', position: 2, name: 'Stores', item: url },
-    ],
-  };
-
   return (
     <main className="container">
       <article className="locations-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
@@ -383,8 +279,6 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
          * theme CSS ported over.
          */}
       </article>
-      <script id="ld-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
-      <script id="ld-breadcrumb-locations" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }
@@ -396,67 +290,9 @@ function ShowroomPage({
   page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
   showroom: Showroom;
 }) {
-  const url = `${SITE}/pages/${page.handle}`;
   const mapEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(
     `${showroom.street}, ${showroom.city}, ${showroom.region} ${showroom.postalCode}`,
   )}&z=15&output=embed`;
-
-  const localBusinessLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FurnitureStore',
-    '@id': url,
-    name: showroom.name,
-    url,
-    telephone: showroom.phone,
-    priceRange: '$$$',
-    image: showroom.imageUrl ?? `${SITE}/assets/la-mattress-logo.png`,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: showroom.street,
-      addressLocality: showroom.city,
-      addressRegion: showroom.region,
-      postalCode: showroom.postalCode,
-      addressCountry: 'US',
-    },
-    ...(showroom.geo
-      ? { geo: { '@type': 'GeoCoordinates', latitude: showroom.geo.latitude, longitude: showroom.geo.longitude } }
-      : {}),
-    // Phase 287: link this FurnitureStore to its verified Google
-    // Business Profile / Maps entity so Google can reconcile the
-    // structured data with the GBP listing (strongest local signal).
-    ...(showroom.gbpUrl ? { sameAs: [showroom.gbpUrl] } : {}),
-    openingHoursSpecification: showroom.hours.map((h) => ({
-      '@type': 'OpeningHoursSpecification',
-      // Phase 236: extended for Mon-Fri / Sat-Sun spans now used by all
-      // five showrooms (replaced the older Mon-Sat / Sun split).
-      dayOfWeek:
-        h.day === 'Mon-Fri'
-          ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-          : h.day === 'Sat-Sun'
-            ? ['Saturday', 'Sunday']
-            : h.day === 'Mon-Sat'
-              ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-              : h.day === 'Sun'
-                ? 'Sunday'
-                : h.day === 'Sat'
-                  ? 'Saturday'
-                  : h.day,
-      opens: h.open,
-      closes: h.close,
-    })),
-    areaServed: ['Los Angeles', showroom.area],
-    parentOrganization: { '@id': `${SITE}/#organization` },
-  };
-
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
-      { '@type': 'ListItem', position: 2, name: 'Stores', item: `${SITE}/pages/mattress-store-locations` },
-      { '@type': 'ListItem', position: 3, name: showroom.area, item: url },
-    ],
-  };
 
   return (
     <main className="container">
@@ -551,64 +387,6 @@ function ShowroomPage({
           </p>
         </section>
       </article>
-      <script id="ld-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
-      <script id="ld-breadcrumb-showroom" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-      {/* Phase 277c: per-showroom FAQPage JSON-LD. Q&As are templated
-          from the showroom's neighborhood/street/hours so each of the
-          5 pages emits genuinely unique FAQ content (avoids the
-          "near-duplicate body" footprint Semrush flagged on the
-          legacy crawl). */}
-      <script
-        id="ld-faq-showroom"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(getShowroomFaq(showroom))) }}
-      />
-      <script id="ld-services" type="application/ld+json" dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          '@context': 'https://schema.org',
-          // Phase 252: each Service must declare `name` — Google's rich-result
-          // requirements and SEMrush structured-data validator both flag a
-          // Service that has only `serviceType`. Adding `name` removed the
-          // 3 errors/URL that the May SEMrush export attributed to every
-          // showroom page.
-          //
-          // Phase 289: switched `provider` from full re-declaration
-          // (`{ '@type': 'FurnitureStore', '@id': url, name: ... }`) to clean
-          // `@id` reference (`{ '@id': url }`). Re-declaring @type + name
-          // creates an ambiguous entity-vs-reference and SEMrush's May 15
-          // re-audit flagged 3 errors/URL on all 5 showroom pages (15
-          // total), almost certainly from the 3 Services × 1 ambiguous
-          // provider each. Schema.org best practice is reference-by-@id;
-          // the localBusinessLd above is the canonical FurnitureStore on
-          // this page, so the Services just point at it.
-          '@graph': [
-            {
-              '@type': 'Service',
-              name: 'Free White-Glove Mattress Delivery in Los Angeles',
-              serviceType: 'Free White-Glove Mattress Delivery',
-              provider: { '@id': url },
-              areaServed: { '@type': 'City', name: 'Los Angeles' },
-              description: 'Free white-glove delivery, setup, and old-mattress haul-away on orders over $499 across Los Angeles. Same-day delivery available when you order by 4pm.',
-            },
-            {
-              '@type': 'Service',
-              name: '0% APR Mattress Financing',
-              serviceType: '0% APR Mattress Financing',
-              provider: { '@id': url },
-              areaServed: { '@type': 'City', name: 'Los Angeles' },
-              description: '0% APR financing through Synchrony and Acima on approved credit. Terms vary by purchase amount and partner. Apply at checkout or in any showroom.',
-            },
-            {
-              '@type': 'Service',
-              name: '120-Night Mattress Comfort Exchange',
-              serviceType: '120-Night Comfort Exchange',
-              provider: { '@id': url },
-              areaServed: { '@type': 'City', name: 'Los Angeles' },
-              description: 'Sleep on it for at least 30 nights, then exchange for any other mattress within 120 nights of delivery.',
-            },
-          ],
-        }),
-      }} />
     </main>
   );
 }
@@ -662,26 +440,6 @@ function SalePage({
   onSaleCount: number;
 }) {
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
-  const url = `${SITE}/pages/${page.handle}`;
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
-      { '@type': 'ListItem', position: 2, name: cleanTitle, item: url },
-    ],
-  };
-  const webPageLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: cleanTitle,
-    url,
-    description: firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined,
-    isPartOf: { '@type': 'WebSite', url: SITE },
-    inLanguage: 'en-US',
-    datePublished: page.createdAt || undefined,
-    dateModified: page.updatedAt || undefined,
-  };
 
   return (
     <main>
@@ -795,9 +553,6 @@ function SalePage({
           </div>
         </div>
       </section>
-
-      <script id="ld-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
-      <script id="ld-breadcrumb-page" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }
@@ -828,64 +583,8 @@ function NeighborhoodPage({
   page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
   neighborhood: Neighborhood;
 }) {
-  const url = `${SITE}/pages/${page.handle}`;
   const nearest = getNearestShowrooms(neighborhood);
   const primaryShowroom = nearest[0]; // first listed is the "primary" CTA
-
-  const localBusinessLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FurnitureStore',
-    '@id': url,
-    name: `LA Mattress Store — ${neighborhood.name}`,
-    url,
-    telephone: SITE_PHONE_SCHEMA,
-    priceRange: '$$$',
-    image: primaryShowroom?.imageUrl ?? `${SITE}/assets/la-mattress-logo.png`,
-    // No `address` — this isn't a physical store. areaServed handles the
-    // local-search signal without misrepresenting location.
-    areaServed: {
-      '@type': 'Place',
-      name: neighborhood.name,
-      ...(neighborhood.geo
-        ? {
-            geo: {
-              '@type': 'GeoCoordinates',
-              latitude: neighborhood.geo.latitude,
-              longitude: neighborhood.geo.longitude,
-            },
-          }
-        : {}),
-    },
-    // Surface the real physical stores so the entity graph stays accurate.
-    department: nearest.map((s) => ({
-      '@type': 'FurnitureStore',
-      name: s.name,
-      url: `${SITE}/pages/${s.handle}`,
-      telephone: s.phone,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: s.street,
-        addressLocality: s.city,
-        addressRegion: s.region,
-        postalCode: s.postalCode,
-        addressCountry: 'US',
-      },
-      ...(s.geo
-        ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } }
-        : {}),
-    })),
-    parentOrganization: { '@id': `${SITE}/#organization` },
-  };
-
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
-      { '@type': 'ListItem', position: 2, name: 'Stores', item: `${SITE}/pages/mattress-store-locations` },
-      { '@type': 'ListItem', position: 3, name: neighborhood.name, item: url },
-    ],
-  };
 
   return (
     <main className="container">
@@ -974,16 +673,6 @@ function NeighborhoodPage({
           </div>
         </section>
       </article>
-      <script
-        id="ld-neighborhood"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
-      />
-      <script
-        id="ld-breadcrumb-neighborhood"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
-      />
     </main>
   );
 }
