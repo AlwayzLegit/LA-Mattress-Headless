@@ -8,6 +8,7 @@ import { getArticleByHandle } from '@/lib/shopify';
 import type { Article } from '@/lib/shopify';
 import { blogs as inventoryBlogs, findBlog } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
+import { isNoindexArticle } from '@/lib/noindex-articles';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { injectHeadingIds } from '@/lib/article-toc';
 import { Icon } from '@/app/_components/icon';
@@ -67,10 +68,16 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     ),
   );
   const url = `/blogs/${article.blog.handle}/${article.handle}`;
+  // Programmatic, near-duplicate doorway-style posts the legacy site
+  // deliberately blocked from crawling. Keep them out of the index
+  // (follow:true so internal link equity still flows). See
+  // lib/noindex-articles.ts.
+  const noindex = isNoindexArticle(article.blog.handle, article.handle);
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
+    ...(noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       type: 'article',
       url,
