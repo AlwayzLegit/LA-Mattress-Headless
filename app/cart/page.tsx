@@ -34,7 +34,7 @@ export default async function CartPage() {
   if (!cart || lines.length === 0) {
     return (
       <>
-        <main className="container" style={{ padding: 'var(--s-9) 0' }}>
+        <main className="container" style={{ paddingTop: 'var(--s-9)', paddingBottom: 'var(--s-9)' }}>
           <div style={{ maxWidth: 640 }}>
             <div className="eyebrow">Cart</div>
             <h1 className="h1" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>Your cart is empty.</h1>
@@ -73,7 +73,7 @@ export default async function CartPage() {
   const discountCurrency = cart.cost.totalAmount.currencyCode;
 
   return (
-    <main className="container cart-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
+    <main className="container cart-page" style={{ paddingTop: 'var(--s-7)', paddingBottom: 'var(--s-9)' }}>
       <header style={{ marginBottom: 'var(--s-6)' }}>
         <div style={{ marginBottom: 'var(--s-3)' }}>
           <Link href="/collections/mattresses" className="link-arrow muted" style={{ fontSize: 14 }}>
