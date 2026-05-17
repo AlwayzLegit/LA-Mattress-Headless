@@ -77,7 +77,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    ...(noindex ? { robots: { index: false, follow: true } } : {}),
+    ...(noindex ? { robots: 'noindex, follow' } : {}),
     openGraph: {
       type: 'article',
       url,

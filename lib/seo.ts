@@ -105,7 +105,7 @@ const SENTENCE_CASE_KEEPERS = [
   'LA', 'CA', 'USA', 'US', 'NYC',
   // multi-word place / brand / street tokens — written in canonical case
   'West LA', 'Hancock Park', 'Koreatown', 'West Hollywood', 'Beverly Hills', 'Studio City',
-  'Pico Blvd', 'La Brea Ave', 'Western Ave', 'Ventura Blvd', 'Brand Blvd', 'Wilshire',
+  'Pico Blvd', 'La Brea Ave', 'Western Ave', 'Ventura Blvd', 'Central Ave', 'Brand Blvd', 'Wilshire',
   'Tempur-Pedic', 'Stearns & Foster', 'Chattam & Wells', 'Diamond', 'Helix',
   'Spring Air', 'Eastman House', 'Englander', 'Eclipse', 'Southerland', 'Rize Home',
   'Sealy', 'Serta', 'Simmons', 'Beautyrest', 'Sleep Number',
