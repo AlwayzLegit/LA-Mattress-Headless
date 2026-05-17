@@ -100,6 +100,11 @@ export default async function CartPage() {
                         alt={v.product.featuredImage.altText ?? v.product.title}
                         width={200}
                         height={200}
+                        // Cart line items are above the fold on every
+                        // cart — lazy-loading caused a visible empty
+                        // slot on initial paint (QA P1-3, not a data
+                        // bug). Eager removes the flash.
+                        loading="eager"
                         style={{ objectFit: 'contain', width: '100%', height: '100%' }}
                       />
                     ) : (
