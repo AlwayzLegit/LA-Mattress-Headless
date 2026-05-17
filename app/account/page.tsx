@@ -22,7 +22,7 @@ export const metadata: Metadata = {
  */
 export default function AccountPage() {
   return (
-    <main className="container" style={{ padding: 'var(--s-8) 0 var(--s-9)' }}>
+    <main className="container" style={{ paddingTop: 'var(--s-8)', paddingBottom: 'var(--s-9)' }}>
       <div style={{ maxWidth: 640 }}>
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>

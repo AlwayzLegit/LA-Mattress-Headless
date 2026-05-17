@@ -1,6 +1,6 @@
 export default function CartLoading() {
   return (
-    <main className="container" style={{ padding: 'var(--s-7) 0 var(--s-9)' }} aria-busy="true">
+    <main className="container" style={{ paddingTop: 'var(--s-7)', paddingBottom: 'var(--s-9)' }} aria-busy="true">
       <div className="skel skel-line" style={{ width: 80, marginBottom: 'var(--s-3)' }} aria-hidden>&nbsp;</div>
       <div className="skel" style={{ height: 40, width: '40%', marginBottom: 'var(--s-6)' }} aria-hidden>&nbsp;</div>
       <div

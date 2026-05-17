@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ProductNotFound() {
   return (
-    <main className="container" style={{ padding: 'var(--s-10) 0' }}>
+    <main className="container" style={{ paddingTop: 'var(--s-10)', paddingBottom: 'var(--s-10)' }}>
       <div style={{ maxWidth: 720 }}>
         <div className="eyebrow">404 — Product</div>
         <h1 className="h-display" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>

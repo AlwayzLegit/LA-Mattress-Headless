@@ -22,7 +22,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="container" style={{ padding: 'var(--s-10) 0' }}>
+    <main className="container" style={{ paddingTop: 'var(--s-10)', paddingBottom: 'var(--s-10)' }}>
       <div style={{ maxWidth: 640 }}>
         <div className="eyebrow">Something went wrong</div>
         <h1 className="h1" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>
