@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { shopifyFetch } from '../client';
 import type {
   Product, ProductReviews, ProductSpecs,
@@ -236,7 +237,9 @@ function parseEditorialMetafields(raw: {
   };
 }
 
-export async function getProductByHandle(handle: string): Promise<Product | null> {
+// Memoized so the products/[handle] segment layout (JSON-LD) and the
+// page's ProductBody share a single Storefront request per render.
+export const getProductByHandle = cache(async (handle: string): Promise<Product | null> => {
   const data = await shopifyFetch<Raw, { handle: string }>(
     GET_PRODUCT_BY_HANDLE,
     { handle },
@@ -263,4 +266,4 @@ export async function getProductByHandle(handle: string): Promise<Product | null
       highlightsMetafield, firmnessScoreMetafield, positionFitMetafield, layersMetafield,
     }),
   };
-}
+});

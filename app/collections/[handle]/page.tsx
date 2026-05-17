@@ -129,34 +129,6 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
     Object.values(filterSel).filter((v) => Array.isArray(v) ? v.length > 0 : v != null).length;
   const hasFiltersApplied = filterCount > 0;
 
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.mattressstoreslosangeles.com/' },
-      { '@type': 'ListItem', position: 2, name: collection.title, item: `https://www.mattressstoreslosangeles.com/collections/${collection.handle}` },
-    ],
-  };
-
-  const collectionLd = {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: collection.title,
-    description: firstNonEmpty(collection.seo.description, collection.description) || undefined,
-    url: `https://www.mattressstoreslosangeles.com/collections/${collection.handle}`,
-    inLanguage: 'en-US',
-    mainEntity: {
-      '@type': 'ItemList',
-      numberOfItems: collection.products.nodes.length,
-      itemListElement: collection.products.nodes.map((p, i) => ({
-        '@type': 'ListItem',
-        position: i + 1,
-        url: `https://www.mattressstoreslosangeles.com/products/${p.handle}`,
-        name: p.title,
-      })),
-    },
-  };
-
   // Phase 217: serialize the active filter params so the client-side
   // PlpLoadMore can pass them through to the /api/load-more-products
   // route. Same shape the old <Link href="?after=cursor"> used to
@@ -326,8 +298,6 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
 
       <PlpContentBlock handle={collection.handle} title={collection.title} />
 
-      <script id="ld-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
-      <script id="ld-breadcrumb-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }

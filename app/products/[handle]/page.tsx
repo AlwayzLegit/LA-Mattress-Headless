@@ -200,61 +200,6 @@ function SpecStrip({ specs }: { specs: Product['specs'] }) {
 }
 
 function ProductView({ product, related }: { product: Product; related: ProductSummary[] }) {
-  const min = product.priceRange.minVariantPrice;
-  const max = product.priceRange.maxVariantPrice;
-
-  // Google's structured-data guidelines say to omit fields rather than emit
-  // empty strings. Some merchants leave SKUs blank in Shopify Admin; only
-  // include the sku key when at least one variant has a non-empty SKU.
-  const firstSku = product.variants.find((v) => v.sku && v.sku.trim().length > 0)?.sku;
-
-  const productUrl = `https://www.mattressstoreslosangeles.com/products/${product.handle}`;
-
-  const productLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    '@id': `${productUrl}#product`,
-    url: productUrl,
-    name: product.title,
-    description: product.description.slice(0, 5000),
-    ...(firstSku ? { sku: firstSku } : {}),
-    brand: { '@type': 'Brand', name: product.vendor },
-    ...(product.productType ? { category: product.productType } : {}),
-    image: product.images.length ? product.images.map((i) => i.url) : (product.featuredImage ? [product.featuredImage.url] : []),
-    offers: {
-      '@type': 'AggregateOffer',
-      priceCurrency: min.currencyCode,
-      lowPrice: min.amount,
-      highPrice: max.amount,
-      offerCount: product.variants.length,
-      availability: product.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-    },
-    // Only include aggregateRating when the merchant's review vendor (Judge.me)
-    // has populated the reviews.* metafields. Google rejects fabricated values.
-    ...(product.reviews
-      ? {
-          aggregateRating: {
-            '@type': 'AggregateRating',
-            ratingValue: product.reviews.rating.toFixed(1),
-            reviewCount: product.reviews.count,
-            bestRating: '5',
-            worstRating: '1',
-          },
-        }
-      : {}),
-  };
-
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home',       item: 'https://www.mattressstoreslosangeles.com/' },
-      { '@type': 'ListItem', position: 2, name: 'Mattresses', item: 'https://www.mattressstoreslosangeles.com/collections/mattresses' },
-      { '@type': 'ListItem', position: 3, name: product.title, item: productUrl },
-    ],
-  };
-
   return (
     <main className="container pdp">
       <nav className="lp-breadcrumbs" aria-label="Breadcrumb" style={{ paddingTop: 'var(--s-5)' }}>
@@ -354,8 +299,6 @@ function ProductView({ product, related }: { product: Product; related: ProductS
       <RecentlyViewedRail excludeHandle={product.handle} />
       <RecordRecentlyViewed product={product} />
 
-      <script id="ld-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }} />
-      <script id="ld-breadcrumb-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
     </main>
   );
 }
