@@ -27,6 +27,74 @@
  * this guard prevents a stale leak from breaking the live site.
  */
 
+import redirectsJson from '@/data/url-inventory/redirects.json';
+
+// Phase 293: resolve internal links that 301-redirect.
+//
+// The SEMrush 20260518 re-crawl (crawler now unblocked) flagged 1297 /
+// 1919 pages under "Broken internal links" — identical, 1:1, to
+// "Permanent redirects" on every row: SEMrush counts an internal link
+// that hits a 301 as a broken link. The dominant source is
+// merchant-authored blog / page / product HTML (rendered via
+// dangerouslySetInnerHTML) containing thousands of hardcoded old
+// /collections/*, /blogs/beds-mattresses/*, /pages/* hrefs that
+// data/url-inventory/redirects.json now 301s to canonical URLs.
+//
+// Rather than editing 1000+ Shopify bodies, rewrite the href at render
+// time to the FINAL destination (chain-resolved), reusing the exact
+// same redirects.json that feeds next.config's redirects() — single
+// source of truth, can never drift. The crawler then sees a direct 200
+// link with no hop. Idempotent (a resolved dest is never itself a
+// source, by construction). Map is built once at module init (~1097
+// rules; cheap) with cycle + depth guards.
+type RedirectRule = { source: string; destination: string };
+
+function normRedirectPath(p: string): string {
+  const x = p.split('#')[0].split('?')[0];
+  return x.length > 1 && x.endsWith('/') ? x.slice(0, -1) : x;
+}
+
+const REDIRECT_TARGET: Map<string, string> = (() => {
+  const rules = (redirectsJson as { redirects?: RedirectRule[] }).redirects ?? [];
+  const direct = new Map<string, string>();
+  for (const r of rules) {
+    if (typeof r?.source !== 'string' || typeof r?.destination !== 'string') continue;
+    const s = normRedirectPath(r.source);
+    if (s && s !== r.destination) direct.set(s, r.destination);
+  }
+  // Collapse chains (A→B, B→C ⇒ A→C) so a single rewrite lands on the
+  // terminal URL — no residual hop for the crawler to follow.
+  const out = new Map<string, string>();
+  for (const start of direct.keys()) {
+    let dest = direct.get(start) as string;
+    const seen = new Set<string>([start]);
+    for (let i = 0; i < 12; i += 1) {
+      const key = normRedirectPath(dest);
+      const next = direct.get(key);
+      if (next === undefined || seen.has(key)) break;
+      seen.add(key);
+      dest = next;
+    }
+    out.set(start, dest);
+  }
+  return out;
+})();
+
+// Root-relative hrefs only (leading "/"; never protocol-relative "//"
+// or external http(s)). Lookbehind on whitespace so `data-href=` /
+// other `*href=` attributes aren't matched. Path is captured up to the
+// first ?/# so any query/hash is preserved verbatim on rewrite.
+const HREF_INTERNAL = /(?<=\s)href=("|')(\/[^"'?#]*)([^"']*)\1/gi;
+
+function resolveRedirectHrefs(html: string): string {
+  if (REDIRECT_TARGET.size === 0) return html;
+  return html.replace(HREF_INTERNAL, (full, q: string, path: string, suffix: string) => {
+    if (path.startsWith('//')) return full;
+    const dest = REDIRECT_TARGET.get(normRedirectPath(path));
+    return dest ? `href=${q}${dest}${suffix}${q}` : full;
+  });
+}
+
 const HOSTS_TO_REWRITE = [
   // Dev tunnels. Add more as they show up.
   /https?:\/\/[a-z0-9-]+\.trycloudflare\.com/gi,
@@ -156,6 +224,11 @@ export function sanitizeShopifyHtml(html: string | null | undefined): string {
   out = stripTrackingParams(out);
   out = stripEmptyAnchors(out);
   out = out.replace(WARRANTY_READ_MORE, '$1Mattress warranty details$2');
+  // Phase 293: resolve internal links that 301-redirect → final
+  // destination. AFTER WARRANTY_READ_MORE so that anchor-text rewrite
+  // still keys off the original /pages/mattress-warranty href; this
+  // pass then also collapses that href to its terminal /pages/warranty.
+  out = resolveRedirectHrefs(out);
   out = out.replace(MERCHANT_H1_OPEN, '<h2$1>').replace(MERCHANT_H1_CLOSE, '</h2>');
   // Some legacy article bodies were imported with bad encoding and contain
   // U+FFFD (the � replacement char). Drop them — they only ever render as
