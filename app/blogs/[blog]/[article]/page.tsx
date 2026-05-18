@@ -77,7 +77,11 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    ...(noindex ? { robots: 'noindex, follow' } : {}),
+    // Next normalizes this and emits bare `noindex` (follow is the
+    // default it omits) — the idiomatic object form documents intent
+    // accurately; the string form misleadingly implied a literal
+    // "noindex, follow" render.
+    ...(noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       type: 'article',
       url,
