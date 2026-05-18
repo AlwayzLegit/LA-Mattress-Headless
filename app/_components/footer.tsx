@@ -23,7 +23,7 @@ const COLS: Col[] = [
     { label: 'Delivery',  href: '/pages/mattress-store-delivery' },
     { label: 'Returns',   href: '/pages/returns' },
     { label: 'Warranty',  href: '/pages/warranty' },
-    { label: 'FAQ',       href: '/pages/mattress-faq' },
+    { label: 'FAQ',       href: '/pages/faq' },
     { label: 'Contact',   href: '/pages/mattress-store-contact' },
   ]},
   { title: 'Stores', links: [

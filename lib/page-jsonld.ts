@@ -267,6 +267,25 @@ export function getPageJsonLd(page: Page): PageLd[] {
       telephone: SITE_PHONE_SCHEMA,
       priceRange: '$$$',
       image: primaryShowroom?.imageUrl ?? `${SITE}/assets/la-mattress-logo.png`,
+      // FurnitureStore is a LocalBusiness — Google/SEMrush require a
+      // postal `address`. The page targets a neighborhood it has no
+      // physical store in, so `areaServed` carries the neighborhood;
+      // `address` is the REAL nearest physical showroom (same business,
+      // a true address — not a fabricated location). Without this the
+      // 8 neighborhood pages emit invalid LocalBusiness markup and get
+      // zero rich-result eligibility.
+      ...(primaryShowroom
+        ? {
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: primaryShowroom.street,
+              addressLocality: primaryShowroom.city,
+              addressRegion: primaryShowroom.region,
+              postalCode: primaryShowroom.postalCode,
+              addressCountry: 'US',
+            },
+          }
+        : {}),
       areaServed: {
         '@type': 'Place',
         name: neighborhood.name,
