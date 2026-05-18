@@ -3,7 +3,7 @@
   "$source": "Shopify Admin → URL Redirects export (CSV), 2026-05-05.",
   "$status": "imported",
   "$applicationNote": "Loaded by next.config.mjs at build time and emitted as Next.js redirects(). Edge-evaluated.",
-  "$count": 1093,
+  "$count": 1097,
   "$importedAt": "2026-05-05T09:22:35.804Z",
   "$importStats": {
     "csvRows": 372,
@@ -5482,6 +5482,30 @@
       "destination": "/sleep-quiz",
       "permanent": true,
       "$note": "Legacy /pages/ slug for the quiz → canonical app route (QA P1-4)."
+    },
+    {
+      "source": "/pages/financing",
+      "destination": "/pages/mattress-store-financing",
+      "permanent": true,
+      "$note": "Legacy slug → live page; ~174 blog bodies linked it (SEMrush 20260518 broken-internal-links)."
+    },
+    {
+      "source": "/pages/locations",
+      "destination": "/pages/mattress-store-locations",
+      "permanent": true,
+      "$note": "Legacy slug → live page; ~174 blog bodies linked it (SEMrush 20260518 broken-internal-links)."
+    },
+    {
+      "source": "/pages/shipping-and-delivery",
+      "destination": "/pages/mattress-store-delivery",
+      "permanent": true,
+      "$note": "Legacy slug → live page; ~174 blog bodies linked it (SEMrush 20260518 broken-internal-links)."
+    },
+    {
+      "source": "/pages/mattress-warranty",
+      "destination": "/pages/warranty",
+      "permanent": true,
+      "$note": "Legacy slug → live page; ~174 blog bodies linked it (SEMrush 20260518 broken-internal-links)."
     }
   ],
   "$auditNote": "Redirect chains flattened to single-hop and stray 302s normalized to 301 on 2026-05-17 (SEMrush audit)."
