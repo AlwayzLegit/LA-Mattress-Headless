@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Icon } from '@/app/_components/icon';
+import { Icon } from '../icon';
 
 type RequestKind = 'opt_out_sale' | 'access' | 'delete' | 'correct';
 

@@ -1,21 +1,21 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Icon } from '@/app/_components/icon';
+import { Icon } from '../icon';
 import { getShopAggregate, getStorefrontReviews, type JudgemeReview } from '@/lib/judgeme';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 const SITE = 'https://www.mattressstoreslosangeles.com';
 
-export const revalidate = 3600;
-
-export const metadata: Metadata = {
-  title: 'Customer Reviews',
-  description:
-    'Read verified customer reviews of LA Mattress Store. Real shoppers, real beds, real opinions — collected via Judge.me from buyers across Los Angeles.',
-  alternates: { canonical: `${SITE}/pages/reviews` },
-};
-
-export default async function ReviewsPage() {
+/**
+ * Coded /pages/reviews page (rendered via app/pages/[handle] +
+ * lib/coded-pages — there's a Shopify CMS page with this handle but its
+ * body is intentionally bypassed in favour of the live Judge.me feed).
+ *
+ * WebPage + BreadcrumbList JSON-LD is emitted by the segment layout.
+ * The Organization + aggregateRating block stays here because it's
+ * data-dependent (only emitted when an aggregate is actually available)
+ * and the aggregate is fetched in this async server component.
+ */
+export async function ReviewsPage() {
   const [aggregate, reviews] = await Promise.all([
     getShopAggregate(),
     getStorefrontReviews({ perPage: 24, minRating: 4 }),
