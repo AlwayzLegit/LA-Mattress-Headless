@@ -171,6 +171,42 @@ function stripMalformedHrefAnchors(html: string): string {
   });
 }
 
+// Phase 296: strip nofollow/sponsored/ugc from anchors whose href is
+// INTERNAL. Merchant product/blog bodies (esp. ~PDP descriptions: the
+// "Read More" → /pages/warranty pattern + other in-body links) carry
+// rel="nofollow" on same-site links. Once Phase 293 resolves those
+// hrefs to clean root-relative internal URLs, SEMrush correctly
+// reclassifies them as "Nofollow attributes in internal links" (347
+// PDPs in the 20260518 _2 re-crawl). You should never nofollow your
+// own internal links — it blocks internal PageRank flow for no
+// benefit (Google's crawl-budget rationale for nofollow ended in
+// 2019). EXTERNAL nofollow is often intentional and is left intact.
+// Runs AFTER host-strip + redirect resolution so "starts with /" is a
+// reliable internal-link test. Other rel tokens (noopener, noreferrer)
+// are preserved; an emptied rel attribute is dropped. Idempotent.
+const REL_ATTR = /\s+rel\s*=\s*("|')(.*?)\1/i;
+const REL_DROP = /^(?:nofollow|sponsored|ugc)$/i;
+function stripInternalLinkNofollow(html: string): string {
+  return html.replace(ANCHOR_TAG, (match, attrs: string, inner: string) => {
+    const hm = HREF_VALUE.exec(attrs);
+    if (!hm) return match;
+    const href = hm[2].trim();
+    // Internal = root-relative, not protocol-relative "//host".
+    if (!href.startsWith('/') || href.startsWith('//')) return match;
+    const rm = REL_ATTR.exec(attrs);
+    if (!rm) return match;
+    const kept = rm[2].split(/\s+/).filter((t) => t && !REL_DROP.test(t));
+    if (kept.length === rm[2].trim().split(/\s+/).filter(Boolean).length) {
+      return match; // nothing to drop
+    }
+    const newAttrs =
+      kept.length === 0
+        ? attrs.replace(REL_ATTR, '')
+        : attrs.replace(REL_ATTR, ` rel=${rm[1]}${kept.join(' ')}${rm[1]}`);
+    return `<a${newAttrs}>${inner}</a>`;
+  });
+}
+
 // Phase 271b: rewrite the boilerplate "Read More" anchor text on
 // /pages/mattress-warranty links. ~18 product description templates
 // share this exact link pattern in their Warranty row:
@@ -262,6 +298,8 @@ export function sanitizeShopifyHtml(html: string | null | undefined): string {
   // href is never misjudged as malformed — only genuine non-URL hrefs
   // (phrases, bare domain text) get unwrapped.
   out = stripMalformedHrefAnchors(out);
+  // Phase 296: drop nofollow/sponsored/ugc on now-internal links.
+  out = stripInternalLinkNofollow(out);
   out = out.replace(MERCHANT_H1_OPEN, '<h2$1>').replace(MERCHANT_H1_CLOSE, '</h2>');
   // Some legacy article bodies were imported with bad encoding and contain
   // U+FFFD (the � replacement char). Drop them — they only ever render as
