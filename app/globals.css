@@ -3815,6 +3815,15 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 .gd-side-card-dark a:hover { color: #fff; }
 .gd-side-card-dark a:first-of-type { border-top: 0; }
 
+/* In-content related-guides cluster (every article gets >=4 in-body
+   internal links regardless of related-article availability). */
+.gd-related { border-top: 1px solid var(--line); }
+.gd-related-h { margin: var(--s-2) 0 var(--s-4); }
+.gd-related-list {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: var(--s-3); max-width: 60ch;
+}
+
 /* Footer CTA band */
 .gd-cta-band {
   padding: var(--s-7) 0;

@@ -231,6 +231,44 @@ function ArticleView({ article }: { article: Article }) {
         </div>
       </div>
 
+      <section className="section gd-related">
+        <div className="container">
+          <div className="eyebrow">Keep reading</div>
+          <h2 className="h2 gd-related-h">Related guides</h2>
+          <nav aria-label="Related guides">
+            <ul className="gd-related-list">
+              {related.slice(0, 5).map((r) => (
+                <li key={r.handle}>
+                  <Link href={`/blogs/${article.blog.handle}/${r.handle}`} className="link-arrow">
+                    {r.title ?? r.handle.replace(/-/g, ' ')} <Icon name="arrow-right" size={14} />
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link href={`/blogs/${article.blog.handle}`} className="link-arrow">
+                  All {article.blog.title} <Icon name="arrow-right" size={14} />
+                </Link>
+              </li>
+              <li>
+                <Link href="/sleep-quiz" className="link-arrow">
+                  Take the 2-minute sleep quiz <Icon name="arrow-right" size={14} />
+                </Link>
+              </li>
+              <li>
+                <Link href="/pages/mattress-brands" className="link-arrow">
+                  Brands we carry <Icon name="arrow-right" size={14} />
+                </Link>
+              </li>
+              <li>
+                <Link href="/collections/mattresses" className="link-arrow">
+                  Shop all mattresses <Icon name="arrow-right" size={14} />
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </section>
+
       <section className="gd-cta-band">
         <div className="container gd-cta-band-inner">
           <div>
