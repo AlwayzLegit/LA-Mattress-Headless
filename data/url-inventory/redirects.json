@@ -3,7 +3,7 @@
   "$source": "Shopify Admin → URL Redirects export (CSV), 2026-05-05.",
   "$status": "imported",
   "$applicationNote": "Loaded by next.config.mjs at build time and emitted as Next.js redirects(). Edge-evaluated.",
-  "$count": 1097,
+  "$count": 1100,
   "$importedAt": "2026-05-05T09:22:35.804Z",
   "$importStats": {
     "csvRows": 372,
@@ -5506,6 +5506,24 @@
       "destination": "/pages/warranty",
       "permanent": true,
       "$note": "Legacy slug → live page; ~174 blog bodies linked it (SEMrush 20260518 broken-internal-links)."
+    },
+    {
+      "source": "/pages/faq/best-cooling-mattress",
+      "destination": "/blogs/mattress-buying-guide/best-cooling-mattress-guide",
+      "permanent": true,
+      "$note": "Legacy nested FAQ path (404, /pages/[handle] is single-segment) → the live cooling guide. SEMrush 20260518 (priority 263)."
+    },
+    {
+      "source": "/products/copy-of-chattam-wells-windsor-medium-firm-luxury-euro-top-18-mattress",
+      "destination": "/collections/chattam-wells-mattresses",
+      "permanent": true,
+      "$note": "Unpublished duplicate ('copy-of-') product, still linked → brand collection. SEMrush 20260518 4xx."
+    },
+    {
+      "source": "/products/sealy-posturepedic-premium-hybrid-gold-chill-ultra-plush-15-floor-sample-clearance-mattress",
+      "destination": "/collections/floor-model-discontinued-mattress-clearance-sale",
+      "permanent": true,
+      "$note": "Sold/unpublished floor-sample clearance product, still linked → clearance collection. SEMrush 20260518 4xx."
     }
   ],
   "$auditNote": "Redirect chains flattened to single-hop and stray 302s normalized to 301 on 2026-05-17 (SEMrush audit)."

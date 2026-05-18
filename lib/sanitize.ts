@@ -98,8 +98,12 @@ function resolveRedirectHrefs(html: string): string {
 const HOSTS_TO_REWRITE = [
   // Dev tunnels. Add more as they show up.
   /https?:\/\/[a-z0-9-]+\.trycloudflare\.com/gi,
-  // Our own production domain — should be relative when we serve from it.
-  /https?:\/\/(?:www\.)?mattressstoreslosangeles\.com/gi,
+  // Our own production domain — should be relative when we serve from
+  // it. Also catches the `checkout.` subdomain: merchant bodies link
+  // e.g. https://checkout.mattressstoreslosangeles.com/collections/…
+  // (SEMrush 20260518 flagged a checkout-subdomain link leak); the path
+  // resolves on our storefront once the host is stripped.
+  /https?:\/\/(?:www\.|checkout\.)?mattressstoreslosangeles\.com/gi,
   // Shopify legacy / mirror hosts that should always be relative paths in
   // our storefront.
   /https?:\/\/la-mattress\.myshopify\.com/gi,
@@ -139,6 +143,31 @@ function stripEmptyAnchors(html: string): string {
     if (/<img\b/i.test(inner)) return match; // image-only link → keep
     const text = inner.replace(/<[^>]+>/g, '').replace(/&nbsp;|\s+/g, '').trim();
     return text === '' ? '' : match;
+  });
+}
+
+// Phase 295: unwrap anchors whose href is malformed. Several legacy
+// imported article bodies have hrefs that are not URLs at all —
+// product names or phrases (`href="Best Affordable Queen Mattress"`),
+// bare domain text (`href="MattressStoresLosAngeles.com"`) — which the
+// browser/crawler resolves relative to the current path and 404s
+// (SEMrush 20260518 "4xx errors" on /blogs/.../<phrase>). Runs AFTER
+// host-strip + redirect resolution, so a valid (even redirecting)
+// internal href is never treated as malformed. Keeps the visible text,
+// drops only the broken link — same philosophy as stripEmptyAnchors
+// (an unfollowable 404 link is worse than no link). Also incidentally
+// neutralizes javascript:/data: hrefs (no allowed prefix).
+const ANCHOR_TAG = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
+const HREF_VALUE = /\bhref\s*=\s*("|')(.*?)\1/i;
+const VALID_HREF_PREFIX = /^(?:\/|#|https?:\/\/|mailto:|tel:|\?)/i;
+function stripMalformedHrefAnchors(html: string): string {
+  return html.replace(ANCHOR_TAG, (match, attrs: string, inner: string) => {
+    const hm = HREF_VALUE.exec(attrs);
+    if (!hm) return match; // no href attr — not our concern here
+    const href = hm[2].trim();
+    if (href === '') return match; // empty href handled by stripEmptyAnchors
+    const ok = VALID_HREF_PREFIX.test(href) && !/\s/.test(href);
+    return ok ? match : inner; // malformed → unwrap, keep text
   });
 }
 
@@ -229,6 +258,10 @@ export function sanitizeShopifyHtml(html: string | null | undefined): string {
   // still keys off the original /pages/mattress-warranty href; this
   // pass then also collapses that href to its terminal /pages/warranty.
   out = resolveRedirectHrefs(out);
+  // Phase 295: AFTER redirect resolution so a valid (even redirecting)
+  // href is never misjudged as malformed — only genuine non-URL hrefs
+  // (phrases, bare domain text) get unwrapped.
+  out = stripMalformedHrefAnchors(out);
   out = out.replace(MERCHANT_H1_OPEN, '<h2$1>').replace(MERCHANT_H1_CLOSE, '</h2>');
   // Some legacy article bodies were imported with bad encoding and contain
   // U+FFFD (the � replacement char). Drop them — they only ever render as
