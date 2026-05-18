@@ -359,3 +359,114 @@ export function categoryIntroFor(handle: string, title: string): string {
   // Generic mattress fallback
   return `Every model on this page is on the floor at one of our 5 LA showrooms — Koreatown, West LA, La Brea, Studio City, and Glendale — so you can try before you buy. Free white-glove delivery on orders over $499 anywhere in Los Angeles, 120-night Love Your Bed Guarantee, and 0% APR financing through Synchrony and Acima.`;
 }
+
+/**
+ * Curated cornerstone buying-guide articles to surface as in-content
+ * internal links on the matching collection PLP.
+ *
+ * The SEMrush 20260518 On-Page export flagged these high-priority
+ * buying-guide articles under "This page doesn't have internal links"
+ * (e.g. queen-size-guide priority 612, how-to-choose-the-best-size 540,
+ * what-is-the-standard-size-of-a-full-bed 529, king-vs-cal-king 394,
+ * full-vs-queen 224). They sit deep in the blog with weak inbound
+ * linking. The collection PLPs are high-authority commercial pages —
+ * a contextual, topically-matched link from the relevant PLP is the
+ * textbook fix (real link equity, not nav/footer boilerplate) and also
+ * makes the PLP content block per-category instead of identical.
+ *
+ * Only matched collections get a block (unmatched → []), so the links
+ * stay contextual rather than turning into another boilerplate cluster.
+ * All hrefs are verified-present article paths (data/url-inventory).
+ * Anchor text is descriptive (also avoids the "non-descriptive anchor
+ * text" flag). Same substring-match-on-handle, most-specific-first
+ * strategy as categoryFaqFor / categoryIntroFor.
+ */
+export type CategoryGuide = { href: string; label: string };
+
+const G = {
+  chooseSize: {
+    href: '/blogs/mattress-buying-guide/how-to-choose-the-best-mattress-size',
+    label: 'How to choose the right mattress size',
+  },
+  kingVsCal: {
+    href: '/blogs/mattress-buying-guide/king-vs-california-king',
+    label: 'King vs. California King: which is bigger?',
+  },
+  calVsKing: {
+    href: '/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference',
+    label: 'California King vs. King: the real difference',
+  },
+  queenGuide: {
+    href: '/blogs/mattress-buying-guide/queen-mattress-size-guide-inches-feet-how-to-pick-the-perfect-fit',
+    label: 'Queen mattress size guide (inches & feet)',
+  },
+  fullVsQueen: {
+    href: '/blogs/mattress-buying-guide/full-vs-queen-mattress',
+    label: 'Full vs. Queen: how to pick',
+  },
+  fullSize: {
+    href: '/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed',
+    label: 'What is the standard size of a full bed?',
+  },
+  fullSpace: {
+    href: '/blogs/mattress-buying-guide/how-much-space-does-a-full-size-mattress-really-give-you',
+    label: 'How much room does a full really give you?',
+  },
+  couples: {
+    href: '/blogs/sleep-blog/what-is-the-best-mattress-size-for-couples',
+    label: 'Best mattress size for couples',
+  },
+  heavy: {
+    href: '/blogs/mattress-buying-guide/best-mattress-for-heavy-people',
+    label: 'Best mattress for heavier sleepers',
+  },
+  stomach: {
+    href: '/blogs/mattress-buying-guide/best-affordable-mattress-for-stomach-sleepers',
+    label: 'Best affordable mattress for stomach sleepers',
+  },
+  cooling: {
+    href: '/blogs/mattress-buying-guide/best-cooling-mattress-guide',
+    label: 'Best cooling mattress guide',
+  },
+  hypoallergenic: {
+    href: '/blogs/mattress-buying-guide/best-hypoallergenic-pillows-and-bedsheets',
+    label: 'Hypoallergenic pillows & bed sheets',
+  },
+} as const;
+
+export function categoryGuidesFor(handle: string): CategoryGuide[] {
+  const h = handle.toLowerCase();
+
+  // Size-specific (California King before the generic "king" match).
+  if (h.includes('california-king') || h.includes('cal-king')) {
+    return [G.kingVsCal, G.calVsKing, G.chooseSize, G.couples];
+  }
+  if (h.includes('king')) return [G.kingVsCal, G.chooseSize, G.couples];
+  if (h.includes('queen')) return [G.queenGuide, G.fullVsQueen, G.chooseSize, G.couples];
+  if (h.includes('full')) return [G.fullSize, G.fullSpace, G.fullVsQueen, G.chooseSize];
+  if (h.includes('twin') || h.includes('split')) return [G.chooseSize, G.couples];
+
+  // Use-case / material.
+  if (h.includes('extra-firm') || h.includes('firm')) return [G.heavy, G.chooseSize];
+  if (h.includes('cooling') || h.includes('gel') || h.includes('memory-foam') || h.includes('foam')) {
+    return [G.cooling, G.chooseSize];
+  }
+  if (h.includes('protector') || h.includes('pillow') || h.includes('sheet') || h.includes('comforter')) {
+    return [G.hypoallergenic];
+  }
+
+  // Broad commercial collections (on-sale, bed-frames, all-mattresses, …)
+  // — a general buying cluster so these high-traffic PLPs still pass
+  // contextual link equity to the cornerstone guides.
+  if (
+    h.includes('mattress') ||
+    h.includes('sale') ||
+    h.includes('clearance') ||
+    h.includes('bed-frame') ||
+    h.includes('adjustable')
+  ) {
+    return [G.chooseSize, G.cooling, G.stomach];
+  }
+
+  return [];
+}
