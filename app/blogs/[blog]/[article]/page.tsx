@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { getArticleByHandle } from '@/lib/shopify';
 import type { Article } from '@/lib/shopify';
 import { blogs as inventoryBlogs, findBlog } from '@/lib/inventory';
-import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
+import { truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase, ensureTitleDistinctFromH1 } from '@/lib/seo';
 import { isNoindexArticle } from '@/lib/noindex-articles';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { injectHeadingIds } from '@/lib/article-toc';
@@ -59,7 +59,12 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // first so an article title that already carries a brand suffix
   // doesn't end up double-branded. Merchant-set seo.title still wins.
   const titleFallback = `${stripBrandSuffix(article.title)} | LA Mattress Store`;
-  const title = capTitle(firstNonEmpty(article.seo.title, titleFallback));
+  // ensureTitleDistinctFromH1 guarantees the <title> differs from the
+  // rendered <h1> (toSentenceCase(stripBrandSuffix(article.title))) even
+  // when the merchant set seo.title to the headline — appending the
+  // keyword-bearing brand suffix only when it would otherwise collapse.
+  // Caps to TITLE_MAX internally (replaces the prior capTitle call).
+  const title = ensureTitleDistinctFromH1(firstNonEmpty(article.seo.title, titleFallback), article.title);
   const description = truncDescription(
     firstNonEmpty(
       article.seo.description,

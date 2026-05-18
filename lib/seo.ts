@@ -98,6 +98,31 @@ export function stripBrandSuffix(s: string): string {
   return s.split(/\s+[|–—]\s+/)[0].trim();
 }
 
+// SEMrush flags "Duplicate content in h1 and title" when the rendered
+// <title> collapses (case-insensitively) to the on-page <h1>. Detail
+// routes derive both from the same Shopify title, so a merchant-set
+// seo.title equal to the headline — or the brand-stripped fallback —
+// yields title == h1 (Phase 289 only suffixed the empty-seo.title
+// path; the 20260518 re-crawl still flagged 151 articles where the
+// merchant DID set seo.title to the headline).
+//
+// When the title collapses to the H1, append the keyword-bearing brand
+// suffix so <title> stays distinct AND descriptive (a bare brand append
+// still reads as "H1 + boilerplate"); otherwise return it unchanged.
+// Result is always capped to TITLE_MAX, with room reserved for the
+// suffix in the collapse branch so capTitle can't strip it back off
+// and re-introduce the duplicate. stripBrandSuffix on both sides so an
+// already-branded title isn't double-branded and the comparison
+// ignores any pre-existing suffix. Idempotent.
+const TITLE_BRAND_SUFFIX = ' | LA Mattress Store';
+function titleDedupeKey(s: string): string {
+  return stripBrandSuffix(s).toLowerCase().replace(/\s+/g, ' ').trim();
+}
+export function ensureTitleDistinctFromH1(title: string, h1: string): string {
+  if (titleDedupeKey(title) !== titleDedupeKey(h1)) return capTitle(title);
+  return `${capTitle(stripBrandSuffix(title), TITLE_MAX - TITLE_BRAND_SUFFIX.length)}${TITLE_BRAND_SUFFIX}`;
+}
+
 // Words that must keep their original case after sentenceCase normalization.
 // Anything else is lowercased except the first character of the string.
 // Order matters when one entry is a substring of another.
