@@ -1,5 +1,6 @@
 import { getPageByHandle } from '@/lib/shopify';
 import { getPageJsonLd } from '@/lib/page-jsonld';
+import { isCodedPage, getCodedPageJsonLd } from '@/lib/coded-pages';
 
 /**
  * Segment layout for /pages/[handle]. Its only job is to emit the
@@ -26,8 +27,14 @@ export default async function PageHandleLayout({
   params: Promise<{ handle: string }>;
 }) {
   const { handle } = await params;
-  const page = await getPageByHandle(handle).catch(() => null);
-  const ld = page ? getPageJsonLd(page) : [];
+  let ld;
+  if (isCodedPage(handle)) {
+    // No Shopify page behind these — JSON-LD comes from lib/coded-pages.
+    ld = getCodedPageJsonLd(handle);
+  } else {
+    const page = await getPageByHandle(handle).catch(() => null);
+    ld = page ? getPageJsonLd(page) : [];
+  }
 
   return (
     <>

@@ -4,6 +4,7 @@ import { SHOWROOMS } from '@/lib/showrooms';
 import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { SITE_URL } from '@/lib/site-config';
 import { isNoindexArticle } from '@/lib/noindex-articles';
+import { CODED_PAGE_HANDLES } from '@/lib/coded-pages';
 
 // Canonical host — never the apex. See lib/site-config.ts#canonicalizeSiteUrl:
 // emitting apex URLs here makes every crawler hit a 308 hop.
@@ -85,6 +86,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
+  // Coded /pages/* (faq, low-price-guarantee) — real indexable pages
+  // with no Shopify CMS record, so not in publishedPages.
+  const codedPageEntries: MetadataRoute.Sitemap = CODED_PAGE_HANDLES.map((h) => ({
+    url: u(`/pages/${h}`),
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }));
+
   const liveBlogs = blogs.filter((b) => !DEPRECATED_BLOG_HANDLES.has(b.handle));
 
   const blogEntries: MetadataRoute.Sitemap = liveBlogs.map((b) => ({
@@ -107,5 +117,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       })),
   );
 
-  return [...home, ...productEntries, ...collectionEntries, ...pageEntries, ...blogEntries, ...articleEntries];
+  return [...home, ...productEntries, ...collectionEntries, ...pageEntries, ...codedPageEntries, ...blogEntries, ...articleEntries];
 }
