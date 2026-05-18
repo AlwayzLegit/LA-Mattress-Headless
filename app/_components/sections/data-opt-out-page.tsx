@@ -1,20 +1,18 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Icon } from '@/app/_components/icon';
+import { Icon } from '../icon';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
-import { OptOutForm } from './opt-out-form';
+import { OptOutForm } from './data-opt-out-form';
 
 const CONTACT_EMAIL = 'privacy@mattressstoreslosangeles.com';
-const SITE = 'https://www.mattressstoreslosangeles.com';
 
-export const metadata: Metadata = {
-  title: 'Do Not Sell or Share My Personal Information',
-  description:
-    'California residents: submit a request to opt out of the sale or sharing of your personal information, or to exercise other rights under the CCPA / CPRA.',
-  alternates: { canonical: `${SITE}/pages/data-sharing-opt-out` },
-};
-
-export default function DataSharingOptOutPage() {
+/**
+ * Coded /pages/data-sharing-opt-out page (rendered via
+ * app/pages/[handle] + lib/coded-pages — the Shopify CMS page with this
+ * handle is intentionally bypassed in favour of this interactive CCPA
+ * request form). WebPage + BreadcrumbList JSON-LD is emitted by the
+ * segment layout.
+ */
+export function DataOptOutPage() {
   return (
     <main className="container" style={{ paddingTop: 'var(--s-7)', paddingBottom: 'var(--s-9)' }}>
       <nav className="lp-breadcrumbs" aria-label="Breadcrumb" style={{ marginBottom: 'var(--s-5)' }}>

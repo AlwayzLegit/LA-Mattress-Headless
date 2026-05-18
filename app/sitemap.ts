@@ -4,7 +4,7 @@ import { SHOWROOMS } from '@/lib/showrooms';
 import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { SITE_URL } from '@/lib/site-config';
 import { isNoindexArticle } from '@/lib/noindex-articles';
-import { CODED_PAGE_HANDLES } from '@/lib/coded-pages';
+import { CODED_PAGE_HANDLES, isCodedPage } from '@/lib/coded-pages';
 
 // Canonical host — never the apex. See lib/site-config.ts#canonicalizeSiteUrl:
 // emitting apex URLs here makes every crawler hit a 308 hop.
@@ -50,12 +50,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // publicly indexable. Other custom routes — /cart, /wishlist,
   // /compare, /account, /search — are noindex via metadata.robots
   // and intentionally absent here.
+  // /pages/reviews + /pages/data-sharing-opt-out are NOT listed here —
+  // they're coded pages, emitted once via codedPageEntries below.
   const home: MetadataRoute.Sitemap = [
     { url: u('/'),                            lastModified: now, changeFrequency: 'daily',   priority: 1.0 },
     { url: u('/blogs'),                       lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
     { url: u('/sleep-quiz'),                  lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: u('/pages/reviews'),               lastModified: now, changeFrequency: 'weekly',  priority: 0.55 },
-    { url: u('/pages/data-sharing-opt-out'),  lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
   ];
 
   const productEntries: MetadataRoute.Sitemap = products.map((p) => ({
@@ -76,24 +76,41 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  const pageEntries: MetadataRoute.Sitemap = publishedPages.map((p) => {
-    const isLocalLanding = LOCAL_LANDING_HANDLES.has(p.handle);
+  // Exclude coded handles: `reviews` / `data-sharing-opt-out` are
+  // isPublished CMS pages but are served by the coded mechanism, so
+  // they're emitted once via codedPageEntries (never double-listed).
+  const pageEntries: MetadataRoute.Sitemap = publishedPages
+    .filter((p) => !isCodedPage(p.handle))
+    .map((p) => {
+      const isLocalLanding = LOCAL_LANDING_HANDLES.has(p.handle);
+      return {
+        url: u(`/pages/${p.handle}`),
+        lastModified: new Date(p.updatedAt),
+        changeFrequency: isLocalLanding ? ('weekly' as const) : ('monthly' as const),
+        priority: isLocalLanding ? 0.85 : 0.7,
+      };
+    });
+
+  // Coded /pages/* — hand-built routes dispatched via app/pages/[handle]
+  // (faq, low-price-guarantee have no CMS record; reviews,
+  // data-sharing-opt-out bypass their CMS body). Per-handle crawl hints
+  // preserve the signals these URLs carried before consolidation.
+  const CODED_SITEMAP_HINTS: Record<
+    string,
+    { changeFrequency: 'weekly' | 'monthly' | 'yearly'; priority: number }
+  > = {
+    reviews: { changeFrequency: 'weekly', priority: 0.55 },
+    'data-sharing-opt-out': { changeFrequency: 'yearly', priority: 0.3 },
+  };
+  const codedPageEntries: MetadataRoute.Sitemap = CODED_PAGE_HANDLES.map((h) => {
+    const hint = CODED_SITEMAP_HINTS[h] ?? { changeFrequency: 'monthly' as const, priority: 0.6 };
     return {
-      url: u(`/pages/${p.handle}`),
-      lastModified: new Date(p.updatedAt),
-      changeFrequency: isLocalLanding ? ('weekly' as const) : ('monthly' as const),
-      priority: isLocalLanding ? 0.85 : 0.7,
+      url: u(`/pages/${h}`),
+      lastModified: now,
+      changeFrequency: hint.changeFrequency,
+      priority: hint.priority,
     };
   });
-
-  // Coded /pages/* (faq, low-price-guarantee) — real indexable pages
-  // with no Shopify CMS record, so not in publishedPages.
-  const codedPageEntries: MetadataRoute.Sitemap = CODED_PAGE_HANDLES.map((h) => ({
-    url: u(`/pages/${h}`),
-    lastModified: now,
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-  }));
 
   const liveBlogs = blogs.filter((b) => !DEPRECATED_BLOG_HANDLES.has(b.handle));
 

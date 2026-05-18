@@ -21,6 +21,8 @@ import { ShowroomDetail } from '@/app/_components/sections/showroom-detail';
 import { ShowroomOpenStatus } from '@/app/_components/showroom-open-status';
 import { FaqPage } from '@/app/_components/sections/faq-page';
 import { PriceConfidencePage } from '@/app/_components/sections/price-confidence';
+import { ReviewsPage } from '@/app/_components/sections/reviews-page';
+import { DataOptOutPage } from '@/app/_components/sections/data-opt-out-page';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -48,8 +50,11 @@ const SITE = 'https://www.mattressstoreslosangeles.com';
 
 export function generateStaticParams() {
   if (!SHOPIFY_CONFIGURED) return [];
+  // `reviews` / `data-sharing-opt-out` are isPublished CMS pages AND
+  // coded handles — filter coded handles out of the published-pages map
+  // so each param is emitted exactly once (no duplicate static params).
   return [
-    ...publishedPages.map((p) => ({ handle: p.handle })),
+    ...publishedPages.filter((p) => !isCodedPage(p.handle)).map((p) => ({ handle: p.handle })),
     ...CODED_PAGE_HANDLES.map((handle) => ({ handle })),
   ];
 }
@@ -133,10 +138,25 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 export default async function ShopifyPage(props: Params) {
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
-  // Coded /pages/* with no Shopify CMS page behind them (legacy URLs
-  // that would otherwise 404 — linked from old blog bodies).
+  // Coded /pages/* dispatched here instead of via a standalone static
+  // leaf route under app/pages/* (`reviews`, `data-sharing-opt-out`
+  // previously had their own folders — Next 15.5.x failed to package
+  // those leaves' own page.js into the Vercel lambda, MODULE_NOT_FOUND
+  // on ISR regen). The dynamic [handle] route packages reliably, so all
+  // hand-built /pages/* go through this single dispatch. For `reviews`
+  // / `data-sharing-opt-out` a same-handle Shopify CMS page also exists
+  // but is intentionally bypassed (interactive content lives in code).
   if (isCodedPage(params.handle)) {
-    return params.handle === 'faq' ? <FaqPage /> : <PriceConfidencePage />;
+    switch (params.handle) {
+      case 'faq':
+        return <FaqPage />;
+      case 'low-price-guarantee':
+        return <PriceConfidencePage />;
+      case 'reviews':
+        return <ReviewsPage />;
+      case 'data-sharing-opt-out':
+        return <DataOptOutPage />;
+    }
   }
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) notFound();
