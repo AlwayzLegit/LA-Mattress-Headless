@@ -9,7 +9,7 @@ import type { ProductSummary } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, formatPhone, type Showroom } from '@/lib/showrooms';
 import { findNeighborhood, getNearestShowrooms, type Neighborhood } from '@/lib/neighborhoods';
-import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
+import { truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase, ensureTitleDistinctFromH1 } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { isSalePage } from '@/lib/page-jsonld';
@@ -100,7 +100,14 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // boilerplate. stripBrandSuffix first so a page title that already
   // carries a brand suffix isn't double-branded.
   const titleFallback = `${stripBrandSuffix(page.title)} | LA Mattress Store`;
-  const title = capTitle(firstNonEmpty(page.seo.title, titleFallback));
+  // Phase 296: same guarantee as blog articles (#178) — keep the CMS
+  // page <title> distinct from the rendered <h1>
+  // (toSentenceCase(stripBrandSuffix(page.title))). The 20260518 _2
+  // re-crawl still flagged 4 warranty pages where the merchant set
+  // seo.title to the headline; ensureTitleDistinctFromH1 appends the
+  // keyword-bearing brand suffix only when it would otherwise collapse.
+  // Caps to TITLE_MAX internally (replaces the prior capTitle call).
+  const title = ensureTitleDistinctFromH1(firstNonEmpty(page.seo.title, titleFallback), page.title);
   const description = truncDescription(
     firstNonEmpty(page.seo.description, page.bodySummary, `${page.title} — LA Mattress Store`),
   );
