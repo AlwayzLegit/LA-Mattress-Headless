@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Icon } from './icon';
-import { categoryIntroFor, categoryFaqFor } from '@/lib/plp-content';
+import { categoryIntroFor, categoryFaqFor, categoryGuidesFor } from '@/lib/plp-content';
 import { renderFaqAnswer } from '@/lib/faq-render';
 
 /**
@@ -29,6 +29,11 @@ export function PlpContentBlock({
   title: string;
 }) {
   const intro = categoryIntroFor(handle, title);
+  // Phase 294: curated cornerstone buying-guide links, topically matched
+  // to this collection — contextual inbound link equity to high-value
+  // guide articles SEMrush flagged as under-linked. [] for unmatched
+  // collections so it stays contextual, not boilerplate.
+  const guides = categoryGuidesFor(handle);
   // Phase 276: per-category FAQ so each PLP has unique Q&A relevant to
   // its material/brand instead of the prior shared PLP_FAQ block.
   const faqItems = categoryFaqFor(handle);
@@ -67,6 +72,20 @@ export function PlpContentBlock({
             <li><Link href="/pages/mattress-types" className="link-arrow">Mattress types compared <Icon name="arrow-right" size={14} /></Link></li>
             <li><Link href="/pages/mattress-brands" className="link-arrow">Brands we carry <Icon name="arrow-right" size={14} /></Link></li>
           </ul>
+          {guides.length > 0 ? (
+            <>
+              <h3 className="eyebrow plp-content-eyebrow">Buying guides</h3>
+              <ul className="plp-content-link-list">
+                {guides.map((g) => (
+                  <li key={g.href}>
+                    <Link href={g.href} className="link-arrow">
+                      {g.label} <Icon name="arrow-right" size={14} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
         </aside>
       </div>
     </section>
