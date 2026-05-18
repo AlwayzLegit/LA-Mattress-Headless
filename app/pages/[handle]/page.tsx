@@ -13,11 +13,14 @@ import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentence
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { isSalePage } from '@/lib/page-jsonld';
+import { isCodedPage, codedPageMeta, CODED_PAGE_HANDLES } from '@/lib/coded-pages';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 import { BrandDirectory } from '@/app/_components/sections/brand-directory';
 import { ShowroomDetail } from '@/app/_components/sections/showroom-detail';
 import { ShowroomOpenStatus } from '@/app/_components/showroom-open-status';
+import { FaqPage } from '@/app/_components/sections/faq-page';
+import { PriceConfidencePage } from '@/app/_components/sections/price-confidence';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -45,12 +48,31 @@ const SITE = 'https://www.mattressstoreslosangeles.com';
 
 export function generateStaticParams() {
   if (!SHOPIFY_CONFIGURED) return [];
-  return publishedPages.map((p) => ({ handle: p.handle }));
+  return [
+    ...publishedPages.map((p) => ({ handle: p.handle })),
+    ...CODED_PAGE_HANDLES.map((handle) => ({ handle })),
+  ];
 }
 
 export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
+  if (isCodedPage(params.handle)) {
+    const m = codedPageMeta(params.handle);
+    const url = `/pages/${params.handle}`;
+    return {
+      title: { absolute: m.title },
+      description: m.description,
+      alternates: { canonical: url },
+      openGraph: {
+        type: 'article',
+        url,
+        title: m.title,
+        description: m.description,
+        images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
+      },
+    };
+  }
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) return { title: 'Page not found' };
   // Phase 289: same fix as blog articles — when the merchant hasn't
@@ -111,6 +133,11 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 export default async function ShopifyPage(props: Params) {
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
+  // Coded /pages/* with no Shopify CMS page behind them (legacy URLs
+  // that would otherwise 404 — linked from old blog bodies).
+  if (isCodedPage(params.handle)) {
+    return params.handle === 'faq' ? <FaqPage /> : <PriceConfidencePage />;
+  }
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) notFound();
 
