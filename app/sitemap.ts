@@ -5,6 +5,19 @@ import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { SITE_URL } from '@/lib/site-config';
 import { isNoindexArticle } from '@/lib/noindex-articles';
 import { CODED_PAGE_HANDLES, isCodedPage } from '@/lib/coded-pages';
+import redirectsJson from '@/data/url-inventory/redirects.json';
+
+// Legacy handles that 301 (same redirects.json that feeds
+// next.config + lib/sanitize). url-inventory still lists many of these
+// (old article/blog/page/collection handles), so without this filter
+// the sitemap advertises 32 URLs that permanently redirect — SEMrush
+// 20260518 "Incorrect pages found in sitemap.xml". A sitemap must only
+// list canonical 200 URLs. Path-keyed, trailing-slash-normalized.
+const REDIRECT_SOURCES: ReadonlySet<string> = new Set(
+  ((redirectsJson as { redirects?: { source?: string }[] }).redirects ?? [])
+    .map((r) => (typeof r?.source === 'string' ? r.source.replace(/\/+$/, '') || '/' : ''))
+    .filter(Boolean),
+);
 
 // Canonical host — never the apex. See lib/site-config.ts#canonicalizeSiteUrl:
 // emitting apex URLs here makes every crawler hit a 308 hop.
@@ -134,5 +147,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       })),
   );
 
-  return [...home, ...productEntries, ...collectionEntries, ...pageEntries, ...codedPageEntries, ...blogEntries, ...articleEntries];
+  const all = [
+    ...home,
+    ...productEntries,
+    ...collectionEntries,
+    ...pageEntries,
+    ...codedPageEntries,
+    ...blogEntries,
+    ...articleEntries,
+  ];
+  // Final guard: never emit a URL that 301-redirects, regardless of
+  // which builder produced it or how url-inventory regenerates.
+  return all.filter((e) => {
+    const path = e.url.slice(SITE.length).replace(/\/+$/, '') || '/';
+    return !REDIRECT_SOURCES.has(path);
+  });
 }
