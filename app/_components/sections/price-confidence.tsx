@@ -1,11 +1,6 @@
 import Link from 'next/link';
 import { Icon } from '../icon';
-
-// The price-match wording is the company's already-published commitment
-// (verbatim from lib/faq.ts HOMEPAGE_FAQ — live on the homepage + its
-// FAQPage JSON-LD). Stated here, not invented.
-const PRICE_MATCH =
-  'Find the same mattress for less at any authorized retailer within 30 days and we’ll refund the difference plus 10%.';
+import { PRICE_MATCH_TEXT } from '@/lib/faq';
 
 const REASONS: { icon: 'shield' | 'home' | 'truck' | 'card' | 'star'; title: string; body: string }[] = [
   { icon: 'shield', title: 'Authorized dealer', body: 'Genuine Tempur-Pedic, Stearns & Foster, Diamond, Helix and more — never gray-market or knockoff models with mismatched warranties.' },
@@ -44,7 +39,7 @@ export function PriceConfidencePage() {
           style={{ borderRadius: 'var(--r-3)', padding: 'var(--s-5)', marginBottom: 'var(--s-6)' }}
         >
           <h2 className="h2" style={{ margin: 0 }}>Price match + 10%</h2>
-          <p style={{ margin: 'var(--s-2) 0 0', maxWidth: '60ch' }}>{PRICE_MATCH}</p>
+          <p style={{ margin: 'var(--s-2) 0 0', maxWidth: '60ch' }}>{PRICE_MATCH_TEXT}</p>
         </div>
 
         <section className="section">

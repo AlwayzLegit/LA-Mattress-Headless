@@ -6,10 +6,16 @@
  */
 export type FaqItem = { q: string; a: string };
 
+// Single source for the published price-match commitment — used by the
+// homepage FAQ, the /pages/faq FAQ, their FAQPage JSON-LD, and the
+// /pages/low-price-guarantee callout, so the wording can never drift.
+export const PRICE_MATCH_TEXT =
+  'Yes — if you find the same mattress for less at any authorized retailer within 30 days, we’ll refund the difference plus 10%.';
+
 export const HOMEPAGE_FAQ: FaqItem[] = [
   {
     q: 'Do you price match?',
-    a: 'Yes — if you find the same mattress for less at any authorized retailer within 30 days, we’ll refund the difference plus 10%.',
+    a: PRICE_MATCH_TEXT,
   },
   {
     q: 'How fast is delivery?',
@@ -80,7 +86,7 @@ export const FAQ_PAGE_SECTIONS: FaqSection[] = [
     items: [
       {
         q: 'Do you price match?',
-        a: 'Yes — if you find the same mattress for less at any authorized retailer within 30 days, we’ll refund the difference plus 10%.',
+        a: PRICE_MATCH_TEXT,
       },
       {
         q: 'Is financing actually 0%?',
