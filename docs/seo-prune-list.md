@@ -291,3 +291,31 @@ Two minor findings, both resolved here:
 
 Semrush T0 capture (cowork suite I) couldn't run — no Semrush surface
 in that session. T+30 recovery re-pull due **2026-06-18**.
+
+---
+
+## 2026-05-19 — optional enrichment APPLIED (live)
+
+The "Standard Full Bed Size: Quick Reference" block (the one net-new
+angle: standalone *"standard size of a full bed / full bed dimensions
+in ft & cm"* phrasing the hub previously only framed as "full vs
+queen") is **live on `full-vs-queen-mattress`** (Article 597477622013,
+`updatedAt 2026-05-19T07:57:39Z`), inserted between *Full Mattress
+Dimensions* and *Queen Mattress Dimensions*.
+
+Applied via `articleUpdate` under a SHA-gated protocol: deterministic
+script-built body → local `diff`/SHA proof of the exact payload
+(`a2cfde42…`) before any write → post-write re-fetch + SHA compare.
+The post-write SHA differed by **+20 bytes**; root-caused by diffing
+to **Shopify's server-side HTML pretty-printer** expanding the new
+table's compact `<tr><td>` rows to one tag per line. Whitespace-
+normalized comparison proved the stored body **semantically identical**
+to intent (both 20,348 chars collapsed), all 9 pre-existing section
+IDs present exactly once, FAQ/CTA intact — i.e. benign normalization,
+not corruption, so **no rollback** (rolling back a correct update over
+cosmetic whitespace would have been the wrong call). Original body
+backed up at the time; remains one-command reversible if ever wanted.
+
+This closes the last open item from the recovery batch. The 301
+consolidation (the dominant lever) was already live + cowork-verified;
+this is the incremental on-page polish on the canonical URL.
