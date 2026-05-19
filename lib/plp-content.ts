@@ -353,7 +353,7 @@ export function categoryIntroFor(handle: string, title: string): string {
     return `King-size mattresses (76" × 80") give two adults the most sleeping surface of any standard size. ${title} on this page are stocked across every material, firmness, and budget tier. Free white-glove delivery in Los Angeles on orders over $499.`;
   }
   if (h.includes('twin')) {
-    return `Twin-size mattresses are made for guest rooms, kids' rooms, dorms, and bunk beds. ${title} on this page span memory foam, hybrid, and innerspring builds across every firmness. Free white-glove delivery in Los Angeles on orders over $499.`;
+    return `Twin-size mattresses (38" × 75") suit kids' rooms, teen bedrooms, bunk beds, daybeds, trundles, dorms, and guest rooms. ${title} on this page span memory foam, hybrid, and innerspring builds across every firmness; size up to a twin XL for taller teens. Free white-glove delivery in Los Angeles on orders over $499.`;
   }
 
   // Generic mattress fallback

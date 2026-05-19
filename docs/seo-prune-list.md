@@ -36,7 +36,6 @@ key). `permanent: true` (308) is correct for every 301 below.
 |---|---|---|---|
 | `mattress-buying-guide/will-a-queen-bed-frame-fit-a-full-size-mattress` | 127 | 201 | ranks #2; compatibility intent |
 | `mattress-buying-guide/queen-mattress-vs-full-xl-mattress` | 96 | 195 | full-XL-vs-queen, distinct |
-| `mattress-buying-guide/is-a-full-bed-wide-enough-for-two-sleepers` | 81 | 26 | "full bed for couples" — internal-link to winner |
 
 **301 → `mattress-buying-guide/full-vs-queen-mattress`:**
 
@@ -49,6 +48,12 @@ key). `permanent: true` (308) is correct for every 301 below.
 | `mattress-buying-guide/full-size-mattress-dimensions-how-wide-and-long-are-they` | 2 | 0 |
 | `mattress-buying-guide/full-size-mattress-measurements-room-layout-tips` | 1 | 0 |
 | `mattress-buying-guide/full-vs-queen-mattress-which-one-is-right-for-your-room-and-budget` | 1 | 0 |
+| `mattress-buying-guide/is-a-full-bed-wide-enough-for-two-sleepers` † | 81 | 26 |
+
+† Pre-existing 301 → `full-size-bed-dimensions-width-couples`; the P0
+batch flattened that chain so it now 301s **directly** to the hub
+(single-hop, cowork-verified 2026-05-19). Reclassified here from the
+KEEP table after the de-chain — cowork finding **F1**.
 
 **⚠ CONSOLIDATE-AFTER-MERGE (do NOT blind-301):**
 `mattress-buying-guide/what-is-the-standard-size-of-a-full-bed` —
@@ -255,3 +260,34 @@ Theme-write blocked via MCP for the live theme, but article-body
 writes are *not* blocked — say the word and I'll apply this via
 `articleUpdate` (full original body is backed up, so it's one-command
 reversible).
+
+---
+
+## 2026-05-19 — cowork verification (post #182/#183): ship-clean
+
+Full report: `data/cowork-reports/seo-recovery-verification-20260519T070513Z.md`.
+Production SHA `1b631b15`, Vercel `dpl_BRwJYSV8hogjsHxsmf4zD9asQTw7` READY.
+
+**Verdict: no regressions introduced by #182/#183.** 29/29 redirects
+single-hop 308→200, 11/11 noindex correct + sitemap-excluded, sitemap
+/ host / robots / schema / internal-link suites all pass, 0 new
+first-party Sentry errors.
+
+Two minor findings, both resolved here:
+
+- **F1 (doc):** the Cluster-A KEEP table still listed
+  `is-a-full-bed-wide-enough-for-two-sleepers` as KEEP, but the
+  implemented decision is a 301 to the hub (the P0 batch flattened its
+  pre-existing chain). **Fixed:** row moved to the 301 table above with
+  a footnote.
+- **F2 (copy):** cowork measured the code-driven `plp-content-intro`
+  block (38 words, `lib/plp-content.ts`) against the brief's ~170-word
+  expectation. **Clarification:** the ~170-word twin copy *is* live —
+  it renders in the prominent `plp-hero-lede` from the Shopify
+  `descriptionHtml` (`app/collections/[handle]/page.tsx:175`), a
+  *different* element near the H1. The 38-word block is a separate,
+  pre-existing supporting paragraph; it was generic, so it's been
+  tightened toward the twin / twin-XL near-miss intent. Not a defect.
+
+Semrush T0 capture (cowork suite I) couldn't run — no Semrush surface
+in that session. T+30 recovery re-pull due **2026-06-18**.
