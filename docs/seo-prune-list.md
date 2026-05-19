@@ -319,3 +319,12 @@ backed up at the time; remains one-command reversible if ever wanted.
 This closes the last open item from the recovery batch. The 301
 consolidation (the dominant lever) was already live + cowork-verified;
 this is the incremental on-page polish on the canonical URL.
+
+**Re-verified clean (cowork pass #2, 2026-05-19T08:36:50Z, prod SHA
+`0bdae969`):** report
+`data/cowork-reports/seo-recovery-verification-2-20260519T083650Z.md`.
+Verdicts — *regressions since prior pass: NO*; *enrichment renders
+correctly on the flagship: YES*. 0 findings; all 11 suites pass; ISR
+already revalidated (`PRERENDER age:0`). The full recovery batch is
+verified complete. Only remaining item: the **T+30 (2026-06-18)**
+Semrush recovery re-pull.
