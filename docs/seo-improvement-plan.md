@@ -340,3 +340,201 @@ quick wins** in the first 2 weeks (GA4 + GSC + sameAs + LCP preload + image
 sizes audit + automated inventory snapshot). That re-baselines measurement,
 captures most of the technical wins for ~20% of total effort, and unblocks
 all later phases.
+
+---
+
+# 2026-05-19 Refresh — Live Semrush Re-Pull + Recovery Re-Prioritization
+
+> This section supersedes the phase **ordering** above (the phase
+> *content* still stands). It is based on a fresh Semrush pull on
+> 2026-05-19 (US database) covering domain overview, 14-month history,
+> organic keywords, won/lost keywords, top pages, competitors and
+> backlinks. The new data exposes a problem the original plan did not
+> see: **a large organic-traffic decline from the 2025 peak**, driven
+> by keyword cannibalization across the 1,133-article blog. Recovery
+> now outranks growth in priority order.
+
+## Fresh snapshot vs. the original baseline
+
+| Metric | Plan baseline | 2026-05-19 | Note |
+|---|---|---|---|
+| Organic keywords | 15,528 | **16,257** | down from ~23,000 in early 2025 |
+| Monthly organic traffic | ~7,509 | **~9,478** | down from ~17,964 (Sep 2025 peak) |
+| Organic traffic value | ~$18,095 | **~$21,144/mo** | |
+| Authority / Trust Score | 28 / 28 | **27 / 27** | flat-to-down |
+| Backlinks / ref domains | 16,912 / 983 | **17,281 / 987** | follows 10,304 / nofollows 7,006 |
+| Domain rank (global) | #230,886 | **#187,912** | improved |
+| Paid (Google Ads) | $0 | **$0** | unchanged |
+
+The original "baseline" was captured near a trough. The real story is
+the **14-month trajectory**, not the month-over-month delta.
+
+## The headline: a ~45% peak-to-trough organic decline
+
+Monthly organic sessions, Semrush `domain_rank_history` (US):
+
+| Month | Traffic | Keywords |
+|---|---|---|
+| 2025-03 | 41,198* | 22,815 |
+| 2025-09 | **17,964** (peak) | 19,928 |
+| 2025-11 | 13,123 | 20,348 |
+| 2025-12 | 8,953 | 18,932 |
+| 2026-02 | 8,936 | 17,984 |
+| 2026-04 | **6,393** (trough) | 15,574 |
+| 2026-05 | 9,478 (rebound) | 16,257 |
+
+\* The Mar-2025 41K spike is a one-off SERP-feature/seasonal anomaly —
+ignore it for trend purposes.
+
+**Read:** the site lost roughly **half its organic traffic** between
+Sep-2025 and Apr-2026 and ~7,000 ranking keywords, then began
+recovering in May-2026 (+48% MoM, likely the Phase 277/29x SEO work +
+sitemap/redirect cleanup landing in the index). The job now is to
+**accelerate and defend the rebound**, not start from a clean baseline.
+
+## Root-cause diagnosis (evidence-backed)
+
+1. **Blog content cannibalization (primary cause).** The site has
+   **1,133 blog articles**. The Semrush *lost-keywords* report shows
+   the same query served by 2–3 competing in-house URLs, e.g.
+   *"full mattress size"* (6,600/mo) split across
+   `/blogs/.../how-much-space-does-a-full-size-mattress-really-give-you`,
+   `/pages/mattress-sizes`, and `/blogs/.../full-vs-queen-mattress` —
+   **all now out of the top 100**. The full-size-dimensions intent
+   alone is targeted by ~10 near-duplicate articles
+   (`full-size-bed-dimensions-two-people`,
+   `full-size-bed-dimensions-width-couples`,
+   `full-size-mattress-dimensions-how-wide-and-long-are-they`,
+   `full-size-mattress-measurements-room-layout-tips`,
+   `how-much-space-does-a-full-size-mattress-really-give-you`,
+   `how-many-cubic-feet-is-a-full-sized-mattress`, plus
+   `full-vs-queen-mattress`, `what-is-the-standard-size-of-a-full-bed`,
+   `queen-mattress-vs-full-xl-mattress`). This is the classic Google
+   Helpful-Content / dilution failure pattern.
+
+2. **High-volume informational pages decayed out of the index.**
+   Not slow growth — outright loss: *"how much does a mattress cost"*
+   (4,400/mo) went **#17 → lost** (it was a flagged near-miss in the
+   original plan and got *worse*); *"gel memory foam mattress"*
+   (4,400) #24 → lost; *"tempur-pedic mattress"* (3,600) → lost;
+   *"king size mattress for couples"* (6,600) → lost;
+   *"diamond mattress"* (1,900) #30 → lost.
+
+3. **Headless-migration host/redirect churn.** Semrush still indexes
+   `www.` and apex variants of the *same* article separately
+   (e.g. `will-king-sheets-fit-a-california-king-mattress` ranks under
+   both hosts). Code already forces the `www` canonical
+   (`lib/site-config.ts#canonicalizeSiteUrl`) and sitemap/robots are
+   clean; the **apex→www 307→308 fix is still open** (followup §9b —
+   2-min Vercel dashboard toggle, no code). Until it lands, link
+   equity is split across hosts.
+
+4. **Commercial collections under-rank for their own head terms.**
+   `/collections/king-size-mattresses` sits **#25–31** for *"king
+   size mattress"* (110,000/mo) and *"king mattress"* (60,500/mo) —
+   page-3 for six-figure-volume commercial intent, while thin blog
+   posts absorb the long-tail. Collection bodies are SEO-titled but
+   thin on indexable on-page copy. Confirmed non-issue:
+   `/collections/king`, `/collections/king-mattresses` etc. already
+   308-redirect to `king-size-mattresses` in `redirects.json` — the
+   stale `/collections/king` Semrush row is just Google catching up.
+
+## Re-prioritized action plan
+
+Priority is now **impact-on-recovery per engineering hour**. Maps onto
+the existing phases where applicable.
+
+### P0 — Stop the bleeding (code-actionable, this sprint)
+
+| # | Action | Where | Owner | Reversible? |
+|---|---|---|---|---|
+| P0-1 | **Prune the cannibalizing blog clusters.** Pick ONE canonical winner per intent cluster (full-size dimensions, full-vs-queen, queen-vs-full-xl, sam's-club-queen, king-sheets-cal-king). `noindex, follow` every duplicate loser via the existing `lib/noindex-articles.ts` set (it already does exactly this for doorway posts; `follow:true` keeps link equity). Drives index focus back to the winner. | `lib/noindex-articles.ts`, `app/sitemap.ts` (already reads the set) | Eng (list needs merchant 👍 — losing a traffic page costs money) | Yes — delete the key to re-include |
+| P0-2 | **Consolidate, don't just hide.** For each pruned loser, 301 the dead duplicates to the canonical winner via `data/url-inventory/redirects.json` (already wired into `next.config.mjs` + `lib/sanitize.ts` render-time resolution). Hide thin variants that still have a few links; redirect zero-value exact dupes. | `redirects.json` | Eng + merchant | Yes |
+| P0-3 | **Land the apex→www 308.** Flip the Vercel domain redirect 307→308 (followup-tasks §9b). Kills the host-split flagged in cause #3. | Vercel dashboard | Merchant (2 min) | Yes |
+| P0-4 | **Re-pull the inventory snapshot + re-submit sitemap** in GSC/Bing after P0-1/2 so the index re-crawls the slimmed URL set. | GitHub Action + GSC | Merchant | n/a |
+
+### P1 — Recover commercial head terms (mixed)
+
+- **King / Twin / On-Sale collection bodies.** Add 150–250 words of
+  unique, keyword-targeted intro copy to the underperforming
+  collections (`king-size-mattresses` → "king size mattress" 110K /
+  "king mattress" 60K; `/collections/twin` → "twin mattress nearby"
+  5,400 @ #15; `/collections/on-sale` → "mattress sale" 22,200 @ #30).
+  **Zero code** — the PLP template already renders Shopify
+  `descriptionHtml`; this is Shopify Admin collection-description work.
+  Internal-link from the highest-traffic blog posts with exact-match
+  anchors.
+- **Recover the decayed informational winners** (cause #2): for the
+  surviving canonical article in each cluster, refresh date + expand
+  to genuinely best-in-class depth, then internal-link from the
+  cluster's noindexed losers (which still `follow`). Targets:
+  `how-much-should-you-spend-on-a-mattress` (4,400/mo, was #17),
+  `full-vs-queen-mattress` (multi-keyword hub), the king-size
+  collection for the gel/tempur/diamond brand terms.
+
+### P2 — Capture (near-miss + new content)
+
+Largely the original plan's Phases 4–7, still valid, but **gated
+behind P0** — adding more content before fixing cannibalization makes
+the dilution worse. Current near-miss board (post-decline):
+
+| Keyword | Vol/mo | Pos | URL |
+|---|---|---|---|
+| king size mattress | 110,000 | #25 | /collections/king-size-mattresses |
+| king mattress | 60,500 | #31 | /collections/king-size-mattresses |
+| mattress sale | 22,200 | #30 | /collections/on-sale |
+| medium firm mattress | 12,100 | #25 | /blogs/.../what-does-medium-firm-mattress-mean |
+| twin mattress nearby | 5,400 | #15 | /collections/twin |
+| where is the best place to buy a mattress | 3,600 | #9 | /blogs/.../best-places-buy-mattress-los-angeles |
+| spring air mattress | 2,900 | #4 | /collections/spring-air-mattresses |
+| mattress stores los angeles | 1,900 | #3 | / |
+| sam's club mattress queen | 1,900 | #5 | /blogs/.../ultimate-sam-s-club-queen-mattress-review |
+| bed frame stores | 1,300 | #11 | /collections/bed-frames |
+| best mattress for fibromyalgia | 1,300 | #9 | /blogs/.../fibromyalgia |
+| eastern king vs california king | 880 | #6 | /blogs/.../eastern-king-and-california-king |
+
+The 5 new pillar articles (original Phase 5) are **deferred until P0
+ships** — net-new informational content right now feeds the
+cannibalization problem. Exception: net-new *commercial / local*
+pages (neighborhood pages, brand×size cross-cuts) are safe to proceed
+in parallel — they don't compete with the blog.
+
+### P3 — Authority / off-page (unchanged)
+
+Original Phase 8 stands. AS is flat at 27 (was 28); follows
+10,304 / nofollows 7,006 — the nofollow ratio (≈40%) is high, so
+prioritize editorial/dofollow link earning (digital PR, vendor
+dealer-locator links) over directory volume. Local rivals
+`airpedic.com` (~32K organic) and `orthomattress.com` (~23K)
+out-traffic us despite our larger keyword footprint — confirming the
+problem is **on-page quality/dilution, not link scarcity**.
+
+## Updated verification baseline (T0 = 2026-05-19)
+
+- Organic traffic **9,478/mo** → target **18,000/mo within 180 days**
+  (i.e. reclaim the 2025 peak, with mix shifted toward commercial).
+- Lost-keyword count: re-run `domain_organic display_positions=lost`
+  monthly; P0 success = the 6,600/4,400-vol "lost" cluster terms
+  re-enter the top 50 on the *single* canonical URL (no more split).
+- `king size mattress` / `king mattress`: #25/#31 → **top 10** within
+  120 days (P1 collection-body work).
+- Indexed URL count in GSC should **drop** after P0-1/2 (fewer, better
+  pages) while impressions hold or rise — the signal that pruning
+  worked, not regressed.
+- Re-pull cadence: monthly `domain_rank_history` + `domain_organic`
+  (won/lost) diff; quarterly full re-pull of this section.
+
+## What I can execute now vs. what needs you
+
+**Code-actionable on this branch (no external access needed):**
+P0-1 (noindex list expansion) and P0-2 (redirect consolidation) — both
+extend existing, reversible mechanisms. The *engineering* is trivial;
+the *risk* is choosing the wrong canonical winner per cluster
+(noindexing a page that still earns money). I have the per-cluster
+traffic/position data to propose the exact list — but it should get a
+merchant 👍 before it ships, because it's a hard-to-reverse signal to
+Google.
+
+**Needs merchant action (no code):** P0-3 (Vercel 307→308 toggle),
+P0-4 (GSC sitemap re-submit), all P1 collection-body copy, P2 content,
+P3 outreach. These are tracked in `docs/seo-followup-tasks.md`.
