@@ -190,3 +190,68 @@ per-URL Semrush data (full/queen/air/cal-king). A complete sweep of
 all 1,133 articles needs the existing audit scripts
 (`scripts/seo-tag-cleanup-report.mjs` pattern) + GSC query data — a
 follow-on, not a blocker for this batch.
+
+---
+
+## 2026-05-19 — `what-is-the-standard-size-of-a-full-bed` resolved (301, no rewrite)
+
+The Cluster-A "⚠ CONSOLIDATE-AFTER-MERGE" item is **closed**. Both
+articles were pulled in full from Shopify Admin and read end-to-end:
+
+- **Hub — `full-vs-queen-mattress`** (Article 597477622013, 535 kw):
+  a modern, semantically-clean guide — quick-answer, key-takeaways,
+  full + queen dimension sections, side-by-side table, room-size +
+  weight + bedding subsections, who-should-choose, price, "can two
+  adults sleep on a full", an 8-question `<details>` FAQ, clean
+  `<h2 id>` anchors (TOC-compatible), internal collection links only.
+- **Source — `what-is-the-standard-size-of-a-full-bed`**
+  (Article 594346868989, 508 kw): older Word-exported HTML
+  (`MsoNormal`, `<!-- [if !supportLists]-->`, broken nested `<div>`s),
+  outbound links to **competitor domains** (sleepfoundation,
+  nilkamalsleep, zomasleep, livingspaces…), and a product-review
+  block whose PDP links carry tracking params (`_pos=…&_fid=…&
+  _ss=c&variant=…`) that `robots.txt` + `sanitize.ts` already block.
+
+**Decision: 301 only, no hub rewrite.** Every topic the source covers
+(full = double, 54×75, twin-vs-full-vs-queen, room size, two-adults,
+budget framing, FAQ) the hub already covers — more accurately, with
+better structure, and without the competitor links / param URLs. The
+508 kw consolidates to the superior page via the permanent redirect
+(now in `redirects.json`). Rewriting the #1 cluster page for a
+marginal phrasing gain would risk the flagship for no proportional
+benefit — the textbook consolidation here is the redirect, not an
+edit. (Status now matches the other Cluster-A rows: a clean 301, not
+a special case.)
+
+### Optional polish (not required; safe paste-in if wanted)
+
+The one genuinely net-new angle: the hub frames everything as
+*"full vs queen"*, while the source ranked for standalone *"standard
+size of a full bed / full bed dimensions in feet & cm / how big is a
+full bed"*. If you want to capture that phrasing explicitly on the
+canonical URL, paste this block in the Shopify article editor for
+`full-vs-queen-mattress` **immediately after the "Full Mattress
+Dimensions" section's `Did You Know?` box** (before the
+`Queen Mattress Dimensions` heading). It matches the hub's existing
+HTML conventions exactly and uses internal links only:
+
+```html
+<h2 id="standard-full-bed-size">Standard Full Bed Size: Quick Reference</h2>
+<p>If you just need to confirm the <strong>standard size of a full bed</strong>: a full (double) bed is <strong>54 inches wide by 75 inches long</strong> — <strong>4.5 ft × 6.25 ft</strong>, or <strong>137 cm × 190 cm</strong>. Every standard full mattress sold in the U.S. is this size, regardless of brand or construction. "Full" and "double" are the same size — the name doesn't change the measurements.</p>
+<div class="comparison-table">
+  <table>
+    <thead><tr><th>Size</th><th>Dimensions (W × L)</th><th>Best For</th><th>Min. Room Size</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Twin</strong></td><td>38" × 75" (97 × 190 cm)</td><td>Kids, bunk beds, small rooms</td><td>7 × 10 ft</td></tr>
+      <tr><td><strong>Full (Double)</strong></td><td>54" × 75" (137 × 190 cm)</td><td>Solo adults, teens, guest rooms</td><td>10 × 12 ft</td></tr>
+      <tr><td><strong>Queen</strong></td><td>60" × 80" (152 × 203 cm)</td><td>Couples, taller sleepers</td><td>10 × 14 ft</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>A full is <strong>16 inches wider than a twin</strong> (same 75" length) and <strong>6 inches narrower and 5 inches shorter than a queen</strong>. Plan for ~2 ft of walkway on each open side — a 10 × 12 ft bedroom is the realistic minimum for a full. If you're over 6 ft tall, the 75" length is the full's real limitation; the <a href="/collections/queen-size-mattresses">queen</a> adds 5 inches. Shopping a full now? Browse <a href="/collections/full-size-mattresses">full size mattresses</a> in plush, medium, and firm — every order includes free white glove delivery, setup, and old-mattress removal across Los Angeles.</p>
+```
+
+Theme-write blocked via MCP for the live theme, but article-body
+writes are *not* blocked — say the word and I'll apply this via
+`articleUpdate` (full original body is backed up, so it's one-command
+reversible).
