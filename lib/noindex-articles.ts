@@ -20,6 +20,21 @@
  * its key here.
  */
 const NOINDEX_ARTICLES: ReadonlySet<string> = new Set([
+  // Cannibalization prune (2026-05-19, live SEMrush per-URL pull):
+  // thin vehicle-specific air-mattress doorway swarm + zero-traffic
+  // "best/comparison queen" listicles that split signal off the
+  // cluster winners. See docs/seo-prune-list.md.
+  'mattress-buying-guide/air-mattress-for-jeep-gladiator',
+  'mattress-buying-guide/air-mattress-for-subaru-crosstrek',
+  'mattress-buying-guide/air-mattress-for-subaru-forester',
+  'mattress-buying-guide/best-air-mattress-for-heavyweights',
+  'mattress-buying-guide/firm-vs-plush-queen-mattress-how-to-choose-for-your-sleep-style',
+  'mattress-buying-guide/how-to-set-up-a-truck-bed-air-mattress-for-camping',
+  'mattress-buying-guide/memory-foam-vs-hybrid-queen-mattress-which-one-helps-you-sleep-better',
+  'mattress-buying-guide/sleep-experts-rate-the-ultimate-queen-memory-foam-mattresses',
+  'mattress-buying-guide/top-5-cooling-queen-mattresses-for-hot-sleepers',
+  'mattress-buying-guide/top-air-mattress-options-for-road-trips-and-truck-camping',
+  'mattress-care-tips/does-temperature-affect-air-mattresses',
   'extra-info/why-memory-foam-mattresses-are-gaining-popularity-in-burbank',
   'mattress-buying-guide/best-black-friday-deals-on-mattresses',
   'mattress-buying-guide/best-mattress-for-your-la-neighborhood',

@@ -13,6 +13,141 @@
   },
   "redirects": [
     {
+      "source": "/blogs/mattress-buying-guide/how-much-space-does-a-full-size-mattress-really-give-you",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/how-many-cubic-feet-is-a-full-sized-mattress",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/full-size-bed-dimensions-width-couples",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/full-size-bed-dimensions-two-people",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/full-size-mattress-dimensions-how-wide-and-long-are-they",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/full-size-mattress-measurements-room-layout-tips",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/full-vs-queen-mattress-which-one-is-right-for-your-room-and-budget",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/queen-mattress-size-guide-inches-feet-how-to-pick-the-perfect-fit",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/queen-vs-california-queen-which-size-fits-your-needs",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/what-is-the-size-of-a-queen-mattress",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/queen-mattress-cost-2023-price-and-comparison-guide",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/short-queen-vs-standard-queen-mattress-best-choice-for-rvs-and-campers",
+      "destination": "/blogs/mattress-buying-guide/short-queen-mattresses-for-campers-how-to-measure-and-buy-right",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/short-queen-vs-queen",
+      "destination": "/blogs/mattress-buying-guide/short-queen-mattresses-for-campers-how-to-measure-and-buy-right",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-queen-mattresses-under-500-2025-buyer-s-guide",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-queen-mattresses-under-1000",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-queen-mattresses-of-2025-editor-s-picks-for-every-budget",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/top-6-best-queen-sized-mattresses-2024",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/top-rated-queen-mattresses-on-amazon-you-can-order-today",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/the-ultimate-best-queen-size-mattress-for-guest-rooms-budget-to-luxury-options",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-queen-size-mattress-for-back-pain-relief",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-queen-mattresses-in-studio-city",
+      "destination": "/collections/queen-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference",
+      "destination": "/blogs/mattress-buying-guide/what-s-the-difference-between-eastern-king-and-california-king",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/king-vs-california-king",
+      "destination": "/blogs/mattress-buying-guide/what-s-the-difference-between-eastern-king-and-california-king",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/is-a-california-king-better-than-a-king-for-tall-sleepers",
+      "destination": "/blogs/mattress-buying-guide/what-s-the-difference-between-eastern-king-and-california-king",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/top-6-best-california-king-mattresses-2024",
+      "destination": "/collections/california-king-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-california-king-bedroom-sets-to-buy-online",
+      "destination": "/collections/california-king-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-california-king-bed-frames",
+      "destination": "/collections/california-king-mattresses",
+      "permanent": true
+    },
+    {
       "source": "/blogs/beds-mattresses/9-easy-steps-on-how-to-clean-a-mattress",
       "destination": "/blogs/mattress-care-tips/9-easy-steps-on-how-to-clean-a-mattress",
       "permanent": true
@@ -334,7 +469,7 @@
     },
     {
       "source": "/blogs/mattress-buying-guide/is-a-full-bed-wide-enough-for-two-sleepers",
-      "destination": "/blogs/mattress-buying-guide/full-size-bed-dimensions-width-couples",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
       "permanent": true
     },
     {
