@@ -13,6 +13,11 @@
   },
   "redirects": [
     {
+      "source": "/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed",
+      "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
+      "permanent": true
+    },
+    {
       "source": "/blogs/mattress-buying-guide/how-much-space-does-a-full-size-mattress-really-give-you",
       "destination": "/blogs/mattress-buying-guide/full-vs-queen-mattress",
       "permanent": true
