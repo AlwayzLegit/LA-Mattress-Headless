@@ -192,7 +192,7 @@ async function pullBlogs() {
     query As($id: ID!, $first: Int!, $after: String) {
       blog(id: $id) {
         articles(first: $first, after: $after) {
-          edges { node { id handle title isPublished publishedAt } }
+          edges { node { id handle title isPublished publishedAt updatedAt } }
           pageInfo { hasNextPage endCursor }
         }
       }
@@ -221,6 +221,13 @@ async function pullBlogs() {
         title: a.title,
         isPublished: a.isPublished,
         publishedAt: a.publishedAt,
+        // updatedAt bumps whenever the article body / SEO / tags are
+        // edited — even without a republish. The sitemap reads this as
+        // the lastmod signal so edits to live articles get re-crawled
+        // promptly. Without it, sitemap lastmod stays pinned to
+        // publishedAt and post-publish edits stay invisible to crawlers
+        // until the next URL is found organically.
+        updatedAt: a.updatedAt,
       })),
     });
   }

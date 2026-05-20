@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { blogs, nonEmptyCollections, products, publishedPages } from '@/lib/inventory';
+import type { BlogInv, BlogArticleInv } from '@/lib/inventory';
 import { SHOWROOMS } from '@/lib/showrooms';
 import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { SITE_URL } from '@/lib/site-config';
@@ -127,9 +128,39 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const liveBlogs = blogs.filter((b) => !DEPRECATED_BLOG_HANDLES.has(b.handle));
 
+  // Resolve an article's lastmod date with the strongest signal available:
+  //   1. updatedAt — bumps on body/SEO/tag edits, the truest "this URL
+  //      changed" signal (added in Phase 297b)
+  //   2. publishedAt — original publish date, the historical fallback
+  //   3. null — caller decides; we omit lastModified rather than emit
+  //      a misleading `now` for an article we have no date for. (In
+  //      practice this branch never fires for live articles — every
+  //      isPublished:true article has publishedAt populated.)
+  const articleLastMod = (a: BlogArticleInv): Date | undefined => {
+    const stamp = a.updatedAt ?? a.publishedAt;
+    return stamp ? new Date(stamp) : undefined;
+  };
+
+  // Blog index lastmod is the most recent article-level edit in that
+  // blog. Using `now` (the build time) for every blog index lied to
+  // crawlers about freshness — every blog index page would claim to
+  // have been edited today, every day, even when no articles changed.
+  // Fallback to the blog row's own updatedAt (the blog title / handle
+  // / SEO edit timestamp) when the blog has no articles yet.
+  function latestArticleDate(b: BlogInv): Date | undefined {
+    const dates = (b.articles ?? [])
+      .filter((a) => a.isPublished !== false)
+      .map((a) => a.updatedAt ?? a.publishedAt)
+      .filter((s): s is string => typeof s === 'string' && s.length > 0)
+      .map((s) => new Date(s).getTime())
+      .filter((n) => Number.isFinite(n));
+    if (dates.length === 0) return undefined;
+    return new Date(Math.max(...dates));
+  }
+
   const blogEntries: MetadataRoute.Sitemap = liveBlogs.map((b) => ({
     url: u(`/blogs/${b.handle}`),
-    lastModified: now,
+    lastModified: latestArticleDate(b) ?? now,
     changeFrequency: 'weekly',
     priority: 0.6,
   }));
@@ -146,12 +177,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       // Keep noindexed doorway-style posts out of the sitemap so we
       // don't ask Google to crawl pages we've told it not to index.
       .filter((a) => !isNoindexArticle(b.handle, a.handle))
-      .map((a) => ({
-        url: u(`/blogs/${b.handle}/${a.handle}`),
-        lastModified: a.publishedAt ? new Date(a.publishedAt) : now,
-        changeFrequency: 'monthly' as const,
-        priority: 0.55,
-      })),
+      .map((a) => {
+        const lastMod = articleLastMod(a);
+        return {
+          url: u(`/blogs/${b.handle}/${a.handle}`),
+          ...(lastMod ? { lastModified: lastMod } : {}),
+          changeFrequency: 'monthly' as const,
+          priority: 0.55,
+        };
+      }),
   );
 
   const all = [
