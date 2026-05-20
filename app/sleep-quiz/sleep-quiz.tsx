@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { ProductSummary } from '@/lib/shopify';
 import { Icon } from '@/app/_components/icon';
+import { track } from '@/lib/analytics';
 import { QUESTIONS, recommend, type Answers, type Recommendation } from './quiz-data';
 
 // Phase 210: result-page rendering (~95 LOC including rationale list,
@@ -29,6 +30,12 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
   const [step, setStep] = useState<number | 'result'>(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [hydrated, setHydrated] = useState(false);
+  // How the user reached the result page — populated by the handler
+  // that triggered the transition. Consumed by the completion-event
+  // effect below to distinguish "answered every question" from
+  // "skipped to results". Ref (not state) because it doesn't drive
+  // render and we don't want a stale-closure read.
+  const completionPathRef = useRef<'answered_all' | 'skipped' | null>(null);
 
   // Restore prior progress so a navigation away + back doesn't lose answers.
   useEffect(() => {
@@ -54,6 +61,26 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
   const total = QUESTIONS.length;
   const result = useMemo<Recommendation | null>(() => (step === 'result' ? recommend(answers) : null), [step, answers]);
 
+  // Fire the terminal `quiz_completed` event the first time step
+  // flips to 'result' for this mounted instance. Includes the
+  // recommendation handles + how the user got here (answered_all vs
+  // skipped). Restoring a prior session's 'result' from localStorage
+  // also fires once on hydration — intentional, since for the funnel
+  // a returning quiz-completer is still a completer impression.
+  const completionFiredRef = useRef(false);
+  useEffect(() => {
+    if (step !== 'result' || !result || completionFiredRef.current) return;
+    completionFiredRef.current = true;
+    track('quiz_completed', {
+      completion_path: completionPathRef.current ?? 'answered_all',
+      answered_count: Object.keys(answers).length,
+      total_steps: total,
+      recommended_type: result.type,
+      recommended_handle: result.primary.handle,
+      recommended_product_handle: result.productPickHandle,
+    });
+  }, [step, result, answers, total]);
+
   // Each time the question changes, refocus the heading for screen readers.
   useEffect(() => {
     if (step === 'result') return;
@@ -73,7 +100,7 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
     };
   }, []);
 
-  if (step === 'result' && result) return <SleepQuizResult result={result} answers={answers} productPicks={productPicks} onRestart={() => { setStep(0); setAnswers({}); }} />;
+  if (step === 'result' && result) return <SleepQuizResult result={result} answers={answers} productPicks={productPicks} onRestart={() => { completionFiredRef.current = false; completionPathRef.current = null; setStep(0); setAnswers({}); }} />;
 
   const idx = step as number;
   const q = QUESTIONS[idx];
@@ -94,6 +121,15 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
   const onSelect = (optId: string) => {
     const wasAnswered = !!answers[q.id];
     setAnswers((a) => ({ ...a, [q.id]: optId }));
+    // Fire on every option-select (including re-selects on the way
+    // back). PostHog's distinct_id + timestamp dedupe is fine; the
+    // re-select carries information ("user changed their mind on Q3").
+    track('quiz_step', {
+      step: idx,
+      question_id: q.id,
+      choice: optId,
+      total_steps: total,
+    });
     // Auto-advance on first answer of a question. Re-selecting on a question
     // the user came back to (Back button) does NOT auto-advance — that would
     // be hostile behaviour.
@@ -104,8 +140,12 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
       // an abrupt jump with no confirmation that the tap landed.
       advanceTimerRef.current = setTimeout(() => {
         advanceTimerRef.current = null;
-        if (idx + 1 >= total) setStep('result');
-        else setStep(idx + 1);
+        if (idx + 1 >= total) {
+          completionPathRef.current = 'answered_all';
+          setStep('result');
+        } else {
+          setStep(idx + 1);
+        }
       }, 450);
     }
   };
@@ -113,8 +153,12 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
   const onNext = () => {
     if (!answered) return;
     cancelAdvance();
-    if (idx + 1 >= total) setStep('result');
-    else setStep(idx + 1);
+    if (idx + 1 >= total) {
+      completionPathRef.current = 'answered_all';
+      setStep('result');
+    } else {
+      setStep(idx + 1);
+    }
   };
 
   const onBack = () => {
@@ -138,7 +182,7 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
           <button
             type="button"
             className="quiz-skip-link"
-            onClick={() => { cancelAdvance(); setStep('result'); }}
+            onClick={() => { cancelAdvance(); completionPathRef.current = 'skipped'; setStep('result'); }}
             aria-label="Skip remaining questions and see the best match"
           >
             Skip to results

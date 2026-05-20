@@ -8,6 +8,7 @@ import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { announce } from '@/app/_components/announcer';
 import { formatPriceRange } from '@/lib/format';
 import type { ProductSummary } from '@/lib/shopify';
+import { track } from '@/lib/analytics';
 import { QUESTIONS, type Answers, type Recommendation } from './quiz-data';
 
 /**
@@ -86,16 +87,41 @@ export function SleepQuizResult({
           Based on how you sleep, we&rsquo;d shortlist <strong>{result.primary.label.toLowerCase()}</strong> first. You can come try them at any LA showroom.
         </p>
         <div className="quiz-result-cta">
-          <Link href={`/collections/${result.primary.handle}`} className="btn btn-primary btn-lg">
+          <Link
+            href={`/collections/${result.primary.handle}`}
+            className="btn btn-primary btn-lg"
+            onClick={() => track('quiz_recommendation_clicked', {
+              target: 'primary_cta',
+              recommended_type: result.type,
+              destination_handle: result.primary.handle,
+            })}
+          >
             See {result.primary.label} <Icon name="arrow-right" size={14} />
           </Link>
-          <Link href="/pages/mattress-store-locations" className="btn btn-ghost">
+          <Link
+            href="/pages/mattress-store-locations"
+            className="btn btn-ghost"
+            onClick={() => track('quiz_recommendation_clicked', {
+              target: 'showroom',
+              recommended_type: result.type,
+              destination_handle: 'mattress-store-locations',
+            })}
+          >
             Find a showroom
           </Link>
         </div>
       </div>
 
-      {pick ? <QuizProductHero pick={pick} /> : null}
+      {pick ? (
+        <QuizProductHero
+          pick={pick}
+          onClick={() => track('quiz_recommendation_clicked', {
+            target: 'product_hero',
+            recommended_type: result.type,
+            destination_handle: pick.handle,
+          })}
+        />
+      ) : null}
 
       {result.rationale.length ? (
         <div className="quiz-result-rationale">
@@ -111,7 +137,15 @@ export function SleepQuizResult({
         <ul>
           {result.alternates.map((a) => (
             <li key={a.handle}>
-              <Link href={`/collections/${a.handle}`} className="link-arrow">
+              <Link
+                href={`/collections/${a.handle}`}
+                className="link-arrow"
+                onClick={() => track('quiz_recommendation_clicked', {
+                  target: 'alternate',
+                  recommended_type: result.type,
+                  destination_handle: a.handle,
+                })}
+              >
                 {a.label} <Icon name="arrow-right" size={14} />
               </Link>
             </li>
@@ -154,7 +188,7 @@ export function SleepQuizResult({
  * before scrolling — but still has the category CTA + collection
  * alternates as fallbacks if the specific product doesn't fit.
  */
-function QuizProductHero({ pick }: { pick: ProductSummary }) {
+function QuizProductHero({ pick, onClick }: { pick: ProductSummary; onClick: () => void }) {
   const minPrice = Number.parseFloat(pick.priceRange.minVariantPrice.amount);
   const minCompare = Number.parseFloat(pick.compareAtPriceRange.minVariantPrice.amount);
   const onSale = minCompare > 0 && minCompare > minPrice;
@@ -165,6 +199,7 @@ function QuizProductHero({ pick }: { pick: ProductSummary }) {
       href={`/products/${pick.handle}`}
       className="quiz-result-product"
       aria-label={`Shop ${pick.vendor} ${pick.title} — our top pick for you`}
+      onClick={onClick}
     >
       <div className="quiz-result-product-img ph" style={{ aspectRatio: '1' }}>
         {onSale ? <span className="pcard-tag pcard-tag-sale">−{pctOff}%</span> : null}

@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { track } from '@/lib/analytics';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
+type Source = 'footer' | 'popup' | 'cart' | 'unknown';
 
 /**
  * Newsletter signup form with inline submit/success/error states.
@@ -17,7 +19,7 @@ type Status = 'idle' | 'submitting' | 'success' | 'error';
  * so keyboard + SR users land on the confirmation instead of having
  * focus dropped to <body>.
  */
-export function NewsletterForm() {
+export function NewsletterForm({ source = 'footer' }: { source?: Source } = {}) {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
   const successRef = useRef<HTMLDivElement>(null);
@@ -52,6 +54,7 @@ export function NewsletterForm() {
       const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
         setStatus('success');
+        track('newsletter_signup', { source });
       } else {
         setStatus('error');
         setError(data.error === 'invalid_email' ? 'That email looks off — try again.' : 'Something went wrong. Try again later.');

@@ -1,6 +1,7 @@
 import { ReviewsBadge } from './reviews-badge';
 import { shopifyProductIdFromGid } from '@/lib/judgeme';
 import { JudgemeWidget } from './judgeme-widget';
+import { TrackReviewWidget } from './track-review-widget';
 import type { ProductReviews } from '@/lib/shopify';
 
 /**
@@ -53,7 +54,10 @@ export function PdpReviewsSection({ productGid, productHandle, reviews }: Props)
           which covers the same user need without the redundancy that
           confused Cowork rev-7. */}
       {productId ? (
-        <JudgemeWidget productId={productId} />
+        <>
+          <JudgemeWidget productId={productId} />
+          <TrackReviewWidget productId={productId} />
+        </>
       ) : (
         <p className="muted">
           Reviews unavailable for this product right now.
