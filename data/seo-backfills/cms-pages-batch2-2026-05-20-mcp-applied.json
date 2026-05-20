@@ -1,0 +1,128 @@
+{
+  "ts": "2026-05-20T16:02:44Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation pageUpdate). Batch 2 of the CMS pages improvement pass — 4 stale or thin pages identified from the full /pages/* inventory and rewritten with structured content, comparison tables, and FAQ sections.",
+  "operator": "Claude (Anthropic)",
+  "scope": "Second pass of CMS page improvements. Candidates identified by sorting the published-pages list by updatedAt + body length — picked 4 high-traffic targets that had stale Word-export content (warranty 2023), legacy 2018 boilerplate (mattress-recycling-fee), broken Hydrogen-theme markup (mattress-store-contact), or essentially empty bodies (mattress-firm-vs-la-mattress-store).",
+  "pages_body_updated": [
+    {
+      "handle": "warranty",
+      "id": "gid://shopify/Page/104220721405",
+      "status": "APPLIED",
+      "appliedAt": "2026-05-20T15:55:08Z",
+      "origLen": 5057,
+      "newLen": 11141,
+      "delta": 6084,
+      "additions": [
+        "'Manufacturer warranty vs comfort exchange' comparison table (6 rows clarifying what each policy covers)",
+        "'Common warranty terms by brand' table (8 brands × 4 columns: term, sag threshold, frame requirement, term length)",
+        "'What warranties don\\'t cover' bullet list (7 exclusions including stains, unsupported foundations, removed law tags)",
+        "5-step 'How to file a warranty claim' ordered list",
+        "6-bullet 'How to keep your warranty valid' tips section",
+        "8 FAQ Q&As inline (plus the 6 already in lib/faq-extra.ts — but those weren't shipping due to the now-fixed key bug)",
+        "Cross-links to all 6 brand-specific warranty pages"
+      ],
+      "removed": [
+        "Empty <h3 data-mce-fragment=\"1\"></h3> tags (Word-export artifact)",
+        "External link to consumer.ftc.gov (outbound link to competitor info)",
+        "Stale lamattressplus@gmail.com email (replaced with orders.lamattress@gmail.com)",
+        "Generic 6-step claim process (replaced with specific 5-step LA Mattress process)"
+      ],
+      "bug_fixed": "lib/faq-extra.ts entry was keyed 'mattress-warranty' but the canonical page handle is 'warranty' — FAQPage JSON-LD was never shipping on /pages/warranty. Rekeyed to 'warranty' in the companion commit."
+    },
+    {
+      "handle": "mattress-recycling-fee",
+      "id": "gid://shopify/Page/161434883",
+      "status": "APPLIED",
+      "appliedAt": "2026-05-20T15:59:18Z",
+      "origLen": 1962,
+      "newLen": 8194,
+      "delta": 6232,
+      "additions": [
+        "'Why the fee exists' explainer (3-bullet rationale: landfill, illegal dumping, recyclable material)",
+        "'What the fee covers' per-item table (7 rows: which items carry the fee, which don't)",
+        "'What happens to the recycled mattress' material breakdown (steel/foam/fabric/wood with % weights)",
+        "4-step 'How LA Mattress handles your old mattress' ordered list",
+        "7 FAQ Q&As inline (also surfaces as FAQPage JSON-LD via lib/faq-extra.ts)",
+        "Internal links to /pages/mattress-store-delivery and /pages/mattress-store-locations",
+        "External link to mattressrecyclingcouncil.org/mrc-in-your-state/california (canonical state info)"
+      ],
+      "removed": [
+        "<noindex>...</noindex> wrapper (deprecated, ignored by Google but a confusing signal)",
+        "Outdated $10.50 fee figure (now references 'per-piece, set by the state, itemized at checkout' instead — fee amount may have changed since 2018, and a stale fixed number is worse than an authoritative pointer)",
+        "Bold-prefixed Q&A format (replaced with proper <h3>Q?</h3><p>A</p> for FAQPage extraction)"
+      ]
+    },
+    {
+      "handle": "mattress-store-contact",
+      "id": "gid://shopify/Page/142120387",
+      "status": "APPLIED",
+      "appliedAt": "2026-05-20T16:00:44Z",
+      "origLen": 2152,
+      "newLen": 7184,
+      "delta": 5032,
+      "additions": [
+        "'Fastest way to reach us' contact-method comparison table (4 methods × response time × best-for)",
+        "All 5 showroom phone numbers + addresses inline (was missing — visitors had to click through to find them)",
+        "'What we handle by phone / email' 7-bullet list covering product questions, delivery, warranties, exchanges, financing, price matching",
+        "'Need an in-person consult?' section with 30-min fitting booking callout",
+        "'Looking for the corporate side?' section for business / press / careers inquiries",
+        "6 FAQ Q&As inline (also surfaces as FAQPage JSON-LD via lib/faq-extra.ts)"
+      ],
+      "removed": [
+        "<div class=\"contacts\"><div class=\"item phone\">... Hydrogen-theme markup (CSS classes don't exist in this storefront — rendered as completely unstyled markup)",
+        "Image references to /cdn/shopify/.../phone_thumb.png and similar (broken thumbnails from the old theme)",
+        "<script>// <![CDATA[ $(function(){$(\".chat\").click(function(){$zopim.livechat.window.show()})}); // ]]></script> — broken jQuery/Zopim call, no jQuery loaded, no Zopim widget; would error in browser console",
+        "Stale lamattressplus@gmail.com email (replaced with orders.lamattress@gmail.com — current canonical)"
+      ]
+    },
+    {
+      "handle": "mattress-firm-vs-la-mattress-store",
+      "id": "gid://shopify/Page/115715145981",
+      "status": "APPLIED",
+      "appliedAt": "2026-05-20T16:02:44Z",
+      "origLen": 105,
+      "newLen": 12691,
+      "delta": 12586,
+      "additions": [
+        "12-row side-by-side comparison table (ownership, locations, sales team, delivery, haul-away, comfort exchange, trial minimum, financing, price matching, brand selection, in-store stock)",
+        "'What's actually different in practice' section with 6 sub-sections (sales experience, delivery, price, comfort exchange, brands available, post-sale support)",
+        "'When Mattress Firm is the better choice' 4-bullet list (intellectually honest framing — not all customers should pick LA Mattress)",
+        "'When LA Mattress is the better choice' 4-bullet list",
+        "7 FAQ Q&As inline (also surfaces as FAQPage JSON-LD via lib/faq-extra.ts)",
+        "Multiple internal links to /collections/{brand} pages, /pages/love-your-bed-guarantee, /pages/mattress-store-financing, /pages/mattress-store-delivery, /pages/lowest-price-guarantee"
+      ],
+      "removed": [
+        "The entire previous body was a single sentence: 'Compare LA Mattress Store with Mattress Firm to find the best deals, delivery options, and customer service.' (105 bytes total). Replaced with 12KB of substantive comparison content."
+      ],
+      "seo_context": "Branded competitor query — 'mattress firm vs', 'mattress firm vs LA mattress', 'difference between mattress firm and...' — typically have lower competition than the bare brand query and convert well when the page actually answers the comparison rather than just claiming to."
+    }
+  ],
+  "companion_code_changes": {
+    "file": "lib/faq-extra.ts",
+    "changes": "Rekeyed 'mattress-warranty' → 'warranty' (FAQ key bug fix — entry existed but didn't ship because handle mismatch). Added new CMS_PAGE_FAQS entries for mattress-recycling-fee (7 Q&As), mattress-store-contact (6 Q&As), mattress-firm-vs-la-mattress-store (7 Q&As). Updated file-header docstring to reflect full coverage map."
+  },
+  "totals": {
+    "pages_applied": 4,
+    "body_chars_added": 29934,
+    "tables_added": 5,
+    "faq_qas_added_body": 28,
+    "faq_qas_added_jsonld": 20,
+    "broken_scripts_removed": 1,
+    "stale_emails_updated": 2,
+    "user_errors": 0
+  },
+  "verification": "Subagent ran sequential pageUpdate + verification query on each page. All 4 confirmed: userErrors empty, updatedAt freshly advanced, body length within ±150 bytes of source (Shopify HTML formatter adds newlines inside table/list cells), no PLACEHOLDER strings anywhere. Spot-checked mattress-firm-vs-la-mattress-store body inline — comparison table renders, FAQ section intact, internal links present.",
+  "expected_seo_impact": [
+    "FAQPage JSON-LD now ships on /pages/warranty (was broken due to key mismatch — 6 existing Q&As never reached Google), /pages/mattress-recycling-fee, /pages/mattress-store-contact, /pages/mattress-firm-vs-la-mattress-store",
+    "Branded competitor query /pages/mattress-firm-vs-la-mattress-store went from 1-sentence placeholder to 12KB of substantive comparison content — Rich Results eligible + ranks for 'mattress firm vs' query family",
+    "Stripped 1 broken jQuery/Zopim script that was throwing console errors on every /pages/mattress-store-contact page load",
+    "Removed 2 stale email references (lamattressplus@gmail.com → orders.lamattress@gmail.com)",
+    "Cross-linked 6 brand-specific warranty pages from the new /pages/warranty content (PageRank flow into thin internal pages that previously had no inbound links)"
+  ],
+  "followup": [
+    "After deploy: Rich Results Test on all 4 pages to confirm FAQPage schema emission",
+    "After deploy: /pages/warranty visual QA — comparison tables render with banded rows (from .rte table CSS polish in PR #208)",
+    "Optional next pass: brand-specific warranty pages (6 of them, all 2023, Word-export cruft). Lower priority — those pages are brand-locked content with minimal customization room."
+  ]
+}
