@@ -32,6 +32,7 @@ export const VARIANT_FRAGMENT = /* GraphQL */ `
     title
     availableForSale
     sku
+    barcode
     selectedOptions { name value }
     price { ...MoneyFields }
     compareAtPrice { ...MoneyFields }

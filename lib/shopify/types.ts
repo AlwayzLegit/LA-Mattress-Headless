@@ -35,6 +35,14 @@ export type ProductVariant = {
   price: Money;
   compareAtPrice: Money | null;
   sku: string | null;
+  /**
+   * Shopify-stored barcode (UPC / EAN / GTIN-13/14). Null when the
+   * variant doesn't have one. Surfaced via Storefront API
+   * `ProductVariant.barcode` and emitted as `gtin` in Product JSON-LD
+   * Offer items — the strongest product-identification signal Google's
+   * Shopping rich results spec looks for.
+   */
+  barcode: string | null;
   image: Image | null;
 };
 
