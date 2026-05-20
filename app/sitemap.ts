@@ -136,6 +136,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const articleEntries: MetadataRoute.Sitemap = liveBlogs.flatMap((b) =>
     (b.articles ?? [])
+      // Drop unpublished articles. The url-inventory snapshot still
+      // carries every Shopify Article row, including drafts and
+      // archived posts (isPublished: false). The storefront returns
+      // 404 for those (Storefront API hides unpublished articles), so
+      // listing them in the sitemap creates dead URLs and trips
+      // SEMrush's "Incorrect pages found in sitemap.xml" flag.
+      .filter((a) => a.isPublished !== false)
       // Keep noindexed doorway-style posts out of the sitemap so we
       // don't ask Google to crawl pages we've told it not to index.
       .filter((a) => !isNoindexArticle(b.handle, a.handle))
