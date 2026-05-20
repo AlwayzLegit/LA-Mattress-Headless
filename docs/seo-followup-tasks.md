@@ -144,14 +144,14 @@ default 150–250-word neighborhood-specific blurb from
 `lib/neighborhoods.ts` is used; if you author your own body, that
 takes precedence.
 
-- [ ] `/pages/mattress-store-beverly-hills` (served from West LA + La Brea)
-- [ ] `/pages/mattress-store-santa-monica` (West LA)
-- [ ] `/pages/mattress-store-downtown-la` (Koreatown + La Brea)
-- [ ] `/pages/mattress-store-pasadena` (Glendale)
-- [ ] `/pages/mattress-store-burbank` (Studio City + Glendale)
-- [ ] `/pages/mattress-store-sherman-oaks` (Studio City)
-- [ ] `/pages/mattress-store-hollywood` (La Brea + Koreatown)
-- [ ] `/pages/mattress-store-long-beach` (West LA + Koreatown)
+- [x] `/pages/mattress-store-beverly-hills` (served from West LA + La Brea)
+- [x] `/pages/mattress-store-santa-monica` (West LA)
+- [x] `/pages/mattress-store-downtown-la` (Koreatown + La Brea)
+- [x] `/pages/mattress-store-pasadena` (Glendale)
+- [x] `/pages/mattress-store-burbank` (Studio City + Glendale)
+- [x] `/pages/mattress-store-sherman-oaks` (Studio City)
+- [x] `/pages/mattress-store-hollywood` (La Brea + Koreatown)
+- [x] `/pages/mattress-store-long-beach` (West LA + Koreatown)
 
 Set the Shopify Page title to something like
 "Mattress Store in {Neighborhood} — LA Mattress" — it's used as the H1.
@@ -160,6 +160,14 @@ Optionally fill the SEO title / description in Shopify Admin →
 
 After all 8 are published, re-run the inventory refresh Action so
 the sitemap picks them up.
+
+**Status 2026-05-20:** ✅ all 8 verified live, published, and in the
+inventory snapshot (sitemap-included). Each has the curated 150–250
+word blurb from `lib/neighborhoods.ts` in its body. 7 titles matched
+the spec; **Beverly Hills** was an outlier (older Page ID `114679021821`
+with `"Mattress Store Beverly Hills | Quality Mattresses & Expert
+Guidance"`) — title brought in line with the other 7 today via
+`pageUpdate` → "Mattress Store in Beverly Hills — LA Mattress".
 
 ---
 
@@ -179,15 +187,29 @@ internal links to commercial pages), and bump the lastUpdated date.
       Koreatown, Studio City, Glendale, West LA & La Brea — free
       white-glove delivery." (Engineering: this is in `hero-slides.tsx`
       / Shopify metaobject — your call which path.)
-- [ ] `/pages/shipping-and-delivery` for "mattress delivery" (4,400/mo, #12)
-      — body should be ~800 words, include the FAQ section (already
-      emitted as schema), link to every PDP that says "free delivery".
-- [ ] `/collections/spring-air-mattresses` for "spring air mattress"
-      (2,900/mo, #4) — add a 200-word collection description in
-      Shopify Admin: target "Spring Air mattress", "Spring Air Back
-      Supporter", "where to buy Spring Air in Los Angeles".
-- [ ] `/collections/bed-frames` for "bed frame stores" (1,300/mo, #11)
-      — same pattern, mention LA showrooms.
+- [ ] **`/pages/shipping-and-delivery`** for "mattress delivery"
+      (4,400/mo, #12) — **⚠ handle discrepancy 2026-05-20:** this
+      handle does not exist on the store. Actual delivery pages are
+      `mattress-store-delivery` **and** `mattress-store-same-day-delivery`
+      (two pages = cannibalization risk for this intent). Defer the
+      body refresh until the T+30 (2026-06-18) Semrush re-pull
+      confirms which page is currently ranking for the 4,400-vol query,
+      so this becomes a consolidate-then-enrich (like the full-bed
+      cluster) rather than a blind edit of one of two competing pages.
+- [x] `/collections/spring-air-mattresses` for "spring air mattress"
+      (2,900/mo, #4) — **already done** by merchant: 4 H2 sections
+      covering Back Supporter / Tradition / Value Collection / "Where
+      to buy Spring Air in Los Angeles" with showroom internal links.
+      Verified 2026-05-20.
+- [x] `/collections/bed-frames` for "bed frame stores" (1,300/mo, #11)
+      — **shipped 2026-05-20:** ~280-word `descriptionHtml` with 3 H2s
+      (formats, sizes/brands, delivery+assembly), internal links to
+      `/collections/adjustable-beds`, `/collections/mattresses`, and
+      `/pages/mattress-store-locations`. Also filled in the previously-
+      null `seo.title` ("Bed Frames — Platform, Metal & Adjustable | LA
+      Mattress", 56 chars) and `seo.description` (155 chars). Side
+      note: 6 of 8 products in this collection are status `DRAFT` —
+      that's a merchant inventory decision out of SEO scope.
 - [ ] `/blogs/.../englander-mattress-reviews-2024` — refresh date,
       add FAQ section, internal-link to `/collections/englander-mattresses`.
 - [ ] `/blogs/.../ultimate-sam-s-club-queen-mattress-review` — same.
