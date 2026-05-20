@@ -1,0 +1,108 @@
+{
+  "ts": "2026-05-20T16:52:27Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation pageUpdate). Batch 3 of the CMS pages improvement pass — 3 more pages chosen for high variance (branded competitor comparison, conversion-critical, legal/policy).",
+  "operator": "Claude (Anthropic)",
+  "scope": "Three mixed-type CMS pages: one branded competitor comparison (mirroring the mattress-firm-vs pattern from batch 2), one conversion-critical commerce page (Low Price Guarantee), one legal page that hadn't been touched since 2016 and was carrying stale policy that contradicted the canonical Love Your Bed Guarantee.",
+  "pages_body_updated": [
+    {
+      "handle": "lowest-price-guarantee",
+      "id": "gid://shopify/Page/202992771",
+      "status": "APPLIED",
+      "appliedAt": "2026-05-20T16:48:09Z",
+      "origLen": 1038,
+      "newLen": 9263,
+      "delta": 8225,
+      "additions": [
+        "4-step 'How the price match works' ordered list",
+        "'How our price match compares' 6-row comparison table (LA Mattress vs big-box chain vs online-only)",
+        "'What counts as an authorized retailer' explainer + per-brand authorized retailer list (Tempur-Pedic, Stearns & Foster, Sealy, etc.)",
+        "Critical 'unauthorized resellers void warranty' warning (was missing — protects shoppers from buying through third-party Amazon sellers where the brand warranty is void)",
+        "'What's NOT eligible' 6-bullet exclusions list (internet-only specials, floor samples, liquidation, open-box, wholesale/employee/military, bundle pricing)",
+        "8 FAQ Q&As inline (plus the 8 added to lib/faq-extra.ts for FAQPage JSON-LD)"
+      ],
+      "removed": [
+        "Old image reference (Low_price_Guarantee_1024x1024.jpg from 2018 — broken responsive sizing on modern viewports)",
+        "Broken internal link to https://la-mattress.myshopify.com/#locations (legacy shop URL — sanitizer redirects but the anchor #locations doesn't exist on the current Locations page)",
+        "Empty <ul></ul> placeholder",
+        "Single-paragraph blob (replaced with structured sections + tables + FAQ)"
+      ]
+    },
+    {
+      "handle": "purple-mattress-vs-tempur-pedic",
+      "id": "gid://shopify/Page/119045226749",
+      "status": "APPLIED",
+      "appliedAt": "2026-05-20T16:51:28Z",
+      "origLen": 638,
+      "newLen": 13910,
+      "delta": 13272,
+      "additions": [
+        "15-row side-by-side comparison table (core material, feel, best-for sleep position, pressure relief, motion isolation, cooling, edge support, bounciness, couples, hot sleepers, adjustable base compat, trial periods, warranty, made in, price range)",
+        "'How they feel — in your own words' section with quote-style descriptions for each brand",
+        "'Pressure relief: where they're really different' explainer (memory foam vs GelFlex grid mechanics)",
+        "'Cooling: where Purple has an edge' — calls out Tempur-Pedic's Breeze upcharge",
+        "'Durability and warranty' real-world comparison",
+        "'Pricing: where you can save' section with promo + bundle + Low Price Guarantee references",
+        "'When Tempur-Pedic is the right pick' / 'When Purple is the right pick' / 'When neither is the right pick' framing (intellectually honest — links to S&F, Chattam & Wells, Diamond, Helix as alternatives)",
+        "7 FAQ Q&As inline (plus 7 in lib/faq-extra.ts for FAQPage JSON-LD)"
+      ],
+      "removed": [
+        "Single-paragraph body claiming 'Tempur-Pedic stands out as the superior choice' (biased framing without comparison data — couldn't rank meaningfully for 'purple vs tempur-pedic' queries because it didn't actually compare them)",
+        "data-start/data-end stream-style attributes (AI-generated content artifacts)",
+        "Inline text-align: center style (overrode .rte default)"
+      ],
+      "seo_context": "Branded comparison query ('purple vs tempur-pedic', 'tempur-pedic vs purple', 'which is better tempur or purple') has high commercial intent and lower competition than the bare brand queries. The previous body was 638 chars of biased opinion; the new body is 13.9KB of structured comparison content with internal links to both /collections/tempur-pedic-mattresses and the memory foam category."
+    },
+    {
+      "handle": "terms-conditions",
+      "id": "gid://shopify/Page/182135619",
+      "status": "APPLIED",
+      "appliedAt": "2026-05-20T16:52:27Z",
+      "origLen": 1393,
+      "newLen": 10927,
+      "delta": 9534,
+      "additions": [
+        "16 numbered sections covering: sales final-ness, final-sale items, 120-Night Love Your Bed Guarantee, manufacturer warranty, promotional items, delivery/pickup, pricing and price match, payment and financing, CA recycling fee, sales tax, order acceptance, shipping limitations, limitation of liability, governing law/venue, privacy, changes to terms",
+        "Full company legal name disclosure (LA Mattress Store, Inc. dba Los Angeles Mattress Stores)",
+        "Cross-references to all sibling policy pages (love-your-bed-guarantee, warranty, mattress-store-delivery, mattress-store-financing, lowest-price-guarantee, mattress-recycling-fee, privacy-policy, data-sharing-opt-out)",
+        "Explicit limitation of liability + governing law sections (CA, LA County jurisdiction)",
+        "6 FAQ Q&As inline (plus 6 in lib/faq-extra.ts for FAQPage JSON-LD)"
+      ],
+      "removed": [
+        "Stale 2016 content (8.5 years old, never updated to match current operations)",
+        "$50 transportation fee for comfort exchange (CONTRADICTED the canonical Love Your Bed Guarantee which states 'no restocking fee, no shipping fee, no re-delivery fee'). Reconciled to match current ops."
+      ],
+      "critical_fix": "The 2016 terms-conditions page had a $50 transportation fee for the 120-night exchange. The just-updated (PR #208) /pages/love-your-bed-guarantee canonical policy says 'No restocking fee, no shipping fee, no re-delivery fee. White-glove pickup of the original mattress and delivery + setup of the replacement is included.' These directly contradicted each other — customers reading the legacy terms page would have seen a different policy than what's actually offered. Now consistent."
+    }
+  ],
+  "companion_code_changes": {
+    "file": "lib/faq-extra.ts",
+    "changes": "Added CMS_PAGE_FAQS entries for lowest-price-guarantee (8 Q&As), purple-mattress-vs-tempur-pedic (7 Q&As), terms-conditions (6 Q&As). All ship FAQPage JSON-LD automatically via getCmsPageFaq() → genericPageLd().",
+    "commit": "40980cd"
+  },
+  "totals": {
+    "pages_applied": 3,
+    "body_chars_added": 31031,
+    "tables_added": 2,
+    "faq_qas_added_body": 21,
+    "faq_qas_added_jsonld": 21,
+    "policy_contradictions_resolved": 1,
+    "broken_internal_links_removed": 1,
+    "broken_image_references_removed": 1,
+    "user_errors": 0
+  },
+  "verification": "Subagent ran sequential pageUpdate + verification query on each page. All 3 confirmed: userErrors empty, updatedAt freshly advanced, body length within ±150 bytes of source (Shopify HTML formatter adds newlines inside table/list cells), no PLACEHOLDER / FULL_BODY_HERE strings. Spot-checked terms-conditions body inline — 16 sections render, all internal links present, no policy contradiction with /pages/love-your-bed-guarantee.",
+  "expected_seo_impact": [
+    "FAQPage JSON-LD now ships on all 3 pages (21 new Q&As in JSON-LD)",
+    "Branded competitor query 'purple vs tempur-pedic' family — body went from 638 chars to 13.9KB of substantive comparison content with internal links to both product collections",
+    "Conversion-critical page 'lowest-price-guarantee' now has a clear 4-step process, eligibility table, exclusions list, and authorized-retailer guidance (was a single paragraph with broken image + broken internal link)",
+    "Legal liability — terms-conditions now matches the canonical Love Your Bed Guarantee policy (was contradicting it with a $50 transportation fee for the exchange)",
+    "Internal linking — terms-conditions cross-references all 8 sibling policy pages, building the legal-pages cluster"
+  ],
+  "followup": [
+    "After deploy: Rich Results Test on all 3 pages to confirm FAQPage schema emission",
+    "After deploy: /pages/terms-conditions visual QA — 16 numbered sections render in proper hierarchy",
+    "Optional next pass: brand-specific warranty pages (6 of them, all 2023 — low priority because brand-locked content)",
+    "Optional: audit /pages/queen-mattress-near-sylmar-la-mattress-store (has broken inline CSS .seo-container { ... } that won't render in this storefront — either fix or redirect)"
+  ]
+}
