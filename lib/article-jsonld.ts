@@ -97,6 +97,10 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     inLanguage: 'en-US',
     headline: article.title,
+    // breadcrumb @id ties this BlogPosting to the BreadcrumbList
+    // emitted alongside it. Same connection pattern as Product +
+    // BreadcrumbList on PDP / CollectionPage + BreadcrumbList on PLP.
+    breadcrumb: { '@id': `${url}#breadcrumb` },
     ...(ldDescription ? { description: ldDescription } : {}),
     datePublished: article.publishedAt,
     image: article.image ? [article.image.url] : undefined,
@@ -121,6 +125,7 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    '@id': `${url}#breadcrumb`,
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
       { '@type': 'ListItem', position: 2, name: article.blog.title, item: `${SITE}/blogs/${article.blog.handle}` },

@@ -1,0 +1,47 @@
+{
+  "ts": "2026-05-20T14:22:30Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation articleUpdate) — appended a `<h2>Related reading</h2><ul>...</ul>` section to each of the 3 new pillar articles. Strengthens internal linking density within the mattress-buying-guide cluster.",
+  "operator": "Claude (Anthropic)",
+  "cms_hygiene": "Followed the established pattern from scripts/seo-article-cleanup.mjs: fetched the canonical body from Shopify Admin API (rather than re-sending the locally-cached source HTML, which would have clobbered any whitespace normalization Shopify applied at create-time), appended the new section, then articleUpdate. Verified via re-fetch — the Related reading section is present in the canonical body served by Shopify.",
+  "articles_updated": [
+    {
+      "id": "gid://shopify/Article/600373494013",
+      "handle": "best-mattress-los-angeles",
+      "updatedAt": "2026-05-20T14:20:36Z",
+      "related_links_added": [
+        "mattress-store-near-me-los-angeles",
+        "mattress-financing-options-los-angeles",
+        "how-to-choose-a-mattress",
+        "best-mattress-for-back-pain"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/600373526781",
+      "handle": "mattress-store-near-me-los-angeles",
+      "updatedAt": "2026-05-20T14:21:26Z",
+      "related_links_added": [
+        "best-mattress-los-angeles",
+        "where-to-buy-a-mattress-in-los-angeles",
+        "mattress-financing-options-los-angeles"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/600373559549",
+      "handle": "mattress-financing-options-los-angeles",
+      "updatedAt": "2026-05-20T14:22:17Z",
+      "related_links_added": [
+        "best-mattress-los-angeles",
+        "how-much-should-you-spend-on-a-mattress",
+        "when-to-buy-a-mattress"
+      ]
+    }
+  ],
+  "totals": {
+    "articles_updated": 3,
+    "new_internal_links_added": 10,
+    "user_errors": 0
+  },
+  "seo_impact": "Builds out the link graph between the 3 new pillar articles + the existing 4 referenced pillar articles. Cross-linking pillar pages within the same topical cluster signals topical authority to Google + distributes PageRank across the cluster. Each link is to an existing live URL (verified via MCP query before applying).",
+  "out_of_scope": "Did NOT modify the existing 6 pillar articles to add reverse links pointing to the new 3 (would require editing merchant-authored content; out of scope for this session). A future merchant-authored editorial pass should add 'See also' links to the new pillar articles from any topically-relevant older articles."
+}

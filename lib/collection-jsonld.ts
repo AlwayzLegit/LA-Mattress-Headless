@@ -22,12 +22,14 @@ type Collection = NonNullable<Awaited<ReturnType<typeof getCollectionByHandle>>>
 export type CollectionLd = { key: string; data: unknown };
 
 export function getCollectionJsonLd(collection: Collection): CollectionLd[] {
+  const collectionUrl = `https://www.mattressstoreslosangeles.com/collections/${collection.handle}`;
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    '@id': `${collectionUrl}#breadcrumb`,
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.mattressstoreslosangeles.com/' },
-      { '@type': 'ListItem', position: 2, name: collection.title, item: `https://www.mattressstoreslosangeles.com/collections/${collection.handle}` },
+      { '@type': 'ListItem', position: 2, name: collection.title, item: collectionUrl },
     ],
   };
 
@@ -36,8 +38,11 @@ export function getCollectionJsonLd(collection: Collection): CollectionLd[] {
     '@type': 'CollectionPage',
     name: collection.title,
     description: firstNonEmpty(collection.seo.description, collection.description) || undefined,
-    url: `https://www.mattressstoreslosangeles.com/collections/${collection.handle}`,
+    url: collectionUrl,
     inLanguage: 'en-US',
+    // breadcrumb @id ties this CollectionPage to the BreadcrumbList
+    // emitted alongside it. Connects the two graph nodes for crawlers.
+    breadcrumb: { '@id': `${collectionUrl}#breadcrumb` },
     // isPartOf links this CollectionPage to the sitewide WebSite
     // schema emitted in layout.tsx. Tightens crawler understanding of
     // collection-to-site hierarchy + supports SearchAction discovery.
