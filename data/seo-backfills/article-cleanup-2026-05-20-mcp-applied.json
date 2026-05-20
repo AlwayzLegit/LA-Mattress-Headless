@@ -1,0 +1,97 @@
+{
+  "ts": "2026-05-20T10:41:28Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation articleUpdate) — bypasses scripts/seo-article-cleanup.mjs which requires SHOPIFY_ADMIN_TOKEN in a node env",
+  "operator": "Claude (Anthropic)",
+  "handles": [
+    "what-s-the-difference-between-eastern-king-and-california-king",
+    "englander-mattress-reviews-2024",
+    "ultimate-sam-s-club-queen-mattress-review-pros-cons-and-top-picks",
+    "sealy-vs-serta-mattress-which-brand-delivers-the-best-sleep"
+  ],
+  "skipped_handles": [
+    "how-much-should-you-spend-on-a-mattress"
+  ],
+  "skipped_reason": "Article is recently rewritten (clean prose, no Word-export cruft). Cleanup script's 8 regex passes would have 0 matches — confirmed by inspecting the body. Skipping the apply saves a no-op write.",
+  "results": [
+    {
+      "handle": "what-s-the-difference-between-eastern-king-and-california-king",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/594113134845",
+      "appliedAt": "2026-05-20T10:26:43Z",
+      "origLen": 50606,
+      "newLen": 43676,
+      "delta": -6930,
+      "origSha": "e5e57e1ff02d6a5c...",
+      "newSha": "30e177d44cd98fba...",
+      "shaMatchesReferenceFromPriorSession": true,
+      "balanced": {"aOpens": 91, "aCloses": 91, "pOpens": 98, "pCloses": 98, "aOk": true, "pOk": true},
+      "passCounts": {
+        "guid_placeholders": 13,
+        "text_fragment_unwraps": 23,
+        "self_301_unwraps": 1,
+        "external_unwraps": 26,
+        "empty_anchors": 6,
+        "strip_srsltid_lit": 5,
+        "strip_utm_ent": 2,
+        "orphan_trailing_q": 5,
+        "year_refresh": 2
+      },
+      "seoContext": "+382 keyword signal carryover from PR #183 cluster consolidation; ranks #6 for 'eastern king vs california king' (880/mo)"
+    },
+    {
+      "handle": "englander-mattress-reviews-2024",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/589761741053",
+      "appliedAt": "2026-05-20T10:41:28Z",
+      "origLen": 31580,
+      "newLen": 29103,
+      "delta": -2477,
+      "origSha": "1da74e393012966a...",
+      "newSha": "b2f0726146175f49...",
+      "balanced": {"aOpens": 8, "aCloses": 8, "pOpens": 115, "pCloses": 115, "aOk": true, "pOk": true},
+      "passCounts": {"external_unwraps": 14},
+      "seoContext": "Ranks #11 for 'englander mattress' (1,300/mo)"
+    },
+    {
+      "handle": "ultimate-sam-s-club-queen-mattress-review-pros-cons-and-top-picks",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/593833722109",
+      "appliedAt": "2026-05-20T10:38:49Z",
+      "origLen": 29317,
+      "newLen": 26147,
+      "delta": -3170,
+      "origSha": "cd928b742cd1a042...",
+      "newSha": "0fbc4b91573c7518...",
+      "balanced": {"aOpens": 20, "aCloses": 20, "pOpens": 132, "pCloses": 132, "aOk": true, "pOk": true},
+      "passCounts": {"guid_placeholders": 13, "external_unwraps": 21, "empty_anchors": 4},
+      "seoContext": "Ranks #5–7 for 'sam’s club queen mattress' (1,900/mo)"
+    },
+    {
+      "handle": "sealy-vs-serta-mattress-which-brand-delivers-the-best-sleep",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/593896112381",
+      "appliedAt": "2026-05-20T10:36:17Z",
+      "origLen": 24592,
+      "newLen": 21602,
+      "delta": -2990,
+      "origSha": "01ab8ea45f1c173c...",
+      "newSha": "1e38d6a5e0dbc71d...",
+      "balanced": {"aOpens": 12, "aCloses": 12, "pOpens": 108, "pCloses": 108, "aOk": true, "pOk": true},
+      "passCounts": {"guid_placeholders": 13, "external_unwraps": 15, "empty_anchors": 6},
+      "seoContext": "Ranks #11 for 'sealy vs serta' (880/mo)"
+    }
+  ],
+  "totals": {
+    "articles_applied": 4,
+    "articles_skipped": 1,
+    "chars_removed_total": -15567,
+    "external_links_unwrapped": 76,
+    "guid_placeholders_dropped": 39,
+    "parasitic_text_fragments_removed": 23,
+    "empty_anchors_stripped": 16,
+    "tracking_params_stripped": 7,
+    "user_errors": 0
+  },
+  "verification": "Article 1 SHA `30e177d4...` matches the byte-identical reference SHA validated locally in the prior Phase #188 session (per the commit message of PR #188). The same clean() regex passes ship in scripts/seo-article-cleanup.mjs."
+}
