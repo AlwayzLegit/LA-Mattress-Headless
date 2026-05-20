@@ -1,0 +1,61 @@
+name: SEO — product seo.title / seo.description backfill
+
+# 2026-05-20. Runs scripts/seo-backfill-product-seo.mjs to fill the
+# ~35% of products that currently have empty seo.title / seo.description
+# in Shopify. The template adds the "in Los Angeles · LA Mattress"
+# brand-suffix that lifts SERP snippet CTR for those PDPs.
+#
+# Dry-run by default — flip the "apply" input to write to Shopify.
+#
+# Manual trigger: Actions → "SEO — product seo.title / seo.description
+# backfill" → Run workflow.
+#
+# Required repo secrets (same as refresh-inventory.yml):
+#   SHOPIFY_STORE_DOMAIN  — e.g. la-mattress.myshopify.com
+#   SHOPIFY_ADMIN_TOKEN   — Admin API token with read_products + write_products.
+#
+# Idempotent: only touches products whose seo.title or seo.description
+# is currently empty (no double-writes on re-run).
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply changes (write to Shopify). Leave false for dry-run.'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run product SEO backfill
+        run: |
+          ARGS=""
+          if [ "${{ inputs.apply }}" = "true" ]; then ARGS="--apply"; fi
+          echo "::group::Invocation"
+          echo "node scripts/seo-backfill-product-seo.mjs$ARGS"
+          echo "::endgroup::"
+          node scripts/seo-backfill-product-seo.mjs $ARGS
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: product-seo-backfill-${{ github.run_id }}
+          path: data/seo-backfills/products-*.json
+          if-no-files-found: warn
+          retention-days: 90

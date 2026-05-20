@@ -1,0 +1,71 @@
+name: SEO — blog article cleanup
+
+# 2026-05-20. Runs scripts/seo-article-cleanup.mjs against the 5
+# default Word-export blog articles (or one specified by handle).
+# Strips parasitic `#:~:text=` anchors, competitor outbound links,
+# `docs-internal-guid` placeholders, tracking-param URLs, the
+# `king-vs-california-king` self-301 chain, and outdated year strings
+# — without touching any visible content. Dry-run by default.
+#
+# Manual trigger: Actions → "SEO — blog article cleanup" → Run
+# workflow. Flip the "apply" input to true to write to Shopify; leave
+# false for a no-risk preview that uploads a JSON report.
+#
+# Required repo secrets (same as refresh-inventory.yml):
+#   SHOPIFY_STORE_DOMAIN  — e.g. la-mattress.myshopify.com
+#   SHOPIFY_ADMIN_TOKEN   — Admin API token with read_content,
+#                           write_content, read_online_store_pages,
+#                           write_online_store_pages.
+#
+# The script is SHA-gated + auto-rollback on real corruption (it
+# tolerates Shopify's benign server-side HTML normalization via
+# whitespace-normalized fallback). Idempotent: re-running on
+# already-cleaned articles is a no-op.
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply changes (write to Shopify). Leave false for dry-run.'
+        type: boolean
+        default: false
+      handle:
+        description: 'Optional single article handle. Leave blank to run against all 5 defaults.'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run cleanup
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.handle }}" ]; then ARGS="$ARGS ${{ inputs.handle }}"; fi
+          if [ "${{ inputs.apply }}" = "true" ]; then ARGS="$ARGS --apply"; fi
+          echo "::group::Invocation"
+          echo "node scripts/seo-article-cleanup.mjs$ARGS"
+          echo "::endgroup::"
+          node scripts/seo-article-cleanup.mjs $ARGS
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: article-cleanup-${{ github.run_id }}
+          path: data/seo-backfills/article-cleanup-*.json
+          if-no-files-found: warn
+          retention-days: 90

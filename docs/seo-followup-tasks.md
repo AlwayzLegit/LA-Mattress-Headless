@@ -70,7 +70,14 @@ Estimated effort: **45 minutes** (15 min review + 30 min for the
 write to land + propagate). Drives ~35% of PDPs to a richer title +
 local-intent suffix.
 
-From your local machine, with the admin token exported:
+**Two ways to run this** — pick the one that fits:
+
+- **One-click** (recommended): Actions → **"SEO — product seo.title /
+  seo.description backfill"** → Run workflow → leave *Apply* unchecked
+  for the dry-run, check it to write. The JSON report is uploaded as
+  an artifact you can download. Uses the same `SHOPIFY_ADMIN_TOKEN`
+  secret as the daily inventory action — no local setup.
+- **Local machine** (also fine): with the admin token exported:
 
 ```bash
 export SHOPIFY_STORE_DOMAIN=la-mattress.myshopify.com
@@ -241,6 +248,19 @@ Shopify's server-side HTML pretty-printer → auto-rollback on real
 corruption). The cleanup logic is locally verified to produce a
 byte-identical SHA against the eastern-king article, and is provably
 idempotent (re-running is a no-op).
+
+**Two ways to run this** — pick the one that fits:
+
+**One-click** (recommended): Actions → **"SEO — blog article cleanup"**
+→ Run workflow. Inputs: `apply` (off = dry-run, on = write) and
+`handle` (blank = all 5 defaults, or one specific article handle).
+The JSON report is uploaded as a downloadable artifact.
+
+- [ ] Trigger dry-run with both inputs at defaults (apply=off, handle=blank).
+- [ ] Download + review the `article-cleanup-{run_id}` artifact.
+- [ ] Re-trigger with apply=on to write.
+
+**Local machine** (same script, manual):
 
 - [ ] **Dry-run** the cleanup against all 5 default articles:
       `node scripts/seo-article-cleanup.mjs`
