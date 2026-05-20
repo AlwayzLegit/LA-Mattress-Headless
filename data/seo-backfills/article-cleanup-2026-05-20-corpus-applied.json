@@ -1,0 +1,78 @@
+{
+  "ts": "2026-05-20T14:46:16Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation articleUpdate) — applies the dry-run cleanup recorded in article-cleanup-2026-05-20-corpus-scan.json. Canonical CMS body was re-fetched at apply time to confirm no drift since the scan; cleanup wrapper /tmp/article-clean.mjs ran the same regex passes as scripts/seo-article-cleanup.mjs.",
+  "operator": "Claude (Anthropic)",
+  "scan_record": "data/seo-backfills/article-cleanup-2026-05-20-corpus-scan.json",
+  "handles": [
+    "cyber-monday-mattress-sale-in-west-los-angeles",
+    "best-black-friday-deals-on-mattresses",
+    "choosing-the-right-mattress-for-luxurious-sleep-after-a-day-of-travel-and-adventure"
+  ],
+  "results": [
+    {
+      "handle": "cyber-monday-mattress-sale-in-west-los-angeles",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/590608171261",
+      "appliedAt": "2026-05-20T14:33:59Z",
+      "origLen": 24866,
+      "newLen": 23629,
+      "delta": -1237,
+      "newSha": "cbf4326c85ea3381",
+      "balanced": {"aOpens": 36, "aCloses": 36, "pOpens": 100, "pCloses": 100, "aOk": true, "pOk": true},
+      "passCounts": {
+        "text_fragment_unwraps": 1,
+        "external_unwraps": 9,
+        "strip_srsltid_lit": 3,
+        "orphan_trailing_q": 3
+      },
+      "external_hosts_stripped": ["sleepfoundation.org", "eachnight.com", "investopedia.com"]
+    },
+    {
+      "handle": "best-black-friday-deals-on-mattresses",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/590589001981",
+      "appliedAt": "2026-05-20T14:36:04Z",
+      "origLen": 25849,
+      "newLen": 23727,
+      "delta": -2122,
+      "newSha": "82ce74de55f0dc03",
+      "balanced": {"aOpens": 33, "aCloses": 33, "pOpens": 93, "pCloses": 93, "aOk": true, "pOk": true},
+      "passCounts": {
+        "text_fragment_unwraps": 2,
+        "external_unwraps": 10,
+        "strip_srsltid_lit": 3,
+        "orphan_trailing_q": 3
+      }
+    },
+    {
+      "handle": "choosing-the-right-mattress-for-luxurious-sleep-after-a-day-of-travel-and-adventure",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/590600700157",
+      "appliedAt": "2026-05-20T14:46:16Z",
+      "origLen": 38641,
+      "newLen": 35375,
+      "delta": -3266,
+      "newSha": "a4204c037b1ef3b6",
+      "balanced": {"aOpens": 31, "aCloses": 31, "pOpens": 101, "pCloses": 101, "aOk": true, "pOk": true},
+      "passCounts": {
+        "text_fragment_unwraps": 6,
+        "external_unwraps": 13,
+        "strip_srsltid_lit": 4,
+        "orphan_trailing_q": 4
+      }
+    }
+  ],
+  "totals": {
+    "articles_applied": 3,
+    "chars_removed_total": -6625,
+    "external_links_unwrapped": 32,
+    "parasitic_text_fragments_removed": 9,
+    "tracking_params_stripped": 10,
+    "orphan_trailing_questions_stripped": 10,
+    "user_errors": 0
+  },
+  "expected_seo_impact": "Strips 32 external competitor link wrappers (sleepfoundation.org, eachnight.com, investopedia.com — sites that compete for the same mattress-buying queries). Stops bleeding PageRank to competitor domains; refocuses link equity on our own product/collection pages. Removes 9 parasitic text-fragment anchors (`#:~:text=`) that Google interprets as deep-link references to competitor content.",
+  "verification": "Each article re-fetched after articleUpdate; updatedAt advanced to the appliedAt timestamps above. Balance check on cleaned bodies passes (matched <a>/<p> open/close counts). Cumulative -6625 chars matches the sum of per-article dry-run deltas.",
+  "followup": "Audit covered only 7 articles from mattress-buying-guide. A broader scan covering 30-50 promotional/seasonal articles would likely surface additional cleanup candidates (estimating 20-40 articles across the ~600-article corpus have similar cruft based on the 3/4 hit rate in promotional content)."
+}
