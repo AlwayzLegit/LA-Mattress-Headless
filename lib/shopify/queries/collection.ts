@@ -43,6 +43,12 @@ const GET_COLLECTION = /* GraphQL */ `
       # PLP v2.1: short SEO-rich intro shown above the product grid.
       # Falls back to categoryIntroFor() in lib/plp-content.ts when empty.
       introShort: metafield(namespace: "custom", key: "intro_short") { value }
+      # PLP v2.1 Phase B: long-form rich-text SEO content rendered below
+      # the product grid. Stored as Shopify rich_text JSON; lib/shopify/
+      # rich-text.ts serializes it to HTML at render time. When empty,
+      # the storefront falls back to collection.descriptionHtml (the
+      # legacy built-in field still populated on ~25 collections).
+      seoContent: metafield(namespace: "custom", key: "seo_content") { value }
       products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse, filters: $filters) {
         nodes { ...ProductSummaryFields }
         pageInfo { hasNextPage endCursor }
@@ -70,8 +76,9 @@ type RawSummary = Omit<ProductSummary, 'reviews'> & {
 
 type Raw = {
   collection:
-    | (Omit<CollectionWithProducts, 'products' | 'introShort'> & {
+    | (Omit<CollectionWithProducts, 'products' | 'introShort' | 'seoContentJson'> & {
         introShort?: { value: string } | null;
+        seoContent?: { value: string } | null;
         products: {
           nodes: RawSummary[];
           pageInfo: { hasNextPage: boolean; endCursor: string | null };
@@ -126,10 +133,11 @@ export async function getCollectionByHandle({
     { tags: [`collection:${handle}`] },
   );
   if (!data.collection) return null;
-  const { introShort: rawIntro, ...rest } = data.collection;
+  const { introShort: rawIntro, seoContent: rawSeo, ...rest } = data.collection;
   return {
     ...rest,
     introShort: rawIntro?.value?.trim() || null,
+    seoContentJson: rawSeo?.value?.trim() || null,
     products: {
       ...data.collection.products,
       nodes: data.collection.products.nodes.map(liftSummarySpecs),
