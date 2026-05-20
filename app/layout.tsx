@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { Suspense } from 'react';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { TopBar } from './_components/topbar';
@@ -154,7 +155,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Analytics />
         <SpeedInsights />
         <AnalyticsGa4 />
-        <AnalyticsPostHog />
+        {/* AnalyticsPostHog reads useSearchParams() to fire $pageview
+            on every route change. Next.js 15 requires that hook to live
+            inside a <Suspense> boundary so static-generated pages
+            (404, /_not-found, etc.) can prerender without bailing to
+            client-side rendering. */}
+        <Suspense fallback={null}>
+          <AnalyticsPostHog />
+        </Suspense>
         <script id="ld-organization" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
         <script id="ld-website" type="application/ld+json"
