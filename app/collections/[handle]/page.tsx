@@ -9,7 +9,7 @@ import type { CollectionSort } from '@/lib/shopify';
 import { collections as inventoryCollections, findCollection } from '@/lib/inventory';
 import { getCollectionSiblings } from '@/lib/collection-siblings';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
-import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { categoryIntroFor } from '@/lib/plp-content';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 import { PlpCount } from '@/app/_components/plp-count';
@@ -172,14 +172,16 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
           <div className="plp-hero-copy">
             <div className="eyebrow">All mattresses</div>
             <h1 className="h-display plp-hero-title">{collection.title}.</h1>
-            {collection.descriptionHtml ? (
-              <div className="plp-hero-lede muted rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(collection.descriptionHtml) }} />
-            ) : (
-              <p className="plp-hero-lede muted">
-                Every model on this page is on the floor at one of our 5 LA showrooms — try before you buy.
-                Free white-glove delivery, 120-night exchange, 0% APR financing.
-              </p>
-            )}
+            {/* PLP v2.1: above-the-grid hero lede is now sourced from
+                the `custom.intro_short` collection metafield (Shopify-
+                enforced 300-600 chars). When the metafield is empty (new
+                collection, merchant hasn't filled it yet), fall back to
+                the code template categoryIntroFor() so the hero is
+                never blank. The long descriptionHtml moved below the
+                product grid into <PlpContentBlock>. */}
+            <p className="plp-hero-lede muted">
+              {collection.introShort ?? categoryIntroFor(collection.handle, collection.title)}
+            </p>
           </div>
           {collection.image ? (
             <div className="plp-hero-img">
@@ -296,7 +298,11 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
         </FilterShell>
       </section>
 
-      <PlpContentBlock handle={collection.handle} title={collection.title} />
+      <PlpContentBlock
+        handle={collection.handle}
+        title={collection.title}
+        descriptionHtml={collection.descriptionHtml || null}
+      />
 
     </main>
   );

@@ -227,7 +227,15 @@ Flip `custom.comfort_level` (if it survives Phase 4) and `custom.sleep_positions
 
 ### Phase 6 — Re-pin (F8)
 
-Cosmetic; after Phase 3 deletions, repin the surviving collection fields cleanly.
+Cosmetic; after Phase 3 deletions, repin the surviving collection fields cleanly. Recommended final pin order (stress-test N1):
+
+| Pin | Field | Reason |
+|---|---|---|
+| 1 | `custom.heading` (existing) | Most-edited collection field per merchant pattern; surface first. |
+| 2 | `custom.intro_short` (new — PLP v2.1) | New short above-grid intro; pin near the top so merchant edits are 1-click. |
+| 3 | `custom.seo_content` (only if kept per F5 Option A) | Below-grid long content. **If Option B is chosen (default), this pin slot drops away and `intro_short` keeps pin 2.** |
+
+Pinning is a single `metafieldDefinitionUpdate` per field. Cosmetic only — does not change which fields are queryable or how data is stored.
 
 ---
 

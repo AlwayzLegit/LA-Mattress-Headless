@@ -343,6 +343,30 @@ This is the same pattern as `seo-backfill-product-seo.mjs` after the metafieldsS
 
 If anything regresses in Phase 1, instant-rollback via Vercel (§9 path 1) — no code change, ~1 minute. The v2 metafield + populated data persist through rollback; they just stop being read.
 
+### 8.0 Step-by-step sequencing (stress-test S3)
+
+The order of operations across Shopify Admin, code, and rollout is non-trivial. Concrete sequence:
+
+| Step | Where | What | Reversibility |
+|---|---|---|---|
+| **S1.** Pre-flight data-presence audit | GitHub Actions ("SEO — metafields data audit") | Read-only — produces the CSV evidence trail for the 14 to-be-deleted fields (audit Phase 2.5). | Trivially reversible (read-only). |
+| **S2.** Create `custom.intro_short` definition | Shopify Admin (via `metafieldDefinitionCreate`) | Adds the new metafield definition with `min:300 max:600` chars, `access.storefront=PUBLIC_READ`, `pin:true` (audit Phase 1). | Reversible via `metafieldDefinitionDelete`. |
+| **S3.** Delete the orphans (≤14 fields) | Shopify Admin (via `metafieldDefinitionDelete`) | After merchant signs off on the S1 CSV, delete the confirmed orphans (audit Phase 3). Default "definition only" — data persists on resources. | Each definition can be re-created; orphaned data persists by default. |
+| **S4.** Ship code change on branch | Git push to `claude/seo-improvement-plan-wiF00` | Adds the metafield query, swaps the layout, demotes H1/H2 → H3 below grid. Vercel auto-deploys a preview URL. | Branch is not merged → production is untouched. |
+| **S5.** Backfill `custom.intro_short` | GitHub Actions ("SEO — collection intro_short backfill") | Dry-run first → merchant reviews JSON → `--apply` writes ~64 metafields. Optional but recommended (addresses fallback-duplication risk S2). | Each metafield is independently editable in Shopify Admin; reset to empty restores fallback rendering. |
+| **S6.** Preview canary review | Merchant + engineering | Manual smoke against the §7.1 collection list. Cowork verification on 12+ collections. | Branch not merged. |
+| **S7.** Production cutover | Merge PR to `main`, Vercel auto-deploys | All `/collections/*` traffic on v2. | Vercel instant-rollback in ~1 min. |
+| **S8.** Production watch (48-72h) | Telemetry + Sentry | LCP @ p75, PLP→PDP clickthrough rate, zero new Sentry errors. | Instant-rollback if criteria not met. |
+| **S9.** Remove v1 code path | Code | After 7 days at 100% with criteria sustained, delete the v1 hero descriptionHtml render path. | Git revert if needed. |
+
+**Critical invariant:** S4 (code) can ship BEFORE S2 (Shopify definition create) because the storefront query for a missing metafield returns `null` and the code falls back to `categoryIntroFor()`. So the order S2 → S4 is preferred for cleanliness, but S4 → S2 is also safe (every collection renders the fallback until S2 lands).
+
+**Critical invariant:** S3 (deletions) MUST follow S1 (CSV review) with merchant sign-off. No `metafieldDefinitionDelete` runs without that gate.
+
+### 8.2 ISR / merchant edit propagation (stress-test S5)
+
+`lib/shopify/client.ts` sets `revalidate: 600` (10 minutes) for all Shopify Storefront fetches. After the merchant edits `custom.intro_short` on a collection in Shopify Admin, the change appears on production within ~10 minutes (whenever the next ISR refresh fires for that route). Same behavior the merchant already sees for `collection.descriptionHtml` edits — no new latency story to learn. A near-instant invalidation hook (admin → revalidateTag) is a future enhancement, not part of this RFC.
+
 ### 8.1 Telemetry
 
 Single GA4 custom event `plp_layout_render` with parameters `layout` (`v1` / `v2`) + `intro_source` (`metafield` / `fallback`) emitted on first interactive paint. After cutover, every visitor sees `layout=v2` — the comparison is pre-cutover (`layout=v1` baseline captured during the 48h preceding cutover) vs post-cutover (`layout=v2`).
