@@ -15,8 +15,11 @@ import { RecentlyViewedRail } from './_components/recently-viewed';
 import { faqJsonLd } from '@/lib/faq';
 import { composeBrandTitle } from '@/lib/seo';
 import { LOCAL_BUSINESS_LD } from '@/lib/structured-data';
+import { getSitewideReviewsExtension } from '@/lib/judgeme';
 import { getShopBrand, getHeroSlides } from '@/lib/shopify';
 import { FALLBACK_HERO_SLIDES } from './_components/hero-slides';
+
+const LOCAL_BUSINESS_ID = 'https://www.mattressstoreslosangeles.com/#localbusiness';
 
 // Phase 268: homepage title + description now read from Shopify Brand
 // (Settings → Store details → Brand) when available, with hardcoded
@@ -48,8 +51,19 @@ export default async function Home() {
   // 3-slide constant so the page is never empty-handed. The Shopify
   // path also moves the bg images onto Shopify CDN (preconnected +
   // edge-cached) instead of Unsplash.
-  const shopifySlides = await getHeroSlides();
+  // Phase 299: also pull the sitewide reviews extension in parallel —
+  // brings AggregateRating + top reviews into the homepage
+  // LocalBusiness schema, eligible for the brand review snippet in
+  // SERP. Returns null when Judge.me is unconfigured; we fall through
+  // to the un-enriched LOCAL_BUSINESS_LD without surfacing an error.
+  const [shopifySlides, reviewsExtension] = await Promise.all([
+    getHeroSlides(),
+    getSitewideReviewsExtension(LOCAL_BUSINESS_ID),
+  ]);
   const slides = shopifySlides.length > 0 ? shopifySlides : FALLBACK_HERO_SLIDES;
+  const localBusinessLd = reviewsExtension
+    ? { ...LOCAL_BUSINESS_LD, ...reviewsExtension }
+    : LOCAL_BUSINESS_LD;
 
   return (
     <main>
@@ -71,7 +85,7 @@ export default async function Home() {
       <script
         id="ld-localbusiness-home"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_LD) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
       />
     </main>
   );
