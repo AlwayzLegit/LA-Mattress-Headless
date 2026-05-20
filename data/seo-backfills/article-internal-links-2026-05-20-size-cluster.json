@@ -1,0 +1,134 @@
+{
+  "ts": "2026-05-20T23:18:18Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation articleUpdate) — appended a `<h2>Related reading</h2><ul>...</ul>` section to each of 9 articles in the size cluster on the mattress-buying-guide blog. Closes out the size-cluster internal-link graph in a single PR (vs the 3 batches needed for the pain cluster, because these articles are much smaller — under 11KB each, totaling ~65KB vs the pain cluster's ~280KB).",
+  "operator": "Claude (Anthropic)",
+  "cms_hygiene": "Same pattern as pain-cluster batches (PRs #215/#216/#217): fetched all 9 canonical bodies in one graphql_query, generated new bodies locally by appending the Related reading section (preserving every word of merchant-authored content), then articleUpdate via MCP per article. updatedAt timestamp confirmed after each call, zero userErrors across all 9 mutations.",
+  "articles_updated": [
+    {
+      "id": "gid://shopify/Article/588888277245",
+      "handle": "how-to-choose-the-best-mattress-size",
+      "role": "pillar — links DOWN to all 4 'what-is-size' articles + 2 comparison articles",
+      "updatedAt": "2026-05-20T23:12:35Z",
+      "related_links_added": [
+        "what-is-the-size-of-a-twin-mattress",
+        "what-is-the-size-of-a-full-mattress",
+        "what-is-the-size-of-a-queen-mattress",
+        "what-is-the-size-of-a-king-mattress",
+        "queen-mattress-vs-king-mattress",
+        "king-vs-california-king"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588928155901",
+      "handle": "what-is-the-size-of-a-twin-mattress",
+      "role": "size-specific — twin",
+      "updatedAt": "2026-05-20T23:13:24Z",
+      "related_links_added": [
+        "how-to-choose-the-best-mattress-size",
+        "what-is-the-size-of-a-full-mattress",
+        "what-is-the-size-of-a-queen-mattress"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588928188669",
+      "handle": "what-is-the-size-of-a-full-mattress",
+      "role": "size-specific — full",
+      "updatedAt": "2026-05-20T23:14:10Z",
+      "related_links_added": [
+        "how-to-choose-the-best-mattress-size",
+        "what-is-the-size-of-a-twin-mattress",
+        "what-is-the-size-of-a-queen-mattress",
+        "queen-mattress-vs-full-xl-mattress"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588928450813",
+      "handle": "what-is-the-size-of-a-queen-mattress",
+      "role": "size-specific — queen (most-popular size)",
+      "updatedAt": "2026-05-20T23:14:55Z",
+      "related_links_added": [
+        "how-to-choose-the-best-mattress-size",
+        "what-is-the-size-of-a-king-mattress",
+        "queen-mattress-vs-king-mattress",
+        "queen-mattress-vs-full-xl-mattress",
+        "short-queen-vs-queen"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588928483581",
+      "handle": "what-is-the-size-of-a-king-mattress",
+      "role": "size-specific — king",
+      "updatedAt": "2026-05-20T23:15:39Z",
+      "related_links_added": [
+        "how-to-choose-the-best-mattress-size",
+        "what-is-the-size-of-a-queen-mattress",
+        "queen-mattress-vs-king-mattress",
+        "king-vs-california-king"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588913803517",
+      "handle": "king-vs-california-king",
+      "role": "comparison — king vs Cal King",
+      "updatedAt": "2026-05-20T23:16:28Z",
+      "related_links_added": [
+        "how-to-choose-the-best-mattress-size",
+        "what-is-the-size-of-a-king-mattress",
+        "queen-mattress-vs-king-mattress"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588916556029",
+      "handle": "queen-mattress-vs-king-mattress",
+      "role": "comparison — queen vs king (highest-traffic comparison)",
+      "updatedAt": "2026-05-20T23:17:21Z",
+      "related_links_added": [
+        "how-to-choose-the-best-mattress-size",
+        "what-is-the-size-of-a-queen-mattress",
+        "what-is-the-size-of-a-king-mattress",
+        "king-vs-california-king"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588916523261",
+      "handle": "queen-mattress-vs-full-xl-mattress",
+      "role": "comparison — queen vs Full XL",
+      "updatedAt": "2026-05-20T23:17:53Z",
+      "related_links_added": [
+        "how-to-choose-the-best-mattress-size",
+        "what-is-the-size-of-a-queen-mattress",
+        "what-is-the-size-of-a-full-mattress"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588935528701",
+      "handle": "short-queen-vs-queen",
+      "role": "comparison — short queen vs standard queen (RV/camper niche)",
+      "updatedAt": "2026-05-20T23:18:18Z",
+      "related_links_added": [
+        "how-to-choose-the-best-mattress-size",
+        "what-is-the-size-of-a-queen-mattress"
+      ]
+    }
+  ],
+  "totals": {
+    "articles_updated": 9,
+    "new_internal_links_added": 34,
+    "user_errors": 0
+  },
+  "seo_impact": "Size cluster is now a fully-connected internal-link graph. The how-to-choose-the-best-mattress-size pillar anchors the cluster with 6 outbound links; each size-specific 'what-is-X' article links back to the pillar plus 2-4 sibling sizes/comparisons. Queen-vs-king (the highest-traffic comparison article in the cluster) acts as a secondary hub linking to all 4 of: pillar, queen detail, king detail, king-vs-Cal-King. 34 new internal links total across 9 articles.",
+  "cluster_complete": true,
+  "comparison_to_pain_cluster": {
+    "pain_cluster_total_body_size_kb": 280,
+    "size_cluster_total_body_size_kb": 65,
+    "pain_cluster_prs": 3,
+    "size_cluster_prs": 1,
+    "rationale": "Size cluster articles are significantly shorter (under 11KB each vs 11-48KB for pain articles), so all 9 fit comfortably in a single MCP session without context overhead concerns."
+  },
+  "next_options": [
+    "Material cluster — what-is-memory-foam, what-is-hybrid, what-is-latex, what-is-innerspring, memory-foam-vs-hybrid, hybrid-vs-innerspring (~6-8 articles).",
+    "Reverse links to the 3 new LA pillar articles (best-mattress-los-angeles, mattress-store-near-me-los-angeles, mattress-financing-options-los-angeles) from older popular articles. Flagged out-of-scope in Phase 297.",
+    "Performance / Core Web Vitals audit (code-side work, different domain entirely)."
+  ]
+}
