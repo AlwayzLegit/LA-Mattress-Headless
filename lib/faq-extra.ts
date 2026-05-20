@@ -290,6 +290,96 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
       a: 'If you live in LA and want a mattress today (same-day delivery, setup, haul-away, locally-owned support after the sale), LA Mattress Store is the more practical choice. If you\'re shopping outside LA or want a specific Mattress Firm-exclusive model (e.g. Sleepy\'s house brand), Mattress Firm makes sense. The actual mattress you sleep on matters more than the storefront — try both if you can, take advantage of the comfort exchange, and pick the bed your body agrees with.',
     },
   ],
+  'lowest-price-guarantee': [
+    {
+      q: 'How long do I have to claim a price match after buying?',
+      a: '30 days from delivery. After that the policy window has closed, but if you\'re shopping the same mattress at multiple retailers, do the price comparison before you order — it\'s faster and you avoid the refund-routing step.',
+    },
+    {
+      q: 'Do I have to bring in a paper ad, or does a website link work?',
+      a: 'A live URL works best — we can verify the price, the stock status, and the retailer authorization in one step. A screenshot with the URL visible is fine if the listing might change before we verify. Paper ads are also accepted.',
+    },
+    {
+      q: 'What if the competitor\'s price drops AFTER I order?',
+      a: 'If it drops within 30 days of your purchase, send us the link and we refund the difference plus 10%. We honor the policy retroactively for the full 30-day window.',
+    },
+    {
+      q: 'Does the price match work on bundled financing or other promos?',
+      a: 'Yes. The price match adjusts your purchase price; any active financing terms apply to the adjusted balance. If you used Synchrony 0% APR and we refund $200, your loan balance decreases by $200 at the same term. No re-application, no second credit pull.',
+    },
+    {
+      q: 'What about Amazon prices?',
+      a: 'If the Amazon listing is the brand\'s own first-party seller (e.g., "Sold by Tempur-Pedic"), the price is eligible. Third-party Amazon sellers usually aren\'t on the brand\'s authorized list — we can\'t price-match those, and the manufacturer warranty is typically void on mattresses sold through unauthorized channels.',
+    },
+    {
+      q: 'Can I combine the price match with a sale?',
+      a: 'Yes. If we\'re running a 15% off sale and you find the same mattress 20% off at an authorized retailer, you get the lower competitor price minus 10%. The price match is a price adjustment, not a discount on top of our promo.',
+    },
+    {
+      q: 'What if you don\'t carry the exact model I found a lower price on?',
+      a: 'The price match requires same mattress, same model number, same size. If we don\'t carry it, we can usually special-order it from the brand at the matched price. Call (800) 218-3578 with the brand + model and we\'ll confirm.',
+    },
+    {
+      q: 'Is the price match the same as the comfort exchange?',
+      a: 'No — they\'re separate policies. The Low Price Guarantee protects the price you pay. The 120-night Love Your Bed Guarantee protects against the wrong-feel-for-my-body case. Both apply to every mattress; they don\'t interact with each other.',
+    },
+  ],
+  'purple-mattress-vs-tempur-pedic': [
+    {
+      q: 'Is Tempur-Pedic better than Purple?',
+      a: 'Neither is universally better — they\'re built on different materials and target different sleepers. Tempur-Pedic is generally better for side sleepers, partners with very different schedules, and shoppers who want a body-hugging feel. Purple is generally better for back/stomach sleepers, hot sleepers, and combination sleepers who change position frequently.',
+    },
+    {
+      q: 'Which one is cooler — Purple or Tempur-Pedic?',
+      a: 'Purple is cooler out of the box — the GelFlex grid is open-channel and doesn\'t trap heat. Tempur-Pedic\'s Breeze cooling line (ProBreeze, LuxeBreeze) matches Purple\'s cooling but adds $1,000–$2,000 to the price. For hot sleepers shopping below ~$3,500, Purple has the cooling edge.',
+    },
+    {
+      q: 'Which is better for couples — Tempur-Pedic or Purple?',
+      a: 'Tempur-Pedic. Memory foam absorbs movement so a tossing partner doesn\'t wake you up. Purple\'s grid transfers some movement because the columns are connected; for very motion-sensitive sleepers, Tempur-Pedic is the right pick.',
+    },
+    {
+      q: 'Are Purple mattresses good for back pain?',
+      a: 'Yes, particularly for back sleepers. The grid provides firm support along the spine while flexing slightly at the hips and shoulders. Side sleepers with back pain often do better with Tempur-Pedic Adapt or LuxeAdapt, which deliver more wrap-around contouring.',
+    },
+    {
+      q: 'Do Tempur-Pedic and Purple come with a sleep trial?',
+      a: 'Yes — both brands offer their own trials (90 nights for Tempur-Pedic, 100 for Purple). At LA Mattress Store, both are also covered by our 120-night Love Your Bed Guarantee — longer than the brand trial, with no restocking fee or $99 redelivery charge. After 30 nights of break-in, exchange for any other mattress we carry.',
+    },
+    {
+      q: 'How long do Purple and Tempur-Pedic mattresses last?',
+      a: 'Both brands carry 10-year limited warranties. In practice, both typically last 10–15 years before showing significant wear. Tempur-Pedic\'s TEMPUR foam is exceptionally dense and resists impressions; Purple\'s GelFlex grid is rated to outlast traditional foam (no compression set). Use a mattress protector to keep the warranty valid.',
+    },
+    {
+      q: 'Can I try both Tempur-Pedic and Purple at LA Mattress Store?',
+      a: 'Yes — both are on the floor at all 5 LA showrooms. Plan 30–60 minutes; lie on each for at least 10 minutes in the position you actually sleep in. No appointment needed.',
+    },
+  ],
+  'terms-conditions': [
+    {
+      q: 'What items are final sale and can\'t be exchanged?',
+      a: 'Adjustable bed bases, pillows, sheets, mattress and pillow protectors, comforters, box springs and foundations, special-order or custom-sized products, and outlet/clearance/floor-sample mattresses. These are clearly marked at the time of purchase.',
+    },
+    {
+      q: 'Is there a fee or restocking charge for the 120-night comfort exchange?',
+      a: 'No. No restocking fee, no shipping fee, no re-delivery fee. White-glove pickup of the original mattress and delivery + setup of the replacement is included. You pay only the price difference if you upgrade to a more expensive mattress (or we refund the difference if you downgrade).',
+    },
+    {
+      q: 'What conditions void the comfort exchange?',
+      a: 'The mattress must be in Like New condition — free of stains, soil, discoloration, rips, tears, burns, and unsanitary conditions. California\'s mattress recycling program rejects stained mattresses. Use a mattress protector from night one to keep the exchange option intact.',
+    },
+    {
+      q: 'What happens to promotional items or gifts if I exchange or return?',
+      a: 'Promotional items are conditional on retaining the original purchase. If the original is exchanged or returned, the retail value of the promotional items is deducted from the exchange credit or refund. The items stay with you; the value is reconciled.',
+    },
+    {
+      q: 'Can I ship a mattress back to you instead of using your delivery team?',
+      a: 'No — all exchanges and returns must use our white-glove delivery service or be returned to the LA Mattress Store distribution center we direct you to. Mattresses shipped back via third-party carriers typically arrive damaged, and the carrier won\'t accept liability. Our delivery team handles pickup as part of the exchange appointment.',
+    },
+    {
+      q: 'What law governs these terms?',
+      a: 'California law, with jurisdiction in Los Angeles County state and federal courts. Some brand-specific manufacturer warranties (notably Stearns & Foster) include binding arbitration clauses; those terms are in the brand\'s warranty card and are separate from the LA Mattress Store terms.',
+    },
+  ],
 };
 
 export function getCmsPageFaq(handle: string): FaqItem[] | null {
