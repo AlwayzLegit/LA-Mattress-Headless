@@ -241,6 +241,300 @@ const GENERIC_FAQ: FaqItem[] = [
   },
 ];
 
+// ─────────────────────────────────────────────────────────────────────
+// Size-aware FAQ banks (Phase 298). Filling the largest coverage gap —
+// queen / king / cal-king / twin / twin-xl / full / split-king PLPs are
+// the highest-traffic category collections in the catalog (>500
+// products combined) and previously fell through to GENERIC_FAQ. Each
+// bank answers the 3 questions shoppers actually type when researching
+// a size (dimensions, who-it-fits, sheets/foundation compatibility).
+// ─────────────────────────────────────────────────────────────────────
+
+const QUEEN_FAQ: FaqItem[] = [
+  {
+    q: 'What are the dimensions of a queen mattress?',
+    a: 'A standard queen mattress is 60 inches wide by 80 inches long. It comfortably fits one adult with room to spread out, or two adults who don\'t mind sleeping close. We recommend a bedroom at least 10x10 feet to leave walking space around the bed; 12x12 or larger is ideal.',
+  },
+  {
+    q: 'Queen vs full — which should I get?',
+    a: 'A queen is 6 inches wider than a full (60" vs 54") and 5 inches longer (80" vs 75"). For couples, queen is the practical minimum — full is too narrow to share comfortably. For a single adult, full works if your room is tight, but queen is worth the upgrade if you have the space and the budget.',
+  },
+  {
+    q: 'Do I need a special foundation for a queen mattress?',
+    a: 'A standard queen foundation, box spring, slatted platform bed, or adjustable base all work. Slats should be no more than 3 inches apart for foam and hybrid mattresses, otherwise the warranty may not cover sagging. Our white-glove delivery includes setup on whatever foundation you have, plus free haul-away of the old one.',
+  },
+];
+
+const KING_FAQ: FaqItem[] = [
+  {
+    q: 'King vs California king — what\'s the difference?',
+    a: 'A standard king is 76" wide by 80" long — the widest mattress made. A California king is narrower but longer at 72" wide by 84" long. King suits couples who want maximum side-to-side space; Cal King suits sleepers 6 feet or taller who need the extra length. Both use king-sized bedding, but the sheets are not interchangeable between the two.',
+  },
+  {
+    q: 'Will a king mattress fit through my doorway and hallway?',
+    a: 'Yes. Most of the king mattresses we sell ship rolled-and-compressed in a box, which fits through any standard 30" doorway with room to spare. Traditional non-compressed kings (some luxury innersprings) measure 76" wide flat, but our delivery team handles getting them through tight stairwells and hallways. Call ahead if you have unusually narrow access.',
+  },
+  {
+    q: 'How much room do I need for a king bed?',
+    a: 'We recommend a bedroom at least 12x12 feet for a king — that leaves enough wall clearance for nightstands and walking around. A 13x13 or larger room gives more comfortable circulation. The bed itself is 76" wide, so account for at least 24" of walking space on each side.',
+  },
+];
+
+const CAL_KING_FAQ: FaqItem[] = [
+  {
+    q: 'Is a California king right for me?',
+    a: 'California king is the right pick if you or your partner is 6 feet tall or taller — its 84" length gives you 4 extra inches of foot room compared to a standard king or queen. The trade-off is 4" less width than a standard king (72" vs 76"). For couples under 6 feet, a standard king is usually the better fit.',
+  },
+  {
+    q: 'Are California king sheets harder to find?',
+    a: 'Slightly. Most home stores carry standard king bedding by default, with Cal King as a special-order. We stock Cal King sheets, fitted sheets, and mattress protectors at every showroom, and our online sizing page lists which models are available in Cal King.',
+  },
+  {
+    q: 'Does a California king need a special bed frame?',
+    a: 'Yes — Cal King bed frames and foundations are sized specifically (72" x 84"); a standard king frame is too wide and too short. Most major brands offer both king and Cal King variants of every bed frame, foundation, and adjustable base. We confirm frame compatibility before delivery so you don\'t end up with a mismatch.',
+  },
+];
+
+const TWIN_FAQ: FaqItem[] = [
+  {
+    q: 'Twin vs Twin XL — which one do I need?',
+    a: 'A standard twin is 38" wide by 75" long; a Twin XL is the same width but 5" longer at 80". Twin is right for kids and shorter adults; Twin XL is the choice for taller teens, college students (most dorm beds require Twin XL), and adults who need foot room. For bunk beds and trundles, check the frame spec — most are sized for standard twin.',
+  },
+  {
+    q: 'Is a twin mattress okay for an adult?',
+    a: 'For a single adult under 6 feet, yes — a twin works in a guest room, studio apartment, or anywhere space is tight. For taller adults, jump to Twin XL or Full. Couples should not share a twin; it\'s only 38" wide (a queen is 60").',
+  },
+  {
+    q: 'What\'s the right foundation for a twin?',
+    a: 'A twin foundation, box spring, slatted platform, or adjustable base. For bunk beds and trundles, check the maximum mattress thickness on the frame — most cap out at 8–10 inches for the top bunk for safety reasons. We stock low-profile twins specifically for bunks.',
+  },
+];
+
+const TWIN_XL_FAQ: FaqItem[] = [
+  {
+    q: 'What is the difference between Twin and Twin XL?',
+    a: 'Same width (38"), different length: Twin is 75" long, Twin XL is 80" long. Twin XL is the standard size for college dorms (most universities require it), and it\'s the size that two-of pair up to form a Split King for adjustable bases. Twin XL suits adults up to about 6\'3"; taller sleepers should consider a Full or Cal King.',
+  },
+  {
+    q: 'Will Twin sheets fit a Twin XL mattress?',
+    a: 'No — the 5-inch length difference means a Twin fitted sheet will be too short. Use Twin XL bedding specifically. We carry Twin XL sheets, mattress protectors, and bedding sets at every showroom and online.',
+  },
+  {
+    q: 'Can I use two Twin XL mattresses as a Split King?',
+    a: 'Yes — two Twin XL mattresses placed side-by-side equal the exact dimensions of a standard King (76" x 80"). This is the standard configuration for couples using a split adjustable base where each side can elevate independently. If you go this route, look for Twin XLs designed to pair (the seam down the middle should be flush).',
+  },
+];
+
+const FULL_FAQ: FaqItem[] = [
+  {
+    q: 'What are full mattress dimensions?',
+    a: 'A full (also called "double") mattress is 54" wide by 75" long. It\'s a 16" upgrade in width over a twin and works well for a single adult or a child transitioning out of a twin. Two adults sharing a full have only 27" each — narrower than a single twin — so couples should generally go up to a queen.',
+  },
+  {
+    q: 'Full vs queen — when is full the right call?',
+    a: 'Full is the right call when your bedroom is too tight for a queen (under 9x9 feet), you\'re shopping for a single adult or teen, or you want to save $100–$300 compared to a comparable queen. Queen is the right call for couples, for guest rooms where adult guests might stay overnight, or anytime you have the space.',
+  },
+  {
+    q: 'How much room do I need for a full mattress?',
+    a: 'A bedroom of at least 9x10 feet gives a full mattress enough wall clearance for one nightstand. 10x10 or larger lets you add a second nightstand and walking space on both sides. The mattress itself takes up 54" x 75" of floor space.',
+  },
+];
+
+const SPLIT_KING_FAQ: FaqItem[] = [
+  {
+    q: 'What exactly is a split king mattress?',
+    a: 'A split king is two Twin XL mattresses placed side-by-side that together equal a standard King (76" x 80"). The split lets each side adjust independently on a split adjustable base — one person can elevate the head for reading while the other stays flat, or use different firmness preferences on each side.',
+  },
+  {
+    q: 'Why would I want a split king instead of a regular king?',
+    a: 'Three reasons: (1) you and your partner have different sleep position preferences and want independent head/foot adjustment on an adjustable base; (2) one of you has acid reflux or snoring and wants nightly head elevation without affecting the other; (3) you have very different firmness preferences and want different mattresses on each side. If none of those apply, a standard king is simpler.',
+  },
+  {
+    q: 'Do I need special sheets for a split king?',
+    a: 'You need two Twin XL fitted sheets (or specially-made "split king" fitted sheets that fit each side separately) plus a king-size flat sheet, comforter, and pillows on top. Standard king fitted sheets won\'t work because they pull both halves together and defeat the independent-adjustment feature.',
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────
+// Use-case FAQs (back-pain / side-sleeper / couples). High-traffic
+// shopper-intent collections that previously fell through to GENERIC.
+// ─────────────────────────────────────────────────────────────────────
+
+const BACK_PAIN_FAQ: FaqItem[] = [
+  {
+    q: 'What\'s the best mattress firmness for back pain?',
+    a: 'Medium-firm is the most-recommended firmness for back pain across decades of sleep-medicine research — firm enough to keep the spine aligned, soft enough to relieve pressure at the shoulders and hips. Too soft and the lower back sags; too firm and the shoulders/hips bear concentrated pressure. Our sleep quiz at /sleep-quiz factors body weight and sleep position into the firmness recommendation.',
+  },
+  {
+    q: 'Memory foam or hybrid for back pain?',
+    a: 'Both work, but hybrids (foam over coils) tend to suit a wider range of back-pain shoppers because the coil support keeps the spine neutral while the foam relieves pressure. Memory foam is a strong pick if you specifically have shoulder/hip pressure issues — it contours more deeply. Innerspring without comfort foam is generally too firm and unyielding for chronic back pain.',
+  },
+  {
+    q: 'How long until a new mattress relieves my back pain?',
+    a: 'Allow 30 nights for your body to adjust — that\'s why our 120-night guarantee requires a 30-night minimum before exchange. Most shoppers feel improvement within 2 weeks; full benefits show up by day 30–60. If pain worsens or doesn\'t improve at all after 30 nights, exchange for a different firmness or construction at no charge.',
+  },
+];
+
+const SIDE_SLEEPER_FAQ: FaqItem[] = [
+  {
+    q: 'What\'s the best mattress for side sleepers?',
+    a: 'Memory foam and hybrid mattresses with a medium to medium-soft firmness work best for side sleepers. They contour around the shoulder and hip — the two pressure points that bear your body weight in this position — instead of forcing them to push back against a firm surface. Latex is also a strong option, especially for hot sleepers who want side-sleeper comfort without the heat retention of foam.',
+  },
+  {
+    q: 'Will a firm mattress hurt side sleepers?',
+    a: 'Usually yes. Firm mattresses don\'t let the shoulder and hip sink in, which concentrates pressure on those points and pushes the spine out of alignment. Side sleepers who use firm mattresses often wake with shoulder, hip, or lower-back pain. The exceptions are very lightweight sleepers (under 130 lbs) who don\'t compress softer mattresses enough.',
+  },
+  {
+    q: 'What pillow do I need with a side-sleeper mattress?',
+    a: 'A medium-to-high loft pillow that fills the gap between your neck and the mattress — usually 4–6 inches of loft for side sleepers. Side sleeping with a flat pillow drops the head and twists the neck. Memory foam, shredded foam, and latex pillows all work; cycling 1–3 years is typical regardless of material.',
+  },
+];
+
+const COUPLES_FAQ: FaqItem[] = [
+  {
+    q: 'What\'s the best mattress size for couples?',
+    a: 'Queen (60" x 80") is the practical minimum for couples — each person gets 30" of personal space, similar to a twin bed. King (76" x 80") adds 16 more inches of width and is the better pick if you have the bedroom space and one or both of you moves around at night. California king is the right call only if one of you is 6\'+ tall and needs the 4 extra inches of length.',
+  },
+  {
+    q: 'How do I find a mattress that works for two different sleepers?',
+    a: 'Look for three features: medium firmness (the universal middle ground for differing preferences), strong motion isolation (so one partner\'s movement doesn\'t wake the other — memory foam and pocketed-coil hybrids both excel), and reinforced edges (lets you sleep all the way to the edge without rolling off). If preferences are truly opposite, a Split King with two Twin XLs lets each side use a different firmness.',
+  },
+  {
+    q: 'My partner sleeps hot but I sleep cold — what do we do?',
+    a: 'Look for hybrid or latex mattresses (both breathe better than all-foam) with a cooling cover — those are neutral for cool sleepers but actively help hot sleepers. Pair with a dual-zone heated mattress pad so the cold sleeper can warm just their side. Avoid all-foam mattresses without cooling tech if one partner runs hot.',
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────
+// Firmness FAQs. Each firmness category gets its own bank since the
+// shopper concerns differ (soft = "will I sink", firm = "will it
+// hurt my hips", medium = "will it work for both of us").
+// ─────────────────────────────────────────────────────────────────────
+
+const SOFT_FAQ: FaqItem[] = [
+  {
+    q: 'Who should buy a soft or plush mattress?',
+    a: 'Soft and plush mattresses suit side sleepers (especially those under 200 lbs), shoppers with shoulder or hip pressure-point pain, and combination sleepers who want a "sink in" feel. They\'re generally not the right pick for stomach sleepers (the hips sink and arch the lower back) or for shoppers over 250 lbs (you may bottom out the comfort layer).',
+  },
+  {
+    q: 'Will I sink in too much on a plush mattress?',
+    a: 'Modern plush mattresses use multi-density comfort layers — a softer top for pressure relief over a denser support core that prevents you from sinking too deep. The sensation is "cradled" rather than "swallowed." If you\'re between two firmness options and worried about sinking, the medium-plush or medium variant is usually the right move.',
+  },
+  {
+    q: 'How long does a plush mattress hold its shape?',
+    a: 'Quality plush mattresses last 7–10 years before noticeable body impressions appear. Rotation every 3–6 months extends the life significantly, especially for one-sided builds (which is most modern plush mattresses). Plush mattresses do soften over their first few months of use as the foam breaks in — this is normal and expected.',
+  },
+];
+
+const MEDIUM_FAQ: FaqItem[] = [
+  {
+    q: 'What does "medium firmness" actually feel like?',
+    a: 'Medium sits right in the middle of the firmness scale — softer than a hotel mattress, firmer than a pillow-top. You feel cradled at the shoulder and hip without sinking deep into the bed. Medium is the most universally-comfortable firmness across body types and sleep positions, which is why it\'s our most-recommended setting from the sleep quiz.',
+  },
+  {
+    q: 'Is medium too soft for back sleepers?',
+    a: 'Usually no — medium provides enough lumbar support for most back sleepers while contouring at the shoulders. The exceptions are back sleepers over 230 lbs who often need medium-firm to keep the lower back from sinking, and back sleepers with chronic lumbar pain who tend to do better on medium-firm to firm.',
+  },
+  {
+    q: 'Medium vs medium-firm — how do I choose?',
+    a: 'Medium suits side sleepers, lighter body weights (under 180 lbs), and shoppers who want pressure relief at the shoulders/hips. Medium-firm suits back and stomach sleepers, heavier body weights (over 200 lbs), and shoppers with back pain who need stronger lumbar support. Combo sleepers often do well on medium-firm because it doesn\'t restrict position changes.',
+  },
+];
+
+const MEDIUM_FIRM_FAQ: FaqItem[] = [
+  {
+    q: 'Who should buy a medium-firm mattress?',
+    a: 'Medium-firm is the firmness most-recommended by sleep researchers for back pain — it keeps the spine aligned without concentrating pressure. It also suits back sleepers, stomach sleepers, combination sleepers, and anyone over about 200 lbs who needs more support than a medium provides. It\'s our top recommendation when the sleep quiz is ambiguous between firmness levels.',
+  },
+  {
+    q: 'Will medium-firm feel hard?',
+    a: 'No — medium-firm still contours at the shoulders and hips, just less deeply than a medium. Think "supportive with cushion" rather than "hard." If you\'re used to a soft mattress, there\'s a 1–2 week adjustment period as your body adapts. If after 30 nights it still feels too firm, our 120-night guarantee lets you exchange for a softer model.',
+  },
+  {
+    q: 'Is medium-firm good for side sleepers?',
+    a: 'For side sleepers over 200 lbs, often yes — heavier shoppers compress softer mattresses too much and end up out of alignment. Lighter side sleepers (under 180 lbs) usually prefer medium or medium-soft because they need more contour at the shoulder and hip. The sleep quiz factors body weight into the firmness recommendation.',
+  },
+];
+
+const FIRM_FAQ: FaqItem[] = [
+  {
+    q: 'Who needs a firm mattress?',
+    a: 'Stomach sleepers (a firmer surface prevents the hips from sinking and arching the lower back), back sleepers who specifically prefer minimal contour, heavier shoppers over 250 lbs who compress softer mattresses too much, and shoppers with chronic lower-back pain who feel best with maximum lumbar support.',
+  },
+  {
+    q: 'Will a firm mattress hurt my shoulders and hips?',
+    a: 'It can — firm mattresses don\'t let the shoulder and hip sink in, which concentrates pressure on those points. Side sleepers typically wake with shoulder, hip, or arm pain on a firm mattress unless they\'re very lightweight. If you side-sleep, look for medium or medium-firm instead. If you back- or stomach-sleep, firm is usually well-tolerated.',
+  },
+  {
+    q: 'Is firm or extra-firm right for back pain?',
+    a: 'Medium-firm — not firm or extra-firm — is the firmness most-supported by research for back pain. Firm mattresses can actually worsen lower-back pain by failing to contour to the lumbar curve. Try medium-firm first; only step up to firm or extra-firm if you specifically prefer a less-contouring feel and don\'t have side-sleeper pressure-point issues.',
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────
+// Feature / format / tier FAQs.
+// ─────────────────────────────────────────────────────────────────────
+
+const COOLING_FAQ: FaqItem[] = [
+  {
+    q: 'What actually makes a mattress "cooling"?',
+    a: 'Three things, usually in combination: (1) breathable construction — hybrids and innersprings allow more airflow than all-foam; (2) heat-dissipating materials in the comfort layer — gel-infused foam, copper, graphite, or phase-change material; (3) cooling covers like TENCEL, copper-blend fabric, or phase-change cooling fabric on the surface. The best cooling mattresses combine all three.',
+  },
+  {
+    q: 'Are gel-infused mattresses really cooler?',
+    a: 'Modestly. Gel-infused foam pulls heat away from the body for the first few hours of sleep, but it can saturate and lose effectiveness in the later hours. For shoppers who run very hot, look for phase-change cooling covers (Tempur-Pedic ProBreeze, Stearns & Foster) or hybrid construction with a copper-infused or TENCEL cover — these tend to cool more consistently through the night than gel alone.',
+  },
+  {
+    q: 'What\'s the coolest material — foam, hybrid, or latex?',
+    a: 'Latex generally sleeps coolest because of its open-cell structure and natural airflow. Hybrid is a close second — the coil core lets heat escape under the comfort foam. All-foam mattresses sleep warmest by default; adding cooling features (gel, phase-change covers) helps but rarely matches the airflow of a hybrid or latex bed. Hot sleepers should look at latex or hybrid first.',
+  },
+];
+
+const PILLOW_TOP_FAQ: FaqItem[] = [
+  {
+    q: 'What is a pillow-top mattress?',
+    a: 'A pillow-top is a mattress with an extra layer of cushioning material sewn or attached on top of the main mattress, giving a noticeably softer, more cradled feel at the surface. Pillow-tops were historically attached as a separate layer; modern pillow-tops are usually integrated into the cover. They\'re popular with shoppers who want luxury-hotel softness without giving up the support of a firm core underneath.',
+  },
+  {
+    q: 'Pillow-top vs Euro-top — what\'s the difference?',
+    a: 'A pillow-top sits on top of the mattress with a visible gap or "gusset" around the edge, giving it a distinct rounded look. A Euro-top is integrated flush with the sides of the mattress for a more uniform, modern profile. Functionally similar — both add a soft comfort layer — but Euro-tops typically have better edge support because the comfort layer extends all the way to the sides.',
+  },
+  {
+    q: 'Will a pillow-top mattress hold up over time?',
+    a: 'Quality pillow-tops last 7–10 years before noticeable body impressions. Rotation every 3–6 months is critical — pillow-tops are one-sided builds, so rotating distributes wear evenly across the surface. Brands like Stearns & Foster and Chattam & Wells use hand-tufted construction to anchor the comfort layer and minimize shifting over time.',
+  },
+];
+
+const LUXURY_FAQ: FaqItem[] = [
+  {
+    q: 'What makes a mattress "luxury"?',
+    a: 'Luxury mattresses use higher-grade materials (Talalay latex, cashmere-blend covers, copper-infused foams, hand-tufted construction), deeper builds (14–17 inches vs the standard 10–12), and longer warranties (typically 15+ years). The brands in this category — Stearns & Foster, Chattam & Wells, Tempur-Pedic, Aireloom, Hastens — invest in materials and craftsmanship that mid-tier mattresses can\'t justify at their price points.',
+  },
+  {
+    q: 'Is a luxury mattress worth 2–3x the price of a mid-tier model?',
+    a: 'For shoppers planning to keep the mattress 10+ years, often yes — the cost per year of use ends up similar, and the comfort and durability are noticeably better. For shoppers who replace mattresses every 5–7 years or have a tight budget, a quality mid-tier model usually delivers 80% of the luxury experience for 40% of the price. Our showroom team can walk you through the side-by-side trade-offs.',
+  },
+  {
+    q: 'What\'s the longest-lasting luxury mattress?',
+    a: 'Natural-latex luxury mattresses last the longest — 15–20+ years with proper care. Southerland\'s Scandinavian Collection (12-year warranty), Tempur-Pedic\'s ProAdapt and LuxeAdapt lines (10-year), and Stearns & Foster\'s Reserve collection (15-year) are the longest-lifespan options we carry. Latex consistently outlasts memory foam and innerspring at the luxury tier.',
+  },
+];
+
+const BED_IN_BOX_FAQ: FaqItem[] = [
+  {
+    q: 'How does bed-in-a-box delivery work?',
+    a: 'The mattress is compressed and rolled, then shipped in a manageable box (about 18" x 18" x 42"). At home, you carry the box to the bedroom, unbox the mattress on top of your foundation, and unroll it. Once you cut the plastic, the mattress decompresses and reaches near-full size within an hour. Full expansion takes 24–72 hours.',
+  },
+  {
+    q: 'Will a bed-in-a-box mattress reach full size?',
+    a: 'Yes — modern bed-in-a-box mattresses are engineered to recover full size after compression. Allow 24–72 hours for the foam layers to fully expand before sleeping on it. Some mattresses may have an initial off-gassing smell from the new foam; airing out the bedroom for a few hours typically resolves it.',
+  },
+  {
+    q: 'Bed-in-a-box vs traditional white-glove delivery?',
+    a: 'Bed-in-a-box is faster to set up and easier to get up stairs/through tight doorways. White-glove delivery (free over $499 in LA) includes setup, removal of packaging, and haul-away of your old mattress — so you skip the heavy lifting and disposal hassle. Bed-in-a-box ships nationally; white-glove is LA-only.',
+  },
+];
+
 /**
  * Phase 276: return a 6-item FAQ that's specific to the collection's
  * category (material or brand). 3 category-specific Qs followed by 3
@@ -254,31 +548,102 @@ const GENERIC_FAQ: FaqItem[] = [
 export function categoryFaqFor(handle: string): FaqItem[] {
   const h = handle.toLowerCase();
 
-  // Brand-specific (most specific first)
+  // ────────────────────────────────────────────────────────────────
+  // Routing order is intentional — substring matches collide if the
+  // wrong check fires first. Two real bugs in the previous order
+  // (Phase 276) the current order fixes:
+  //
+  //   - pillow-top-mattresses used to match PILLOW_FAQ (because
+  //     "pillow" is a substring of "pillow-top"). It's a mattress
+  //     construction, not a pillow PLP.
+  //   - twin-xl-mattress-sale used to match SALE_FAQ (because "sale"
+  //     is a substring). It's a size collection, not a sale page.
+  //
+  // Rule: most-specific compound handles checked first. For nested
+  // matches (split-king vs king, twin-xl vs twin, medium-firm vs
+  // firm/medium, extra-firm vs firm, ultra-plush vs plush), the
+  // longer form is always checked before the shorter.
+  // ────────────────────────────────────────────────────────────────
+
+  // 1. Compound construction handles (must beat the substring matches
+  //    further down — pillow-top must beat pillow, bed-in-a-box must
+  //    beat any material match).
+  if (h.includes('pillow-top')) return [...PILLOW_TOP_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('bed-in-a-box')) return [...BED_IN_BOX_FAQ, ...UNIVERSAL_FAQ];
+
+  // 2. Use-case (back-pain, side-sleepers, couples). These are
+  //    high-intent shopper collections and should win over any
+  //    material/brand substring that might happen to appear in the
+  //    handle.
+  if (h.includes('back-pain')) return [...BACK_PAIN_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('side-sleeper')) return [...SIDE_SLEEPER_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('couples')) return [...COUPLES_FAQ, ...UNIVERSAL_FAQ];
+
+  // 3. Sizes (most-specific first — split-king beats king, twin-xl
+  //    beats twin, california-king beats king). Sizes win over the
+  //    sale substring so twin-xl-mattress-sale routes correctly.
+  if (h.includes('split-king') || h.includes('split-cal') || h.includes('split-california')) {
+    return [...SPLIT_KING_FAQ, ...UNIVERSAL_FAQ];
+  }
+  if (h.includes('california-king') || h.includes('cal-king')) {
+    return [...CAL_KING_FAQ, ...UNIVERSAL_FAQ];
+  }
+  if (h.includes('twin-xl')) return [...TWIN_XL_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('queen')) return [...QUEEN_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('king')) return [...KING_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('twin')) return [...TWIN_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('full-size') || h.includes('full-mattress')) {
+    return [...FULL_FAQ, ...UNIVERSAL_FAQ];
+  }
+
+  // 4. Firmness (most-specific first — medium-firm beats both medium
+  //    and firm, extra-firm beats firm, ultra-plush beats plush).
+  if (h.includes('medium-firm')) return [...MEDIUM_FIRM_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('extra-firm') || h.includes('firm-mattress') || h === 'firm') {
+    return [...FIRM_FAQ, ...UNIVERSAL_FAQ];
+  }
+  if (h.includes('medium')) return [...MEDIUM_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('ultra-plush') || h.includes('plush') || h.includes('soft-mattress')) {
+    return [...SOFT_FAQ, ...UNIVERSAL_FAQ];
+  }
+
+  // 5. Accessory categories (adjustable bases, pillows). Must come
+  //    BEFORE brand + feature checks so handles like
+  //    /collections/tempur-pedic-adjustable-bases route to ADJUSTABLE
+  //    (not TEMPUR's mattress FAQ) and /collections/cooling-pillows
+  //    routes to PILLOW (not the mattress cooling FAQ). The pillow-top
+  //    check at step 1 already protects pillow-top-mattresses from
+  //    being caught here.
+  if (h.includes('adjustable')) return [...ADJUSTABLE_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('pillow')) return [...PILLOW_FAQ, ...UNIVERSAL_FAQ];
+
+  // 6. Brand-specific
   if (h.includes('tempur')) return [...TEMPUR_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('stearns') && h.includes('foster')) return [...STEARNS_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('helix')) return [...HELIX_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('southerland') || h.includes('scandinavian')) return [...SOUTHERLAND_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('englander')) return [...ENGLANDER_FAQ, ...UNIVERSAL_FAQ];
 
-  // Material-specific
+  // 7. Material-specific
   if (h.includes('memory-foam') || h.includes('foam')) return [...MEMORY_FOAM_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('hybrid')) return [...HYBRID_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('latex')) return [...LATEX_FAQ, ...UNIVERSAL_FAQ];
-  if (h.includes('innerspring')) return [...INNERSPRING_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('innerspring') || h.includes('pocketed-coil')) {
+    return [...INNERSPRING_FAQ, ...UNIVERSAL_FAQ];
+  }
 
-  // Accessory categories (adjustable bases, pillows) — were falling
-  // through to the generic mattress FAQ, which read wrong on these PLPs
-  // (merchant flagged adjustable-beds + pillows).
-  if (h.includes('adjustable')) return [...ADJUSTABLE_FAQ, ...UNIVERSAL_FAQ];
-  if (h.includes('pillow')) return [...PILLOW_FAQ, ...UNIVERSAL_FAQ];
+  // 8. Feature / tier (mattress-specific — accessory checks above
+  //    have already routed pillow/adjustable variants).
+  if (h.includes('cooling')) return [...COOLING_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('luxury')) return [...LUXURY_FAQ, ...UNIVERSAL_FAQ];
 
-  // Sale / clearance
+  // 9. Sale / clearance (last — every other category beats this so
+  //    handles like twin-xl-mattress-sale don't get the sale FAQ).
   if (h.includes('sale') || h.includes('clearance') || h.includes('floor-model')) {
     return [...SALE_FAQ, ...UNIVERSAL_FAQ];
   }
 
-  // Generic mattress fallback
+  // 10. Generic mattress fallback
   return [...GENERIC_FAQ, ...UNIVERSAL_FAQ];
 }
 
