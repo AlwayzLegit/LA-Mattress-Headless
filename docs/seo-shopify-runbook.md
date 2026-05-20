@@ -21,6 +21,7 @@ All scripts live in `scripts/` and follow the same pattern as
 | `seo-backfill-skus.mjs` | Generate deterministic SKUs for variants with empty SKU | RW | yes (`--apply` to write) |
 | `seo-tag-cleanup-report.mjs` | Audit tag bloat + flag near-duplicate tag groups | R | always read-only |
 | `seo-image-alt-report.mjs` | List images missing alt text + suggest replacements | R | always read-only |
+| `seo-article-cleanup.mjs` | Surgical Word-cruft cleanup on blog article HTML (parasitic `#:~:text=`, competitor outbound links, empty anchors, `docs-internal-guid` placeholders, tracking params). Idempotent. | RW | yes (`--apply` to write) |
 
 ## Required Admin scopes
 
@@ -28,9 +29,11 @@ All scripts live in `scripts/` and follow the same pattern as
 |---|---|
 | `read_products` | all four scripts |
 | `write_products` | `seo-backfill-product-seo.mjs --apply`, `seo-backfill-skus.mjs --apply` |
-| `read_content` | (none of these, but the existing `pull-inventory.mjs` needs it) |
-| `read_online_store_pages` | (same as above) |
-| `read_themes` | (same as above) |
+| `read_content` | `seo-article-cleanup.mjs` (+ `pull-inventory.mjs`) |
+| `write_content` | `seo-article-cleanup.mjs --apply` |
+| `read_online_store_pages` | `seo-article-cleanup.mjs` (+ `pull-inventory.mjs`) |
+| `write_online_store_pages` | `seo-article-cleanup.mjs --apply` |
+| `read_themes` | `pull-inventory.mjs` |
 
 Create / edit the Admin app token at: Shopify Admin → Settings → Apps
 and sales channels → Develop apps → \[your app\] → Configuration → Admin
