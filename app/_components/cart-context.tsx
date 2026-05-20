@@ -15,6 +15,7 @@ import {
   readCart,
 } from '@/app/_actions/cart';
 import { announce, announceAssertive } from './announcer';
+import { track } from '@/lib/analytics';
 
 type CartContextValue = {
   cart: Cart | null;
@@ -64,6 +65,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // always be present right after a successful add).
       const addedLine = res.cart?.lines.nodes.find((l) => l.merchandise.id === variantId);
       const title = addedLine?.merchandise.product.title;
+      // Funnel event — PLP/PDP → add_to_cart. Uses the post-add cart
+      // line so the price and product handle reflect what Shopify
+      // actually accepted (variant-level price, not the PDP min).
+      if (addedLine) {
+        track('add_to_cart', {
+          product_handle: addedLine.merchandise.product.handle,
+          variant_id: addedLine.merchandise.id,
+          product_title: title,
+          quantity,
+          price: Number.parseFloat(addedLine.merchandise.price.amount) || 0,
+          currency: addedLine.merchandise.price.currencyCode,
+        });
+      }
       announce(
         title
           ? quantity === 1

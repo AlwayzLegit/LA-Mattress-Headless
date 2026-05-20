@@ -35,6 +35,7 @@ import { composeBrandTitle } from '@/lib/seo';
 import { getShopBrand, getActiveAnnouncement, getBrands } from '@/lib/shopify';
 import { AnnouncementBar } from './_components/announcement-bar';
 import { AnalyticsGa4 } from './_components/analytics-ga4';
+import { AnalyticsPostHog } from './_components/analytics-posthog';
 
 // Phase 268: homepage / site-wide title + description + OG default
 // image now read from Shopify's built-in Brand assets (Settings →
@@ -153,6 +154,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Analytics />
         <SpeedInsights />
         <AnalyticsGa4 />
+        <AnalyticsPostHog />
         <script id="ld-organization" type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
         <script id="ld-website" type="application/ld+json"

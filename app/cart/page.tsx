@@ -9,6 +9,8 @@ import { CartLineEditor } from './cart-line-editor';
 import { DeliveryDate } from './delivery-date';
 import { CartLineVariant } from './cart-line-variant';
 import { CouponForm } from './coupon-form';
+import { CheckoutLink } from './checkout-link';
+import { TrackCartView } from './track-cart-view';
 import { OrderNote } from './order-note';
 import { FreeShippingBar } from './free-shipping-bar';
 import { Icon } from '@/app/_components/icon';
@@ -74,6 +76,11 @@ export default async function CartPage() {
 
   return (
     <main className="container cart-page" style={{ paddingTop: 'var(--s-7)', paddingBottom: 'var(--s-9)' }}>
+      <TrackCartView
+        itemCount={cart.totalQuantity}
+        cartValue={Number.parseFloat(cart.cost.totalAmount.amount) || 0}
+        currency={cart.cost.totalAmount.currencyCode}
+      />
       <header style={{ marginBottom: 'var(--s-6)' }}>
         <div style={{ marginBottom: 'var(--s-3)' }}>
           <Link href="/collections/mattresses" className="link-arrow muted" style={{ fontSize: 14 }}>
@@ -179,9 +186,16 @@ export default async function CartPage() {
             Tax &amp; shipping calculated at checkout.
           </p>
           <CouponForm />
-          <a className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: 'var(--s-4)' }} href={cart.checkoutUrl}>
+          <CheckoutLink
+            className="btn btn-primary btn-lg"
+            style={{ width: '100%', marginTop: 'var(--s-4)' }}
+            checkoutUrl={cart.checkoutUrl}
+            itemCount={cart.totalQuantity}
+            cartValue={Number.parseFloat(cart.cost.totalAmount.amount) || 0}
+            currency={cart.cost.totalAmount.currencyCode}
+          >
             Checkout <Icon name="arrow-right" size={16} />
-          </a>
+          </CheckoutLink>
           <OrderNote />
           <ul className="pdp-trust" style={{ marginTop: 'var(--s-4)', borderTop: '1px solid var(--line)', paddingTop: 'var(--s-4)' }}>
             <li><Icon name="lock" size={16} /> Secure checkout — encrypted by Shopify</li>

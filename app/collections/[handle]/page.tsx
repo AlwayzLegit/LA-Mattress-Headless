@@ -16,6 +16,7 @@ import { PlpCard } from '@/app/_components/plp-card';
 import { PlpCount } from '@/app/_components/plp-count';
 import { PlpLoadMore } from '@/app/_components/plp-load-more';
 import { PlpContentBlock } from '@/app/_components/plp-content-block';
+import { TrackPlpView } from '@/app/_components/track-plp-view';
 import { SortControl } from './sort-control';
 import { SORT_OPTIONS, parseSort } from './sort-options';
 import { CollectionSkeleton } from './skeleton';
@@ -155,8 +156,27 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
   // Returns null on `mattresses`, `on-sale`, etc. → no sub-nav.
   const siblingGroups = getCollectionSiblings(collection.handle);
 
+  // Analytics: what actually rendered above and below the grid?
+  // Drives the v1 vs v2.1 layout-impact funnels in PostHog.
+  const seoContentHtml = richTextJsonToHtml(collection.seoContentJson);
+  const longHtml = seoContentHtml || collection.descriptionHtml || null;
+  const introSource = collection.introShort ? 'metafield' : 'fallback';
+  const longContentSource = seoContentHtml
+    ? 'seo_content'
+    : collection.descriptionHtml
+      ? 'description_html'
+      : 'none';
+
   return (
     <main className="container plp">
+      <TrackPlpView
+        handle={collection.handle}
+        title={collection.title}
+        layout="v2"
+        introSource={introSource}
+        longContentSource={longContentSource}
+        productCount={collection.products.nodes.length}
+      />
       <header className="plp-hero">
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
@@ -302,15 +322,10 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
       <PlpContentBlock
         handle={collection.handle}
         title={collection.title}
-        // PLP v2.1 Phase B: below-grid long-content priority is
-        // custom.seo_content (49/64 collections, ~586KB rich-text JSON
-        // serialized to HTML) → collection.descriptionHtml (25/64
-        // collections, raw HTML) → null. PlpContentBlock omits the
-        // long-content section when no source is populated and just
-        // renders the FAQ + links + guides.
-        descriptionHtml={
-          richTextJsonToHtml(collection.seoContentJson) || collection.descriptionHtml || null
-        }
+        // PLP v2.1 Phase B: below-grid long-content priority computed
+        // above as `longHtml` — seo_content → descriptionHtml → null.
+        // PlpContentBlock omits the long-content section when null.
+        descriptionHtml={longHtml}
       />
 
     </main>

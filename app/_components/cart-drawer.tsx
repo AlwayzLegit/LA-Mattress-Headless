@@ -11,6 +11,7 @@ import { CartEmptyRecent } from './cart-empty-recent';
 import { announce } from './announcer';
 import { formatMoney } from '@/lib/format';
 import { FreeShippingBar } from '@/app/cart/free-shipping-bar';
+import { track } from '@/lib/analytics';
 
 export function CartDrawer() {
   const { cart, drawerOpen, closeDrawer, updateLine, removeLine, pending } = useCart();
@@ -188,6 +189,19 @@ export function CartDrawer() {
                 className="btn btn-primary btn-lg"
                 style={{ width: '100%', marginTop: 'var(--s-3)' }}
                 href={cart?.checkoutUrl ?? '/cart'}
+                onClick={() => {
+                  // Last first-party event before Shopify hosts the
+                  // checkout flow — pairs with order_completed (driven
+                  // by a Shopify webhook → posthog-node) to close the
+                  // funnel.
+                  if (cart) {
+                    track('checkout_started', {
+                      item_count: cart.totalQuantity,
+                      cart_value: Number.parseFloat(cart.cost.subtotalAmount.amount) || 0,
+                      currency: cart.cost.subtotalAmount.currencyCode,
+                    });
+                  }
+                }}
               >
                 Checkout <Icon name="arrow-right" size={16} />
               </a>
