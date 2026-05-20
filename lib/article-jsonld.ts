@@ -102,6 +102,13 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     image: article.image ? [article.image.url] : undefined,
     author: article.author ? { '@type': 'Person', name: article.author.name } : undefined,
     publisher: {
+      // @id link to the canonical Organization schema emitted from
+      // app/layout.tsx (lib/structured-data.ts buildOrganizationLd).
+      // Lets Google's entity graph treat the article publisher and the
+      // sitewide Organization as the same entity instead of two
+      // disconnected ones — strengthens E-E-A-T signals on every
+      // article page.
+      '@id': `${SITE}/#organization`,
       '@type': 'Organization',
       name: 'LA Mattress Store',
       logo: { '@type': 'ImageObject', url: `${SITE}/assets/la-mattress-logo.png` },
