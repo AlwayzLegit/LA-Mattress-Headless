@@ -283,6 +283,14 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
   );
 }
 
+function summarizeHours(hours: Showroom['hours']): string {
+  if (hours.length === 0) return '';
+  const first = hours[0];
+  const open = formatHour(first.open);
+  const close = formatHour(first.close);
+  return `${first.day} ${open}–${close}`;
+}
+
 function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>> }) {
   return (
     <main className="container">
@@ -297,20 +305,67 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
           <div className="eyebrow">Five LA showrooms</div>
           <h1 className="h1">{toSentenceCase(stripBrandSuffix(page.title))}</h1>
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
-            Visit any of our showrooms across Los Angeles to try every mattress in person. Open daily — no appointment needed.
+            Try every mattress in person at any of our five showrooms across Los Angeles. Open daily — no appointment needed. Free white-glove delivery, 120-night comfort exchange, and 0% APR financing at every location.
           </p>
         </header>
 
+        <section className="locations-trust" aria-label="What every showroom offers">
+          <div className="locations-trust-item">
+            <Icon name="truck" size={18} />
+            <div>
+              <div className="locations-trust-title">Free LA delivery</div>
+              <div className="locations-trust-sub">White-glove, same-day if ordered by 4 PM</div>
+            </div>
+          </div>
+          <div className="locations-trust-item">
+            <Icon name="shield" size={18} />
+            <div>
+              <div className="locations-trust-title">120-night exchange</div>
+              <div className="locations-trust-sub">Sleep on it, swap if it isn&rsquo;t right</div>
+            </div>
+          </div>
+          <div className="locations-trust-item">
+            <Icon name="card" size={18} />
+            <div>
+              <div className="locations-trust-title">0% APR financing</div>
+              <div className="locations-trust-sub">Synchrony &amp; Acima — instant approval</div>
+            </div>
+          </div>
+        </section>
+
         <section className="locations-grid" aria-label="Showroom directory">
           {SHOWROOMS.map((s) => (
-            <Link key={s.handle} href={`/pages/${s.handle}`} className="location-card">
+            <Link key={s.handle} href={`/pages/${s.handle}`} className="location-card location-card-rich">
+              {s.imageUrl ? (
+                <div className="location-card-photo">
+                  <Image
+                    src={s.imageUrl}
+                    alt={`${s.name} storefront`}
+                    width={800}
+                    height={420}
+                    sizes="(max-width: 760px) 100vw, 540px"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+              ) : null}
               <div className="location-card-meta">
                 <div className="eyebrow">{s.area}</div>
                 <h2 className="location-card-name">{s.name}</h2>
+                <ShowroomOpenStatus showroom={s} />
                 <address className="location-card-addr">
                   <div>{s.street}</div>
                   <div>{s.city}, {s.region} {s.postalCode}</div>
+                  {s.crossStreet ? <div className="muted" style={{ fontSize: 13, marginTop: 'var(--s-1)' }}>Near {s.crossStreet}</div> : null}
                 </address>
+                <div className="location-card-hours muted" style={{ fontSize: 13 }}>
+                  {summarizeHours(s.hours)}
+                </div>
+                {s.nearbyAreas.length > 0 ? (
+                  <div className="location-card-areas muted" style={{ fontSize: 13, marginTop: 'var(--s-2)' }}>
+                    Serving {s.nearbyAreas.slice(0, 3).join(', ')}
+                    {s.nearbyAreas.length > 3 ? ` + ${s.nearbyAreas.length - 3} more` : ''}
+                  </div>
+                ) : null}
                 <div className="location-card-actions">
                   <span className="location-card-phone tnum">{formatPhone(s.phone)}</span>
                   <span className="link-arrow">Store details <Icon name="arrow-right" size={14} /></span>
@@ -320,18 +375,31 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
           ))}
         </section>
 
-        {/*
-         * NOT rendering page.body here — the merchant's CMS body for
-         * /pages/mattress-store-locations is ~31KB of HTML using ~91
-         * Hydrogen-theme CSS classes (.loc-card, .compare-grid,
-         * .brand-tile, .delivery-feature, .faq-trigger, etc.) that
-         * don't exist in this storefront's CSS, so the body renders
-         * as completely unstyled markup. Our own <section class="locations-grid">
-         * above replaces the directory portion of that body. If the
-         * merchant wants the comparison / brands / FAQ sections back,
-         * they need to be rewritten as components or the relevant
-         * theme CSS ported over.
-         */}
+        {/* Below-grid copy: long-form local intent + cross-links. The
+            merchant's original 31KB Hydrogen-theme CMS body doesn't render
+            (CSS classes don't exist in this storefront); replacing the most
+            valuable parts here as native components so the page still
+            answers "why visit a showroom" and links to ranking surfaces. */}
+        <section className="section" style={{ marginTop: 'var(--s-7)' }}>
+          <h2 className="h2">Why visit a showroom?</h2>
+          <p className="muted" style={{ maxWidth: '60ch' }}>
+            A 10-minute showroom test tells you more than a hundred online reviews. Lie down on the bed for real, compare three or four options back-to-back, and walk out the same day with free delivery scheduled. Our sleep consultants are <strong>salaried, never commission</strong> — there&rsquo;s no upsell pressure to talk you into a bed your body doesn&rsquo;t agree with.
+          </p>
+          <ul style={{ marginTop: 'var(--s-4)', maxWidth: '60ch', paddingLeft: 'var(--s-5)' }}>
+            <li style={{ marginBottom: 'var(--s-2)' }}>Every mattress on the floor at all five showrooms — Tempur-Pedic, Stearns &amp; Foster, Sealy, Chattam &amp; Wells, Spring Air, Diamond, Englander, Eastman House, Helix, Harvest.</li>
+            <li style={{ marginBottom: 'var(--s-2)' }}>Same-day white-glove delivery anywhere in LA when you order by 4 PM.</li>
+            <li style={{ marginBottom: 'var(--s-2)' }}><Link href="/pages/love-your-bed-guarantee">120-night comfort exchange</Link> — sleep on it, swap it if it isn&rsquo;t right.</li>
+            <li style={{ marginBottom: 'var(--s-2)' }}><Link href="/pages/mattress-store-financing">0% APR financing</Link> through Synchrony or Acima, instant approval at any location.</li>
+          </ul>
+        </section>
+
+        <section className="section" style={{ marginTop: 'var(--s-6)' }}>
+          <h2 className="h2">Not sure where to start?</h2>
+          <p className="muted" style={{ maxWidth: '60ch' }}>
+            Take our <Link href="/sleep-quiz">2-minute sleep quiz</Link> for a category recommendation, then come into the closest showroom to lie on the top picks. Or call us at{' '}
+            <a href={`tel:${SITE_PHONE_TEL}`} className="tnum">{SITE_PHONE_DISPLAY}</a> — we&rsquo;ll help you pick over the phone and book delivery the same day.
+          </p>
+        </section>
       </article>
     </main>
   );

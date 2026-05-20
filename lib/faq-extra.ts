@@ -121,6 +121,62 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
       a: 'You can finance any combination — a mattress alone, a complete bedroom set, or a mattress + bed frame + pillows + sheets. Minimum financed amount is $499 at most showrooms.',
     },
   ],
+  'mattress-store-delivery': [
+    {
+      q: 'Is mattress delivery actually free in Los Angeles?',
+      a: 'Yes — free on every order over $499 across the LA service area. That covers the mattress, white-glove delivery to your bedroom (not the curb), full setup on your existing frame or base, and haul-away of your old mattress. Orders under $499 incur a flat delivery fee, quoted at checkout.',
+    },
+    {
+      q: 'How fast can I get a mattress delivered in LA?',
+      a: 'Most in-stock mattresses ordered by 4 PM are delivered the same day. Saturdays and post-sale weekdays can slip to next-day depending on route density. Custom-order mattresses (handcrafted Chattam & Wells, special-order Stearns & Foster Reserve) take 1–3 weeks to build before delivery.',
+    },
+    {
+      q: 'Do you take away my old mattress for free?',
+      a: 'Yes — old mattress haul-away is included free with every white-glove delivery. We wrap your old mattress, load it on our truck, and recycle it through California\'s mattress recycling program. No need to bag it or move it.',
+    },
+    {
+      q: 'Can you deliver to a 2nd-floor apartment with no elevator?',
+      a: 'Yes, no extra charge. Just flag the floor count when you order so we can plan. We carry mattresses up to fourth-floor walk-ups in LA apartment buildings every week.',
+    },
+    {
+      q: 'Will you set up the mattress on my bed frame?',
+      a: 'Yes — full setup on your existing frame, foundation, or adjustable base is included. We unbox, position the mattress, and check that everything sits flat before we leave. Adjustable bases are also fully assembled and tested.',
+    },
+    {
+      q: 'What if I\'m not home when you arrive?',
+      a: 'You\'ll get a 30-minute heads-up text from the driver. If something comes up, call us and we\'ll reschedule the same day, push to the next available window, or coordinate with your doorman or building manager. We don\'t leave mattresses unattended at the door.',
+    },
+  ],
+  'love-your-bed-guarantee': [
+    {
+      q: 'How long is the comfort exchange window?',
+      a: '120 nights from delivery. Sleep on your new mattress for at least 30 nights — give your body time to adjust — then if it\'s not right, contact us anytime within 120 nights to start an exchange. One free exchange per purchase.',
+    },
+    {
+      q: 'What\'s the minimum sleep period before I can exchange?',
+      a: '30 nights. A new mattress needs time to break in and your body needs time to adjust — most exchange decisions made in the first two weeks reverse themselves by week four. We hold customers to the 30-night minimum because it leads to better outcomes.',
+    },
+    {
+      q: 'Can I exchange more than once?',
+      a: 'The Love Your Bed Guarantee covers one exchange per purchase. If the second mattress isn\'t right either, contact us — we\'ll work with you, but it\'s case-by-case rather than a blanket guarantee. Try mattresses in-store or take the 2-minute sleep quiz first to narrow the field.',
+    },
+    {
+      q: 'What if the replacement costs more or less than the original?',
+      a: 'You pay the difference (if more) or we refund the difference (if less). If you used financing, the new balance gets applied to the existing loan at the same terms — no second application, no second credit check.',
+    },
+    {
+      q: 'Are there any restocking fees or return shipping costs?',
+      a: 'None. No restocking fees, no shipping costs, no haggling. We pick up the original mattress and deliver + set up the replacement as one appointment, included white-glove logistics.',
+    },
+    {
+      q: 'Does the guarantee apply to floor samples or clearance items?',
+      a: 'No. Floor samples and "as-is" clearance items are priced lower precisely because the comfort exchange has been waived. The product page and your receipt both flag the exchange status before checkout.',
+    },
+    {
+      q: 'What if my mattress has a defect rather than a comfort issue?',
+      a: 'Manufacturer defects (sagging beyond manufacturer thresholds, broken coils, foam delamination) are covered separately by the brand\'s warranty — typically 10 years. We help you file the claim. The comfort exchange is for "this isn\'t my body\'s right feel"; the manufacturer warranty is for "this is broken."',
+    },
+  ],
   'mattress-warranty': [
     {
       q: 'How long is the mattress warranty?',
