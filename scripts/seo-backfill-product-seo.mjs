@@ -138,22 +138,54 @@ function generateSeoDescription({ title, vendor }) {
 }
 
 async function updateSeo({ id, seo }) {
+  // Shopify gotcha — verified live 2026-05-20: `productUpdate.input.seo.title`
+  // is silently rejected (userErrors empty, but the write doesn't apply —
+  // the legacy `global.title_tag` metafield it should write to never gets
+  // created). `seo.description` writes via productUpdate DO work, but for
+  // consistency + reliability we use `metafieldsSet` for BOTH. That writes
+  // the underlying `global.title_tag` and `global.description_tag`
+  // metafields that the `product.seo { title description }` field reads
+  // from — bypassing the broken productUpdate path entirely. Verified that
+  // metafieldsSet writes for both keys land correctly and the resulting
+  // product.seo reflects them.
   const M = `
-    mutation U($input: ProductInput!) {
-      productUpdate(input: $input) {
-        product { id }
-        userErrors { field message }
+    mutation SetSeo($metafields: [MetafieldsSetInput!]!) {
+      metafieldsSet(metafields: $metafields) {
+        metafields { id namespace key }
+        userErrors { field message code }
       }
     }`;
-  const d = await gql(M, { input: { id, seo } });
-  const errs = d.productUpdate.userErrors;
-  if (errs.length) throw new Error(`userErrors: ${JSON.stringify(errs)}`);
+  const inputs = [];
+  if (seo.title) {
+    inputs.push({
+      ownerId: id,
+      namespace: 'global',
+      key: 'title_tag',
+      type: 'single_line_text_field',
+      value: seo.title,
+    });
+  }
+  if (seo.description) {
+    inputs.push({
+      ownerId: id,
+      namespace: 'global',
+      key: 'description_tag',
+      type: 'single_line_text_field',
+      value: seo.description,
+    });
+  }
+  if (!inputs.length) return;
+  const d = await gql(M, { metafields: inputs });
+  const errs = d.metafieldsSet.userErrors;
+  if (errs.length) throw new Error(`metafieldsSet userErrors: ${JSON.stringify(errs)}`);
 }
 
 (async function main() {
-  console.log(`Mode: ${APPLY ? 'APPLY (will mutate Shopify)' : 'dry-run (preview only)'}`);
-  const products = await pullProducts();
-  console.log(`Pulled ${products.length} active+published products.`);
+  try {
+    console.log(`Mode: ${APPLY ? 'APPLY (will mutate Shopify)' : 'dry-run (preview only)'}`);
+    console.log(`API: ${VERSION}  store: ${STORE}`);
+    const products = await pullProducts();
+    console.log(`Pulled ${products.length} active+published products.`);
 
   const changes = [];
   for (const p of products) {
@@ -206,5 +238,14 @@ async function updateSeo({ id, seo }) {
       console.error(`  FAILED ${c.handle}: ${err.message}`);
     }
   }
-  console.log(`Done. ${ok} applied, ${fail} failed.`);
+    console.log(`Done. ${ok} applied, ${fail} failed.`);
+  } catch (err) {
+    // Make sure the workflow log shows the real failure (and not an
+    // opaque "unhandled promise rejection") when something blows up
+    // before reaching the per-product try/catch in the apply loop —
+    // e.g. pullProducts() throwing on auth / network / API errors.
+    console.error(`FATAL: ${err.message}`);
+    if (err.stack) console.error(err.stack);
+    process.exit(1);
+  }
 })();
