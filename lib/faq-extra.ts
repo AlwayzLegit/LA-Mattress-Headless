@@ -16,8 +16,13 @@
  * extends the coverage to the surfaces we know rank locally:
  *   - 5 showroom pages       → unique Q&As referencing each neighborhood
  *   - /pages/shipping-and-delivery
+ *   - /pages/mattress-store-delivery
  *   - /pages/mattress-store-financing
- *   - /pages/mattress-warranty
+ *   - /pages/love-your-bed-guarantee
+ *   - /pages/warranty (canonical handle; legacy `/pages/mattress-warranty` 301s here)
+ *   - /pages/mattress-recycling-fee
+ *   - /pages/mattress-store-contact
+ *   - /pages/mattress-firm-vs-la-mattress-store
  *
  * Each FaqItem stays free of HTML for the same reason as lib/faq.ts.
  */
@@ -177,7 +182,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
       a: 'Manufacturer defects (sagging beyond manufacturer thresholds, broken coils, foam delamination) are covered separately by the brand\'s warranty — typically 10 years. We help you file the claim. The comfort exchange is for "this isn\'t my body\'s right feel"; the manufacturer warranty is for "this is broken."',
     },
   ],
-  'mattress-warranty': [
+  'warranty': [
     {
       q: 'How long is the mattress warranty?',
       a: 'Most premium mattresses we carry (Tempur-Pedic, Stearns & Foster, Diamond, Sealy) include a 10-year limited manufacturer warranty. Some private-label models offer 5 years. The exact terms are in the warranty card delivered with each mattress.',
@@ -201,6 +206,88 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
     {
       q: 'Does the warranty cover stains or damage?',
       a: 'No — stains, burns, tears, or damage from misuse are not covered, and a stained mattress will be denied for inspection. Use a mattress protector from day one to keep the warranty valid.',
+    },
+  ],
+  'mattress-recycling-fee': [
+    {
+      q: 'What is the California mattress recycling fee?',
+      a: 'California State Law requires retailers to collect a per-piece recycling fee on every mattress, box spring, foundation, and adjustable base sold. The fee funds the state\'s mattress recycling program (administered by the Mattress Recycling Council) and is set by the state — not by individual retailers.',
+    },
+    {
+      q: 'How much is the recycling fee per piece?',
+      a: 'The fee is per piece — mattress, box spring, foundation, and adjustable-base components each carry the fee. The exact amount is set by California\'s Mattress Recycling Council and is itemized at checkout. Check the live total before placing your order; it\'s a separate line from the mattress price.',
+    },
+    {
+      q: 'Why do I have to pay the fee if I am not recycling my old mattress?',
+      a: 'State law requires retailers to collect the fee on every new mattress sold, regardless of what you do with your old one. The fee funds the statewide recycling infrastructure (drop-off centers, transport, processing facilities) that every California resident can use at no additional cost when they\'re ready to recycle.',
+    },
+    {
+      q: 'Does LA Mattress Store take my old mattress for recycling?',
+      a: 'Yes — every white-glove delivery includes free pickup and recycling of your old mattress, regardless of where you bought it. We wrap it, load it, and route it through the state\'s recycling program. No need to pre-arrange or pay extra.',
+    },
+    {
+      q: 'What if I recycle the old mattress myself?',
+      a: 'You still pay the state-mandated recycling fee at purchase (it\'s collected on the sale, not on the disposal). You may receive a modest incentive from the Mattress Recycling Council if you drop off your used mattress at a designated state-approved location.',
+    },
+    {
+      q: 'What happens to the recycled mattress?',
+      a: 'The mattresses are dismantled and the steel, foam, fabric, and wood are separated and reused to make new products. About 75% of a typical mattress is recyclable. Learn more at mattressrecyclingcouncil.org/mrc-in-your-state/california.',
+    },
+  ],
+  'mattress-store-contact': [
+    {
+      q: 'How can I contact LA Mattress Store?',
+      a: 'Three ways: call (800) 218-3578 between 10 AM and 8 PM Pacific, email orders.lamattress@gmail.com (we reply within one business day), or visit any of our 5 LA showrooms during open hours. No appointment needed.',
+    },
+    {
+      q: 'What are your business hours?',
+      a: 'All 5 LA showrooms are open daily — typically Mon–Fri 10 AM–9 PM, Sat–Sun 10 AM–8 PM. Each showroom\'s exact hours vary slightly; see the per-showroom page for current times.',
+    },
+    {
+      q: 'How quickly do you respond to emails?',
+      a: 'Within one business day, usually within a few hours during business hours. For urgent orders or delivery questions, calling is faster — our phone line is staffed 10 AM–8 PM Pacific seven days a week.',
+    },
+    {
+      q: 'Can I chat with a sales expert live?',
+      a: 'Yes — live chat is available on the website during business hours (10 AM–8 PM Pacific). Click the chat icon in the lower-right corner of any page. A real mattress consultant — not a bot — replies within a minute.',
+    },
+    {
+      q: 'Do you have a showroom near me?',
+      a: 'Five LA showrooms: Koreatown, West LA, La Brea / Hancock Park, Studio City, and Glendale. We deliver white-glove to all of LA County. Check the Locations page for hours, directions, and the closest showroom to your zip code.',
+    },
+    {
+      q: 'How do I apply for a job at LA Mattress Store?',
+      a: 'Email your resume to orders.lamattress@gmail.com with "Career" in the subject line. We hire showroom sales consultants (salaried, never commission), delivery drivers, and customer service team members. Check our Careers page for current openings.',
+    },
+  ],
+  'mattress-firm-vs-la-mattress-store': [
+    {
+      q: 'What is the difference between LA Mattress Store and Mattress Firm?',
+      a: 'LA Mattress Store is family-owned, LA-based since 2012, with 5 local showrooms and salaried (non-commission) consultants. Mattress Firm is a national chain with commission-based sales reps and 2,200+ stores. The biggest practical differences for LA shoppers are local stock (we keep most mattresses on the floor), free same-day white-glove delivery within LA, and no upsell pressure.',
+    },
+    {
+      q: 'Who has better prices — LA Mattress or Mattress Firm?',
+      a: 'Both run promotional pricing year-round, but our Low Price Guarantee means we beat any authorized retailer\'s advertised price by 10% on the same model. For Tempur-Pedic, Stearns & Foster, and Sealy specifically, the MSRP is brand-controlled — so the real differentiator becomes delivery cost, financing terms, and what\'s actually in stock today.',
+    },
+    {
+      q: 'How does delivery compare?',
+      a: 'LA Mattress: free white-glove delivery anywhere in LA on orders over $499 — typically same-day if ordered by 4 PM, with mattress setup on your bed frame and free haul-away of the old mattress. Mattress Firm: free standard delivery on most orders over $250, with same-day available in some markets; haul-away is sometimes a separate charge.',
+    },
+    {
+      q: 'Do you carry the same mattress brands as Mattress Firm?',
+      a: 'We carry most of the same major brands — Tempur-Pedic, Stearns & Foster, Sealy, Chattam & Wells, Spring Air, Englander, Diamond, Helix, Harvest — plus several brands Mattress Firm doesn\'t (regional and direct-to-consumer brands). Brand availability on the floor is consistent year-round at our showrooms; check the brands page for the current lineup.',
+    },
+    {
+      q: 'Is the financing the same?',
+      a: '0% APR on approved credit at both stores. LA Mattress Store uses Synchrony and Acima (Acima offers a soft-credit-pull lease-to-own path for thin-credit buyers). Mattress Firm uses Synchrony and Progressive Leasing on a similar structure. Promotional 0% term lengths are tied to your purchase amount at both.',
+    },
+    {
+      q: 'Does LA Mattress Store offer a comfort exchange like Mattress Firm?',
+      a: 'Yes — our Love Your Bed Guarantee is a 120-night comfort exchange (sleep on it 30+ nights, swap for any other mattress in stock if it isn\'t right, no restocking fee). Mattress Firm\'s 120 Night Sleep Trial is similar, with a comparable 21-day minimum and a per-policy $99.99 redelivery fee for the swap. The trial windows match; the swap logistics are where the practical difference lives.',
+    },
+    {
+      q: 'Which is better for LA shoppers — LA Mattress or Mattress Firm?',
+      a: 'If you live in LA and want a mattress today (same-day delivery, setup, haul-away, locally-owned support after the sale), LA Mattress Store is the more practical choice. If you\'re shopping outside LA or want a specific Mattress Firm-exclusive model (e.g. Sleepy\'s house brand), Mattress Firm makes sense. The actual mattress you sleep on matters more than the storefront — try both if you can, take advantage of the comfort exchange, and pick the bed your body agrees with.',
     },
   ],
 };
