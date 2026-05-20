@@ -119,3 +119,91 @@ export async function getShopAggregate(): Promise<ShopReviewsAggregate | null> {
     return null;
   }
 }
+
+// ───────────────────────────────────────────────────────────────────────
+// Sitewide-reviews JSON-LD (Phase 299)
+//
+// Per-product Review embedding is impossible on the current Judge.me
+// token tier (Phase 247: all per-product filters silently ignored).
+// What still works: sitewide AggregateRating + the top-rated 4★+ reviews
+// fetched without a filter. Embedded as `aggregateRating` + `review[]`
+// on the homepage LocalBusiness (FurnitureStore) schema and on the
+// /pages/reviews Organization schema, both linked via @id to the
+// sitewide #localbusiness / #organization nodes.
+//
+// This makes the brand eligible for the LocalBusiness review-snippet
+// rich result in SERP — the gold stars + count under the brand name on
+// queries like "LA Mattress" or "mattress store Los Angeles". Not the
+// same as the per-product reviews rich result (still gated on
+// Judge.me's higher tier), but the largest review-rich-result win
+// available without an upgrade.
+// ───────────────────────────────────────────────────────────────────────
+
+/** Truncate review body for embedding — Google ignores anything past
+ *  the first few hundred chars and over-long reviews bloat the JSON-LD
+ *  payload. Keeps full reviews visible in the rendered carousels. */
+function truncateReview(body: string, max = 500): string {
+  if (body.length <= max) return body;
+  const slice = body.slice(0, max);
+  const lastSpace = slice.lastIndexOf(' ');
+  return (lastSpace > max * 0.7 ? slice.slice(0, lastSpace) : slice).trim() + '…';
+}
+
+/**
+ * Format one Judge.me review as a Schema.org Review node. `itemReviewedId`
+ * lets the caller pin the @id of the parent (LocalBusiness on homepage,
+ * Organization on /pages/reviews) so each Review correctly attaches to
+ * the brand entity instead of orphaning in the graph.
+ */
+function reviewLdFrom(r: JudgemeReview, itemReviewedId: string): Record<string, unknown> {
+  return {
+    '@type': 'Review',
+    author: { '@type': 'Person', name: r.reviewer.name || 'Verified customer' },
+    datePublished: r.created_at,
+    reviewBody: truncateReview(r.body || ''),
+    ...(r.title ? { name: r.title } : {}),
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: r.rating,
+      bestRating: 5,
+      worstRating: 1,
+    },
+    itemReviewed: { '@id': itemReviewedId },
+  };
+}
+
+/**
+ * Async — fetches sitewide aggregate + top reviews and returns the
+ * JSON-LD extension to merge onto a LocalBusiness / Organization node.
+ * Returns `null` when Judge.me is unconfigured or returns no data,
+ * letting callers fall through to the un-enriched base schema.
+ *
+ * `itemReviewedId` is the @id of the parent node the reviews attach to
+ * (`https://.../#localbusiness` for homepage, `.../#organization` for
+ * /pages/reviews). Both already exist in lib/structured-data.ts.
+ *
+ * 12 reviews is the sweet spot — Google's rich-result eligibility kicks
+ * in at ≥1 review but more reviews tighten the relevance signal; past
+ * ~15 there's diminishing return and the JSON-LD payload grows.
+ */
+export async function getSitewideReviewsExtension(
+  itemReviewedId: string,
+  { perPage = 12 }: { perPage?: number } = {},
+): Promise<{ aggregateRating: Record<string, unknown>; review: Record<string, unknown>[] } | null> {
+  if (!ENABLED) return null;
+  const [aggregate, reviews] = await Promise.all([
+    getShopAggregate(),
+    getStorefrontReviews({ perPage, minRating: 4 }),
+  ]);
+  if (!aggregate || reviews.length === 0) return null;
+  return {
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: aggregate.rating.toFixed(1),
+      reviewCount: aggregate.count,
+      bestRating: '5',
+      worstRating: '1',
+    },
+    review: reviews.map((r) => reviewLdFrom(r, itemReviewedId)),
+  };
+}

@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { Icon } from '../icon';
-import { getShopAggregate, getStorefrontReviews, type JudgemeReview } from '@/lib/judgeme';
+import { getShopAggregate, getStorefrontReviews, getSitewideReviewsExtension, type JudgemeReview } from '@/lib/judgeme';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 const SITE = 'https://www.mattressstoreslosangeles.com';
+const ORGANIZATION_ID = `${SITE}/#organization`;
 
 /**
  * Coded /pages/reviews page (rendered via app/pages/[handle] +
@@ -16,9 +17,15 @@ const SITE = 'https://www.mattressstoreslosangeles.com';
  * and the aggregate is fetched in this async server component.
  */
 export async function ReviewsPage() {
-  const [aggregate, reviews] = await Promise.all([
+  // Phase 299: also fetch the JSON-LD extension (linked to the
+  // sitewide #organization node) so this page emits the same Review[]
+  // schema the homepage emits — keeps the brand's social-proof graph
+  // consistent across high-visibility pages and reinforces the rich-
+  // result eligibility signal.
+  const [aggregate, reviews, reviewsExtension] = await Promise.all([
     getShopAggregate(),
     getStorefrontReviews({ perPage: 24, minRating: 4 }),
+    getSitewideReviewsExtension(ORGANIZATION_ID, { perPage: 12 }),
   ]);
 
   // No reviews available yet (Judge.me not configured, or no published 4★+
@@ -42,19 +49,31 @@ export async function ReviewsPage() {
     );
   }
 
-  const aggregateLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'LA Mattress Store',
-    url: SITE,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: aggregate.rating.toFixed(1),
-      reviewCount: aggregate.count,
-      bestRating: '5',
-      worstRating: '1',
-    },
-  };
+  // Phase 299: link via @id to the sitewide Organization emitted in
+  // app/layout.tsx so Google reads this as a property OF the brand
+  // entity, not a duplicate Organization. When the Judge.me extension
+  // is available (Reviews API configured), include the full Review[]
+  // array; otherwise the aggregateRating-only block is still a valid
+  // SEO signal.
+  const aggregateLd = reviewsExtension
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        '@id': ORGANIZATION_ID,
+        ...reviewsExtension,
+      }
+    : {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        '@id': ORGANIZATION_ID,
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: aggregate.rating.toFixed(1),
+          reviewCount: aggregate.count,
+          bestRating: '5',
+          worstRating: '1',
+        },
+      };
 
   return (
     <main className="container reviews-page">
