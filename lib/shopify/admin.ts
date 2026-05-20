@@ -12,39 +12,64 @@
  */
 
 import 'server-only';
+import * as Sentry from '@sentry/nextjs';
 
-const STORE = process.env.SHOPIFY_STORE_DOMAIN;
-const TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
-const VERSION = process.env.SHOPIFY_API_VERSION ?? '2024-10';
+// Read env vars per-call (not at module init) so Vercel env-var updates
+// take effect on the next function invocation without needing a redeploy.
+// Wrapped in a helper to keep call sites tidy.
+function adminConfig(): { store: string | undefined; token: string | undefined; version: string } {
+  return {
+    store: process.env.SHOPIFY_STORE_DOMAIN,
+    token: process.env.SHOPIFY_ADMIN_TOKEN,
+    version: process.env.SHOPIFY_API_VERSION ?? '2024-10',
+  };
+}
 
-export const ADMIN_CONFIGURED = Boolean(STORE && TOKEN);
+// Snapshot at module load for the dashboard's "configured?" check —
+// this stays a one-shot read because the dashboard page guards with it
+// at render time, which already gives the most-recent value per request
+// (server components re-evaluate the import on each render in dev / on
+// each cold start in prod).
+export const ADMIN_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_ADMIN_TOKEN);
 
 export async function adminGql<T>(query: string, variables: Record<string, unknown> = {}): Promise<T | null> {
-  if (!ADMIN_CONFIGURED) return null;
+  const { store, token, version } = adminConfig();
+  if (!store || !token) {
+    const msg = `[admin.ts] Missing env: SHOPIFY_STORE_DOMAIN=${Boolean(store)} SHOPIFY_ADMIN_TOKEN=${Boolean(token)}`;
+    console.error(msg);
+    Sentry.captureMessage(msg, 'error');
+    return null;
+  }
+  const queryFirstLine = query.trim().split('\n')[0].slice(0, 80);
   try {
-    const res = await fetch(`https://${STORE}/admin/api/${VERSION}/graphql.json`, {
+    const res = await fetch(`https://${store}/admin/api/${version}/graphql.json`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': TOKEN!,
+        'X-Shopify-Access-Token': token,
       },
       body: JSON.stringify({ query, variables }),
-      // Dashboard data is fresh-ish — cache for 5 minutes to avoid
-      // hammering Admin API on every refresh.
       next: { revalidate: 300, tags: ['admin-dashboard'] },
     });
     if (!res.ok) {
-      console.error(`[admin.ts] GraphQL HTTP ${res.status}: ${await res.text()}`);
+      const body = await res.text();
+      const msg = `[admin.ts] HTTP ${res.status} on \`${queryFirstLine}\`: ${body.slice(0, 500)}`;
+      console.error(msg);
+      Sentry.captureMessage(msg, 'error');
       return null;
     }
     const json = await res.json();
     if (json.errors) {
-      console.error(`[admin.ts] GraphQL errors: ${JSON.stringify(json.errors)}`);
+      const msg = `[admin.ts] GraphQL errors on \`${queryFirstLine}\`: ${JSON.stringify(json.errors).slice(0, 800)}`;
+      console.error(msg);
+      Sentry.captureMessage(msg, 'error');
       return null;
     }
     return json.data as T;
   } catch (err) {
-    console.error(`[admin.ts] fetch failed: ${err instanceof Error ? err.message : err}`);
+    const msg = `[admin.ts] fetch failed on \`${queryFirstLine}\`: ${err instanceof Error ? err.message : String(err)}`;
+    console.error(msg);
+    Sentry.captureException(err instanceof Error ? err : new Error(msg));
     return null;
   }
 }
