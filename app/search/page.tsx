@@ -20,6 +20,7 @@ import {
   selectionToProductFilters,
 } from '@/app/_components/plp-filters';
 import { SearchInput } from './search-input';
+import { TrackSearchView } from '@/app/_components/track-search-view';
 
 type Params = { searchParams: Promise<Record<string, string | undefined>> };
 
@@ -181,6 +182,7 @@ export default async function SearchPage(props: Params) {
 
   return (
     <main className="container plp">
+      {q ? <TrackSearchView query={q} resultCount={tabCounts.all} /> : null}
       <header className="lp-hero" style={{ paddingBottom: 'var(--s-5)' }}>
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>

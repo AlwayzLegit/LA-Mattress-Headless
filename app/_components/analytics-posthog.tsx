@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import posthog from 'posthog-js';
+import { registerAttribution } from '@/lib/analytics';
 
 /**
  * PostHog client-side analytics provider.
@@ -77,6 +78,10 @@ function initPostHog() {
   if (Math.random() > 0.1) {
     posthog.stopSessionRecording();
   }
+  // Stamp utm_*/click-id/referrer onto super-properties + person-row
+  // so every downstream event carries acquisition source without each
+  // call site having to thread it through.
+  registerAttribution();
   initialized = true;
 }
 

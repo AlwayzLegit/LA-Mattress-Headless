@@ -117,15 +117,66 @@ export type AnalyticsEvent =
       };
     }
   | {
-      // Sleep-quiz interaction — fires when a quiz step is completed
-      // OR a recommendation is shown. Used to measure quiz completion
-      // rate + the conversion lift of quiz users vs non-quiz visitors.
+      // Sleep-quiz interaction — fires on every answered question
+      // (one per option-select). The funnel is:
+      //   quiz_step(step=0) → quiz_step(step=1) … → quiz_completed.
+      // `total_steps` is included so the funnel chart can compute the
+      // drop-off rate per step without hard-coding the question count.
       name: 'quiz_step';
       props: {
         step: number;
-        choice?: string;
-        is_final?: boolean;
-        recommended_handle?: string;
+        question_id: string;
+        choice: string;
+        total_steps: number;
+      };
+    }
+  | {
+      // Quiz-completion terminal event. Fired when the user reaches
+      // the recommendation page — whether by answering every question
+      // or by clicking Skip-to-Results. `completion_path` distinguishes
+      // the two so the funnel can split "engaged completion" vs "skip".
+      name: 'quiz_completed';
+      props: {
+        completion_path: 'answered_all' | 'skipped';
+        answered_count: number;
+        total_steps: number;
+        recommended_type: string;
+        recommended_handle: string;
+        recommended_product_handle?: string;
+      };
+    }
+  | {
+      // Click on a recommendation from the quiz result page. `target`
+      // distinguishes the primary CTA / product hero / alternate
+      // collection links so we can measure which surface drives the
+      // quiz-to-PDP conversion. Combined with `pdp_view` downstream
+      // this closes the quiz-attribution funnel.
+      name: 'quiz_recommendation_clicked';
+      props: {
+        target: 'primary_cta' | 'product_hero' | 'alternate' | 'showroom';
+        recommended_type: string;
+        destination_handle: string;
+      };
+    }
+  | {
+      // Newsletter (Klaviyo / Shopify customers list) signup success.
+      // Fires from the inline newsletter-form post-/api/newsletter
+      // 200 response. `source` distinguishes the placement so we can
+      // measure footer vs popup vs cart-page lift independently.
+      name: 'newsletter_signup';
+      props: {
+        source: 'footer' | 'popup' | 'cart' | 'unknown';
+      };
+    }
+  | {
+      // Judge.me review-widget interaction. `action` distinguishes
+      // engagement levels: just opening the form, submitting a review,
+      // or clicking through review pagination. Helps surface PDPs
+      // with high review intent vs PDPs with engaged review readers.
+      name: 'review_widget_interaction';
+      props: {
+        product_id: string;
+        action: 'write_form_opened' | 'review_submitted' | 'pagination_clicked' | 'photo_opened';
       };
     }
   | {
@@ -181,7 +232,12 @@ export function track<E extends AnalyticsEvent>(name: E['name'], props: E['props
   }
 
   // Sentry breadcrumbs for funnel-critical events (drop-off triage)
-  if (name === 'add_to_cart' || name === 'checkout_started') {
+  if (
+    name === 'add_to_cart' ||
+    name === 'checkout_started' ||
+    name === 'quiz_completed' ||
+    name === 'quiz_recommendation_clicked'
+  ) {
     try {
       Sentry.addBreadcrumb({
         category: 'analytics',
@@ -192,6 +248,86 @@ export function track<E extends AnalyticsEvent>(name: E['name'], props: E['props
     } catch {
       // Sentry not initialized — fine.
     }
+  }
+}
+
+/* ------------------------------------------------------------------------ *
+ * Attribution super-properties
+ *
+ * registerAttribution() merges utm_*, gclid, fbclid, and the initial
+ * document.referrer onto the PostHog super-properties so every event
+ * (and the person row, when identified) carries acquisition source
+ * without the call site having to thread it through. Called once at
+ * provider init.
+ *
+ * Two flavors of properties are set:
+ *   - `posthog.register(...)` — super-properties: merged onto EVERY
+ *     subsequent event in this session. Use for session-scoped
+ *     attribution (the utm on THIS session's landing URL).
+ *   - `posthog.people.set_once(...)` — person-properties set the FIRST
+ *     time only. Use for "what got this user here originally", which
+ *     should never overwrite on a second visit.
+ *
+ * No-op when PostHog isn't loaded or when we're not in a browser.
+ * ------------------------------------------------------------------------ */
+
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
+const CLICK_ID_KEYS = ['gclid', 'fbclid', 'msclkid', 'ttclid'] as const;
+
+export function registerAttribution(): void {
+  if (typeof window === 'undefined') return;
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+  try {
+    const sp = new URLSearchParams(window.location.search);
+    const session: Record<string, string> = {};
+    const initial: Record<string, string> = {};
+    for (const k of UTM_KEYS) {
+      const v = sp.get(k);
+      if (v) {
+        session[k] = v;
+        initial[`initial_${k}`] = v;
+      }
+    }
+    for (const k of CLICK_ID_KEYS) {
+      const v = sp.get(k);
+      if (v) {
+        session[k] = v;
+        initial[`initial_${k}`] = v;
+      }
+    }
+    // Referrer host (full URL retained by PostHog's $initial_referrer
+    // automatically — we add the host separately for easier filtering).
+    const ref = document.referrer;
+    if (ref) {
+      try {
+        const refHost = new URL(ref).hostname;
+        // Don't count ourselves as a referrer (same-origin nav before
+        // this provider mounted on a deep link).
+        if (refHost && refHost !== window.location.hostname) {
+          session.session_referrer_host = refHost;
+          initial.initial_referrer_host = refHost;
+          initial.initial_referrer_url = ref;
+        }
+      } catch {
+        /* malformed referrer URL — skip */
+      }
+    }
+    // Landing path (first URL pathname of the session). Useful for
+    // "what entry pages drive the most signups" without joining
+    // against the $pageview events table.
+    initial.initial_landing_path = window.location.pathname;
+
+    if (Object.keys(session).length > 0) {
+      posthog.register(session);
+    }
+    if (Object.keys(initial).length > 0) {
+      // set_once: only the FIRST session's values stick on the person
+      // row. Subsequent visits update the session-scoped super-props
+      // above but leave the initial attribution intact.
+      posthog.people.set_once(initial);
+    }
+  } catch {
+    /* silent — never let analytics break the page */
   }
 }
 
