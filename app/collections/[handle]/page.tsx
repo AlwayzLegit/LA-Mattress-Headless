@@ -10,6 +10,7 @@ import { collections as inventoryCollections, findCollection } from '@/lib/inven
 import { getCollectionSiblings } from '@/lib/collection-siblings';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
 import { categoryIntroFor } from '@/lib/plp-content';
+import { richTextJsonToHtml } from '@/lib/shopify/rich-text';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 import { PlpCount } from '@/app/_components/plp-count';
@@ -301,7 +302,15 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
       <PlpContentBlock
         handle={collection.handle}
         title={collection.title}
-        descriptionHtml={collection.descriptionHtml || null}
+        // PLP v2.1 Phase B: below-grid long-content priority is
+        // custom.seo_content (49/64 collections, ~586KB rich-text JSON
+        // serialized to HTML) → collection.descriptionHtml (25/64
+        // collections, raw HTML) → null. PlpContentBlock omits the
+        // long-content section when no source is populated and just
+        // renders the FAQ + links + guides.
+        descriptionHtml={
+          richTextJsonToHtml(collection.seoContentJson) || collection.descriptionHtml || null
+        }
       />
 
     </main>

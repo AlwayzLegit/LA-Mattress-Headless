@@ -156,6 +156,14 @@ export type Collection = {
    * the storefront falls back to categoryIntroFor() in lib/plp-content.ts.
    */
   introShort: string | null;
+  /**
+   * PLP v2.1 Phase B: long-form rich-text SEO content rendered below
+   * the product grid (`custom.seo_content` metafield, Shopify rich_text
+   * JSON AST as a string). Serialized to HTML at render time via
+   * lib/shopify/rich-text.ts → richTextJsonToHtml(). When null/empty,
+   * the storefront falls back to descriptionHtml.
+   */
+  seoContentJson: string | null;
 };
 
 export type AvailableFilterValue = {
