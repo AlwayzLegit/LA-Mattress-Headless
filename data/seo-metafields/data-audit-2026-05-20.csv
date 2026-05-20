@@ -1,0 +1,81 @@
+owner_type,owner_handle,owner_title,namespace,key,value_len,notes
+collection,popular,Popular Mattresses,custom,seo_content,6622,rich-text — heavily populated long-form content
+collection,mattresses,Mattresses,custom,description_,4794,rich-text — long-form duplicate of descriptionHtml era
+collection,mattresses,Mattresses,custom,seo_content,16132,rich-text
+collection,queen-size-mattresses,Queen Mattresses,custom,description_,1890,rich-text
+collection,queen-size-mattresses,Queen Mattresses,custom,link,59,URL → /collections/mattresses
+collection,queen-size-mattresses,Queen Mattresses,custom,label,10,"Mattresses"
+collection,queen-size-mattresses,Queen Mattresses,custom,seo_content,12702,rich-text
+collection,king-size-mattresses,King Mattresses,custom,description_,880,rich-text
+collection,king-size-mattresses,King Mattresses,custom,seo_content,12980,rich-text
+collection,california-king-mattresses,California King Mattresses,custom,description_,1077,rich-text
+collection,california-king-mattresses,California King Mattresses,custom,seo_content,13355,rich-text
+collection,twin-size-mattresses,Twin Mattresses,custom,description_,893,rich-text
+collection,twin-size-mattresses,Twin Mattresses,custom,seo_content,12405,rich-text
+collection,full-size-mattresses,Full Mattresses,custom,description_,597,rich-text
+collection,full-size-mattresses,Full Mattresses,custom,seo_content,11978,rich-text
+collection,gel-foam-mattresses,Gel Foam Mattresses,custom,seo_content,14089,rich-text
+collection,latex-mattresses,Latex Mattresses,custom,seo_content,13447,rich-text
+collection,memory-foam-mattresses,Memory Foam Mattresses,custom,description_,904,rich-text
+collection,memory-foam-mattresses,Memory Foam Mattresses,custom,seo_content,13910,rich-text
+collection,on-sale,Mattress Sale,custom,seo_content,13192,rich-text
+collection,firm-mattress,Firm Mattresses,custom,description_,615,rich-text
+collection,firm-mattress,Firm Mattresses,custom,seo_content,13342,rich-text
+collection,adjustable-beds,Adjustable Beds & Bases,custom,seo_content,13793,rich-text
+collection,pillows,Pillows,custom,seo_content,13792,rich-text
+collection,tempur-pedic-adjustable-bases,Tempur-Pedic Adjustable Bases,custom,seo_content,5208,rich-text
+collection,floor-model-discontinued-mattress-clearance-sale,Floor Model & Clearance Mattresses,custom,seo_content,4732,rich-text
+collection,mattress-protector,Mattress Protectors,custom,seo_content,13853,rich-text
+collection,mattress-toppers,Mattress Toppers,custom,seo_content,2409,rich-text
+collection,all-foam-mattresses,All-Foam Mattresses,custom,seo_content,13498,rich-text
+collection,extra-firm-mattresses,Extra Firm Mattresses,custom,description_,364,rich-text
+collection,extra-firm-mattresses,Extra Firm Mattresses,custom,seo_content,13608,rich-text
+collection,plush-mattresses,Plush Mattresses,custom,description_,939,rich-text
+collection,plush-mattresses,Plush Mattresses,custom,seo_content,13252,rich-text
+collection,metal-beds,Metal Bed Frames,custom,seo_content,2380,rich-text
+collection,southerland-mattresses,Southerland Mattresses,custom,description_,1070,rich-text
+collection,southerland-mattresses,Southerland Mattresses,custom,seo_content,7700,rich-text
+collection,innerspring-mattresses,Innerspring Mattresses,custom,description_,910,rich-text
+collection,innerspring-mattresses,Innerspring Mattresses,custom,seo_content,14863,rich-text
+collection,chattam-wells-mattresses,Chattam & Wells Mattresses,custom,description_,974,rich-text
+collection,chattam-wells-mattresses,Chattam & Wells Mattresses,custom,seo_content,13375,rich-text
+collection,diamond-mattresses,Diamond Mattresses,custom,description_,1602,rich-text
+collection,diamond-mattresses,Diamond Mattresses,custom,seo_content,13485,rich-text
+collection,eastman-house-mattresses,Eastman House Mattresses,custom,description_,1359,rich-text
+collection,eastman-house-mattresses,Eastman House Mattresses,custom,seo_content,6242,rich-text
+collection,englander-mattresses,Englander Mattresses,custom,seo_content,12836,rich-text
+collection,harvest-mattresses,Harvest Green Mattresses,custom,description_,605,rich-text
+collection,harvest-mattresses,Harvest Green Mattresses,custom,seo_content,5992,rich-text
+collection,scandinavian-mattresses,Scandinavian Mattresses,custom,seo_content,6200,rich-text
+collection,spring-air-mattresses,Spring Air Mattresses,custom,description_,1208,rich-text
+collection,spring-air-mattresses,Spring Air Mattresses,custom,seo_content,5594,rich-text
+collection,tempur-pedic-mattresses,Tempur-Pedic Mattresses,custom,description_,1040,rich-text
+collection,tempur-pedic-mattresses,Tempur-Pedic Mattresses,custom,seo_content,13338,rich-text
+collection,hybrid-mattresses,Hybrid Mattresses,custom,description_,982,rich-text
+collection,hybrid-mattresses,Hybrid Mattresses,custom,seo_content,15173,rich-text
+collection,organic-mattress,Organic Mattresses,custom,seo_content,14622,rich-text
+collection,pillow-top-mattresses,Pillow Top Mattresses,custom,description_,932,rich-text
+collection,pillow-top-mattresses,Pillow Top Mattresses,custom,seo_content,14265,rich-text
+collection,pocketed-coil-mattresses,Pocketed Coil Mattresses,custom,seo_content,14021,rich-text
+collection,bed-in-a-box-mattresses,Bed-in-a-Box Mattresses,custom,description_,873,rich-text
+collection,bed-in-a-box-mattresses,Bed-in-a-Box Mattresses,custom,seo_content,13329,rich-text
+collection,ultra-plush-mattresses,Ultra Plush Mattresses,custom,description_,764,rich-text
+collection,ultra-plush-mattresses,Ultra Plush Mattresses,custom,seo_content,14070,rich-text
+collection,stearns-foster-mattresses,Stearns & Foster Mattresses,custom,description_,143,rich-text
+collection,stearns-foster-mattresses,Stearns & Foster Mattresses,custom,seo_content,14484,rich-text
+collection,medium-mattresses,Medium Mattresses,custom,description_,146,rich-text
+collection,medium-mattresses,Medium Mattresses,custom,seo_content,13905,rich-text
+collection,technogel-mattresses,Technogel Mattresses,custom,seo_content,5920,rich-text
+collection,helix-mattresses,Helix Mattresses,custom,description_,923,rich-text
+collection,helix-mattresses,Helix Mattresses,custom,seo_content,13678,rich-text
+collection,medium-firm-mattresses,Medium Firm Mattresses,custom,seo_content,14872,rich-text
+collection,mattresses-under-1000,"Mattresses Under $1,000",custom,seo_content,13644,rich-text
+collection,mattresses-for-back-pain,Mattresses for Back Pain,custom,seo_content,14637,rich-text
+collection,mattresses-for-side-sleepers,Mattresses for Side Sleepers,custom,seo_content,14297,rich-text
+collection,mattresses-for-couples,Mattresses for Couples,custom,seo_content,14707,rich-text
+collection,soft-mattresses-for-pressure-relief,Soft Mattresses for Pressure Relief,custom,seo_content,15320,rich-text
+collection,cooling-mattresses,Cooling Mattresses,custom,seo_content,14484,rich-text
+product,queen-diamond-lucille-firm-natural-latex-lux-euro-top-15-floor-sample-clearance-mattress,Queen Diamond Lucille Firm Floor Sample,custom,sleep_position,24,"[""Stomach and Back""]"
+product,queen-diamond-lucille-plush-natural-latex-luxury-euro-top-15-floor-sample-clearance-mattress,Queen Diamond Lucille Plush Floor Sample,custom,sleep_position,11,"[""Side""]"
+product,queen-chattam-wells-mattress-clearance-the-ashford-luxury-medium-euro-top-15,Queen Chattam Ashford Floor Sample,custom,sleep_position,11,"[""Side""]"
+product,queen-diamond-diana-medium-natural-latex-lux-euro-top-15-5-floor-model-clerance-mattress,Queen Diamond Diana Medium Floor Sample,custom,sleep_position,21,"[""Side and Back""]"

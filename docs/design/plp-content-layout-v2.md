@@ -198,12 +198,16 @@ metafieldDefinitionCreate(definition: {
 
 ### 5.2 What happens to the existing long Shopify `collection.descriptionHtml`?
 
-Two options for the merchant — both are valid, both end at the same UX. The audit doc covers this as **F5 / decision C2**:
+**Updated 2026-05-20 per the Phase 2.5 pre-flight audit** (`data/seo-metafields/data-audit-2026-05-20.csv`). The earlier v2.1 draft treated `custom.seo_content` as a "defined but never populated" metafield. That was wrong — the merchant has populated it on **49 of 64 collections**, ~586KB of rich-text content averaging 12,000 chars per collection. It is, in practice, already the long-form below-grid content the merchant has been authoring all along; the only thing missing was a render path in the headless storefront. Likewise, `custom.description_` (trailing underscore) is populated on 25 collections with another ~26KB of long-form copy. Neither is an orphan; both must be preserved.
 
-- **Option B (default, lower risk):** Keep `collection.descriptionHtml` as the long-content source-of-truth. PLP v2 below-grid section reads from it. **Delete** the unused `custom.seo_content` metafield definition (audit Phase 3).
-- **Option A (data-model purist):** One-time script migration of every collection's current `descriptionHtml` content into `custom.seo_content`. PLP v2 reads from `custom.seo_content` (with `descriptionHtml` as a transition-window fallback). Eventually `descriptionHtml` is fully retired for collections.
+This collapses the previous two-option fork into one shipping plan + one follow-up RFC:
 
-Default to **Option B** unless the merchant strongly prefers the all-metafield architecture. Functionally identical to the customer; cheaper to operate.
+- **Phase A (this RFC):** the below-grid render reads `collection.descriptionHtml` (the built-in Shopify field, populated on roughly the same 25 collections as `description_`). No data migration. Long content that's already there moves below grid; everything else stays as today. This is what the code in this PR does. Keeps the change small, reviewable, and reversible.
+- **Phase B (follow-up RFC):** add a rich-text-JSON → HTML serializer (Shopify's `rich_text_field` is a JSON tree, not raw HTML — the storefront can't `dangerouslySetInnerHTML` it as-is), wire `custom.seo_content` as the primary below-grid source with `descriptionHtml` as the fallback. Estimated ~150 LOC for the serializer + ~10 LOC for the read path. Materially unlocks ~586KB of existing merchant content into the storefront.
+
+This split keeps Phase A's scope tight (the layout swap, validated by the test plan in §7) without leaving the seo_content story unresolved. Phase B is unblocked the moment Phase A ships.
+
+A third metafield, `custom.description_` (25 collections, ~26KB), is a parallel author-target the merchant has independently populated. This RFC does **not** read from it. The audit doc §0 captures the merchant decision needed to consolidate it (likely: merge into `seo_content` and retire the field).
 
 ---
 
@@ -264,7 +268,7 @@ Default to **Option B** unless the merchant strongly prefers the all-metafield a
 | `lib/shopify/queries/collection.ts` | Extend the `getCollectionByHandle` query to fetch `metafield(namespace: "custom", key: "intro_short") { value }`. Add to the returned type. | ~10 |
 | `lib/shopify/types.ts` | Add `introShort?: string \| null` to the Collection type. | ~2 |
 | `app/collections/[handle]/page.tsx` | (a) Replace the hero `plp-hero-lede` block (~lines 175-183) with a paragraph rendering `collection.introShort ?? categoryIntroFor(collection.handle, collection.title)`. (b) Pass `descriptionHtml` as a prop to `<PlpContentBlock>` at line 299. | ~15 |
-| `app/_components/plp-content-block.tsx` | Accept new optional `descriptionHtml` prop. Render at top of the component (above the existing intro/H2), inside a new `<div class="plp-long-content rte">` with `dangerouslySetInnerHTML` after running `sanitizeShopifyHtml`. Remove the `categoryIntroFor` paragraph render from this component (it now lives in the hero); keep the H2 + FAQ + links + guides. | ~20 |
+| `app/_components/plp-content-block.tsx` | Accept new optional `descriptionHtml` prop. Render at top of the component (above the existing intro/H2), inside a new `<div class="plp-long-content rte">` with `dangerouslySetInnerHTML` after running `sanitizeShopifyHtml({ demoteHeadings: true })`. Remove the `categoryIntroFor` paragraph render from this component (it now lives in the hero); keep the H2 + FAQ + links + guides. Phase B will swap the prop name to `longHtml` and the source to `seoContent ?? descriptionHtml`. | ~20 |
 | `app/globals.css` | Add `.plp-long-content` styling (max-width container, `<h2>/<h3>` typography matching `<article>` body, list/table styling mirroring `.rte`). Tighten `.plp-hero-lede` to assume short text (no need to handle 400-word overflow anymore). | ~30 |
 | `lib/plp-content.ts` | No code changes — `categoryIntroFor()` stays exactly as it is (it's now the fallback). | 0 |
 | `lib/structured-data.ts` / collection JSON-LD | **No change.** CollectionPage + ItemList + FAQPage JSON-LD all stay as-is. | 0 |

@@ -8,6 +8,32 @@
 
 ---
 
+## 0. Important update (2026-05-20, post pre-flight data audit)
+
+Phase 2.5 ran on 2026-05-20 against the live store. The CSV is at
+`data/seo-metafields/data-audit-2026-05-20.csv`. **Three of the items
+this audit originally classified as "orphan" were wrong** — the
+merchant has been actively populating two of them. Headline corrections:
+
+| Field | Original classification | Actual state on live store | Revised verdict |
+|---|---|---|---|
+| `custom.seo_content` (COLLECTION) | "Defined but unused — never populated on any collection" | **Populated on 49 of 64 collections** with rich-text content averaging 12,000 chars / collection (4-16KB per row); ~586KB of merchant-authored long-form content total. | **KEEP. Wire it into the headless.** This is the obvious source of truth for below-grid PLP long content (RFC v2.1 §6). |
+| `custom.description_` (COLLECTION, trailing underscore) | "Orphan — delete unconditionally" | **Populated on 25 of 64 collections** with rich-text content averaging ~1,000 chars / collection; 26KB total. | **Conditional.** It's a parallel long-content store next to `descriptionHtml` and `seo_content`. The merchant should decide: merge into `seo_content`, or migrate into the new `intro_short`, or keep + wire it. Cannot delete-and-lose. |
+| `custom.link` / `custom.label` (6+6 fields) | "Delete all 12 — never queried" | **Populated on 1 of 64 collections** (`queen-size-mattresses` has `link`=`/collections/mattresses` + `label`=`Mattresses`). The other 10 link/label fields are empty everywhere. | **Mostly safe.** Confirm with merchant whether the single `queen-size-mattresses` link/label still has a purpose; if not, delete the 12 link/label definitions. |
+| `custom.sleep_position` (PRODUCT, singular) | "Orphan — delete" | Populated on **4 floor-sample products** with light values (e.g. `["Side"]`). | **Safe to delete after merchant approves dropping the 4 floor-sample data points.** sleep_positions (plural) is the canonical S&D-wired field. |
+
+**What this audit got right before the data check:**
+
+- The 10 `link1`–`link5`/`label1`–`label5` fields are genuinely empty everywhere → safe to delete.
+- The singular `sleep_position` is genuinely duplicative of the plural canonical field used by Search & Discovery → safe to retire (after data approval).
+- Firmness consolidation (F1), missing length validators (F6), and storefront-access inconsistency (F7) findings stand unchanged — none depended on data-presence assumptions.
+
+**Why this matters:** without the Phase 2.5 pre-flight, this audit would have recommended deleting ~586KB of merchant-authored SEO content — the exact category-page long-form copy Google's March 2026 update specifically rewards. The stress-test that mandated the pre-flight (B2) saved that content. Going forward, **no metafield definition deletion runs without a populated-data CSV in evidence**.
+
+The findings below are the original audit text, **left in place for traceability**. Read §0 as the operative summary; the deletion verdicts in §4 and §8 need the revisions above applied.
+
+---
+
 ## 1. Verdict — yes, cleanup is needed
 
 ### Headline findings
