@@ -195,14 +195,27 @@ Create the metafield definition with `min:300 max:600` char validation, `access.
 
 Merchant decision. Engineering can script either path. Default if no answer: **Option B (delete `custom.seo_content`)** — lower risk, same end result.
 
-### Phase 3 — Delete confirmed orphans (12 fields, fully reversible)
+### Phase 2.5 — Pre-flight data-presence audit (new per stress-test B2)
+
+**Blocking gate before Phase 3.** Run `scripts/seo-metafields-data-audit.mjs` to query every collection's `metafields` and produce a CSV of every `link*` / `label*` / `description_` / `seo_content` / `sleep_position` value actually populated on any of the 64 collections (or any product, for `sleep_position`). Output: `data/seo-metafields/data-audit-{timestamp}.csv`.
+
+Reason: we've verified the **definitions** aren't read by the headless code, but we haven't verified whether the merchant has data on them that they intend to wire up later. If data is found, the merchant decides per-field:
+- "I never populated this — safe to delete." → proceed to Phase 3.
+- "I populated this but it's stale / superseded — safe to delete." → proceed to Phase 3.
+- "I rely on this in Shopify Admin / a 3rd-party app." → drop it from the deletion list and re-audit code path.
+
+The CSV is the **evidence trail** the merchant signs off against before any deletion runs. Read-only — script does not mutate Shopify.
+
+### Phase 3 — Delete confirmed orphans (≤14 fields, fully reversible)
+
+After Phase 2.5 sign-off, delete the orphans confirmed safe by the merchant:
 
 - `custom.description_` (1) — F3
 - `custom.link`, `custom.link1`–`link5` (6) — F4
 - `custom.label`, `custom.label1`–`label5` (6) — F4
 - `custom.sleep_position` (singular) (1) — F2
 
-Total: **14 deletions**. Each is a single `metafieldDefinitionDelete` mutation. The merchant can preview the impact in Shopify Admin first (Settings → Custom data → Collections), and Shopify supports a "delete definition only" mode that keeps any orphaned data on resources reachable via the API (for true recovery if needed).
+Total: **up to 14 deletions** (subject to Phase 2.5 trims). Each is a single `metafieldDefinitionDelete` mutation. The merchant can preview the impact in Shopify Admin first (Settings → Custom data → Collections), and Shopify supports a "delete definition only" mode that keeps any orphaned data on resources reachable via the API (for true recovery if needed).
 
 ### Phase 4 — Resolve firmness duplication (F1)
 
@@ -267,7 +280,7 @@ Key industry consensus the audit applies:
 
 | # | Decision | Default |
 |---|---|---|
-| C1 | Approve Phase 3 deletions (12 orphan collection fields + 1 singular sleep_position field). Reversible — Shopify keeps the definitions deletable but data on resources persists by default unless explicitly purged. | yes |
+| C1 | Approve Phase 3 deletions (up to 14 orphan fields) **after** reviewing the Phase 2.5 data-presence CSV. Reversible — Shopify keeps the definitions deletable but data on resources persists by default unless explicitly purged. | yes, pending Phase 2.5 CSV |
 | C2 | **F5 / Phase 2:** Option A (migrate `descriptionHtml` into `custom.seo_content`, all-metafield) or Option B (delete `custom.seo_content`, keep `descriptionHtml` as the long-content source). | Option B (lower risk, same UX) |
 | C3 | Approve `custom.comfort_level` deletion (F1). Confirm no Shopify-side app/process relies on it. | confirm-then-delete |
 | C4 | Approve adding `choices` validator to `custom.firmness` with the 6 listed values. | yes |

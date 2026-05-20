@@ -17,7 +17,7 @@ We swap the position of two content blocks on every collection PLP, AND move the
 
 | | Now (v1 layout) | Proposed (v2 layout) |
 |---|---|---|
-| **Above product grid** (in `<header class="plp-hero">`) | Shopify-managed `collection.descriptionHtml` — **wildly variable** (0 → 465 words; see §3). | New `custom.intro_short` collection metafield (`multi_line_text_field`, **Shopify-enforced `min:300 max:600` chars** ≈ 60-80 words). Merchant fills per collection in the admin UI. Falls back to existing `categoryIntroFor()` template in code when the metafield is empty (zero-effort onboarding for new collections + a safety net for any unfilled handle). |
+| **Above product grid** (in `<header class="plp-hero">`) | Shopify-managed `collection.descriptionHtml` — **wildly variable** (0 → 465 words; see §3). | New `custom.intro_short` collection metafield (`multi_line_text_field`, **Shopify-enforced `min:300 max:600` chars** — roughly 55-100 words, squarely inside the industry-cited 50-100 word band). Merchant fills per collection in the admin UI. Falls back to existing `categoryIntroFor()` template in code when the metafield is empty (zero-effort onboarding for new collections + a safety net for any unfilled handle). |
 | **Below product grid** (`<PlpContentBlock>` server component) | Code-driven intro + FAQ + helpful pages + buying guides. | Existing Shopify `collection.descriptionHtml` (long, merchant-controlled, freely variable length) + FAQ + helpful pages + buying guides. |
 
 ### Why metafield-driven, not code-driven (the v1 → v2.1 pivot)
@@ -174,7 +174,7 @@ metafieldDefinitionCreate(definition: {
   namespace: "custom",
   key: "intro_short",
   name: "Short intro (above product grid)",
-  description: "Short SEO-rich intro shown above the product grid on the PLP. Target 60-80 words / ~350-500 chars. If left blank, the headless storefront falls back to the code-driven categoryIntroFor() template. Industry-standard category-page hook length per https://www.getpassionfruit.com/blog/how-to-optimize-category-pages-for-e-commerce-seo-in-2026",
+  description: "Short SEO-rich intro shown above the product grid on the PLP. Target ~55-100 words / 300-600 characters (industry sweet spot per https://www.getpassionfruit.com/blog/how-to-optimize-category-pages-for-e-commerce-seo-in-2026). Shopify enforces the 300/600 char min/max at save time. If left blank, the headless storefront falls back to the code-driven categoryIntroFor() template.",
   ownerType: COLLECTION,
   type: "multi_line_text_field",
   validations: [
@@ -192,7 +192,7 @@ metafieldDefinitionCreate(definition: {
 **Choices explained:**
 
 - **`multi_line_text_field`** over `rich_text_field`: short intros don't need formatting, plain text composes better with the existing `plp-hero-lede` CSS (no `<p>` wrapping issues), and avoids the editor surfacing formatting that would visually clash with the constrained hero space.
-- **`min:300, max:600` chars**: roughly 60-80 words at 5 chars/word average. Within the industry-cited 50-100 word band. Lower bound prevents one-line stubs ("Best mattresses!"); upper bound prevents the above-fold pushing problem.
+- **`min:300, max:600` chars**: roughly **55-100 words** at ~5.7 chars/word (English average including trailing space). Squarely inside the industry-cited 50-100 word band. Lower bound prevents one-line stubs ("Best mattresses!"); upper bound prevents the above-fold pushing problem.
 - **`PUBLIC_READ` storefront access**: required for the headless to read.
 - **Pinned**: surfaces at the top of the COLLECTION admin UI so merchant edits are 1-click after the rest of the cleanup (audit doc Phase 3) clears the dead pinned fields.
 
@@ -240,7 +240,7 @@ Default to **Option B** unless the merchant strongly prefers the all-metafield a
     <breadcrumbs/>
     <div class="plp-hero-inner">
       <h1>{collection.title}.</h1>
-      <p class="plp-hero-lede">                                       ← NEW: 60-80 words, consistent
+      <p class="plp-hero-lede">                                       ← NEW: ~55-100 words, consistent
         {collection.metafield('custom','intro_short')?.value
           ?? categoryIntroFor(collection.handle, collection.title)}
       </p>
@@ -329,22 +329,29 @@ This is the same pattern as `seo-backfill-product-seo.mjs` after the metafieldsS
 
 ---
 
-## 8. Rollout plan (phased, feature-flagged)
+## 8. Rollout plan (preview canary → 100% cutover, instant-rollback safety net)
 
-**Feature flag:** `NEXT_PUBLIC_PLP_LAYOUT_V2` — read in `app/collections/[handle]/page.tsx`. Default `false` (v1). Toggle via Vercel env var. Instant rollback by flipping to `false` + re-deploy (or use Vercel's instant rollback).
+**Stress-test correction (B3):** the earlier draft proposed a `NEXT_PUBLIC_PLP_LAYOUT_V2` env-var feature flag with 10% / 50% / 100% phasing. A `NEXT_PUBLIC_*` env var is a build-time constant — it's binary across all visitors, so it cannot deliver a percentage cohort split. Cohorting would require Edge Middleware + sticky cookie infrastructure that doesn't currently exist on this project. Given (a) the v2 swap is fully reversible via Vercel instant-rollback in ~1 minute (§9), (b) the test plan (§7) + cowork verification cover the manual surface, and (c) the storefront receives modest traffic (cohorting buys little statistical power on the metrics we care about), the simpler shape below is the right call.
 
-| Phase | Traffic | Duration | Exit criteria → next |
+| Phase | Surface | Duration | Exit criteria → next |
 |---|---|---|---|
-| **0. Preview** | 0% (preview deployments only) | 1-2 days | Manual smoke § 7.1 passes. Cowork verification (read-only) signs off layout + content fidelity on 12+ representative collections. |
-| **1. Canary** | 10% (Vercel split / Edge Middleware A/B) | 3-5 days | LCP @ p75 across the 7 long-body collections ≤ baseline. Zero new Sentry errors. Conversion within ±5% of v1 (telemetry §8.1). |
-| **2. Majority** | 50% | 3-5 days | Phase-1 criteria sustain. GA4 PLP engagement (scroll depth, product card clicks) within ±10% of v1. |
-| **3. Full** | 100% | — | v1 code path removed at next major release. |
+| **0. Preview canary** | Vercel preview deployment URL (not production) | 1-2 days | Manual smoke §7.1 passes on 12+ representative collections. Cowork verification (read-only) signs off layout + content fidelity. LCP measured on preview = production baseline ± 5%. |
+| **1. Production 100%** | All `/collections/*` traffic via main deploy | 48-72h watch window | LCP @ p75 across the 7 long-body collections ≤ baseline. Zero new Sentry errors. PLP→PDP clickthrough rate (§8.1) within ±5% of pre-cutover. |
+| **2. v1 code path removal** | Codebase | — | After 7 days at 100% with criteria sustained, delete the v1 hero `descriptionHtml` render path. |
 
-**Total rollout window: ~2 weeks from merge to 100%.**
+**Total rollout window: ~5 days from merge to confirmed-stable.** Two checkpoints: preview-canary sign-off (Phase 0 → 1) and 48-72h production watch (Phase 1 → 2).
+
+If anything regresses in Phase 1, instant-rollback via Vercel (§9 path 1) — no code change, ~1 minute. The v2 metafield + populated data persist through rollback; they just stop being read.
 
 ### 8.1 Telemetry
 
-Single GA4 custom event `plp_layout_render` with parameter `layout` (`v1` / `v2`) + `intro_source` (`metafield` / `fallback`) emitted on first interactive paint. Lets us attribute conversion delta both between v1/v2 cohorts and between metafield-populated vs fallback-only collections.
+Single GA4 custom event `plp_layout_render` with parameters `layout` (`v1` / `v2`) + `intro_source` (`metafield` / `fallback`) emitted on first interactive paint. After cutover, every visitor sees `layout=v2` — the comparison is pre-cutover (`layout=v1` baseline captured during the 48h preceding cutover) vs post-cutover (`layout=v2`).
+
+**Locked metric definitions (stress-test S6):**
+
+- **Primary conversion proxy:** PLP→PDP clickthrough rate per session (product card click on any `/collections/*` page → next `/products/*` pageview). Compare 7-day pre-cutover vs 7-day post-cutover, relative ±5%.
+- **Secondary:** Add-to-cart rate among sessions whose entry pageview was a `/collections/*` URL.
+- **Layout-source attribution:** `intro_source=fallback` vs `intro_source=metafield` engagement comparison once the backfill seeds most collections.
 
 No personally-identifiable data collected. No new third-party scripts.
 
@@ -352,15 +359,14 @@ No personally-identifiable data collected. No new third-party scripts.
 
 ## 9. Rollback plan
 
-Three rollback paths, in order of speed:
+Two rollback paths, in order of speed:
 
-1. **Vercel env var flip** (`NEXT_PUBLIC_PLP_LAYOUT_V2=false`) + redeploy: ~3 minutes, no code change.
-2. **Vercel instant rollback** to the deployment immediately before v2 went live: ~1 minute, no code change.
-3. **Git revert** the merge commit + redeploy: ~10 minutes, code change.
+1. **Vercel instant rollback** to the deployment immediately before v2 went live: ~1 minute, no code change, no merchant action. This is the primary rollback path.
+2. **Git revert** the merge commit + redeploy: ~10 minutes, code change. Useful when the v2 path needs partial keeping (e.g., the new metafield query stays but the layout reverts).
 
-The Shopify `collection.descriptionHtml` is untouched throughout — no merchant content lost on rollback. The new `custom.intro_short` metafield definition and any data written to it persist through rollback (they just stop being read when v2 is disabled). The `categoryIntroFor()` template is untouched throughout — no template edits to revert.
+The Shopify `collection.descriptionHtml` is untouched throughout — no merchant content lost on rollback. The new `custom.intro_short` metafield definition and any data written to it persist through rollback (they just stop being read by the storefront when v2 is rolled back). The `categoryIntroFor()` template is untouched throughout — no template edits to revert.
 
-If a single collection (not all) misbehaves, blacklist its handle from v2 via a small `PLP_V2_EXCLUDE_HANDLES` set in code without touching the global flag.
+If a single collection (not all) misbehaves, ship a small `PLP_V2_EXCLUDE_HANDLES` set in code listing the affected handle; that's a one-line patch and re-deploy (~5 minutes) without touching the rest of the rollout.
 
 ---
 
@@ -369,13 +375,13 @@ If a single collection (not all) misbehaves, blacklist its handle from v2 via a 
 | # | Decision | Default if no answer | Yes / No / Amend |
 |---|---|---|---|
 | D1 | **Approve the layout swap** as described in §6. | — | |
-| D2 | **Length validator on `custom.intro_short`:** `min:300 max:600` chars (≈ 60-80 words, industry sweet spot per §4). Or amend to e.g. `min:200 max:800` for a wider band. | 300-600 chars | |
+| D2 | **Length validator on `custom.intro_short`:** `min:300 max:600` chars (~55-100 words, industry sweet spot per §4). Or amend to e.g. `min:200 max:800` for a wider band. | 300-600 chars | |
 | D3 | **Approve creating the `custom.intro_short` collection metafield definition** in Shopify Admin via API (§5.1 spec). | yes | |
 | D4 | **Long-content source (audit C2):** Option B (keep `descriptionHtml`, delete the unused `custom.seo_content` definition) vs Option A (migrate `descriptionHtml` into `custom.seo_content`). | Option B (lower risk) | |
 | D5 | **Backfill helper script** (§6.3): ship `scripts/seo-backfill-collection-intro-short.mjs` so the merchant doesn't have to author all 64 intros manually from scratch. | yes | |
-| D6 | **Rollout phasing:** 10% → 50% → 100% over 2 weeks as in §8. Or amend (faster ramp / slower ramp). | 10/50/100 | |
+| D6 | **Rollout shape:** preview canary → 100% cutover with 48-72h watch + Vercel instant-rollback safety net (§8 revised per stress-test B3). Or amend (e.g., longer preview-only window before cutover). | preview canary → 100% | |
 | D7 | **The 5 zero-body collections** — fine for v2 to render fallback intro above + just FAQ/links below, or do you want to author Shopify `descriptionHtml` for them first? | fine as-is for v2; revisit in v3 | |
-| D8 | **Engineering can use 1-day prototype budget on a sandbox preview** for you to eyeball before the canary phase. Worth doing? | yes | |
+| D8 | **Engineering can use 1-day prototype budget on a Vercel preview deployment** for you to eyeball before the Phase 1 production cutover (§8). Worth doing? | yes | |
 | D9 | **Cleanup plan from the audit doc** (audit §C1, C3, C4, C5) — approved to bundle into the same PR as the v2 metafield creation, or split into a separate "Shopify metafields hygiene" PR? | bundle (simpler) | |
 
 ---
@@ -407,7 +413,7 @@ v2 is considered shipped when **all** of the following hold:
 - 100% of collection PLP traffic served by v2 code path.
 - v1 code path deleted from the codebase.
 - `custom.intro_short` metafield definition created and visible in Shopify Admin.
-- All 64 collections render: short intro (60-80w from `custom.intro_short` OR `categoryIntroFor()` fallback) above grid; FAQ + links + (where present) merchant `descriptionHtml` below grid.
+- All 64 collections render: short intro (~55-100w from `custom.intro_short` OR `categoryIntroFor()` fallback) above grid; FAQ + links + (where present) merchant `descriptionHtml` below grid.
 - Site-wide CWV p75 LCP unchanged or improved relative to pre-v2 baseline.
 - No SEO regression in `domain_organic_unique` for `/collections/*` URLs after a full 30-day window.
 - Schema validation green on a sample of 10 collections.
