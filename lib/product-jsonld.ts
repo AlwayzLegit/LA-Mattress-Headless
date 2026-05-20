@@ -173,6 +173,40 @@ function getVariantSize(variant: Product['variants'][number]): string | null {
   return sizeOpt?.value ?? null;
 }
 
+/**
+ * Meta-collections that aren't useful as a breadcrumb parent. These are
+ * cross-cutting groupings ("on-sale", "featured") rather than category
+ * hierarchies. When a product is in a meta-collection AND a real
+ * category collection, prefer the real category for the breadcrumb.
+ */
+const META_COLLECTION_HANDLES = new Set([
+  'all', 'all-products', 'frontpage', 'featured', 'on-sale',
+  'new-arrivals', 'best-sellers', 'best-selling', 'sale',
+  'clearance', 'mattresses', // 'mattresses' is the root category — we
+                              // surface it as position 2 in every PDP
+                              // breadcrumb already; using it again as
+                              // position 3 would duplicate the path.
+]);
+
+/**
+ * Pick the most-specific category collection for a product's breadcrumb.
+ * Returns null when the product is only in meta-collections or has no
+ * collections at all — caller falls back to the 2-level breadcrumb
+ * (Home → Mattresses → Product).
+ *
+ * Exported so the visible PDP breadcrumb in app/products/[handle]/page.tsx
+ * uses the same primary-collection logic as the JSON-LD breadcrumb. The
+ * two must agree per Google's structured-data spec — a JSON-LD path
+ * that doesn't match the visible page is flagged as a mismatch in
+ * Search Console and can suppress the rich result.
+ */
+export function pickPrimaryCollection(collections: Product['collections']): Product['collections'][number] | null {
+  for (const c of collections) {
+    if (!META_COLLECTION_HANDLES.has(c.handle)) return c;
+  }
+  return null;
+}
+
 export function getProductJsonLd(product: Product): ProductLd[] {
   const min = product.priceRange.minVariantPrice;
   const max = product.priceRange.maxVariantPrice;
@@ -289,15 +323,38 @@ export function getProductJsonLd(product: Product): ProductLd[] {
       : {}),
   };
 
+  // Primary-collection-aware breadcrumb. When the product is in a real
+  // category collection (memory-foam-mattresses, hybrid-mattresses,
+  // tempur-pedic-mattresses, etc.), insert it as position 3. Falls back
+  // to the 2-level (Home → Mattresses → Product) path when the product
+  // has no real category — meta-only or uncategorized.
+  // Must match the visible PDP breadcrumb (app/products/[handle]/page.tsx)
+  // exactly; Google flags JSON-LD breadcrumbs that diverge from the
+  // visible page in Search Console as a structured-data mismatch.
+  const primaryCollection = pickPrimaryCollection(product.collections);
+  const breadcrumbItems: unknown[] = [
+    { '@type': 'ListItem', position: 1, name: 'Home',       item: `${SITE}/` },
+    { '@type': 'ListItem', position: 2, name: 'Mattresses', item: `${SITE}/collections/mattresses` },
+  ];
+  if (primaryCollection) {
+    breadcrumbItems.push({
+      '@type': 'ListItem',
+      position: breadcrumbItems.length + 1,
+      name: primaryCollection.title,
+      item: `${SITE}/collections/${primaryCollection.handle}`,
+    });
+  }
+  breadcrumbItems.push({
+    '@type': 'ListItem',
+    position: breadcrumbItems.length + 1,
+    name: product.title,
+    item: productUrl,
+  });
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     '@id': `${productUrl}#breadcrumb`,
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home',       item: `${SITE}/` },
-      { '@type': 'ListItem', position: 2, name: 'Mattresses', item: `${SITE}/collections/mattresses` },
-      { '@type': 'ListItem', position: 3, name: product.title, item: productUrl },
-    ],
+    itemListElement: breadcrumbItems,
   };
 
   return [

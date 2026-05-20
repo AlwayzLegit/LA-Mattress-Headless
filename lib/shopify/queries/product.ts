@@ -26,9 +26,10 @@ type RawMetafield = { value: string; type: string } | null;
 
 type Raw = {
   product:
-    | (Omit<Product, 'images' | 'variants' | 'reviews' | 'specs' | 'editorial'> & {
+    | (Omit<Product, 'images' | 'variants' | 'collections' | 'reviews' | 'specs' | 'editorial'> & {
         images: { nodes: Product['images'] };
         variants: { nodes: Product['variants'] };
+        collections: { nodes: Product['collections'] };
         ratingMetafield?: RawMetafield;
         ratingCountMetafield?: RawMetafield;
         judgemeBadgeMetafield?: RawMetafield;
@@ -257,6 +258,7 @@ export const getProductByHandle = cache(async (handle: string): Promise<Product 
     ...rest,
     images: data.product.images.nodes,
     variants: data.product.variants.nodes,
+    collections: data.product.collections.nodes,
     reviews: parseReviewsMetafields(ratingMetafield, ratingCountMetafield, judgemeBadgeMetafield),
     specs: parseSpecMetafields({
       firmnessMetafield, heightMetafield, materialMetafield, warrantyMetafield, trialMetafield,
