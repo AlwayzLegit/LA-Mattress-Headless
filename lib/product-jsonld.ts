@@ -25,6 +25,11 @@ export function getProductJsonLd(product: Product): ProductLd[] {
     '@type': 'Product',
     '@id': `${productUrl}#product`,
     url: productUrl,
+    // breadcrumb @id ties this Product to the BreadcrumbList emitted
+    // alongside it (same layout.tsx render). Google's structured-data
+    // graph parses the two as connected entities for a single page
+    // instead of two disjoint nodes.
+    breadcrumb: { '@id': `${productUrl}#breadcrumb` },
     name: product.title,
     description: product.description.slice(0, 5000),
     ...(firstSku ? { sku: firstSku } : {}),
@@ -61,6 +66,7 @@ export function getProductJsonLd(product: Product): ProductLd[] {
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    '@id': `${productUrl}#breadcrumb`,
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home',       item: 'https://www.mattressstoreslosangeles.com/' },
       { '@type': 'ListItem', position: 2, name: 'Mattresses', item: 'https://www.mattressstoreslosangeles.com/collections/mattresses' },
