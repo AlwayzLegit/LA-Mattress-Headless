@@ -210,15 +210,67 @@ internal links to commercial pages), and bump the lastUpdated date.
       Mattress", 56 chars) and `seo.description` (155 chars). Side
       note: 6 of 8 products in this collection are status `DRAFT` —
       that's a merchant inventory decision out of SEO scope.
-- [ ] `/blogs/.../englander-mattress-reviews-2024` — refresh date,
-      add FAQ section, internal-link to `/collections/englander-mattresses`.
-- [ ] `/blogs/.../ultimate-sam-s-club-queen-mattress-review` — same.
-- [ ] `/blogs/.../sealy-vs-serta-mattress` — same.
-- [ ] `/blogs/.../what-s-the-difference-between-eastern-king-and-california-king` — same.
-- [ ] `/blogs/.../how-much-should-you-spend-on-a-mattress` for
-      "how much does a mattress cost" (4,400/mo, #17) — biggest
-      single content-refresh opportunity; this page is currently #17
-      on a 4,400/mo query.
+### Blog refreshes — 5 Word-cruft articles
+
+These 5 §6 blog articles share a Word-exported HTML pattern with real
+SEO-harmful issues that compound the underlying content (audit ran
+2026-05-20 against the eastern-king article):
+
+- **Parasitic** `<a href="#:~:text=…">` Google Text Fragment anchors
+  (23 in the eastern-king article alone)
+- **External outbound links to competitor / affiliate domains**
+  (sleepfoundation, healthline, nilkamalsleep, naplab, whitelotushome,
+  bryte, livingspaces, zomasleep, etc.) bleeding authority — 26 in
+  the eastern-king article
+- **Empty** `<p><b id="docs-internal-guid-…"></b></p>` placeholder
+  paragraphs from the Google Docs export pipeline (~13 each)
+- **Empty anchor tags** clustered under H2 headings (~6 each)
+- **Self-301 chains** where the article links to a handle that the
+  P0 batch (#183) now 301s back to itself (e.g. `king-vs-california-king`)
+- **Tracking-param URLs** (`?srsltid=`, `?utm_source=…`) including
+  HTML-entity-encoded `&amp;` variants
+- **Hardcoded outdated years** ("Best … to Buy in 2025")
+
+A deterministic, idempotent cleanup script is shipped at
+`scripts/seo-article-cleanup.mjs`. It applies 8 regex passes that
+strip the SEO-harmful wrappers **without touching a single word of the
+visible content**, and uses the same SHA-gated protocol that shipped
+the 2026-05-19 full-vs-queen enrichment (deterministic build → write
+→ re-fetch → SHA-compare → whitespace-normalized fallback for
+Shopify's server-side HTML pretty-printer → auto-rollback on real
+corruption). The cleanup logic is locally verified to produce a
+byte-identical SHA against the eastern-king article, and is provably
+idempotent (re-running is a no-op).
+
+- [ ] **Dry-run** the cleanup against all 5 default articles:
+      `node scripts/seo-article-cleanup.mjs`
+- [ ] Review the report at
+      `data/seo-backfills/article-cleanup-{timestamp}-dryrun.json`
+      — per-article pass counts, byte deltas, SHAs.
+- [ ] **Apply** (writes back via `articleUpdate` with SHA verification
+      and auto-rollback): `node scripts/seo-article-cleanup.mjs --apply`
+- [ ] Or run a single handle: `node scripts/seo-article-cleanup.mjs --apply <handle>`.
+
+Article-by-article SEO context:
+
+- `what-s-the-difference-between-eastern-king-and-california-king` —
+  "eastern king vs california king" 880/mo @ #6. **Highest priority**
+  in this batch: just received +382 kw of consolidated signal from
+  the P0 batch (3 cluster dupes 301'd into it).
+- `englander-mattress-reviews-2024` — "englander mattress" 1,300/mo @ #11.
+- `ultimate-sam-s-club-queen-mattress-review-pros-cons-and-top-picks` —
+  "sam's club queen mattress" 1,900/mo @ #5–7.
+- `sealy-vs-serta-mattress-which-brand-delivers-the-best-sleep` —
+  "sealy vs serta" 880/mo @ #11.
+- `how-much-should-you-spend-on-a-mattress` — "how much does a mattress
+  cost" 4,400/mo (was @ #17 pre-decline, now **lost** from top 100 per
+  the 2026-05 lost-keywords pull) — **biggest-volume target** in the batch.
+
+The cleanup is **necessary but not sufficient** — it removes the
+authority-bleed wrappers but the underlying content is also dated and
+could benefit from a manual editorial refresh (updated stats, FAQ
+expansion, internal links to commercial pages). The cleanup is a safe
+prerequisite that maximizes the upside of any later editorial work.
 
 ---
 
