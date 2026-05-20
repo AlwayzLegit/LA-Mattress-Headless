@@ -173,6 +173,13 @@ export const PRODUCT_FRAGMENT = /* GraphQL */ `
       maxVariantPrice { ...MoneyFields }
     }
     seo { ...SeoFields }
+    # Phase 297: surface up to 5 collections this product belongs to so
+    # the PDP breadcrumb + JSON-LD can identify a "primary" parent
+    # category (Memory Foam, Hybrid, etc.) rather than hardcoding
+    # "Mattresses". Filtered down to a single primary in code via a
+    # meta-collection deny-list (all, featured, on-sale, new-arrivals,
+    # best-sellers, etc.). Light fetch: just handle + title per row.
+    collections(first: 5) { nodes { handle title } }
     ${REVIEWS_METAFIELDS}
     ${SPEC_METAFIELDS}
     ${EDITORIAL_METAFIELDS}

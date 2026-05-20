@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { getCollectionByHandle } from '@/lib/shopify';
+import { isMattressSubCategoryHandle } from '@/lib/collection-jsonld';
 import type { CollectionSort } from '@/lib/shopify';
 import { collections as inventoryCollections, findCollection } from '@/lib/inventory';
 import { getCollectionSiblings } from '@/lib/collection-siblings';
@@ -181,7 +182,18 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="sep" aria-hidden="true">/</span>
-          {collection.handle !== 'mattresses' ? (
+          {/*
+            Insert the Mattresses parent only when the collection is
+            actually a mattress sub-category (handle ends in
+            `-mattresses`). Bedding-accessory collections (pillows,
+            sheets, mattress-toppers, etc.) and the root mattresses
+            collection itself stay at 2 levels — they don't belong
+            under /collections/mattresses in the natural hierarchy.
+            Must match isMattressSubCategoryHandle() in
+            lib/collection-jsonld.ts so the visible breadcrumb
+            agrees with the JSON-LD BreadcrumbList.
+          */}
+          {isMattressSubCategoryHandle(collection.handle) ? (
             <>
               <Link href="/collections/mattresses">Mattresses</Link>
               <span className="sep" aria-hidden="true">/</span>

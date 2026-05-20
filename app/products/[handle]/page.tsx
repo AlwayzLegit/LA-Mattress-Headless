@@ -9,6 +9,7 @@ import type { Product, ProductSummary } from '@/lib/shopify';
 import { products as inventoryProducts, findProduct } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { pickPrimaryCollection } from '@/lib/product-jsonld';
 import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
@@ -218,6 +219,19 @@ function ProductView({ product, related }: { product: Product; related: ProductS
         <Link href="/">Home</Link>
         <span className="sep" aria-hidden="true">/</span>
         <Link href="/collections/mattresses">Mattresses</Link>
+        {(() => {
+          // Primary-collection-aware breadcrumb. Must match the JSON-LD
+          // BreadcrumbList emitted in lib/product-jsonld.ts — Google
+          // flags any divergence between visible breadcrumb and JSON-LD
+          // as a structured-data mismatch in Search Console.
+          const primary = pickPrimaryCollection(product.collections);
+          return primary ? (
+            <>
+              <span className="sep" aria-hidden="true">/</span>
+              <Link href={`/collections/${primary.handle}`}>{primary.title}</Link>
+            </>
+          ) : null;
+        })()}
         <span className="sep" aria-hidden="true">/</span>
         <span>{product.title}</span>
       </nav>

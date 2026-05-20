@@ -107,6 +107,9 @@ export type ProductEditorial = {
   layers: ProductLayer[];
 };
 
+/** Slim collection summary attached to a Product — handle + title only. */
+export type ProductCollectionRef = { handle: string; title: string };
+
 export type Product = {
   id: string;
   handle: string;
@@ -126,6 +129,12 @@ export type Product = {
   priceRange: { minVariantPrice: Money; maxVariantPrice: Money };
   compareAtPriceRange: { minVariantPrice: Money; maxVariantPrice: Money };
   seo: Seo;
+  /**
+   * Up to 5 collections this product belongs to (Phase 297). Used by
+   * the PDP breadcrumb + Product JSON-LD to pick a "primary" parent
+   * category instead of hardcoding "Mattresses".
+   */
+  collections: ProductCollectionRef[];
   reviews: ProductReviews | null;
   specs: ProductSpecs;
   editorial: ProductEditorial;
