@@ -1,0 +1,62 @@
+{
+  "ts": "2026-05-20T23:07:45Z",
+  "mode": "apply",
+  "execution": "Final batch — direct via Shopify Admin MCP (graphql_mutation articleUpdate). Closes out the back-pain cluster's Related-reading link graph. All 10 articles in the cluster now ship Related-reading sections.",
+  "operator": "Claude (Anthropic)",
+  "cms_hygiene": "Same pattern as batches 1+2: bodies generated locally from canonical fetches (Phase 1 graphql_query), Related reading section appended, articleUpdate via MCP. Zero userErrors across all 10 mutations spanning the 3 batches.",
+  "articles_updated": [
+    {
+      "id": "gid://shopify/Article/589951762685",
+      "handle": "best-mattress-for-chronic-pain",
+      "role": "condition-specific — chronic pain (umbrella)",
+      "updatedAt": "2026-05-20T23:03:48Z",
+      "related_links_added": [
+        "best-mattress-for-back-pain",
+        "what-is-the-best-mattress-for-fibromyalgia-pain-relief",
+        "best-mattress-for-joint-pain",
+        "best-mattress-for-shoulder-and-neck-pain"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/589888717053",
+      "handle": "best-mattress-for-shoulder-and-neck-pain",
+      "role": "condition-specific — shoulder + neck",
+      "updatedAt": "2026-05-20T23:07:45Z",
+      "related_links_added": [
+        "best-mattress-for-back-pain",
+        "best-mattress-for-joint-pain",
+        "best-mattress-for-bad-back",
+        "what-is-the-best-mattress-for-fibromyalgia-pain-relief"
+      ]
+    }
+  ],
+  "totals": {
+    "articles_updated": 2,
+    "new_internal_links_added": 8,
+    "user_errors": 0
+  },
+  "cluster_complete": true,
+  "cluster_final_status": {
+    "total_articles": 10,
+    "all_completed": true,
+    "completed_across_3_prs": [
+      { "handle": "best-mattress-for-back-pain", "role": "pillar", "pr": "#215" },
+      { "handle": "best-mattress-for-sciatica", "role": "condition-specific", "pr": "#215" },
+      { "handle": "best-mattress-for-hip-pain", "role": "condition-specific", "pr": "#215" },
+      { "handle": "best-mattress-for-lumbar-pain", "role": "condition-specific", "pr": "#215" },
+      { "handle": "best-mattress-for-sacroiliac-joint-pain", "role": "condition-specific", "pr": "#215" },
+      { "handle": "what-is-the-best-mattress-for-fibromyalgia-pain-relief", "role": "condition-specific", "pr": "#216" },
+      { "handle": "best-mattress-for-bad-back", "role": "condition-specific", "pr": "#216" },
+      { "handle": "best-mattress-for-joint-pain", "role": "secondary anchor", "pr": "#216" },
+      { "handle": "best-mattress-for-chronic-pain", "role": "umbrella", "pr": "this PR" },
+      { "handle": "best-mattress-for-shoulder-and-neck-pain", "role": "condition-specific", "pr": "this PR" }
+    ],
+    "cumulative_new_internal_links": 43
+  },
+  "seo_impact": "Pain cluster is now a fully-connected internal-link graph. Every article in the cluster has 4-6 inbound + 4-6 outbound contextual links to topical siblings. The back-pain pillar carries the strongest concentration of inbound authority signals; condition-specific articles benefit from cross-cluster discoverability for shoppers who arrive on a specific condition page and want to compare to related conditions. Combined 43 new internal links across 10 articles, all with descriptive anchor text (not raw titles) for stronger relevance signaling to Google.",
+  "next_options": [
+    "Size cluster — queen vs king, what-is-size articles, ~6-8 articles. Similar pattern.",
+    "Reverse links to the 3 new LA pillar articles (best-mattress-los-angeles, mattress-store-near-me-los-angeles, mattress-financing-options-los-angeles) from older popular articles. Out-of-scope flag from Phase 297.",
+    "Material cluster — memory foam vs hybrid vs latex articles cross-linking."
+  ]
+}
