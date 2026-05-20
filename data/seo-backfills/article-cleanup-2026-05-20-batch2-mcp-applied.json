@@ -1,0 +1,79 @@
+{
+  "ts": "2026-05-20T15:22:27Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation articleUpdate). Followup batch to article-cleanup-2026-05-20-corpus-applied.json — wider scan of 20 promotional/seasonal candidates from mattress-buying-guide.",
+  "operator": "Claude (Anthropic)",
+  "scan": {
+    "candidates_scanned": 20,
+    "cleanup_worthy": 3,
+    "hit_rate": "15%",
+    "method": "Bulk-fetched bodies via nodes(ids: [...]) query, dry-ran /tmp/article-clean.mjs on each, applied to articles with >5 external_unwraps OR delta > -500 chars"
+  },
+  "results": [
+    {
+      "handle": "best-black-friday-mattress-deals-in-la",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/590497644797",
+      "appliedAt": "2026-05-20T15:03:02Z",
+      "origLen": 30894,
+      "newLen": 29381,
+      "delta": -1513,
+      "balanced": {"aOpens": 35, "aCloses": 35, "pOpens": 122, "pCloses": 122, "aOk": true, "pOk": true},
+      "passCounts": {"external_unwraps": 16}
+    },
+    {
+      "handle": "black-friday-deals-on-twin-mattresses",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/590507376893",
+      "appliedAt": "2026-05-20T15:19:27Z",
+      "origLen": 33204,
+      "newLen": 31712,
+      "delta": -1492,
+      "balanced": {"aOpens": 31, "aCloses": 31, "pOpens": 135, "pCloses": 135, "aOk": true, "pOk": true},
+      "passCounts": {"external_unwraps": 15}
+    },
+    {
+      "handle": "are-local-mattress-stores-better-than-online-deals-7-reasons-why",
+      "status": "APPLIED",
+      "id": "gid://shopify/Article/594430460157",
+      "appliedAt": "2026-05-20T15:22:27Z",
+      "origLen": 26706,
+      "newLen": 24825,
+      "delta": -1881,
+      "balanced": {"aOpens": 20, "aCloses": 20, "pOpens": 90, "pCloses": 90, "aOk": true, "pOk": true},
+      "passCounts": {"external_unwraps": 13, "strip_srsltid_lit": 10, "orphan_trailing_q": 10}
+    }
+  ],
+  "skipped_clean": [
+    "best-black-friday-mattress-sale-in-la",
+    "best-black-friday-deals-on-furniture",
+    "black-friday-mattress-sale-in-koreatown",
+    "black-friday-mattress-sale-in-hancock-park",
+    "best-memorial-day-sale-king-mattresses-2024",
+    "memorial-day-sale-mattresses-under-1000",
+    "memorial-day-sale-mattresses-under-2000",
+    "memorial-day-sale-mattresses-under-3000",
+    "best-memorial-day-sale-queen-mattresses",
+    "best-memorial-day-sale-memory-foam-mattresses",
+    "top-memorial-day-sale-mattresses-2024",
+    "best-memorial-day-sale-spring-air-mattresses",
+    "best-memorial-day-sale-chattam-wells-mattresses",
+    "best-deals-on-king-sized-mattresses",
+    "queen-mattress-box-spring-sets-on-a-budget-best-deals-this-month",
+    "how-to-score-a-queen-mattress-deal-during-memorial-day-sales",
+    "navigating-black-friday-queen-mattress-sales-top-5-stores-to-watch"
+  ],
+  "skipped_reason": "Dry-run cleanup produced 0 changes — these articles were authored directly in Shopify Admin (or post-cleanup) without the Word-export cruft signature.",
+  "totals": {
+    "candidates_scanned": 20,
+    "articles_applied": 3,
+    "articles_skipped": 17,
+    "chars_removed_total": -4886,
+    "external_links_unwrapped": 44,
+    "tracking_params_stripped": 10,
+    "orphan_trailing_questions_stripped": 10,
+    "user_errors": 0
+  },
+  "verification": "All 3 articles re-fetched after applyUpdate. Re-running cleanup on each live body produces 0 changes (idempotent). Balance check (a/p tag counts) passes on every cleaned body. No PLACEHOLDER remnants from agent-assisted apply.",
+  "expected_seo_impact": "44 external competitor link wrappers unwrapped to plain text (mostly sleepfoundation.org variants). Stops bleeding PageRank to competitor domains in the Black Friday / deals article cluster. Total -4,886 chars removed across the 3 articles."
+}
