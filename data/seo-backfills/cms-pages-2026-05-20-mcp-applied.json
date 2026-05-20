@@ -1,0 +1,78 @@
+{
+  "ts": "2026-05-20T15:34:32Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation pageUpdate). Body rewrites + design/content improvements on 2 CMS pages.",
+  "operator": "Claude (Anthropic)",
+  "scope": "Content + design improvement pass on 4 user-flagged CMS pages. Two pages received body updates via pageUpdate; the other two received template/component improvements via code (PR #208).",
+  "pages_body_updated": [
+    {
+      "handle": "love-your-bed-guarantee",
+      "id": "gid://shopify/Page/104205680893",
+      "status": "APPLIED",
+      "appliedAt": "2026-05-20T15:31:38Z",
+      "origLen": 2165,
+      "newLen": 8988,
+      "delta": 6823,
+      "additions": [
+        "4-step 'How the 120-night exchange works' ordered list (was a paragraph)",
+        "'How LA Mattress compares' comparison table (vs big-box retailer + online-only brand) with 6 policy details",
+        "'Tips to make the exchange smooth' bullet list (4 actionable tips)",
+        "8 FAQ Q&As at body level (also surfaces as FAQPage JSON-LD via lib/faq-extra.ts)",
+        "Expanded internal linking: 18 internal links (was 3) — to /collections/mattresses, /sleep-quiz, /pages/mattress-store-financing, etc."
+      ],
+      "verification": "Re-fetched after apply; body intact, comparison table renders, no PLACEHOLDER strings, all internal links present. The +44 byte size diff from source file is Shopify's HTML sanitizer formatter inserting newlines inside <li>/<tr>/<td> tags — content identical."
+    },
+    {
+      "handle": "mattress-store-financing",
+      "id": "gid://shopify/Page/104211972349",
+      "status": "APPLIED",
+      "appliedAt": "2026-05-20T15:34:32Z",
+      "origLen": 3424,
+      "newLen": 11022,
+      "delta": 7598,
+      "additions": [
+        "'Synchrony vs Acima — side-by-side' comparison table (8 policy details, including credit-pull type, approval ceiling, terms, deferred interest, etc.)",
+        "'Example monthly payments' table (4 purchase amounts × 4 terms = 16 illustrative payment values)",
+        "'What both options offer' expanded bullet list (6 items, was 4)",
+        "'How to apply' 3-step ordered list (was implicit in body text)",
+        "'Other ways to pay' bullet list (cards, Apple Pay, Google Pay, ACH, PayPal, Affirm/Klarna)",
+        "7 FAQ Q&As at body level (in addition to the 5 already in lib/faq-extra.ts for FAQPage JSON-LD)",
+        "Expanded internal linking: 19 internal links (was 4) — to /collections/adjustable-beds, /collections/bed-frames, /pages/mattress-store-delivery, etc."
+      ],
+      "verification": "Re-fetched after apply; both tables render, comparison data correct, FAQ section intact, no PLACEHOLDER strings. The +81 byte size diff from source file is Shopify's HTML sanitizer formatter inserting newlines inside table cells and list items — content identical."
+    }
+  ],
+  "pages_with_code_improvements": [
+    {
+      "handle": "mattress-store-locations",
+      "component": "LocationsIndexPage in app/pages/[handle]/page.tsx",
+      "changes": "Showroom cards now include storefront photo (from showroom.imageUrl), open/closed status chip (ShowroomOpenStatus), today's hours summary, cross-street snippet, 'Serving X areas' line from nearbyAreas. Added trust strip (delivery/exchange/financing) above grid, 'Why visit a showroom' content section, and 'Not sure where to start' CTA section. CSS additions in app/globals.css: .locations-trust, .location-card-rich, .location-card-photo, .location-card-hours, .location-card-areas.",
+      "rationale": "The merchant's 31KB Hydrogen-theme body never rendered (CSS classes absent in this storefront). Replacing the minimal name+address+phone card with native-component-driven richer cards uses the data already in lib/showrooms.ts (photos, hours, geo, areas served) so the page actually answers 'which showroom is right for me'."
+    },
+    {
+      "handle": "mattress-store-delivery",
+      "component": "lib/faq-extra.ts CMS_PAGE_FAQS map",
+      "changes": "Added 6 FAQ entries — 'Is mattress delivery actually free in LA', 'How fast can I get a mattress delivered', 'Do you take away my old mattress for free', 'Can you deliver to a 2nd-floor apartment with no elevator', 'Will you set up the mattress on my bed frame', 'What if I am not home when you arrive'. FAQPage JSON-LD now ships on this page via getCmsPageFaq() → genericPageLd().",
+      "rationale": "Body content was already substantive (10KB) — the real win was adding structured-data markup for Rich Results eligibility. No body update needed."
+    }
+  ],
+  "site_wide_css_improvements": {
+    ".rte tables": "Banded even rows, dedicated thead styling, border-radius container, 14px header font, responsive padding on mobile. Visible across all CMS page bodies that use tables (financing, guarantee, etc.).",
+    "rationale": "The existing .rte table styling was minimal — just border-bottom on cells. The new styling lifts visual quality on every Shopify-body table without per-page CSS overrides."
+  },
+  "totals": {
+    "pages_body_updated": 2,
+    "pages_code_improved": 2,
+    "body_chars_added": 14421,
+    "tables_added": 3,
+    "faq_qas_added_body": 15,
+    "faq_qas_added_jsonld": 13,
+    "user_errors": 0
+  },
+  "verification": "Both pageUpdate mutations verified via re-fetch; live bodies match source files within Shopify HTML formatter tolerance (~50-100 byte newline insertions). All H2/H3 sections present, both comparison tables render, FAQ sections intact, every internal link verified non-malformed. No PLACEHOLDER strings anywhere. Local React + CSS changes pass tsc + next build (33 routes).",
+  "followup": [
+    "After deploy: Rich Results Test on /pages/love-your-bed-guarantee and /pages/mattress-store-delivery to confirm FAQPage schema emission",
+    "After deploy: /pages/mattress-store-locations visual QA — showroom photos load, trust strip above grid, open/closed status chip per card",
+    "Optional next pass: extend the same body-improvement pattern to /pages/mattress-warranty, /pages/about-us, /pages/contact-us"
+  ]
+}
