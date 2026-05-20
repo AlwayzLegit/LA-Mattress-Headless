@@ -1,0 +1,45 @@
+{
+  "ts": "2026-05-20T13:35:00Z",
+  "mode": "analysis_only",
+  "execution": "Read-only audit via Shopify Admin MCP (graphql_query) — investigating the `custom.description_` collection metafield (trailing-underscore typo from earlier theme era). Did NOT apply any changes because the content is unique merchant-authored copy, not a duplicate of `custom.seo_content`.",
+  "operator": "Claude (Anthropic)",
+  "tally": {
+    "total_collections": 64,
+    "has_description_": 25,
+    "has_seo_content": 49,
+    "has_both": 25,
+    "has_only_description_": 0,
+    "has_only_seo_content": 24,
+    "has_neither": 14
+  },
+  "code_audit": "Storefront code (lib/shopify/, app/) reads `custom.intro_short` (above PLP grid) and `custom.seo_content` (below PLP grid, PR #193). `custom.description_` is NOT read anywhere — the ~26KB of merchant content in this metafield is currently invisible to visitors.",
+  "content_uniqueness_check": "Sampled 2 collections (mattresses, queen-size-mattresses). Both have DIFFERENT copy in description_ vs seo_content — not duplicates. description_ contains older generic copy (e.g., 'After a day there's nothing quite like sinking into the cozy embrace of your bed...'), seo_content contains newer LA-specific SEO-optimized copy (e.g., 'Find Your Perfect Mattress in Los Angeles').",
+  "recommended_paths_in_order_of_value": [
+    {
+      "name": "Merge description_ content into seo_content",
+      "value": "Preserves ~26KB of merchant-authored copy + surfaces it to visitors + future writes go to a single canonical field. Best SEO + content-preservation outcome.",
+      "risk": "Requires care: seo_content is rich-text JSON AST. Naive concat of two ASTs is straightforward (children arrays merge), but the resulting flow may read awkwardly if the two pieces overlap topically. Merchant should review the merged output before deletion of description_.",
+      "execution": "For each of 25 collections: parse both metafields as JSON, build merged AST with description_ children appended after seo_content children, write to seo_content via metafieldsSet, then delete description_ via metafieldsDelete."
+    },
+    {
+      "name": "Surface description_ as a separate block on the PLP",
+      "value": "Zero data risk — just adds another rendering surface on collection pages. More on-page content for crawl signals.",
+      "risk": "Likely creates pages with two competing long-form sections. SEO value diminishes when the second section is older / weaker copy. UX gets cluttered.",
+      "execution": "Add `descriptionUnderscore` to the collection query + render with the same rich-text serializer + sanitizer used by seo_content."
+    },
+    {
+      "name": "Delete description_ data + metafield definition",
+      "value": "Cleanest Admin UX — no orphaned metafields visible in Shopify Admin.",
+      "risk": "DESTRUCTIVE — 26KB of merchant-authored content lost. Cannot recover without backup. Should only happen with explicit merchant approval after they confirm the content is obsolete.",
+      "execution": "metafieldsDelete on 25 collections + metafieldDefinitionDelete on the definition. Snapshot the values to a JSON backup before deletion."
+    },
+    {
+      "name": "Leave as-is",
+      "value": "Zero risk. The orphaned data has no SEO impact (storefront doesn't read it) and no cost beyond admin UI clutter.",
+      "risk": "None. But the cleanup never happens.",
+      "execution": "No changes."
+    }
+  ],
+  "user_decision_needed": "Which of the 4 paths to take. Recommendation: Path 1 (merge) — preserves the merchant's authored content while consolidating to a single field the storefront actually reads. If the merchant prefers a manual review of each collection's merged output, Path 3 (delete) is the lighter-touch alternative.",
+  "blocked_until": "Merchant confirms which option."
+}

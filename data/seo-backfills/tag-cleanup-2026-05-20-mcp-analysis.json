@@ -1,0 +1,30 @@
+{
+  "ts": "2026-05-20T13:25:00Z",
+  "mode": "analysis_only",
+  "execution": "Read-only audit via Shopify Admin MCP (graphql_query) — did NOT apply any tag changes because the catalog has smart collections whose ruleSets depend on these tags. Removing a tag without first auditing every collection rule + Search & Discovery facet config could silently break category pages.",
+  "operator": "Claude (Anthropic)",
+  "source_audit": "data/seo-backfills/tag-cleanup-2026-05-14T22-18-37.csv (196 products, 176 flagged for ≥20 tags or near-duplicate groups)",
+  "constraint_discovered": {
+    "smart_collections_using_tags": 30,
+    "examples": [
+      { "collection_handle": "mattresses-for-side-sleepers", "required_tags": ["Plush Mattresses", "Medium Mattresses", "Medium Memory Foam Mattresses"] },
+      { "collection_handle": "extra-firm-mattresses", "required_tags": ["mattress", "Extra Firm", "Extra Firm Mattresses"] },
+      { "collection_handle": "ultra-plush-mattresses", "required_tags": ["Ultra Plush Mattresses"] },
+      { "collection_handle": "tempur-pedic-mattresses", "required_tags": ["Brand_Tempur-Pedic", "mattress"] },
+      { "collection_handle": "queen-size-mattresses", "required_tags": ["mattress", "Size_Queen"] },
+      { "collection_handle": "diamond-mattresses", "required_tags": ["Brand_Diamond", "mattress"] }
+    ],
+    "implication": "Any near-duplicate that looks redundant (e.g., `Plush Mattresses` next to `Plush California King Size Mattresses`) is actually a separate collection's primary filter rule. Deleting it depopulates that collection page."
+  },
+  "safe_deletions_identified": {
+    "lowercase_brand_duplicates": ["chattam", "Diamond", "eastman", "Englander", "harvest", "scandinavian", "Stearns", "Tempur"],
+    "rationale": "These are lowercase/partial variants of the `Brand_X` canonical tag. None of the 50 smart collections audited reference these forms (they all use `Brand_Chattam & Wells`, `Brand_Diamond`, etc.). LIKELY safe to remove. Caveat: this analysis does NOT see Shopify Search & Discovery filter facet config, which may also reference tag names. If that config uses one of these lowercase forms, a search facet chip could break.",
+    "estimated_products_affected": "~150 products carry one of these lowercase brand duplicates alongside the Brand_X form."
+  },
+  "required_for_apply": [
+    "Merchant confirms no Shopify Search & Discovery filter group references any of the lowercase brand tags (chattam, Diamond, eastman, Englander, harvest, scandinavian, Stearns, Tempur). Check at: Shopify Admin → Online Store → Search & Discovery → Filters.",
+    "Once confirmed, this audit JSON + a follow-up apply script can bulk-remove those 8 tags from the ~150 affected products via productUpdate.",
+    "Larger cleanup (the 50+ `[Firmness] [Brand] [Size] Mattresses` combinatorial tags) requires per-collection review — for every `Extra Firm Eastman House Innerspring Mattresses`-style tag, the merchant decides whether the collection that depends on it is still active or can be deprecated."
+  ],
+  "do_not_auto_apply": "Tags `mattress`, `Size_*`, `Brand_*`, `Type_*`, `Firm`, `Medium`, `Plush`, `Extra Firm`, `Hybrid`, `clearance`, `best seller`, `Comfort_*`, `material_*`, `bed_frame`, `adjustable_bed`, `adjustable-base`, `mattress protector`, `mattress topper`, `organic`, `popular`, `Foam Mattress`, `Type_Pocketed Coil`, `Ultra Plush Mattresses`, `Extra Firm Mattresses`, `Plush Mattresses`, `Medium Mattresses`, `Medium Memory Foam Mattresses`, `Medium Hybrid Mattresses`, `Harvest *`, `Spring Air Mattresses`, `Southerland Mattresses`. All actively used by smart-collection ruleSets."
+}

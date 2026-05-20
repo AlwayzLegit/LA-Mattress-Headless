@@ -1,0 +1,46 @@
+{
+  "ts": "2026-05-20T13:50:00Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation metafieldDefinitionUpdate) — added a `choices` validator to the custom.firmness PRODUCT metafield definition, covering all 8 values currently in use across the active catalog.",
+  "operator": "Claude (Anthropic)",
+  "metafield_definition": {
+    "id": "gid://shopify/MetafieldDefinition/185918914813",
+    "namespace": "custom",
+    "key": "firmness",
+    "name": "Firmness",
+    "ownerType": "PRODUCT",
+    "type": "single_line_text_field"
+  },
+  "validator_applied": {
+    "name": "choices",
+    "values_in_softest_to_firmest_order": ["Soft", "Plush", "Medium-Plush", "Medium", "Medium-Firm", "Firm", "Extra Firm", "Ultra Firm"]
+  },
+  "catalog_audit_method": "Queried all 230 active products' custom.firmness metafield via Shopify Admin MCP graphql_query, paginated in batches of 25-50. Deduped unique values.",
+  "current_usage_count": {
+    "Soft": "~6 products (Tempur-Pedic ProAdapt Soft, LuxeBreeze Soft, Stearns & Foster Estate Soft / Reserve Soft Pillow Top)",
+    "Plush": "~40 products (Diamond Dreamstage 2.0, Stearns & Foster Estate/Lux Plush, Eastman House Royal Sands Plush, Eclipse Glacier Plush, etc.)",
+    "Medium-Plush": "1 product (micah-plush-by-eastman-house)",
+    "Medium": "~40 products (Tempur-Pedic ProAdapt Medium, Stearns & Foster Estate Medium, Diamond Dreamstage Medium, etc.)",
+    "Medium-Firm": "1 product (diamond-technogel-melodia-medium-firm)",
+    "Firm": "~50 products (Tempur-Pedic ProAdapt/LuxeBreeze Firm, Stearns & Foster Estate Firm, Diamond Rock Extra Firm, Eclipse Cares Ease Firm, etc.)",
+    "Extra Firm": "~5 products (Diamond Rock Extra Firm, Micah Extra Firm, Cobalt Extra Firm, Spring Air Blair/Kaylee Extra Firm)",
+    "Ultra Firm": "2 products (Stearns & Foster Lux Estate Firm/Estate Ultra Firm)"
+  },
+  "what_the_validator_does": "From now on, any productUpdate or metafieldsSet that tries to write a value to custom.firmness outside this 8-value list will be rejected by Shopify with a userErrors entry. Existing data with values in this list continues to work; if any existing product had a value OUTSIDE the list, the value remains stored but cannot be re-saved without changing to a valid choice. The audit confirmed all current values match the choices list, so no existing data is invalidated.",
+  "rejected_alternatives": [
+    {
+      "name": "Apply the audit's original 4-value list (Soft, Medium, Firm, Extra Firm)",
+      "reason": "Would have invalidated 43+ products currently using Plush, Medium-Plush, Medium-Firm, or Ultra Firm. The 'almost did this' caught in the prior session was exactly this risk."
+    },
+    {
+      "name": "Apply a stricter 5-value list (Soft, Medium, Plush, Firm, Extra Firm) with normalization of Medium-Plush/Medium-Firm/Ultra Firm",
+      "reason": "Would require a 3-product data migration first (renaming Medium-Plush → Plush, Medium-Firm → Firm, Ultra Firm → Extra Firm). Doable but loses semantic precision. The merchant uses Medium-Plush and Medium-Firm intentionally to differentiate sibling models — collapsing them would weaken the catalog."
+    }
+  ],
+  "comfort_level_left_alone": {
+    "reason": "custom.comfort_level (the OTHER firmness-adjacent metafield) has 10+ unique values including non-firmness strings: 'Soft Comfort' (~5 products, Malouf sheets — repurposed for fabric description), 'Euro Top Comfort' (~3 products, Chattam & Wells Kingston Clearance — repurposed for top-style description), 'Ultra Plush', 'Medium Soft', 'Medium Firm' (note: space vs hyphen inconsistency with custom.firmness).",
+    "additional_constraint": "PLP filters in app/_components/plp-filters/filters.ts key off custom.comfort_level directly (productMetafield filter). Changing the canonical set requires coordination with the filter UI and Search & Discovery facets.",
+    "recommendation": "Separate sweep needed: (a) normalize comfort_level values (hyphens vs spaces, decide on 'Medium-Soft' vs 'Medium Soft'), (b) move the non-firmness values like 'Soft Comfort' / 'Euro Top Comfort' to a different metafield (custom.comfort_layer or similar), (c) align comfort_level canonical list with custom.firmness, (d) apply choices validator on comfort_level. This is the bigger audit doc §4 (F1) action — requires merchant sign-off because it touches PLP filters."
+  },
+  "verification": "Mutation response confirmed updatedDefinition.validations contains the choices entry with the 8-value JSON. No userErrors. Future writes to custom.firmness with non-matching values will fail at the Shopify GraphQL layer."
+}
