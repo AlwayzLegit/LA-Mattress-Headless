@@ -53,6 +53,11 @@ export default function robots(): MetadataRoute.Robots {
           '/compare',
           '/search?',
           '/api/',
+          // Internal admin surfaces — also gated by HTTP Basic Auth at
+          // the edge (see middleware.ts) and X-Robots-Tag noindex on
+          // every response. Defense-in-depth: this stops well-behaved
+          // crawlers from even attempting to fetch them.
+          '/admin/',
           '/*?srsltid=*',
           '/*?_pos=*',
           '/*?_sid=*',

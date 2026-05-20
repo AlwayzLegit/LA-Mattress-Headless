@@ -16,46 +16,23 @@ import {
  * external dashboards (Sentry for errors, PostHog for funnels +
  * session replay, Vercel for deploys + CWV).
  *
- * Auth: `noindex` via metadata + a soft token gate via the
- * `DASHBOARD_TOKEN` env var. When DASHBOARD_TOKEN is set, the page
- * checks for ?token=<value> and 404s otherwise. When unset, the page
- * renders for anyone who knows the URL — acceptable while traffic to
- * the URL stays effectively zero.
- *
- * Production-hardening to-do (not in scope of this PR): Vercel Edge
- * Middleware HTTP Basic Auth on /admin/* paths. Documented in the
- * dashboard's own §6 below.
+ * Auth: HTTP Basic Auth at the edge (see middleware.ts) gated on
+ * ADMIN_USER + ADMIN_PASSWORD env vars. When either is unset,
+ * /admin/* returns 503. Defense-in-depth: noindex via metadata,
+ * X-Robots-Tag noindex on every response (middleware), and
+ * `/admin/` disallow in robots.txt.
  */
 
 export const metadata: Metadata = {
   title: 'Dashboard — LA Mattress Internal',
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: false, nocache: true, noimageindex: true },
 };
 
 // Refresh server-rendered data every 5 minutes; merchant can hit the
 // page reload to force a re-render anytime.
 export const revalidate = 300;
-export const dynamic = 'force-dynamic'; // honor query-string token check
 
-const DASHBOARD_TOKEN = process.env.DASHBOARD_TOKEN;
-
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ token?: string }>;
-}) {
-  const params = await searchParams;
-  // Soft token check: if env var is set, require it via ?token=<value>.
-  // Otherwise let through anyone with the URL.
-  if (DASHBOARD_TOKEN && params.token !== DASHBOARD_TOKEN) {
-    return (
-      <main className="container" style={{ paddingTop: 'var(--s-8)', paddingBottom: 'var(--s-9)' }}>
-        <h1 className="h2">Dashboard</h1>
-        <p className="muted">Authentication required. Append <code>?token=…</code> to the URL.</p>
-      </main>
-    );
-  }
-
+export default async function DashboardPage() {
   if (!ADMIN_CONFIGURED) {
     return (
       <main className="container" style={{ paddingTop: 'var(--s-8)', paddingBottom: 'var(--s-9)' }}>
