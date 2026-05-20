@@ -13,6 +13,7 @@ import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
 import { PdpReviewsSection } from '@/app/_components/pdp-reviews-section';
+import { TrackPdpView } from '@/app/_components/track-pdp-view';
 import { BuyBox } from './buy-box';
 import { PdpCtaRow } from './pdp-cta-row';
 import { PdpGallery } from './gallery';
@@ -200,8 +201,19 @@ function SpecStrip({ specs }: { specs: Product['specs'] }) {
 }
 
 function ProductView({ product, related }: { product: Product; related: ProductSummary[] }) {
+  const minPrice = Number.parseFloat(product.priceRange.minVariantPrice.amount);
+  const inStock = product.variants.some((v) => v.availableForSale !== false);
   return (
     <main className="container pdp">
+      <TrackPdpView
+        handle={product.handle}
+        title={product.title}
+        vendor={product.vendor}
+        productType={product.productType}
+        price={Number.isFinite(minPrice) ? minPrice : undefined}
+        currency={product.priceRange.minVariantPrice.currencyCode}
+        inStock={inStock}
+      />
       <nav className="lp-breadcrumbs" aria-label="Breadcrumb" style={{ paddingTop: 'var(--s-5)' }}>
         <Link href="/">Home</Link>
         <span className="sep" aria-hidden="true">/</span>
