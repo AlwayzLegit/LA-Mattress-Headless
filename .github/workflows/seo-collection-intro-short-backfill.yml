@@ -1,0 +1,63 @@
+name: SEO — collection intro_short backfill
+
+# 2026-05-20. Runs scripts/seo-backfill-collection-intro-short.mjs
+# against the live Shopify catalog. Proposes (and in --apply mode,
+# writes) handle-specific values for the `custom.intro_short` collection
+# metafield introduced by PLP RFC v2.1.
+#
+# Dry-run by default — produces a JSON report uploaded as an artifact.
+# Flip the "apply" input to true to write to Shopify via metafieldsSet.
+# Idempotent: only touches collections whose intro_short is currently
+# empty.
+#
+# Prerequisite: the `custom.intro_short` metafield definition must
+# already exist (audit doc Phase 1 / RFC §5.1). The script will fail
+# with OWNER_TYPE_RESOURCE_TYPE_MISMATCH otherwise.
+#
+# Required repo secrets (same as refresh-inventory.yml):
+#   SHOPIFY_STORE_DOMAIN  — e.g. la-mattress.myshopify.com
+#   SHOPIFY_ADMIN_TOKEN   — Admin API token with read_products and
+#                           write_products scopes.
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply changes (write to Shopify). Leave false for dry-run.'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run backfill
+        run: |
+          ARGS=""
+          if [ "${{ inputs.apply }}" = "true" ]; then ARGS="$ARGS --apply"; fi
+          echo "::group::Invocation"
+          echo "node scripts/seo-backfill-collection-intro-short.mjs$ARGS"
+          echo "::endgroup::"
+          node scripts/seo-backfill-collection-intro-short.mjs $ARGS
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: collection-intro-short-${{ github.run_id }}
+          path: data/seo-backfills/collection-intro-short-*.json
+          if-no-files-found: warn
+          retention-days: 90

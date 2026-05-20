@@ -1,0 +1,456 @@
+{
+  "generatedAt": "2026-05-20T09:05:32.438Z",
+  "mode": "dry-run",
+  "charMin": 300,
+  "charMax": 600,
+  "changes": [
+    {
+      "id": "gid://shopify/Collection/210011139",
+      "handle": "popular",
+      "title": "Popular Mattresses",
+      "value": "The mattresses on this page are the highest-velocity sellers across our 5 LA showrooms — the models real local shoppers are choosing this season. Browse Popular Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 369
+    },
+    {
+      "id": "gid://shopify/Collection/232154947",
+      "handle": "mattresses",
+      "title": "Mattresses",
+      "value": "Every mattress on this page is on the floor at one of our 5 LA showrooms — Koreatown, West LA, La Brea, Studio City, and Glendale. Browse Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 346
+    },
+    {
+      "id": "gid://shopify/Collection/261336131",
+      "handle": "queen-size-mattresses",
+      "title": "Queen Mattresses",
+      "value": "Queen mattresses (60″ × 80″) are the most popular size we sell — large enough for two adults, compact enough for most bedrooms. Browse Queen Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 349
+    },
+    {
+      "id": "gid://shopify/Collection/267486147",
+      "handle": "king-size-mattresses",
+      "title": "King Mattresses",
+      "value": "King mattresses (76″ × 80″) give two adults the most sleeping surface of any standard size — stocked across every material, firmness, and budget. Browse King Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 366
+    },
+    {
+      "id": "gid://shopify/Collection/267509571",
+      "handle": "california-king-mattresses",
+      "title": "California King Mattresses",
+      "value": "California king mattresses (72″ × 84″) are the longest standard size we sell — best for taller sleepers, with the same width as a queen-plus. Browse California King Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 373
+    },
+    {
+      "id": "gid://shopify/Collection/267512835",
+      "handle": "twin-size-mattresses",
+      "title": "Twin Mattresses",
+      "value": "Twin mattresses (38″ × 75″) suit kids’ rooms, bunk beds, daybeds, trundles, and guest rooms. Browse Twin Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 313
+    },
+    {
+      "id": "gid://shopify/Collection/267513411",
+      "handle": "full-size-mattresses",
+      "title": "Full Mattresses",
+      "value": "Full / double mattresses (54″ × 75″) suit one adult comfortably with room to stretch, in teen / guest bedrooms or smaller master rooms. Browse Full Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 356
+    },
+    {
+      "id": "gid://shopify/Collection/296456579",
+      "handle": "gel-foam-mattresses",
+      "title": "Gel Foam Mattresses",
+      "value": "Memory foam contours to your body and isolates motion better than any other mattress type — best for side sleepers wanting pressure relief at the shoulders and hips. Gel infusion and copper / open-cell cooling tech offset the trade-off for hot sleepers. Browse Gel Foam Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 478
+    },
+    {
+      "id": "gid://shopify/Collection/296458755",
+      "handle": "latex-mattresses",
+      "title": "Latex Mattresses",
+      "value": "Latex is the longest-lasting and most breathable mattress material we sell — 15+ year typical life with a buoyant, responsive feel. Best for hot sleepers and shoppers with joint pain. Browse Latex Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 405
+    },
+    {
+      "id": "gid://shopify/Collection/296460291",
+      "handle": "memory-foam-mattresses",
+      "title": "Memory Foam Mattresses",
+      "value": "Memory foam contours to your body and isolates motion better than any other mattress type — best for side sleepers wanting pressure relief at the shoulders and hips. Gel infusion and copper / open-cell cooling tech offset the trade-off for hot sleepers. Browse Memory Foam Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 481
+    },
+    {
+      "id": "gid://shopify/Collection/300952131",
+      "handle": "on-sale",
+      "title": "Mattress Sale",
+      "value": "Sale and clearance mattresses are deeply discounted — either former showroom display units or last season’s models, all brand new and ship with the same delivery + guarantee as full-price. Browse Mattress Sale below — try every model in person at LA Mattress Store before you buy. Same free white-glove delivery and 120-night Love Your Bed Guarantee as full-price mattresses.",
+      "len": 375
+    },
+    {
+      "id": "gid://shopify/Collection/363267331",
+      "handle": "firm-mattress",
+      "title": "Firm Mattresses",
+      "value": "Firm and extra-firm mattresses deliver maximum lumbar and edge support — best for back / stomach sleepers, heavier sleepers, and anyone whose previous mattress sagged. Browse Firm Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 388
+    },
+    {
+      "id": "gid://shopify/Collection/364349059",
+      "handle": "adjustable-beds",
+      "title": "Adjustable Beds & Bases",
+      "value": "Adjustable bases let you raise the head and feet independently — for reading, eased acid reflux and snoring, and the zero-gravity preset that takes pressure off the lower back. Pairs with most foam, hybrid, and latex mattresses we carry. Browse Adjustable Beds & Bases below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery + assembly in Los Angeles, with haul-away of your old foundation.",
+      "len": 431
+    },
+    {
+      "id": "gid://shopify/Collection/14771748893",
+      "handle": "pillows",
+      "title": "Pillows",
+      "value": "The right pillow keeps your neck and spine aligned with your mattress — loft should match your sleep position (higher and firmer for side, medium for back, thin for stomach). Browse Pillows below — try every model in person at LA Mattress Store before you buy. Free delivery in Los Angeles on qualifying orders, and 30-day returns.",
+      "len": 331
+    },
+    {
+      "id": "gid://shopify/Collection/89613729882",
+      "handle": "tempur-pedic-adjustable-bases",
+      "title": "Tempur-Pedic Adjustable Bases",
+      "value": "Tempur-Pedic builds the original NASA-developed TEMPUR memory foam — all-foam ProAdapt and Adapt, plus hybrid LuxeAdapt models with pocketed coils for a more responsive feel. Browse Tempur-Pedic Adjustable Bases below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery + assembly in Los Angeles, with haul-away of your old foundation.",
+      "len": 374
+    },
+    {
+      "id": "gid://shopify/Collection/393460908285",
+      "handle": "floor-model-discontinued-mattress-clearance-sale",
+      "title": "Floor Model & Clearance Mattresses",
+      "value": "Sale and clearance mattresses are deeply discounted — either former showroom display units or last season’s models, all brand new and ship with the same delivery + guarantee as full-price. Browse Floor Model & Clearance Mattresses below — try every model in person at LA Mattress Store before you buy. Same free white-glove delivery and 120-night Love Your Bed Guarantee as full-price mattresses.",
+      "len": 396
+    },
+    {
+      "id": "gid://shopify/Collection/400254435581",
+      "handle": "mattress-protector",
+      "title": "Mattress Protectors",
+      "value": "The right mattress protector or topper extends the life of your mattress and the depth of your sleep — choose by size, material, and care preference. Browse Mattress Protectors below — try every model in person at LA Mattress Store before you buy. Free delivery in Los Angeles on qualifying orders, and 30-day returns.",
+      "len": 318
+    },
+    {
+      "id": "gid://shopify/Collection/401028972797",
+      "handle": "mattress-toppers",
+      "title": "Mattress Toppers",
+      "value": "The right mattress protector or topper extends the life of your mattress and the depth of your sleep — choose by size, material, and care preference. Browse Mattress Toppers below — try every model in person at LA Mattress Store before you buy. Free delivery in Los Angeles on qualifying orders, and 30-day returns.",
+      "len": 315
+    },
+    {
+      "id": "gid://shopify/Collection/404400144637",
+      "handle": "all-foam-mattresses",
+      "title": "All-Foam Mattresses",
+      "value": "Memory foam contours to your body and isolates motion better than any other mattress type — best for side sleepers wanting pressure relief at the shoulders and hips. Gel infusion and copper / open-cell cooling tech offset the trade-off for hot sleepers. Browse All-Foam Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 478
+    },
+    {
+      "id": "gid://shopify/Collection/404686799101",
+      "handle": "extra-firm-mattresses",
+      "title": "Extra Firm Mattresses",
+      "value": "Firm and extra-firm mattresses deliver maximum lumbar and edge support — best for back / stomach sleepers, heavier sleepers, and anyone whose previous mattress sagged. Browse Extra Firm Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 394
+    },
+    {
+      "id": "gid://shopify/Collection/404688863485",
+      "handle": "plush-mattresses",
+      "title": "Plush Mattresses",
+      "value": "Soft / plush mattresses cushion side sleepers and shoulders with deeper comfort layers over a supportive base — best for body-weights under ~230 lbs. Browse Plush Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 371
+    },
+    {
+      "id": "gid://shopify/Collection/405255094525",
+      "handle": "metal-beds",
+      "title": "Metal Bed Frames",
+      "value": "A solid bed frame or headboard finishes the bedroom — platform, metal, and adjustable-compatible designs in every standard size from twin XL to California king. Browse Metal Bed Frames below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery + assembly in Los Angeles, with haul-away of your old foundation.",
+      "len": 347
+    },
+    {
+      "id": "gid://shopify/Collection/405980479741",
+      "handle": "southerland-mattresses",
+      "title": "Southerland Mattresses",
+      "value": "Southerland Scandinavian is a CertiPUR-US-certified natural-latex collection built in Minnesota — latex over pocketed coils, with TENCEL and copper-gel covers, runs cooler than memory foam. Browse Southerland Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 417
+    },
+    {
+      "id": "gid://shopify/Collection/406648291581",
+      "handle": "innerspring-mattresses",
+      "title": "Innerspring Mattresses",
+      "value": "Innerspring mattresses combine a steel coil support unit with comfort foam, fiber, or pillow-top layers — the traditional mattress construction with the bounce and edge support foam can’t replicate. Browse Innerspring Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 426
+    },
+    {
+      "id": "gid://shopify/Collection/411644363005",
+      "handle": "chattam-wells-mattresses",
+      "title": "Chattam & Wells Mattresses",
+      "value": "Chattam & Wells is a luxury mattress collection — handcrafted with high coil counts, hand-tufted covers, and natural fibers including silk and cashmere blends. Browse Chattam & Wells Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 391
+    },
+    {
+      "id": "gid://shopify/Collection/411644395773",
+      "handle": "diamond-mattresses",
+      "title": "Diamond Mattresses",
+      "value": "Diamond Mattress is a California-built brand (since 1946) — premium handcrafted innersprings and hybrids with copper-cooled and gel memory-foam comfort layers. Browse Diamond Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 383
+    },
+    {
+      "id": "gid://shopify/Collection/411644428541",
+      "handle": "eastman-house-mattresses",
+      "title": "Eastman House Mattresses",
+      "value": "Eastman House / Aireloom are American hand-crafted luxury mattress builders — pocketed coils, natural latex layers, and hand-tufted covers in heights up to 17 inches. Browse Eastman House Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 396
+    },
+    {
+      "id": "gid://shopify/Collection/411644461309",
+      "handle": "englander-mattresses",
+      "title": "Englander Mattresses",
+      "value": "Englander is a fourth-generation American mattress builder — pocketed coils with gel-infused foam comfort layers in the O’Conner and Allendale luxury innerspring lines. Browse Englander Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 394
+    },
+    {
+      "id": "gid://shopify/Collection/411644559613",
+      "handle": "harvest-mattresses",
+      "title": "Harvest Green Mattresses",
+      "value": "Harvest Green is a GOTS-certified organic mattress line — natural latex, organic cotton, and pure wool over pocketed coils, with no polyurethane foam or chemical fire barriers. Browse Harvest Green Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 406
+    },
+    {
+      "id": "gid://shopify/Collection/411644625149",
+      "handle": "scandinavian-mattresses",
+      "title": "Scandinavian Mattresses",
+      "value": "Southerland Scandinavian is a CertiPUR-US-certified natural-latex collection built in Minnesota — latex over pocketed coils, with TENCEL and copper-gel covers, runs cooler than memory foam. Browse Scandinavian Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 418
+    },
+    {
+      "id": "gid://shopify/Collection/411644657917",
+      "handle": "spring-air-mattresses",
+      "title": "Spring Air Mattresses",
+      "value": "Spring Air is the original American sleep brand (since 1926) — best known for the Back Supporter line with zoned pocketed coil support and individually wrapped Sensorcoils. Browse Spring Air Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 399
+    },
+    {
+      "id": "gid://shopify/Collection/411644821757",
+      "handle": "tempur-pedic-mattresses",
+      "title": "Tempur-Pedic Mattresses",
+      "value": "Tempur-Pedic builds the original NASA-developed TEMPUR memory foam — all-foam ProAdapt and Adapt, plus hybrid LuxeAdapt models with pocketed coils for a more responsive feel. Browse Tempur-Pedic Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 403
+    },
+    {
+      "id": "gid://shopify/Collection/411725627645",
+      "handle": "hybrid-mattresses",
+      "title": "Hybrid Mattresses",
+      "value": "Hybrid mattresses pair memory foam or latex comfort layers with a pocketed-coil base — combining the contouring of foam with the breathability and edge support of an innerspring. Browse Hybrid Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 401
+    },
+    {
+      "id": "gid://shopify/Collection/411730411773",
+      "handle": "organic-mattress",
+      "title": "Organic Mattresses",
+      "value": "Organic and natural mattresses are built from GOLS-certified latex, GOTS-certified cotton, and wool — no polyurethane foam or chemical flame barriers. Browse Organic Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 374
+    },
+    {
+      "id": "gid://shopify/Collection/411730444541",
+      "handle": "pillow-top-mattresses",
+      "title": "Pillow Top Mattresses",
+      "value": "Pocketed-coil and pillow-top constructions individually wrap each spring for motion isolation while a quilted comfort layer adds cushioning — the most universally comfortable mattress build we stock. Browse Pillow Top Mattresses below — try every model in person at LA Mattress Store before you buy. Free delivery in Los Angeles on qualifying orders, and 30-day returns.",
+      "len": 370
+    },
+    {
+      "id": "gid://shopify/Collection/411730477309",
+      "handle": "pocketed-coil-mattresses",
+      "title": "Pocketed Coil Mattresses",
+      "value": "Pocketed-coil and pillow-top constructions individually wrap each spring for motion isolation while a quilted comfort layer adds cushioning — the most universally comfortable mattress build we stock. Browse Pocketed Coil Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 429
+    },
+    {
+      "id": "gid://shopify/Collection/411730510077",
+      "handle": "bed-in-a-box-mattresses",
+      "title": "Bed-in-a-Box Mattresses",
+      "value": "Bed-in-a-box mattresses ship compressed and rolled in a small carton — same construction as a traditional mattress, just easier to deliver. Most expand to full height within 24-48 hours. Browse Bed-in-a-Box Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 415
+    },
+    {
+      "id": "gid://shopify/Collection/413038543101",
+      "handle": "ultra-plush-mattresses",
+      "title": "Ultra Plush Mattresses",
+      "value": "Soft / plush mattresses cushion side sleepers and shoulders with deeper comfort layers over a supportive base — best for body-weights under ~230 lbs. Browse Ultra Plush Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 377
+    },
+    {
+      "id": "gid://shopify/Collection/413788438781",
+      "handle": "stearns-foster-mattresses",
+      "title": "Stearns & Foster Mattresses",
+      "value": "Stearns & Foster is a hand-tufted luxury innerspring brand (Estate and Reserve collections) built on IntelliCoil pocketed support and cashmere-blend covers, in 14-17 inch heights. Browse Stearns & Foster Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 412
+    },
+    {
+      "id": "gid://shopify/Collection/413965615357",
+      "handle": "medium-mattresses",
+      "title": "Medium Mattresses",
+      "value": "Medium and medium-firm mattresses are the most universally comfortable firmness band — supportive enough for back and stomach sleepers, soft enough for side sleepers. Browse Medium Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 389
+    },
+    {
+      "id": "gid://shopify/Collection/431586836733",
+      "handle": "technogel-mattresses",
+      "title": "Technogel Mattresses",
+      "value": "Technogel mattresses use Italian-engineered gel technology that contours and cools simultaneously — a softer, more breathable alternative to traditional memory foam. Browse Technogel Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 391
+    },
+    {
+      "id": "gid://shopify/Collection/444386836733",
+      "handle": "best-sellers",
+      "title": "Best Sellers",
+      "value": "The mattresses on this page are the highest-velocity sellers across our 5 LA showrooms — the models real local shoppers are choosing this season. Browse Best Sellers below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 363
+    },
+    {
+      "id": "gid://shopify/Collection/463327002877",
+      "handle": "helix-mattresses",
+      "title": "Helix Mattresses",
+      "value": "Helix Sleep makes build-to-fit hybrid mattresses — pocketed coils under foam comfort layers and knit covers, stepping up through the Core, Luxe, and Elite collections. Browse Helix Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 389
+    },
+    {
+      "id": "gid://shopify/Collection/464474407165",
+      "handle": "medium-firm-mattresses",
+      "title": "Medium Firm Mattresses",
+      "value": "Medium and medium-firm mattresses are the most universally comfortable firmness band — supportive enough for back and stomach sleepers, soft enough for side sleepers. Browse Medium Firm Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 394
+    },
+    {
+      "id": "gid://shopify/Collection/464474439933",
+      "handle": "mattresses-under-1000",
+      "title": "Mattresses Under $1,000",
+      "value": "Budget mattresses on this page are the lowest-priced models we stock with the same delivery and guarantee — typically all-foam or basic-spring builds in standard sizes. Browse Mattresses Under $1,000 below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 397
+    },
+    {
+      "id": "gid://shopify/Collection/464474603773",
+      "handle": "mattresses-for-back-pain",
+      "title": "Mattresses for Back Pain",
+      "value": "For back pain and pressure relief we recommend medium-firm hybrid or latex builds with zoned pocketed-coil support that keeps the spine neutral while contouring at the shoulders and hips. Browse Mattresses for Back Pain below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 417
+    },
+    {
+      "id": "gid://shopify/Collection/464474636541",
+      "handle": "mattresses-for-side-sleepers",
+      "title": "Mattresses for Side Sleepers",
+      "value": "Side sleepers need extra cushioning at the shoulders and hips — softer comfort layers over a supportive base. Hybrid and memory-foam builds in plush to medium firmness work best. Browse Mattresses for Side Sleepers below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 412
+    },
+    {
+      "id": "gid://shopify/Collection/464474669309",
+      "handle": "mattresses-for-couples",
+      "title": "Mattresses for Couples",
+      "value": "Mattresses for couples balance motion isolation, edge support, and split-firmness options so two sleepers share a bed without compromising on what either one needs. Browse Mattresses for Couples below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 392
+    },
+    {
+      "id": "gid://shopify/Collection/464474702077",
+      "handle": "soft-mattresses-for-pressure-relief",
+      "title": "Soft Mattresses for Pressure Relief",
+      "value": "For back pain and pressure relief we recommend medium-firm hybrid or latex builds with zoned pocketed-coil support that keeps the spine neutral while contouring at the shoulders and hips. Browse Soft Mattresses for Pressure Relief below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 428
+    },
+    {
+      "id": "gid://shopify/Collection/464474734845",
+      "handle": "cooling-mattresses",
+      "title": "Cooling Mattresses",
+      "value": "Cooling mattresses and accessories use latex, gel infusion, copper, phase-change covers, or pocketed coils to dissipate body heat for hot sleepers and warm-climate bedrooms. Browse Cooling Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 397
+    },
+    {
+      "id": "gid://shopify/Collection/464615866621",
+      "handle": "luxury-mattresses",
+      "title": "Luxury Mattresses",
+      "value": "Luxury mattresses are the high-touch end of our catalog — hand-tufted innersprings, all-natural latex hybrids, and premium memory-foam builds in heights up to 17 inches. Browse Luxury Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 392
+    },
+    {
+      "id": "gid://shopify/Collection/465220174077",
+      "handle": "foundations",
+      "title": "Mattress Foundations & Box Springs",
+      "value": "A foundation or box spring supports your mattress and protects the warranty — most modern foam, hybrid, and latex mattresses need a solid, slatted, or low-profile foundation. Browse Mattress Foundations & Box Springs below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery + assembly in Los Angeles, with haul-away of your old foundation.",
+      "len": 379
+    },
+    {
+      "id": "gid://shopify/Collection/465222631677",
+      "handle": "sheets-pillowcases",
+      "title": "Sheets & Pillowcases",
+      "value": "The right pillow keeps your neck and spine aligned with your mattress — loft should match your sleep position (higher and firmer for side, medium for back, thin for stomach). Browse Sheets & Pillowcases below — try every model in person at LA Mattress Store before you buy. Free delivery in Los Angeles on qualifying orders, and 30-day returns.",
+      "len": 344
+    },
+    {
+      "id": "gid://shopify/Collection/465227481341",
+      "handle": "twin-xl-mattress-sale",
+      "title": "Twin XL Mattresses",
+      "value": "Sale and clearance mattresses are deeply discounted — either former showroom display units or last season’s models, all brand new and ship with the same delivery + guarantee as full-price. Browse Twin XL Mattresses below — try every model in person at LA Mattress Store before you buy. Same free white-glove delivery and 120-night Love Your Bed Guarantee as full-price mattresses.",
+      "len": 380
+    },
+    {
+      "id": "gid://shopify/Collection/465227907325",
+      "handle": "cooling-pillows",
+      "title": "Cooling Pillows",
+      "value": "The right pillow keeps your neck and spine aligned with your mattress — loft should match your sleep position (higher and firmer for side, medium for back, thin for stomach). Browse Cooling Pillows below — try every model in person at LA Mattress Store before you buy. Free delivery in Los Angeles on qualifying orders, and 30-day returns.",
+      "len": 339
+    },
+    {
+      "id": "gid://shopify/Collection/465227940093",
+      "handle": "headboards",
+      "title": "Headboards",
+      "value": "A solid bed frame or headboard finishes the bedroom — platform, metal, and adjustable-compatible designs in every standard size from twin XL to California king. Browse Headboards below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery + assembly in Los Angeles, with haul-away of your old foundation.",
+      "len": 341
+    },
+    {
+      "id": "gid://shopify/Collection/465770414333",
+      "handle": "rize-adjustable-bases",
+      "title": "Rize - Adjustable Bases",
+      "value": "Rize® designs adjustable bases, pillows, and protection products engineered for sleep ergonomics — from entry-level Contemporary IV up to the Aviada with massage and lumbar support. Browse Rize - Adjustable Bases below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery + assembly in Los Angeles, with haul-away of your old foundation.",
+      "len": 375
+    },
+    {
+      "id": "gid://shopify/Collection/465770447101",
+      "handle": "bed-frames",
+      "title": "Bed Frames - Bedding Support",
+      "value": "A solid bed frame or headboard finishes the bedroom — platform, metal, and adjustable-compatible designs in every standard size from twin XL to California king. Browse Bed Frames - Bedding Support below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery + assembly in Los Angeles, with haul-away of your old foundation.",
+      "len": 359
+    },
+    {
+      "id": "gid://shopify/Collection/465770479869",
+      "handle": "rize-pillows",
+      "title": "Rize - Pillows",
+      "value": "Rize® designs adjustable bases, pillows, and protection products engineered for sleep ergonomics — from entry-level Contemporary IV up to the Aviada with massage and lumbar support. Browse Rize - Pillows below — try every model in person at LA Mattress Store before you buy. Free delivery in Los Angeles on qualifying orders, and 30-day returns.",
+      "len": 345
+    },
+    {
+      "id": "gid://shopify/Collection/465770512637",
+      "handle": "rize-mattress-protection",
+      "title": "Rize - Mattress Protection",
+      "value": "Rize® designs adjustable bases, pillows, and protection products engineered for sleep ergonomics — from entry-level Contemporary IV up to the Aviada with massage and lumbar support. Browse Rize - Mattress Protection below — try every model in person at LA Mattress Store before you buy. Free delivery in Los Angeles on qualifying orders, and 30-day returns.",
+      "len": 357
+    },
+    {
+      "id": "gid://shopify/Collection/465982161149",
+      "handle": "split-king-mattresses",
+      "title": "Split King Mattresses",
+      "value": "Split-king setups (two twin XL mattresses on a single king-size frame, ideally a split-head adjustable base) let each partner pick their own firmness and elevation. Browse Split King Mattresses below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 391
+    },
+    {
+      "id": "gid://shopify/Collection/467229999357",
+      "handle": "memorial-day-sale",
+      "title": "Memorial Day Mattress Sale",
+      "value": "Sale and clearance mattresses are deeply discounted — either former showroom display units or last season’s models, all brand new and ship with the same delivery + guarantee as full-price. Browse Memorial Day Mattress Sale below — try every model in person at LA Mattress Store before you buy. Same free white-glove delivery and 120-night Love Your Bed Guarantee as full-price mattresses.",
+      "len": 388
+    },
+    {
+      "id": "gid://shopify/Collection/467326304509",
+      "handle": "comforters",
+      "title": "Comforters",
+      "value": "Sheets, pillowcases, and comforters complete the bed — choose Tencel, linen, or microfiber by skin sensitivity, climate, and how warm you tend to sleep. Browse Comforters below — try every model in person at LA Mattress Store before you buy. Free delivery in Los Angeles on qualifying orders, and 30-day returns.",
+      "len": 312
+    },
+    {
+      "id": "gid://shopify/Collection/467326337277",
+      "handle": "sleep-beyond",
+      "title": "Sleep & Beyond",
+      "value": "Sleep & Beyond crafts wool bedding from imported merino — organic toppers, washable pillows, and adjustable-fill pillows that regulate temperature naturally. Browse Sleep & Beyond below — try every model in person at LA Mattress Store before you buy. Free white-glove delivery on orders over $499 in Los Angeles, with our 120-night Love Your Bed Guarantee and 0% APR financing.",
+      "len": 377
+    }
+  ]
+}

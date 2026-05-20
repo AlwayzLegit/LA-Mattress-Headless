@@ -2822,7 +2822,13 @@ summary:focus-visible,
 }
 .plp-hero-copy { display: flex; flex-direction: column; gap: var(--s-3); }
 .plp-hero-title { margin: var(--s-1) 0 var(--s-4); }
-.plp-hero-lede { font-size: 17px; line-height: 1.55; max-width: 56ch; }
+/* PLP v2.1: hero lede is now always a single short paragraph (300-600
+   chars / ~55-100 words) from custom.intro_short or the
+   categoryIntroFor() fallback. Earlier rule wrapped variable-length
+   descriptionHtml that could span many paragraphs; max-width tightened
+   from 56ch to 62ch so the consistent shorter copy reads on 1-2 lines
+   at desktop widths without stranding orphans. */
+.plp-hero-lede { font-size: 17px; line-height: 1.55; max-width: 62ch; margin: 0; }
 .plp-hero-img {
   aspect-ratio: 16 / 10;
   border-radius: var(--r-4);
@@ -2902,6 +2908,28 @@ summary:focus-visible,
 .plp-content-intro { margin-bottom: var(--s-6); max-width: 70ch; }
 .plp-content-title { margin: 0 0 var(--s-3); font-size: clamp(22px, 2.4vw, 28px); }
 .plp-content-lede { font-size: 16px; line-height: 1.65; color: var(--text-2); margin: 0; }
+/* PLP v2.1: merchant-authored descriptionHtml moved here from the hero.
+   Headings inside this block are demoted by sanitizer to <h3> so they
+   sit one level under .plp-content-title. The .rte class already
+   provides paragraph / list / link typography; these additions tighten
+   the visual rhythm for the larger body now living here. */
+.plp-long-content {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-2);
+  margin-top: var(--s-3);
+}
+.plp-long-content h3 {
+  font-size: clamp(18px, 1.8vw, 21px);
+  margin: var(--s-5) 0 var(--s-2);
+  color: var(--text-1);
+}
+.plp-long-content p { margin: 0 0 var(--s-3); }
+.plp-long-content ul,
+.plp-long-content ol { margin: 0 0 var(--s-3) 1.25em; }
+.plp-long-content li { margin: var(--s-1) 0; }
+.plp-long-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.plp-long-content a:hover { text-decoration-thickness: 2px; }
 .plp-content-eyebrow { margin: 0 0 var(--s-3); display: block; }
 .plp-content-grid {
   display: grid; grid-template-columns: 1.4fr 1fr;

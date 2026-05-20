@@ -150,6 +150,12 @@ export type Collection = {
   image: Image | null;
   updatedAt: string;
   seo: Seo;
+  /**
+   * PLP v2.1: short SEO-rich intro shown above the product grid on the
+   * collection page (`custom.intro_short` metafield). When null/empty,
+   * the storefront falls back to categoryIntroFor() in lib/plp-content.ts.
+   */
+  introShort: string | null;
 };
 
 export type AvailableFilterValue = {

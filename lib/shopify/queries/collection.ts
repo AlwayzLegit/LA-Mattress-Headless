@@ -40,6 +40,9 @@ const GET_COLLECTION = /* GraphQL */ `
       updatedAt
       image { ...ImageFields }
       seo { ...SeoFields }
+      # PLP v2.1: short SEO-rich intro shown above the product grid.
+      # Falls back to categoryIntroFor() in lib/plp-content.ts when empty.
+      introShort: metafield(namespace: "custom", key: "intro_short") { value }
       products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse, filters: $filters) {
         nodes { ...ProductSummaryFields }
         pageInfo { hasNextPage endCursor }
@@ -67,7 +70,8 @@ type RawSummary = Omit<ProductSummary, 'reviews'> & {
 
 type Raw = {
   collection:
-    | (Omit<CollectionWithProducts, 'products'> & {
+    | (Omit<CollectionWithProducts, 'products' | 'introShort'> & {
+        introShort?: { value: string } | null;
         products: {
           nodes: RawSummary[];
           pageInfo: { hasNextPage: boolean; endCursor: string | null };
@@ -122,8 +126,10 @@ export async function getCollectionByHandle({
     { tags: [`collection:${handle}`] },
   );
   if (!data.collection) return null;
+  const { introShort: rawIntro, ...rest } = data.collection;
   return {
-    ...data.collection,
+    ...rest,
+    introShort: rawIntro?.value?.trim() || null,
     products: {
       ...data.collection.products,
       nodes: data.collection.products.nodes.map(liftSummarySpecs),

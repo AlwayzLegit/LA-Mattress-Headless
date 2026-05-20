@@ -234,6 +234,20 @@ const WARRANTY_READ_MORE = /(<a\b[^>]*\bhref="\/pages\/mattress-warranty"[^>]*>)
 const MERCHANT_H1_OPEN  = /<h1(\b[^>]*)>/gi;
 const MERCHANT_H1_CLOSE = /<\/h1>/gi;
 
+// PLP v2 / stress-test S1: when the merchant's collection
+// descriptionHtml is moved BELOW the product grid (via PlpContentBlock),
+// it lives inside a region that already has its own <h2> title
+// ("About {collection.title}"). If the merchant body contains its own
+// <h1> or <h2>, those would compete with both the page <h1> and that
+// region's <h2>. The "demoteHeadings" option flattens both H1 and H2 in
+// merchant content down to H3 so the hierarchy reads:
+//   <h1>     collection title (page)
+//   <h2>     About {collection.title} (PlpContentBlock)
+//   <h3>     merchant section heading
+//   <h3>     FAQ "Common questions" eyebrow
+const MERCHANT_H2_OPEN  = /<h2(\b[^>]*)>/gi;
+const MERCHANT_H2_CLOSE = /<\/h2>/gi;
+
 // Phase 290: strip click-tracking query parameters from links in
 // merchant-authored article bodies. The May 15 SEMrush re-audit
 // flagged 64 articles with 89 "broken external links" instances.
@@ -275,7 +289,21 @@ function stripTrackingParams(html: string): string {
   return out;
 }
 
-export function sanitizeShopifyHtml(html: string | null | undefined): string {
+export type SanitizeOptions = {
+  /**
+   * When true, merchant <h1> and <h2> in the source HTML are both
+   * downgraded to <h3>. Use this when rendering merchant body content
+   * inside a region that already has its own <h2> (e.g. PlpContentBlock
+   * below the collection product grid). Default false (preserves the
+   * existing Phase 281 behavior — H1 → H2, H2 untouched).
+   */
+  demoteHeadings?: boolean;
+};
+
+export function sanitizeShopifyHtml(
+  html: string | null | undefined,
+  options: SanitizeOptions = {},
+): string {
   if (!html) return '';
   let out = html;
   // Phase 262: rewrite Hydrogen-era CDN URLs FIRST, before the generic
@@ -300,7 +328,12 @@ export function sanitizeShopifyHtml(html: string | null | undefined): string {
   out = stripMalformedHrefAnchors(out);
   // Phase 296: drop nofollow/sponsored/ugc on now-internal links.
   out = stripInternalLinkNofollow(out);
-  out = out.replace(MERCHANT_H1_OPEN, '<h2$1>').replace(MERCHANT_H1_CLOSE, '</h2>');
+  if (options.demoteHeadings) {
+    out = out.replace(MERCHANT_H1_OPEN, '<h3$1>').replace(MERCHANT_H1_CLOSE, '</h3>');
+    out = out.replace(MERCHANT_H2_OPEN, '<h3$1>').replace(MERCHANT_H2_CLOSE, '</h3>');
+  } else {
+    out = out.replace(MERCHANT_H1_OPEN, '<h2$1>').replace(MERCHANT_H1_CLOSE, '</h2>');
+  }
   // Some legacy article bodies were imported with bad encoding and contain
   // U+FFFD (the � replacement char). Drop them — they only ever render as
   // visible glyphs that look broken.

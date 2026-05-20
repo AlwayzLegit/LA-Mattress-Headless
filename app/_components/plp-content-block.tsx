@@ -1,19 +1,28 @@
 import Link from 'next/link';
 import { Icon } from './icon';
-import { categoryIntroFor, categoryFaqFor, categoryGuidesFor } from '@/lib/plp-content';
+import { categoryFaqFor, categoryGuidesFor } from '@/lib/plp-content';
 import { renderFaqAnswer } from '@/lib/faq-render';
+import { sanitizeShopifyHtml } from '@/lib/sanitize';
 
 /**
  * Below-the-product-grid content block on every /collections/[handle].
  *
  * Phase 265: addresses the May SEMrush audit's 941 "Low text-to-HTML
- * ratio" flags. Three pieces:
+ * ratio" flags. Three pieces (with a fourth added in PLP v2.1):
  *
- *   1. Category-aware intro paragraph (varies by collection handle so
- *      different PLPs carry different copy — not pure boilerplate).
+ *   1. (PLP v2.1) The merchant-authored long-form descriptionHtml when
+ *      present, rendered with the sanitizer's `demoteHeadings` option
+ *      so merchant H1/H2 inside that body don't compete with the page
+ *      <h1> or the section <h2> below.
  *   2. FAQ accordion (6 mattress-shopping questions, distinct from
  *      lib/faq.ts HOMEPAGE_FAQ to avoid duplicate-content overlap).
  *   3. Internal-link cluster to /pages/* policy pages and /sleep-quiz.
+ *   4. Curated buying-guide cluster topically matched to this collection.
+ *
+ * The short intro paragraph that used to render here (the categoryIntroFor
+ * output) moved UP to the hero in v2.1 — that slot is now sourced from
+ * `collection.introShort` (custom.intro_short metafield) with the same
+ * categoryIntroFor() template as the fallback.
  *
  * Also emits FAQPage JSON-LD so the FAQ becomes eligible for Google's
  * rich-result featured-snippet treatment on category searches.
@@ -24,11 +33,12 @@ import { renderFaqAnswer } from '@/lib/faq-render';
 export function PlpContentBlock({
   handle,
   title,
+  descriptionHtml,
 }: {
   handle: string;
   title: string;
+  descriptionHtml?: string | null;
 }) {
-  const intro = categoryIntroFor(handle, title);
   // Phase 294: curated cornerstone buying-guide links, topically matched
   // to this collection — contextual inbound link equity to high-value
   // guide articles SEMrush flagged as under-linked. [] for unmatched
@@ -37,13 +47,21 @@ export function PlpContentBlock({
   // Phase 276: per-category FAQ so each PLP has unique Q&A relevant to
   // its material/brand instead of the prior shared PLP_FAQ block.
   const faqItems = categoryFaqFor(handle);
+  // PLP v2.1: sanitize the merchant body with demoteHeadings so any
+  // <h1>/<h2> inside become <h3>, sitting one level below the section
+  // <h2> that wraps them.
+  const longHtml = descriptionHtml
+    ? sanitizeShopifyHtml(descriptionHtml, { demoteHeadings: true })
+    : '';
   return (
     <section className="plp-content" aria-labelledby={`plp-content-h-${handle}`}>
       <div className="plp-content-intro">
         <h2 id={`plp-content-h-${handle}`} className="h2 plp-content-title">
           About {title.toLowerCase()} at LA Mattress
         </h2>
-        <p className="plp-content-lede">{intro}</p>
+        {longHtml ? (
+          <div className="plp-long-content rte" dangerouslySetInnerHTML={{ __html: longHtml }} />
+        ) : null}
       </div>
 
       <div className="plp-content-grid">

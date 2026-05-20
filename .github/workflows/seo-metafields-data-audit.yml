@@ -1,0 +1,52 @@
+name: SEO — metafields data audit (read-only)
+
+# 2026-05-20. Runs scripts/seo-metafields-data-audit.mjs against the live
+# Shopify catalog. Read-only — does NOT mutate. Produces a CSV listing
+# every (owner, key) pair where one of the 14 orphan COLLECTION custom.*
+# metafields (plus the singular PRODUCT custom.sleep_position) has a
+# populated value.
+#
+# Purpose: the evidence trail the merchant signs off against BEFORE
+# Phase 3 of docs/design/shopify-metafields-metaobjects-audit.md runs any
+# metafieldDefinitionDelete. Stress-test B2 / Audit Phase 2.5.
+#
+# Manual trigger: Actions → "SEO — metafields data audit (read-only)"
+# → Run workflow. No inputs. The CSV is uploaded as a downloadable
+# artifact.
+#
+# Required repo secrets (same as refresh-inventory.yml):
+#   SHOPIFY_STORE_DOMAIN  — e.g. la-mattress.myshopify.com
+#   SHOPIFY_ADMIN_TOKEN   — Admin API token with read_products scope
+#                           (no write scope required — this is read-only).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run audit
+        run: node scripts/seo-metafields-data-audit.mjs
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+
+      - name: Upload CSV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metafields-data-audit-${{ github.run_id }}
+          path: data/seo-metafields/data-audit-*.csv
+          if-no-files-found: warn
+          retention-days: 90
