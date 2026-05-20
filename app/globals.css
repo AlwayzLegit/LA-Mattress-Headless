@@ -2450,8 +2450,16 @@ summary:focus-visible,
 .rte a { color: var(--accent); text-decoration: none; }
 .rte a:hover { color: var(--accent-2); text-decoration: underline; text-underline-offset: 2px; }
 .rte img { max-width: 100%; height: auto; border-radius: var(--r-2); }
-.rte table { width: 100%; border-collapse: collapse; margin: var(--s-4) 0; }
-.rte th, .rte td { padding: var(--s-2) var(--s-3); border-bottom: 1px solid var(--line); text-align: left; }
+.rte table { width: 100%; border-collapse: collapse; margin: var(--s-5) 0; font-size: 15px; border: 1px solid var(--line); border-radius: var(--r-2); overflow: hidden; }
+.rte thead { background: var(--surface); }
+.rte th, .rte td { padding: var(--s-3) var(--s-3); border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.rte th { font-weight: 600; color: var(--text); font-size: 14px; letter-spacing: -0.005em; }
+.rte tbody tr:nth-child(even) { background: var(--surface-2, rgba(0, 0, 0, 0.015)); }
+.rte tbody tr:last-child td { border-bottom: 0; }
+@media (max-width: 600px) {
+  .rte table { font-size: 14px; }
+  .rte th, .rte td { padding: var(--s-2) var(--s-2); }
+}
 
 /* PLP grid */
 .plp { padding-top: 0; }
@@ -3939,6 +3947,42 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 .location-card-addr { font-style: normal; line-height: 1.5; font-size: 15px; color: var(--text-2); margin-bottom: var(--s-4); }
 .location-card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3); padding-top: var(--s-3); border-top: 1px solid var(--line); font-size: 14px; }
 .location-card-phone { color: var(--text-3); }
+
+/* Enhanced location card — photo + hours + areas served. .location-card
+   styles still apply (border, padding, hover); the .-rich variant adds
+   the new structural patterns without re-declaring the base styling. */
+.location-card-rich { padding: 0; overflow: hidden; }
+.location-card-rich .location-card-meta { padding: var(--s-5); }
+.location-card-photo {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.location-card-photo img { display: block; }
+.location-card-rich .location-card-name { font-size: 22px; }
+.location-card-hours { margin: 0 0 var(--s-2); display: flex; align-items: center; gap: 6px; }
+.location-card-areas { margin: 0 0 var(--s-4); }
+.location-card-rich .location-card-addr { margin-bottom: var(--s-3); }
+
+/* Trust strip on /pages/mattress-store-locations — three reassurance
+   bullets between hero and showroom grid. Mirrors the SalePage trust
+   strip pattern (3 columns desktop → 1 column mobile). */
+.locations-trust {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-4);
+  margin: 0 0 var(--s-6);
+  padding: var(--s-4) var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface);
+}
+@media (max-width: 760px) { .locations-trust { grid-template-columns: 1fr; gap: var(--s-3); } }
+.locations-trust-item { display: flex; align-items: flex-start; gap: var(--s-3); }
+.locations-trust-item > svg { color: var(--accent); margin-top: 2px; flex: 0 0 auto; }
+.locations-trust-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 0; }
+.locations-trust-sub { font-size: 13px; color: var(--text-3); margin-top: 2px; line-height: 1.45; }
 
 /* Saved mattresses — design handoff §Account · Saved items, lifted to its
    own /wishlist surface. Mirrors the `.acct-saved-grid` / `.acct-saved-card`
