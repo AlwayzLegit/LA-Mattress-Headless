@@ -1,0 +1,72 @@
+{
+  "ts": "2026-05-20T22:56:26Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation articleUpdate) — appended a `<h2>Related reading</h2><ul>...</ul>` section to each of 3 more articles in the back-pain cluster on the mattress-buying-guide blog. Completes the back-pain pillar's inbound link graph from the joint-pain / fibromyalgia / chronic-back side of the cluster.",
+  "operator": "Claude (Anthropic)",
+  "cms_hygiene": "Same pattern as batch 1 (PR #215): fetched canonical bodies via earlier graphql_query batch, generated new bodies locally by appending the Related reading section (preserving every word of merchant-authored content), then articleUpdate via MCP. updatedAt timestamp confirmed after each call, zero userErrors across all 3 mutations.",
+  "articles_updated": [
+    {
+      "id": "gid://shopify/Article/594904776957",
+      "handle": "what-is-the-best-mattress-for-fibromyalgia-pain-relief",
+      "role": "condition-specific — fibromyalgia (chronic-pain-cluster anchor)",
+      "updatedAt": "2026-05-20T22:48:19Z",
+      "related_links_added": [
+        "best-mattress-for-back-pain",
+        "best-mattress-for-chronic-pain",
+        "best-mattress-for-joint-pain",
+        "best-mattress-for-shoulder-and-neck-pain"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/590200471805",
+      "handle": "best-mattress-for-bad-back",
+      "role": "condition-specific — chronic back pain (back-cluster anchor)",
+      "updatedAt": "2026-05-20T22:52:21Z",
+      "related_links_added": [
+        "best-mattress-for-back-pain",
+        "best-mattress-for-lumbar-pain",
+        "best-mattress-for-sciatica",
+        "best-mattress-for-sacroiliac-joint-pain"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/589959332093",
+      "handle": "best-mattress-for-joint-pain",
+      "role": "condition-specific — generalized joint pain (joint-cluster anchor)",
+      "updatedAt": "2026-05-20T22:56:26Z",
+      "related_links_added": [
+        "best-mattress-for-back-pain",
+        "best-mattress-for-hip-pain",
+        "best-mattress-for-shoulder-and-neck-pain",
+        "what-is-the-best-mattress-for-fibromyalgia-pain-relief",
+        "best-mattress-for-chronic-pain"
+      ]
+    }
+  ],
+  "totals": {
+    "articles_updated": 3,
+    "new_internal_links_added": 13,
+    "user_errors": 0
+  },
+  "seo_impact": "Completes the inbound-link side of the back-pain pillar's link graph from the chronic-pain / joint / fibromyalgia subcluster. Combined with PR #215's 5 articles, the back-pain pillar now has 8 inbound + 6 outbound internal links from sibling pain-cluster articles. The joint-pain article in particular acts as a secondary anchor — it links to back-pain, hip-pain, shoulder-and-neck-pain, fibromyalgia, AND chronic-pain (5 outbound), creating a meaningful internal-link hub for arthritis / generalized-pain shoppers who don't know they want back-pain specifically.",
+  "cumulative_cluster_progress": {
+    "completed": [
+      "best-mattress-for-back-pain (pillar) — PR #215",
+      "best-mattress-for-sciatica — PR #215",
+      "best-mattress-for-hip-pain — PR #215",
+      "best-mattress-for-lumbar-pain — PR #215",
+      "best-mattress-for-sacroiliac-joint-pain — PR #215",
+      "what-is-the-best-mattress-for-fibromyalgia-pain-relief — this PR",
+      "best-mattress-for-bad-back — this PR",
+      "best-mattress-for-joint-pain — this PR"
+    ],
+    "remaining": [
+      "best-mattress-for-chronic-pain (44KB)",
+      "best-mattress-for-shoulder-and-neck-pain (48KB)"
+    ],
+    "total_cluster_size": 10,
+    "completed_count": 8,
+    "remaining_count": 2
+  },
+  "deferred_reason": "The remaining 2 articles (chronic-pain 44KB, shoulder-neck 48KB) combined are ~92KB of body content. Deferring to a batch 3 PR to keep this PR's MCP-call context footprint reasonable. New bodies are already staged in the sandbox at /tmp/pain-cluster-updates/*.body.html with the Related reading sections pre-appended; same articleUpdate mutation pattern will close out the cluster in batch 3."
+}
