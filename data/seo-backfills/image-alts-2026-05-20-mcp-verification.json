@@ -1,0 +1,39 @@
+{
+  "ts": "2026-05-20T12:05:00Z",
+  "mode": "verification",
+  "execution": "Direct via Shopify Admin MCP (graphql_query) — verifying the state of the 6 images flagged in data/seo-backfills/image-alts-2026-05-14T22-18-37.csv",
+  "operator": "Claude (Anthropic)",
+  "verified_handles": [
+    "miramare-luxury-mattress-palace-collection-by-chattam-wells-1",
+    "ashford-euro-top-luxury-mattress-palace-collection-by-chattam-wells",
+    "queen-chattam-wells-mattress-clearance-the-ashford-luxury-medium-euro-top-15",
+    "helix-sleep-elite-collection-midnight-elite-luxury-plush-15-mattress",
+    "chattam-wells-miramare-luxury-firm-13-floor-sample-clearance-mattress",
+    "deluxe-bed-frame"
+  ],
+  "result": "all_6_csv_flagged_images_already_have_alt_text",
+  "samples": [
+    {
+      "image_id": "gid://shopify/MediaImage/37124343333117",
+      "url_fragment": "Chattam_and_Wells_The_Miramare_at_LA_Mattress_Store_2.png",
+      "alt_now": "Chattam & Wells Miramare Luxury Firm 13\" mattress photographed at LA Mattress Store showroom",
+      "alt_in_csv": "(was empty)"
+    },
+    {
+      "image_id": "gid://shopify/MediaImage/37247723766013",
+      "url_fragment": "Steel_DQKG6_Q_01_WEB.jpg",
+      "alt_now": "Rize Home Deluxe Steel Bed Frame at LA Mattress Store in Los Angeles",
+      "alt_in_csv": "(was empty)"
+    },
+    {
+      "image_id": "gid://shopify/MediaImage/36813331988733",
+      "url_fragment": "elite_e1d5ao_*.webp",
+      "alt_now": "Helix Sleep Elite Collection Midnight Elite Luxury Plush 15\" mattress photographed at LA Mattress Store showroom",
+      "alt_in_csv": "(was empty)"
+    }
+  ],
+  "new_finding": {
+    "scope": "Secondary/carousel images on many products still have empty alt text — not in the original May 14 audit (which only flagged featured images that were empty). Spot-checked the Helix Midnight Elite and Rize Deluxe Bed Frame: both have 5-8 secondary images each with alt=\"\".",
+    "next_steps": "Future PR should re-run scripts/seo-image-alt-report.mjs with logic that ALSO flags non-featured images, then apply alts via Shopify Admin MCP fileUpdate or productUpdateMedia. Estimated scope: ~150-400 secondary images across the 230 active products."
+  }
+}

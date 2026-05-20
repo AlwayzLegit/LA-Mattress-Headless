@@ -31,6 +31,11 @@ export function getProductJsonLd(product: Product): ProductLd[] {
     brand: { '@type': 'Brand', name: product.vendor },
     ...(product.productType ? { category: product.productType } : {}),
     image: product.images.length ? product.images.map((i) => i.url) : (product.featuredImage ? [product.featuredImage.url] : []),
+    // dateModified signals content freshness to Google. Shopify's
+    // Storefront API exposes updatedAt on every Product (it bumps on
+    // any merchant edit — price, copy, image, variant change). Helps
+    // Rich Results show "Updated 2 days ago" on competitive queries.
+    ...(product.updatedAt ? { dateModified: product.updatedAt } : {}),
     offers: {
       '@type': 'AggregateOffer',
       priceCurrency: min.currencyCode,

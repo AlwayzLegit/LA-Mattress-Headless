@@ -38,6 +38,10 @@ export function getCollectionJsonLd(collection: Collection): CollectionLd[] {
     description: firstNonEmpty(collection.seo.description, collection.description) || undefined,
     url: `https://www.mattressstoreslosangeles.com/collections/${collection.handle}`,
     inLanguage: 'en-US',
+    // isPartOf links this CollectionPage to the sitewide WebSite
+    // schema emitted in layout.tsx. Tightens crawler understanding of
+    // collection-to-site hierarchy + supports SearchAction discovery.
+    isPartOf: { '@type': 'WebSite', '@id': 'https://www.mattressstoreslosangeles.com/#website' },
   };
 
   return [

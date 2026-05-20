@@ -1,0 +1,69 @@
+{
+  "ts": "2026-05-20T13:05:00Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation articleCreate + metafieldsSet) — created 3 missing pillar SEO articles in the mattress-buying-guide blog, all published with proper author, tags, summary, and SEO title/description metafields.",
+  "operator": "Claude (Anthropic)",
+  "blog": {
+    "id": "gid://shopify/Blog/89331695869",
+    "handle": "mattress-buying-guide",
+    "title": "Mattress Buying Guide | Find Your Perfect Mattress"
+  },
+  "articles": [
+    {
+      "id": "gid://shopify/Article/600373494013",
+      "handle": "best-mattress-los-angeles",
+      "title": "Best Mattress in Los Angeles (2026 Guide for LA Shoppers)",
+      "author": "Cody Peterson",
+      "publishedAt": "2026-05-20T13:03:07Z",
+      "bodyWordsApprox": 1490,
+      "tags": ["los angeles", "mattress buying guide", "best mattress", "showrooms"],
+      "seoTitle": "Best Mattress in Los Angeles (2026) | LA Mattress Store",
+      "seoDescription": "Best mattresses to buy in Los Angeles in 2026: Tempur-Pedic, Stearns & Foster, Diamond, Helix, Englander. Test in person at 5 LA showrooms with free delivery.",
+      "structure": "Intro + 6 H2 sections (brands depend on sleep style, top brands, price tiers, where to test, free delivery, financing) + 5-question FAQ + closing CTA",
+      "internalLinks": 11,
+      "targetKeyword": "best mattress los angeles"
+    },
+    {
+      "id": "gid://shopify/Article/600373526781",
+      "handle": "mattress-store-near-me-los-angeles",
+      "title": "Mattress Store Near Me in Los Angeles — 5 LA Showrooms",
+      "author": "Cody Peterson",
+      "publishedAt": "2026-05-20T13:03:55Z",
+      "bodyWordsApprox": 1080,
+      "tags": ["los angeles", "mattress store", "near me", "showrooms", "local guide"],
+      "seoTitle": "Mattress Store Near Me in Los Angeles | 5 LA Showrooms",
+      "seoDescription": "Mattress store near you in Los Angeles: 5 showrooms (Koreatown, West LA, Hancock Park, Studio City, Glendale). Same-day delivery, free white-glove setup.",
+      "structure": "Intro + 4 H2 sections (5 showrooms by neighborhood, what to expect on visit, delivery zones, showroom vs online) + 6-question FAQ + closing CTA",
+      "internalLinks": 9,
+      "targetKeyword": "mattress store near me los angeles"
+    },
+    {
+      "id": "gid://shopify/Article/600373559549",
+      "handle": "mattress-financing-options-los-angeles",
+      "title": "Mattress Financing Options in Los Angeles (0% APR Guide)",
+      "author": "Cody Peterson",
+      "publishedAt": "2026-05-20T13:04:43Z",
+      "bodyWordsApprox": 1230,
+      "tags": ["los angeles", "financing", "0% APR", "buying guide", "payment plans"],
+      "seoTitle": "Mattress Financing Los Angeles | 0% APR Payment Plans | LA Mattress",
+      "seoDescription": "Mattress financing in Los Angeles: 0% APR for 6/12/24 months on mattresses over $599. Affirm, Klarna, Synchrony, lay-away. Credit thresholds + monthly cost math.",
+      "structure": "Intro + 5 H2 sections (how 0% APR works, who qualifies, alternative plans Affirm/Klarna/Synchrony/layaway, how much to finance, $2,400 example cost) + 6-question FAQ + closing CTA",
+      "internalLinks": 3,
+      "targetKeyword": "mattress financing los angeles"
+    }
+  ],
+  "totals": {
+    "articles_created": 3,
+    "metafields_written": 6,
+    "user_errors": 0,
+    "approximate_total_words": 3800
+  },
+  "verification": "Queried all 3 articles via articles(query: \"blog_id:89331695869 AND (handle:...)\") immediately after create. All show isPublished=true, correct author, summary, tags, plus titleTag + descTag metafields with the intended SEO values.",
+  "indexing_notes": [
+    "The 3 new URLs are: /blogs/mattress-buying-guide/best-mattress-los-angeles, /blogs/mattress-buying-guide/mattress-store-near-me-los-angeles, /blogs/mattress-buying-guide/mattress-financing-options-los-angeles.",
+    "Next-day Vercel cache will pick them up automatically once the storefront Storefront API revalidate fires. Force a refresh by hitting /api/revalidate if needed.",
+    "Sitemap.xml regenerates on each request (next.js dynamic sitemap), so new articles appear in the next crawl.",
+    "Internal-link strategy: each article links 3-11 times into existing PLPs (/collections/tempur-pedic-mattresses, /collections/stearns-foster-mattresses, /collections/diamond-mattresses, etc.) and the 5 showroom location pages (/pages/koreatown-best-mattress-store, etc.). This boosts those internal pages' link equity in addition to ranking the new article URLs."
+  ],
+  "followup_for_user": "Submit the 3 new URLs to Google Search Console (URL Inspection → Request Indexing) to accelerate first crawl. Optional but recommended — without manual submission Google typically discovers blog articles within 2-7 days via sitemap."
+}
