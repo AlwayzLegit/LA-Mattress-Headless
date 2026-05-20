@@ -127,6 +127,34 @@ export type AnalyticsEvent =
         is_final?: boolean;
         recommended_handle?: string;
       };
+    }
+  | {
+      // Server-side event — fires from app/api/webhooks/shopify/
+      // order-paid via the Shopify orders/paid webhook → posthog-node.
+      // Closes the revenue funnel (cart_view → checkout_started →
+      // order_completed). Never fired client-side; the type lives
+      // here so the taxonomy stays the single source of truth.
+      name: 'order_completed';
+      props: {
+        order_id: string;
+        order_number?: number;
+        value: number;
+        currency?: string;
+        item_count: number;
+        items?: Array<{
+          product_id?: number;
+          variant_id?: number;
+          sku?: string;
+          title?: string;
+          quantity?: number;
+          price: number;
+        }>;
+        discount_codes?: string[];
+        first_purchase?: boolean;
+        source_name?: string;
+        referring_site?: string;
+        landing_site?: string;
+      };
     };
 
 /* ------------------------------------------------------------------------ *
