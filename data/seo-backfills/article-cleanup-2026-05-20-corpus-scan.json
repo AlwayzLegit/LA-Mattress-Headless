@@ -1,0 +1,57 @@
+{
+  "ts": "2026-05-20T15:00:00Z",
+  "mode": "audit_only",
+  "execution": "Read-only audit via Shopify Admin MCP (graphql_query) — scanned 7 published articles in mattress-buying-guide for the Word-export cruft patterns that scripts/seo-article-cleanup.mjs targets. Found 3 articles with significant cruft (all promotional/seasonal content). The cleanup is best run via the existing scripts/seo-article-cleanup.yml workflow (per CMS hygiene + the script's SHA-gated verification pattern).",
+  "operator": "Claude (Anthropic)",
+  "method": "Sampled 7 articles total: 3 evergreen guides (best-mattress-for-side-sleepers, when-to-buy-a-mattress, how-to-choose-a-mattress) and 4 promotional/seasonal pieces. The evergreen guides were clean (likely authored directly in Shopify Admin). The promotional pieces showed the Word-export cruft signature.",
+  "evergreen_articles_clean": [
+    "best-mattress-for-side-sleepers",
+    "when-to-buy-a-mattress",
+    "how-to-choose-a-mattress"
+  ],
+  "promotional_articles_needing_cleanup": [
+    {
+      "handle": "cyber-monday-mattress-sale-in-west-los-angeles",
+      "id": "gid://shopify/Article/590608171261",
+      "cruft": {
+        "external_unwraps": 9,
+        "strip_srsltid_lit": 3,
+        "orphan_trailing_q": 3,
+        "text_fragment_unwraps_in_audit_grep": 1,
+        "external_hosts_referenced": ["sleepfoundation.org", "eachnight.com", "investopedia.com"]
+      },
+      "dry_run_delta": "-1237 chars (24866 → 23629)",
+      "balanced_after_clean": { "aOk": true, "pOk": true }
+    },
+    {
+      "handle": "best-black-friday-deals-on-mattresses",
+      "id": "gid://shopify/Article/590589001981",
+      "cruft": {
+        "external_unwraps": 10,
+        "strip_srsltid_lit": 3,
+        "orphan_trailing_q": 3,
+        "text_fragment_unwraps_in_audit_grep": 2
+      },
+      "dry_run_delta": "-2122 chars (25849 → 23727)",
+      "balanced_after_clean": { "aOk": true, "pOk": true }
+    },
+    {
+      "handle": "choosing-the-right-mattress-for-luxurious-sleep-after-a-day-of-travel-and-adventure",
+      "id": "gid://shopify/Article/590600700157",
+      "cruft": {
+        "external_unwraps": 13,
+        "strip_srsltid_lit": 4,
+        "orphan_trailing_q": 4,
+        "text_fragment_unwraps_in_audit_grep": 6
+      },
+      "dry_run_delta": "-3266 chars (38641 → 35375)",
+      "balanced_after_clean": { "aOk": true, "pOk": true }
+    }
+  ],
+  "recommended_followup": {
+    "primary": "Trigger the seo-article-cleanup.yml GitHub Action workflow with each of the 3 handles individually (the workflow's apply=true mode runs the same regex passes I dry-ran here, plus SHA-gated verification + auto-rollback on corruption). Workflow path: GitHub repo → Actions → 'SEO — blog article cleanup' → Run workflow → set 'apply' to true → enter handle.",
+    "alternative": "If the GitHub Actions SHOPIFY_ADMIN_TOKEN secret is still stale, the cleanup can be applied via Shopify Admin MCP (same pattern as the 4 articles cleaned in data/seo-backfills/article-cleanup-2026-05-20-mcp-applied.json). Each article needs (a) fetch body, (b) apply regex passes from scripts/seo-article-cleanup.mjs's clean() function, (c) articleUpdate, (d) re-fetch to verify.",
+    "scope": "Audit covered only 7 articles. The mattress-buying-guide blog has ~600 articles total; the cruft is concentrated in promotional/seasonal posts. A broader scan covering 30-50 promotional articles would surface more cleanup candidates. Estimating 20-40 articles across the corpus have similar cruft based on the 3/4 hit rate in this sample of promotional content."
+  },
+  "expected_seo_impact_per_cleanup": "Each cleanup strips 9-13 external competitor links per article (sleepfoundation.org, eachnight.com, investopedia.com — sites that compete for the same mattress-buying queries). This stops bleeding PageRank to competitor domains and refocuses link equity on the site's own product/collection pages."
+}
