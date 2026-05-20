@@ -46,6 +46,14 @@ export type BlogArticleInv = {
   title?: string;
   isPublished?: boolean;
   publishedAt?: string | null;
+  /**
+   * Bumps whenever the article body / SEO / tags are edited in Shopify
+   * (independent of publishedAt). Sitemap lastmod prefers this over
+   * publishedAt so edits to live articles get re-crawled promptly.
+   * Optional for snapshot backward-compat — older snapshots (pre Phase
+   * 297b) don't carry this field, callers fall back to publishedAt.
+   */
+  updatedAt?: string | null;
 };
 
 export type BlogInv = {
