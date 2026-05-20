@@ -338,7 +338,7 @@ export default async function DashboardPage({
             <span className="muted" style={{ fontSize: 12 }}>Vercel Speed Insights</span>
           </div>
           <p className="muted" style={{ marginTop: 0 }}>
-            Core Web Vitals per route (LCP / INP / CLS). Live in Vercel's Insights tab.
+            Core Web Vitals per route (LCP / INP / CLS). Live in Vercel&rsquo;s Insights tab.
           </p>
           <a
             className="btn btn-ghost"
