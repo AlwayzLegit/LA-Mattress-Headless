@@ -1,0 +1,135 @@
+{
+  "ts": "2026-05-20T23:33:05Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation articleUpdate) — appended a `<h2>Related reading</h2><ul>...</ul>` section to each of 9 articles in the material cluster on the mattress-buying-guide blog. Single-PR close-out using the same proven pattern as the size cluster (PR #218).",
+  "operator": "Claude (Anthropic)",
+  "cms_hygiene": "Same pattern as prior cluster batches (PRs #215/#216/#217/#218): fetched all 9 canonical bodies in one graphql_query, generated new bodies locally by appending the Related reading section preserving every word of merchant-authored content, then articleUpdate via MCP. Zero userErrors across all 9 mutations.",
+  "articles_updated": [
+    {
+      "id": "gid://shopify/Article/588945096957",
+      "handle": "mattress-materials",
+      "role": "pillar — links DOWN to all 5 'what is X' material articles + 1 comparison",
+      "updatedAt": "2026-05-20T23:25:03Z",
+      "related_links_added": [
+        "what-is-memory-foam",
+        "what-is-a-hybrid",
+        "what-is-latex",
+        "what-is-innerspring",
+        "what-is-pillow-top",
+        "memory-foam-mattresses-vs-hybrid-mattresses"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588942508285",
+      "handle": "what-is-memory-foam",
+      "role": "material-specific — memory foam",
+      "updatedAt": "2026-05-20T23:26:02Z",
+      "related_links_added": [
+        "mattress-materials",
+        "what-is-a-hybrid",
+        "what-is-latex",
+        "memory-foam-mattresses-vs-hybrid-mattresses"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588942967037",
+      "handle": "what-is-a-hybrid",
+      "role": "material-specific — hybrid (secondary hub)",
+      "updatedAt": "2026-05-20T23:27:05Z",
+      "related_links_added": [
+        "mattress-materials",
+        "what-is-memory-foam",
+        "what-is-innerspring",
+        "memory-foam-mattresses-vs-hybrid-mattresses",
+        "hybrid-vs-innerspring-mattress-which-is-best"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588942672125",
+      "handle": "what-is-latex",
+      "role": "material-specific — latex",
+      "updatedAt": "2026-05-20T23:27:59Z",
+      "related_links_added": [
+        "mattress-materials",
+        "what-is-memory-foam",
+        "what-is-a-hybrid"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588942737661",
+      "handle": "what-is-innerspring",
+      "role": "material-specific — innerspring",
+      "updatedAt": "2026-05-20T23:28:56Z",
+      "related_links_added": [
+        "mattress-materials",
+        "what-is-a-hybrid",
+        "hybrid-vs-innerspring-mattress-which-is-best",
+        "what-is-pillow-top"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588942999805",
+      "handle": "what-is-pillow-top",
+      "role": "construction — pillow top",
+      "updatedAt": "2026-05-20T23:29:54Z",
+      "related_links_added": [
+        "mattress-materials",
+        "what-is-innerspring",
+        "what-is-a-hybrid"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/589210419453",
+      "handle": "memory-foam-mattresses-vs-hybrid-mattresses",
+      "role": "comparison — memory foam vs hybrid (highest-traffic comparison)",
+      "updatedAt": "2026-05-20T23:30:52Z",
+      "related_links_added": [
+        "mattress-materials",
+        "what-is-memory-foam",
+        "what-is-a-hybrid",
+        "hybrid-vs-innerspring-mattress-which-is-best"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588914163965",
+      "handle": "hybrid-vs-innerspring-mattress-which-is-best",
+      "role": "comparison — hybrid vs innerspring",
+      "updatedAt": "2026-05-20T23:31:48Z",
+      "related_links_added": [
+        "mattress-materials",
+        "what-is-a-hybrid",
+        "what-is-innerspring",
+        "memory-foam-mattresses-vs-hybrid-mattresses"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588898402557",
+      "handle": "bed-in-a-box-vs-traditional-mattress-pros-and-cons",
+      "role": "format comparison — bed-in-a-box vs traditional",
+      "updatedAt": "2026-05-20T23:33:05Z",
+      "related_links_added": [
+        "mattress-materials",
+        "what-is-memory-foam",
+        "what-is-a-hybrid"
+      ]
+    }
+  ],
+  "totals": {
+    "articles_updated": 9,
+    "new_internal_links_added": 36,
+    "user_errors": 0
+  },
+  "cluster_complete": true,
+  "seo_impact": "Material cluster is now a fully-connected internal-link graph. The mattress-materials pillar anchors the cluster with 6 outbound links to every 'what is X' material article + the highest-traffic comparison. Each material-specific article links back to the pillar plus 2-4 related materials/comparisons. The what-is-a-hybrid article acts as a secondary hub (5 outbound: pillar + memory foam + innerspring + both comparison articles) because hybrid sits at the intersection of foam and coil materials and is the most commonly-cross-referenced material type. 36 new internal links across 9 articles.",
+  "cumulative_three_clusters": {
+    "pain_cluster": { "articles": 10, "links": 43, "prs": ["#215", "#216", "#217"] },
+    "size_cluster": { "articles": 9, "links": 34, "prs": ["#218"] },
+    "material_cluster": { "articles": 9, "links": 36, "prs": ["this PR"] },
+    "total_articles": 28,
+    "total_internal_links_added": 113
+  },
+  "remaining_options": [
+    "Reverse links to the 3 new LA pillar articles (best-mattress-los-angeles, mattress-store-near-me-los-angeles, mattress-financing-options-los-angeles) from older popular articles. Flagged out-of-scope in Phase 297.",
+    "Performance / Core Web Vitals audit (code-side work, different domain)."
+  ]
+}
