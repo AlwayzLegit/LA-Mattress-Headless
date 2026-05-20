@@ -7,14 +7,26 @@ import {
   getSeoGaps,
   getTopProducts,
 } from '@/lib/shopify/admin';
+import {
+  POSTHOG_CONFIGURED,
+  postHogConfig,
+} from '@/lib/posthog-query';
+import {
+  getConversionFunnel,
+  getQuizFunnel,
+  getRevenueBySource,
+  getTopEntryPages,
+  getTopSearches,
+  getTopTrafficSources,
+} from '@/lib/posthog-dashboard';
 
 /**
  * Internal admin dashboard at /admin/dashboard.
  *
  * Aggregates first-party metrics from Shopify Admin (orders, revenue,
- * catalog health, SEO gaps) into one page, plus deep-links into the
- * external dashboards (Sentry for errors, PostHog for funnels +
- * session replay, Vercel for deploys + CWV).
+ * catalog health, SEO gaps) PLUS live PostHog data (conversion funnel,
+ * top entry pages with bounce %, top searches with zero-result rate,
+ * top traffic sources, quiz funnel, revenue by acquisition source).
  *
  * Auth: HTTP Basic Auth at the edge (see middleware.ts) gated on
  * ADMIN_USER + ADMIN_PASSWORD env vars. When either is unset,
@@ -45,13 +57,38 @@ export default async function DashboardPage() {
     );
   }
 
-  // Fan out all queries in parallel — they each take ~200-500ms and
-  // running serially would push the page over a second.
-  const [orderSummary, catalog, topProducts, seoGaps] = await Promise.all([
+  // PostHog project URL for deep-linking. When the env vars aren't
+  // set we still render the dashboard; PostHog widgets show
+  // "data unavailable" with a config hint.
+  const phCfg = postHogConfig();
+  const phProjectUrl = phCfg
+    ? `${phCfg.apiHost.replace(/^https:\/\/us\.posthog\.com$/, 'https://us.posthog.com')}/project/${phCfg.projectId}`
+    : 'https://us.posthog.com';
+
+  // Fan out all queries in parallel — each ~200-500ms; serial would
+  // push the page over a second.
+  const [
+    orderSummary,
+    catalog,
+    topProducts,
+    seoGaps,
+    funnel,
+    entryPages,
+    searches,
+    sources,
+    quizFunnel,
+    revenueBySource,
+  ] = await Promise.all([
     getOrderSummary(30).catch(() => null),
     getCatalogHealth().catch(() => null),
     getTopProducts(30).catch(() => null),
     getSeoGaps().catch(() => null),
+    POSTHOG_CONFIGURED ? getConversionFunnel(30).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getTopEntryPages(7, 10).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getTopSearches(30, 15).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getTopTrafficSources(30, 10).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getQuizFunnel(30).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getRevenueBySource(30, 8).catch(() => null) : Promise.resolve(null),
   ]);
 
   return (
@@ -62,13 +99,14 @@ export default async function DashboardPage() {
           <h1 className="h2" style={{ margin: 0 }}>LA Mattress dashboard</h1>
           <p className="muted" style={{ marginTop: 4, fontSize: 13 }}>
             Last refreshed {new Date().toLocaleString()} · auto-refreshes every 5 minutes
+            {!POSTHOG_CONFIGURED ? ' · PostHog widgets disabled (env vars missing)' : null}
           </p>
         </div>
         <nav className="dashboard-links">
           <a href="https://jetnine.sentry.io/issues/?project=la-mattress-headless" target="_blank" rel="noopener noreferrer">
             Sentry →
           </a>
-          <a href="https://us.posthog.com/" target="_blank" rel="noopener noreferrer">
+          <a href={phProjectUrl} target="_blank" rel="noopener noreferrer">
             PostHog →
           </a>
           <a href="https://vercel.com/alwayzlegits-projects/la-mattress-headless" target="_blank" rel="noopener noreferrer">
@@ -136,6 +174,21 @@ export default async function DashboardPage() {
           )}
         </div>
 
+        {/* Conversion funnel — LIVE */}
+        <div className="dash-card dash-card-wide">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Conversion funnel · last 30 days</h2>
+            <span className="muted" style={{ fontSize: 12 }}>PostHog · unique persons</span>
+          </div>
+          {funnel ? (
+            <FunnelViz steps={funnel.steps} />
+          ) : POSTHOG_CONFIGURED ? (
+            <p className="muted">Funnel data unavailable. Check Sentry for the failing PostHog query.</p>
+          ) : (
+            <PostHogConfigHint />
+          )}
+        </div>
+
         {/* Catalog health */}
         <div className="dash-card">
           <div className="dash-card-hd">
@@ -178,11 +231,53 @@ export default async function DashboardPage() {
           )}
         </div>
 
+        {/* Quiz funnel */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Quiz funnel · 30d</h2>
+            <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
+          </div>
+          {quizFunnel ? (
+            <ul className="dash-list">
+              <li>
+                <span>Started</span>
+                <strong>{quizFunnel.started}</strong>
+              </li>
+              <li>
+                <span>Completed</span>
+                <strong>
+                  {quizFunnel.completed}
+                  {quizFunnel.started > 0 ? (
+                    <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                      ({pct(quizFunnel.completed, quizFunnel.started)})
+                    </span>
+                  ) : null}
+                </strong>
+              </li>
+              <li>
+                <span>Clicked recommendation</span>
+                <strong>
+                  {quizFunnel.clicked}
+                  {quizFunnel.completed > 0 ? (
+                    <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                      ({pct(quizFunnel.clicked, quizFunnel.completed)})
+                    </span>
+                  ) : null}
+                </strong>
+              </li>
+            </ul>
+          ) : POSTHOG_CONFIGURED ? (
+            <p className="muted">No quiz data yet — events ship in PostHog Phase 1.</p>
+          ) : (
+            <PostHogConfigHint />
+          )}
+        </div>
+
         {/* Top products */}
         <div className="dash-card dash-card-wide">
           <div className="dash-card-hd">
             <h2 className="h3" style={{ margin: 0 }}>Top products (last 30 days)</h2>
-            <span className="muted" style={{ fontSize: 12 }}>by units sold</span>
+            <span className="muted" style={{ fontSize: 12 }}>by units sold · Shopify</span>
           </div>
           {topProducts ? (
             topProducts.topByQuantity.length === 0 ? (
@@ -213,6 +308,162 @@ export default async function DashboardPage() {
             )
           ) : (
             <p className="muted">Top-products data unavailable.</p>
+          )}
+        </div>
+
+        {/* Top entry pages */}
+        <div className="dash-card dash-card-wide">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Top entry pages · 7d</h2>
+            <span className="muted" style={{ fontSize: 12 }}>PostHog · with bounce %</span>
+          </div>
+          {entryPages ? (
+            entryPages.length === 0 ? (
+              <p className="muted">No session data yet.</p>
+            ) : (
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Path</th>
+                    <th>Sessions</th>
+                    <th>Bounces</th>
+                    <th>Bounce %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entryPages.map((p) => (
+                    <tr key={p.path}>
+                      <td>
+                        <Link href={p.path} prefetch={false} target="_blank" rel="noopener noreferrer">
+                          {p.path}
+                        </Link>
+                      </td>
+                      <td className="tnum">{p.sessions}</td>
+                      <td className="tnum">{p.bounces}</td>
+                      <td className={`tnum ${p.bouncePct > 70 ? 'dash-warn' : ''}`}>{p.bouncePct.toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          ) : POSTHOG_CONFIGURED ? (
+            <p className="muted">Entry-page data unavailable.</p>
+          ) : (
+            <PostHogConfigHint />
+          )}
+        </div>
+
+        {/* Top searches */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Top searches · 30d</h2>
+            <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
+          </div>
+          {searches ? (
+            searches.length === 0 ? (
+              <p className="muted">No search data yet — event ships in PostHog Phase 1.</p>
+            ) : (
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Query</th>
+                    <th>Count</th>
+                    <th>Zero-result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {searches.map((s) => (
+                    <tr key={s.query}>
+                      <td>
+                        <Link href={`/search?q=${encodeURIComponent(s.query)}`} prefetch={false} target="_blank" rel="noopener noreferrer">
+                          {s.query}
+                        </Link>
+                      </td>
+                      <td className="tnum">{s.searches}</td>
+                      <td className={`tnum ${s.zeroPct > 25 ? 'dash-warn' : ''}`}>
+                        {s.zeroResult > 0 ? `${s.zeroResult} (${s.zeroPct.toFixed(0)}%)` : '0'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          ) : POSTHOG_CONFIGURED ? (
+            <p className="muted">Search data unavailable.</p>
+          ) : (
+            <PostHogConfigHint />
+          )}
+        </div>
+
+        {/* Top traffic sources */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Traffic sources · 30d</h2>
+            <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
+          </div>
+          {sources ? (
+            sources.length === 0 ? (
+              <p className="muted">No traffic data yet.</p>
+            ) : (
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Source</th>
+                    <th>Visitors</th>
+                    <th>Sessions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sources.map((s) => (
+                    <tr key={s.source}>
+                      <td>{s.source}</td>
+                      <td className="tnum">{s.visitors}</td>
+                      <td className="tnum">{s.sessions}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          ) : POSTHOG_CONFIGURED ? (
+            <p className="muted">Traffic-source data unavailable.</p>
+          ) : (
+            <PostHogConfigHint />
+          )}
+        </div>
+
+        {/* Revenue by source */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Revenue by source · 30d</h2>
+            <span className="muted" style={{ fontSize: 12 }}>PostHog · initial UTM</span>
+          </div>
+          {revenueBySource ? (
+            revenueBySource.length === 0 ? (
+              <p className="muted">No order events tracked yet — webhook fires order_completed.</p>
+            ) : (
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Source</th>
+                    <th>Orders</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {revenueBySource.map((r) => (
+                    <tr key={r.source}>
+                      <td>{r.source}</td>
+                      <td className="tnum">{r.orders}</td>
+                      <td className="tnum">{fmtMoney(r.revenue, 'USD')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          ) : POSTHOG_CONFIGURED ? (
+            <p className="muted">Revenue-by-source unavailable.</p>
+          ) : (
+            <PostHogConfigHint />
           )}
         </div>
 
@@ -261,33 +512,6 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* External dashboards */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Conversion funnel</h2>
-            <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
-          </div>
-          <p className="muted" style={{ marginTop: 0 }}>
-            PostHog stores the funnel; this card embeds the link until we wire the Insights API.
-          </p>
-          <ul className="dash-list-compact">
-            <li><span className="dash-badge">plp_view</span> → <span className="dash-badge">pdp_view</span></li>
-            <li><span className="dash-badge">pdp_view</span> → <span className="dash-badge">add_to_cart</span></li>
-            <li><span className="dash-badge">add_to_cart</span> → <span className="dash-badge">cart_view</span></li>
-            <li><span className="dash-badge">cart_view</span> → <span className="dash-badge">checkout_started</span></li>
-            <li><span className="dash-badge">checkout_started</span> → <span className="dash-badge">order_completed</span></li>
-          </ul>
-          <a
-            className="btn btn-ghost"
-            href="https://us.posthog.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ marginTop: 'var(--s-3)' }}
-          >
-            Open in PostHog →
-          </a>
-        </div>
-
         <div className="dash-card">
           <div className="dash-card-hd">
             <h2 className="h3" style={{ margin: 0 }}>Errors</h2>
@@ -333,6 +557,51 @@ export default async function DashboardPage() {
 }
 
 /* ------------------------------------------------------------------------ *
+ * Sub-components
+ * ------------------------------------------------------------------------ */
+
+function FunnelViz({ steps }: { steps: Array<{ event: string; label: string; persons: number }> }) {
+  const top = Math.max(...steps.map((s) => s.persons), 1);
+  return (
+    <ul className="dash-funnel">
+      {steps.map((s, i) => {
+        const widthPct = (s.persons / top) * 100;
+        const prev = i > 0 ? steps[i - 1] : null;
+        const dropPct = prev && prev.persons > 0 ? 100 - (s.persons / prev.persons) * 100 : null;
+        return (
+          <li key={s.event} className="dash-funnel-row">
+            <div className="dash-funnel-meta">
+              <span className="dash-funnel-label">{s.label}</span>
+              <span className="dash-badge">{s.event}</span>
+            </div>
+            <div className="dash-funnel-bar">
+              <div className="dash-funnel-fill" style={{ width: `${widthPct.toFixed(1)}%` }} />
+              <span className="dash-funnel-value tnum">{s.persons.toLocaleString()}</span>
+            </div>
+            {dropPct !== null ? (
+              <span className={`dash-funnel-drop tnum ${dropPct > 50 ? 'dash-warn' : ''}`}>
+                {dropPct >= 0 ? '−' : '+'}{Math.abs(dropPct).toFixed(1)}%
+              </span>
+            ) : (
+              <span className="dash-funnel-drop muted">—</span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function PostHogConfigHint() {
+  return (
+    <p className="muted" style={{ marginTop: 0 }}>
+      Set <code>POSTHOG_PERSONAL_API_KEY</code> + <code>POSTHOG_PROJECT_ID</code> in Vercel env
+      to load PostHog data here. Personal API key needs <code>query:read</code> + <code>insight:read</code> scopes.
+    </p>
+  );
+}
+
+/* ------------------------------------------------------------------------ *
  * Formatters
  * ------------------------------------------------------------------------ */
 
@@ -355,4 +624,9 @@ function relativeTime(iso: string): string {
   if (hr < 24) return `${hr}h ago`;
   const day = Math.round(hr / 24);
   return `${day}d ago`;
+}
+
+function pct(num: number, denom: number): string {
+  if (denom <= 0) return '—';
+  return `${((num / denom) * 100).toFixed(1)}%`;
 }
