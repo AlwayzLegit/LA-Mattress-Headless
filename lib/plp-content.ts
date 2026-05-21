@@ -797,10 +797,69 @@ const G = {
     href: '/blogs/mattress-buying-guide/best-hypoallergenic-pillows-and-bedsheets',
     label: 'Hypoallergenic pillows & bed sheets',
   },
+  // SEMrush 20260521_1 follow-up — local LA pillar articles (created in
+  // 2026-05-20 batch, data/seo-backfills/pillar-articles-...) wired into
+  // the high-traffic broad-cluster PLPs (mattresses, on-sale, all-foam,
+  // memorial-day, etc.) so they accumulate dozens of contextual inbound
+  // links from every category PLP — pulling them out of the
+  // crawl-depth tail.
+  laBest: {
+    href: '/blogs/mattress-buying-guide/best-mattress-los-angeles',
+    label: 'Best mattress in Los Angeles (2026 guide)',
+  },
+  laFinancing: {
+    href: '/blogs/mattress-buying-guide/mattress-financing-options-los-angeles',
+    label: 'LA mattress financing (0% APR options)',
+  },
+  backPain: {
+    href: '/blogs/mattress-buying-guide/best-mattress-for-back-pain',
+    label: 'Best mattress for back pain',
+  },
+  sideSleepers: {
+    href: '/blogs/mattress-buying-guide/best-mattress-for-side-sleepers',
+    label: 'Best mattress for side sleepers',
+  },
+  adjustableBeds: {
+    href: '/blogs/mattress-buying-guide/8-health-benefits-of-using-an-adjustable-bed',
+    label: '8 health benefits of an adjustable bed',
+  },
+  tempurVsPurple: {
+    href: '/pages/purple-mattress-vs-tempur-pedic',
+    label: 'Purple vs. Tempur-Pedic compared',
+  },
 } as const;
 
 export function categoryGuidesFor(handle: string): CategoryGuide[] {
   const h = handle.toLowerCase();
+
+  // SEMrush 20260521_1 orphan-collection specifics — most-specific
+  // matches FIRST so they don't get caught by the broad fallbacks
+  // below. Each block adds the LA-local pillar where it's the most
+  // contextually relevant.
+  if (h === 'best-sellers') {
+    return [G.laBest, G.chooseSize, G.cooling];
+  }
+  if (h === 'luxury-mattresses') {
+    return [G.laBest, G.tempurVsPurple, G.chooseSize];
+  }
+  if (h === 'soft-mattresses-for-pressure-relief') {
+    return [G.backPain, G.sideSleepers, G.chooseSize];
+  }
+  if (h === 'tempur-pedic-adjustable-bases') {
+    return [G.adjustableBeds, G.tempurVsPurple, G.laFinancing];
+  }
+  if (h === 'memorial-day-sale') {
+    return [G.laBest, G.laFinancing, G.chooseSize];
+  }
+  if (h === 'cooling-pillows') {
+    return [G.cooling, G.hypoallergenic];
+  }
+
+  // Brand-specific PLPs benefit from the Purple-vs-Tempur comparison
+  // (high commercial intent) and the LA-best pillar.
+  if (h.includes('tempur-pedic')) {
+    return [G.tempurVsPurple, G.laBest, G.chooseSize];
+  }
 
   // Size-specific (California King before the generic "king" match).
   if (h.includes('california-king') || h.includes('cal-king')) {
@@ -812,9 +871,12 @@ export function categoryGuidesFor(handle: string): CategoryGuide[] {
   if (h.includes('twin') || h.includes('split')) return [G.chooseSize, G.couples];
 
   // Use-case / material.
-  if (h.includes('extra-firm') || h.includes('firm')) return [G.heavy, G.chooseSize];
+  if (h.includes('extra-firm') || h.includes('firm')) return [G.heavy, G.chooseSize, G.backPain];
   if (h.includes('cooling') || h.includes('gel') || h.includes('memory-foam') || h.includes('foam')) {
     return [G.cooling, G.chooseSize];
+  }
+  if (h.includes('adjustable')) {
+    return [G.adjustableBeds, G.laFinancing, G.chooseSize];
   }
   if (h.includes('protector') || h.includes('pillow') || h.includes('sheet') || h.includes('comforter')) {
     return [G.hypoallergenic];
@@ -822,15 +884,15 @@ export function categoryGuidesFor(handle: string): CategoryGuide[] {
 
   // Broad commercial collections (on-sale, bed-frames, all-mattresses, …)
   // — a general buying cluster so these high-traffic PLPs still pass
-  // contextual link equity to the cornerstone guides.
+  // contextual link equity to the cornerstone guides + the local LA
+  // pillar (which carries the highest commercial-intent local keyword).
   if (
     h.includes('mattress') ||
     h.includes('sale') ||
     h.includes('clearance') ||
-    h.includes('bed-frame') ||
-    h.includes('adjustable')
+    h.includes('bed-frame')
   ) {
-    return [G.chooseSize, G.cooling, G.stomach];
+    return [G.laBest, G.chooseSize, G.cooling, G.stomach];
   }
 
   return [];
