@@ -3108,8 +3108,8 @@ summary:focus-visible,
 /* Per-showroom structured content (ShowroomDetail). Consistent look
    across all five pages; reuses the shared .section / .eyebrow / .h2
    rhythm so it reads as one page, not bolted-on. */
-.showroom-areas, .showroom-brands, .showroom-expect { border-top: 1px solid var(--line); padding-top: var(--s-6); }
-.showroom-areas .h2, .showroom-brands .h2, .showroom-expect .h2 { margin: var(--s-2) 0 var(--s-3); }
+.showroom-areas, .showroom-brands, .showroom-expect, .showroom-other, .showroom-guides { border-top: 1px solid var(--line); padding-top: var(--s-6); }
+.showroom-areas .h2, .showroom-brands .h2, .showroom-expect .h2, .showroom-other .h2, .showroom-guides .h2 { margin: var(--s-2) 0 var(--s-3); }
 .showroom-chips {
   list-style: none; padding: 0; margin: var(--s-4) 0 0;
   display: flex; flex-wrap: wrap; gap: var(--s-2);
