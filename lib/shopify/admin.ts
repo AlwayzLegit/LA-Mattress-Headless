@@ -595,7 +595,15 @@ export type DashboardOrderDetail = {
   cancelReason: string | null;
   displayFinancialStatus: string | null;
   displayFulfillmentStatus: string | null;
+  /** Current total — net of refunds. From Shopify's currentTotalPriceSet. */
   total: number;
+  /**
+   * Original total — what the customer was charged at order time. From
+   * Shopify's totalPriceSet (no "current" prefix). Differs from `total`
+   * for partially-refunded orders. Same value the dashboard's Recent
+   * orders table shows in the Total column.
+   */
+  originalTotal: number;
   subtotal: number;
   totalTax: number;
   totalShipping: number;
@@ -634,6 +642,7 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
       displayFinancialStatus: string | null;
       displayFulfillmentStatus: string | null;
       currentTotalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+      totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
       currentSubtotalPriceSet: { shopMoney: { amount: string; currencyCode: string } } | null;
       currentTotalTaxSet: { shopMoney: { amount: string; currencyCode: string } } | null;
       totalShippingPriceSet: { shopMoney: { amount: string; currencyCode: string } } | null;
@@ -680,6 +689,7 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
         id name createdAt processedAt cancelledAt cancelReason
         displayFinancialStatus displayFulfillmentStatus
         currentTotalPriceSet { shopMoney { amount currencyCode } }
+        totalPriceSet { shopMoney { amount currencyCode } }
         currentSubtotalPriceSet { shopMoney { amount currencyCode } }
         currentTotalTaxSet { shopMoney { amount currencyCode } }
         totalShippingPriceSet { shopMoney { amount currencyCode } }
@@ -723,6 +733,7 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
     displayFinancialStatus: o.displayFinancialStatus,
     displayFulfillmentStatus: o.displayFulfillmentStatus,
     total: Number.parseFloat(o.currentTotalPriceSet.shopMoney.amount || '0'),
+    originalTotal: Number.parseFloat(o.totalPriceSet.shopMoney.amount || '0'),
     subtotal: Number.parseFloat(o.currentSubtotalPriceSet?.shopMoney.amount || '0'),
     totalTax: Number.parseFloat(o.currentTotalTaxSet?.shopMoney.amount || '0'),
     totalShipping: Number.parseFloat(o.totalShippingPriceSet?.shopMoney.amount || '0'),

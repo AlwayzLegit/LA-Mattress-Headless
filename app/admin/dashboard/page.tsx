@@ -224,6 +224,8 @@ export default async function DashboardPage({
     funnelConvPrev,
     cartAbandonmentNow: abandonment?.cartAbandonment ?? null,
     cartAbandonmentPrev: abandonmentPrev?.cartAbandonment ?? null,
+    cartViewersNow: abandonment?.cartViewers ?? null,
+    cartViewersPrev: abandonmentPrev?.cartViewers ?? null,
     rangeLabel,
   });
 
@@ -853,7 +855,22 @@ export default async function DashboardPage({
                   <strong>{catalog.publishedProducts}</strong>
                 </li>
                 <li className={catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts > 0 ? 'dash-warn' : ''}>
-                  <span>Active but hidden</span>
+                  <span>
+                    Active but hidden
+                    {catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts > 0 ? (
+                      <>
+                        {' '}
+                        <a
+                          href={`${SHOPIFY_ADMIN_BASE}/products?selectedView=all&status=active&published_status=unpublished`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ fontSize: 11 }}
+                        >
+                          (review →)
+                        </a>
+                      </>
+                    ) : null}
+                  </span>
                   <strong>{Math.max(catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts, 0)}</strong>
                 </li>
                 <li className={catalog.draftProducts > 0 ? 'dash-warn' : ''}>

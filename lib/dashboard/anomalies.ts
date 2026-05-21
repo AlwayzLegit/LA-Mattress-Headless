@@ -83,6 +83,14 @@ export type AnomalyInput = {
   /** Cart→checkout abandonment as a fraction. */
   cartAbandonmentNow: number | null;
   cartAbandonmentPrev: number | null;
+  /**
+   * Raw cart-viewer counts in each window. Used by the cart-abandonment
+   * detector to suppress callouts on tiny samples — a "50pp jump" on
+   * 2 cart views vs 0 is mathematically true but statistically noise
+   * (QA round 2 B2).
+   */
+  cartViewersNow: number | null;
+  cartViewersPrev: number | null;
   /** Used in callout copy ("vs prior 30 days"). */
   rangeLabel: string;
 };
@@ -143,7 +151,17 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
   // Reported in percentage points (pp) — a 10pp jump (e.g. 60% → 70%)
   // is meaningfully worse than a 10% relative jump. Catches "we shipped
   // a checkout regression yesterday and conversion fell off a cliff".
-  if (input.cartAbandonmentNow !== null && input.cartAbandonmentPrev !== null) {
+  //
+  // QA round 2 B2: requires at least 5 cart viewers in the CURRENT
+  // window. Without this, the detector would fire critical on 2 carts
+  // viewed + 1 checkout started ("50pp jump from 0%") which is
+  // mathematically true but statistically meaningless. Same pattern as
+  // the refund-rate detector's totalOrders >= 5 guard.
+  if (
+    input.cartAbandonmentNow !== null &&
+    input.cartAbandonmentPrev !== null &&
+    (input.cartViewersNow ?? 0) >= 5
+  ) {
     const ppDelta = (input.cartAbandonmentNow - input.cartAbandonmentPrev) * 100;
     if (ppDelta >= 10) {
       out.push({

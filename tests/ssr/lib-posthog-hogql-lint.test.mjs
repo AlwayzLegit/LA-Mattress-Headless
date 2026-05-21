@@ -30,24 +30,30 @@ import { dirname, resolve } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '../..');
 
-// ClickHouse-native function names that look HogQL-compatible but
-// aren't. The PostHog error message points at the right replacement
-// for each — kept in this comment so the fix is one keystroke away
-// if a CI failure surfaces a new query containing one of these.
+// ClickHouse / pseudo-ClickHouse function names that look HogQL-compatible
+// but aren't. Two confirmed-broken classes:
 //
-//   toInt8OrNull   → toIntOrNull       toInt8OrZero   → (no direct equivalent; use toIntOrNull + coalesce 0)
-//   toInt16OrNull  → toIntOrNull       toInt16OrZero  → likewise
-//   toInt32OrNull  → toIntOrNull       toInt32OrZero  → likewise
-//   toInt64OrNull  → toIntOrNull       toInt64OrZero  → likewise
-//   toFloat32OrZero → toFloatOrZero
-//   toFloat64OrZero → toFloatOrZero
-//   toFloat32OrNull → toFloatOrNull
-//   toFloat64OrNull → toFloatOrNull
+//   1. Width-suffixed Int conversions (`toInt32OrNull` etc.) — first
+//      caught in PR #225 from Sentry LA-MATTRESS-HEADLESS-Q.
+//   2. Bare `toIntOrNull` — what PR #225 swapped in as a fix, also
+//      rejected by HogQL (Sentry LA-MATTRESS-HEADLESS-S, QA round 2).
+//
+// `toFloatOrZero` IS valid HogQL (PR #225's fix to the parallel float
+// query worked), so we DON'T blanket-ban every `to*OrZero/Null` variant.
+// Add to this list only what's been observed broken in the wild.
+//
+// Pattern that's safe when you need to compare a JSON property to an
+// integer: avoid conversion entirely. `properties.X` access auto-types,
+// and string-compare via `toString(properties.X) = '0'` is bulletproof.
 const BANNED_HOGQL_FUNCTIONS = [
   'toInt8OrNull', 'toInt16OrNull', 'toInt32OrNull', 'toInt64OrNull',
   'toInt8OrZero', 'toInt16OrZero', 'toInt32OrZero', 'toInt64OrZero',
   'toFloat32OrZero', 'toFloat64OrZero',
   'toFloat32OrNull', 'toFloat64OrNull',
+  // QA round 2 (Sentry LA-MATTRESS-HEADLESS-S): the bare non-suffixed
+  // version of toIntOrNull is ALSO unsupported. Banned alongside the
+  // width-suffixed variants — same fix class.
+  'toIntOrNull',
 ];
 
 // Files whose source must not contain any banned function token. Add

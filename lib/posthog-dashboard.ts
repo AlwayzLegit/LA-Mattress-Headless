@@ -165,8 +165,8 @@ export async function getTopSearches(days = 30, limit = 15): Promise<SearchQuery
     SELECT
       lower(trim(toString(properties.query))) AS q,
       count() AS searches,
-      countIf(toIntOrNull(toString(properties.result_count)) = 0) AS zero_result,
-      round(100.0 * countIf(toIntOrNull(toString(properties.result_count)) = 0) / count(), 1) AS zero_pct
+      countIf(toString(properties.result_count) = '0') AS zero_result,
+      round(100.0 * countIf(toString(properties.result_count) = '0') / count(), 1) AS zero_pct
     FROM events
     WHERE event = 'search'
       AND timestamp >= now() - INTERVAL ${days} DAY
