@@ -4,6 +4,7 @@ import { Hero } from '../_components/hero';
 import {
   ShopByCategory,
   BrandStrip,
+  FeaturedGuides,
   WhyUs,
   QuizTeaser,
   Reviews,
@@ -73,6 +74,7 @@ export default async function Home() {
       <ShopByCategory />
       <Showrooms />
       <BrandStrip />
+      <FeaturedGuides />
       <WhyUs />
       <QuizTeaser />
       <Reviews />
