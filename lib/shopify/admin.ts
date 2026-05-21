@@ -18,6 +18,7 @@ import {
   summarizeCustomerLifetime,
   type CustomerLifetimeSummary,
 } from '@/lib/dashboard/customer-lifetime';
+import { aggregateRefundsByLineItem } from '@/lib/dashboard/refund-aggregation';
 
 // Re-export so admin.ts callers can keep their `import { numericIdFromGid }
 // from '@/lib/shopify/admin'` paths unchanged. The pure helper now lives
@@ -169,9 +170,19 @@ export async function getOrderSummary(days = 30): Promise<DashboardOrderSummary 
  * "X orders, +Y% vs previous N days" deltas and inline sparklines.
  */
 export type DashboardDailyPoint = { date: string; orders: number; revenue: number };
+/**
+ * Hour-of-day bucket — 24 entries, hour ∈ [0, 23] in the store's
+ * physical timezone (America/Los_Angeles). Aggregated across every
+ * day in the current window so the dashboard can render a "when do
+ * orders come in" view independent of which calendar day they
+ * happened on. PT chosen (cowork 20260521 follow-up; was UTC) so
+ * the merchant doesn't have to do a 7-8h mental subtraction.
+ */
+export type DashboardHourPoint = { hour: number; orders: number; revenue: number };
 export type DashboardOrderSummaryWithTrends = DashboardOrderSummary & {
   prev: { totalOrders: number; totalRevenue: number; avgOrderValue: number } | null;
   daily: DashboardDailyPoint[];
+  hourly: DashboardHourPoint[];
 };
 
 export async function getOrderSummaryWithTrends(days = 30): Promise<DashboardOrderSummaryWithTrends | null> {
@@ -237,6 +248,40 @@ export async function getOrderSummaryWithTrends(days = 30): Promise<DashboardOrd
     .map(([date, v]) => ({ date, orders: v.orders, revenue: v.revenue }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
+  // Hour-of-day bucket — 24 fixed slots in America/Los_Angeles, zero-
+  // filled. Counts how many orders fall into each hour across every
+  // day in the window, so a 30-day window with one order/day at 2pm PT
+  // gives buckets[14] = 30. Renderer turns this into the "when do
+  // orders come in" heatmap.
+  //
+  // Cowork 20260521 follow-up: was UTC, which forced the merchant to
+  // do a 7-8h mental subtraction every time they read the card. Five
+  // physical showrooms in LA + a customer base concentrated in
+  // California → America/Los_Angeles is the operationally correct
+  // zone. Hardcoded for this single-store deploy; if the dashboard
+  // ever ships multi-store, swap to `Shop.ianaTimezone` from the
+  // Shopify Admin API.
+  const STORE_TZ = 'America/Los_Angeles';
+  const hourFmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: STORE_TZ,
+    hour: 'numeric',
+    hour12: false,
+  });
+  const hourlyBuckets: DashboardHourPoint[] = Array.from({ length: 24 }, (_, h) => ({
+    hour: h, orders: 0, revenue: 0,
+  }));
+  for (const o of orders) {
+    // Intl.DateTimeFormat returns '0' through '23' (en-US, hour12:false).
+    // '24' would mean midnight-end-of-day in some locales; en-US uses
+    // '0' so the modulo is defensive, not load-bearing.
+    const hour = Number(hourFmt.format(new Date(o.createdAt))) % 24;
+    const bucket = hourlyBuckets[hour];
+    if (bucket) {
+      bucket.orders += 1;
+      bucket.revenue += Number.parseFloat(o.totalPriceSet.shopMoney.amount || '0');
+    }
+  }
+
   let prevSummary: DashboardOrderSummaryWithTrends['prev'] = null;
   if (prev) {
     const prevOrders = prev.orders.nodes;
@@ -268,6 +313,7 @@ export async function getOrderSummaryWithTrends(days = 30): Promise<DashboardOrd
     })),
     prev: prevSummary,
     daily,
+    hourly: hourlyBuckets,
   };
 }
 
@@ -756,14 +802,9 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
   // QA round 2 B4: aggregate refundLineItems across every refund record
   // on the order, grouped by the original line item id. Powers the
   // per-line "(N refunded, $X)" vs "(N restocked, no refund)" callout.
-  const refundsByLineItem = new Map<string, number>();
-  for (const r of o.refunds) {
-    for (const rli of r.refundLineItems.nodes) {
-      const id = rli.lineItem.id;
-      const subtotal = Number.parseFloat(rli.subtotalSet.shopMoney.amount || '0');
-      refundsByLineItem.set(id, (refundsByLineItem.get(id) ?? 0) + subtotal);
-    }
-  }
+  // Pure helper in lib/dashboard/refund-aggregation.ts so the
+  // edge-case logic is unit-testable (cowork 20260521 follow-up).
+  const refundsByLineItem = aggregateRefundsByLineItem(o.refunds);
 
   return {
     id: numericIdFromGid(o.id),
@@ -873,43 +914,37 @@ export type DashboardCustomerInsights = {
     revenueInWindow: number;
     currency: string;
   }>;
+  /**
+   * Previous-period customer split (same window length, ending `days`
+   * ago). Powers the new-customer-share-down anomaly detector. Set to
+   * null when the second query fails — dashboard still renders the
+   * current-window card; the anomaly detector silently skips.
+   */
+  prev: {
+    totalCustomers: number;
+    newCustomers: number;
+    returningCustomers: number;
+  } | null;
 };
 
-export async function getCustomerInsights(days = 30): Promise<DashboardCustomerInsights | null> {
-  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
-  const data = await adminGql<{
-    orders: {
-      nodes: Array<{
-        id: string;
-        totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
-        customer: {
-          id: string;
-          displayName: string | null;
-          numberOfOrders: string | number | null;
-        } | null;
-      }>;
-    };
-  }>(
-    `query CustomerInsights($q: String!) {
-      orders(first: 250, query: $q, sortKey: CREATED_AT, reverse: true) {
-        nodes {
-          id
-          totalPriceSet { shopMoney { amount currencyCode } }
-          customer { id displayName numberOfOrders }
-        }
-      }
-    }`,
-    { q: `created_at:>=${since}` },
-  );
-  if (!data) return null;
-  const orders = data.orders.nodes;
+/**
+ * Pure aggregator — counts new vs returning + builds the topRepeaters
+ * leaderboard from a list of orders with attached customer info. Used
+ * for both the current and previous windows so the math is identical
+ * (no drift between the two timeframes).
+ */
+function aggregateCustomerInsights(
+  orders: Array<{
+    totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+    customer: { id: string; displayName: string | null; numberOfOrders: string | number | null } | null;
+  }>,
+) {
   let newCustomers = 0;
   let returningCustomers = 0;
   const byCustomer = new Map<string, { displayName: string; orders: number; revenue: number; currency: string }>();
   for (const o of orders) {
     if (!o.customer) continue;
     const cid = o.customer.id;
-    // numberOfOrders is returned as a string from Shopify; coerce defensively.
     const lifetimeOrders = Number(o.customer.numberOfOrders ?? 0);
     if (lifetimeOrders <= 1) newCustomers += 1;
     else returningCustomers += 1;
@@ -928,10 +963,48 @@ export async function getCustomerInsights(days = 30): Promise<DashboardCustomerI
       });
     }
   }
-  const totalCustomers = byCustomer.size;
-  const repeatInWindow = [...byCustomer.values()].filter((c) => c.orders >= 2).length;
+  return { newCustomers, returningCustomers, byCustomer };
+}
+
+export async function getCustomerInsights(days = 30): Promise<DashboardCustomerInsights | null> {
+  const now = Date.now();
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const sinceCurrent = new Date(now - days * msPerDay).toISOString();
+  const untilPrev = new Date(now - days * msPerDay).toISOString();
+  const sincePrev = new Date(now - 2 * days * msPerDay).toISOString();
+
+  const query = `query CustomerInsights($q: String!) {
+    orders(first: 250, query: $q, sortKey: CREATED_AT, reverse: true) {
+      nodes {
+        id
+        totalPriceSet { shopMoney { amount currencyCode } }
+        customer { id displayName numberOfOrders }
+      }
+    }
+  }`;
+  type OrderRow = {
+    id: string;
+    totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+    customer: { id: string; displayName: string | null; numberOfOrders: string | number | null } | null;
+  };
+
+  // Two parallel queries — current window + previous window of equal
+  // length ending `days` ago. Same pattern as getOrderSummaryWithTrends.
+  // Previous window is best-effort: failure leaves prev: null and the
+  // anomaly detector silently skips that comparison.
+  const [current, prev] = await Promise.all([
+    adminGql<{ orders: { nodes: OrderRow[] } }>(query, { q: `created_at:>=${sinceCurrent}` }),
+    adminGql<{ orders: { nodes: OrderRow[] } }>(query, {
+      q: `created_at:>=${sincePrev} created_at:<${untilPrev}`,
+    }),
+  ]);
+  if (!current) return null;
+
+  const cur = aggregateCustomerInsights(current.orders.nodes);
+  const totalCustomers = cur.byCustomer.size;
+  const repeatInWindow = [...cur.byCustomer.values()].filter((c) => c.orders >= 2).length;
   const repeatRatePct = totalCustomers > 0 ? (repeatInWindow / totalCustomers) * 100 : 0;
-  const topRepeaters = [...byCustomer.entries()]
+  const topRepeaters = [...cur.byCustomer.entries()]
     .filter(([, c]) => c.orders >= 2)
     .sort((a, b) => b[1].orders - a[1].orders || b[1].revenue - a[1].revenue)
     .slice(0, 6)
@@ -942,13 +1015,25 @@ export async function getCustomerInsights(days = 30): Promise<DashboardCustomerI
       revenueInWindow: c.revenue,
       currency: c.currency,
     }));
+
+  let prevSummary: DashboardCustomerInsights['prev'] = null;
+  if (prev) {
+    const p = aggregateCustomerInsights(prev.orders.nodes);
+    prevSummary = {
+      totalCustomers: p.byCustomer.size,
+      newCustomers: p.newCustomers,
+      returningCustomers: p.returningCustomers,
+    };
+  }
+
   return {
     totalCustomers,
-    newCustomers,
-    returningCustomers,
+    newCustomers: cur.newCustomers,
+    returningCustomers: cur.returningCustomers,
     repeatInWindow,
     repeatRatePct,
     topRepeaters,
+    prev: prevSummary,
   };
 }
 

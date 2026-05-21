@@ -1,0 +1,21 @@
+{
+  "$schema": "Audit record for the duplicate-title-tag fix on the Arlington Heights adjustable-bed article. SEMrush 20260521 flagged 4 pages with duplicate title tags; 2 were the intentional Memorial Day campaign duplicates, 2 were adjustable-bed articles sharing an identical seoTitle metafield. This record covers the seoTitle update on the Arlington Heights article so its <title> tag differs from the umbrella explainer.",
+  "appliedAt": "2026-05-21T11:50:00Z",
+  "source": "SEMrush mega-export audit 20260521",
+  "auditFinding": "Duplicate title tag — 4 URLs",
+  "changes": [
+    {
+      "type": "metafieldsSet",
+      "ownerId": "gid://shopify/Article/592659513597",
+      "ownerHandle": "how-adjustable-beds-are-transforming-sleep-in-arlington-heights",
+      "namespace": "global",
+      "key": "title_tag",
+      "valueBefore": "Adjustable Beds: Benefits, Features & How to Choose | LA Mattress Store",
+      "valueAfter": "Adjustable Bed Benefits for Better Sleep Quality | LA Mattress Store",
+      "rationale": "Differentiates this article's <title> from the parallel /blogs/mattress-buying-guide/adjustable-mattresses-the-ultimate-solution-for-personalized-comfort article which keeps the original 'Benefits, Features & How to Choose' framing as the umbrella explainer. This article's body content emphasizes sleep-quality benefits (matches the new title), so the angle is consistent."
+    }
+  ],
+  "remainingDuplicates": [
+    "/pages/memorial-day-sale-2026 vs /collections/memorial-day-sale — intentional campaign duplicate, per round-1 QA brief; leaving as-is."
+  ]
+}

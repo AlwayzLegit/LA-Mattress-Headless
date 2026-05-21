@@ -450,3 +450,70 @@ export async function getShowroomTraffic(
     };
   }).sort((a, b) => b.pageviews - a.pageviews);
 }
+
+/* ------------------------------------------------------------------------ *
+ * Top-converting blog articles — sessions that started on a /blogs/* page
+ * AND placed an order_completed in the same session.
+ *
+ * Directly attributes content investment (SEO articles, internal-link
+ * work, etc.) to revenue: which articles brought a buyer to the
+ * storefront? Useful for "where should we double down on content".
+ *
+ * Implementation — single CTE pass:
+ *   1. For each session, find the earliest /blogs/* pathname viewed
+ *      AND whether the session also fired order_completed
+ *   2. Group by blog path; count sessions + converted sessions
+ *
+ * Same-session attribution is the simplest causal heuristic — Google
+ * Analytics / PostHog both default to it. A multi-touch model would
+ * be more accurate but needs cross-session linking data we don't
+ * collect server-side.
+ *
+ * Sample-size guarded: only paths with >= 5 sessions in the window
+ * show up. Otherwise a single conversion makes a low-traffic article
+ * look like a 100%-converter.
+ * ------------------------------------------------------------------------ */
+
+export type ConvertingArticle = {
+  path: string;
+  sessions: number;
+  orders: number;
+  conversionPct: number;
+};
+
+export async function getTopConvertingArticles(days = 30, limit = 10): Promise<ConvertingArticle[] | null> {
+  const data = await hogQL(`
+    WITH session_meta AS (
+      SELECT
+        properties.$session_id AS sid,
+        argMin(properties.$pathname, timestamp) AS blog_path,
+        countIf(event = 'order_completed') > 0 AS converted
+      FROM events
+      WHERE timestamp >= now() - INTERVAL ${days} DAY
+        AND properties.$session_id != ''
+        AND (
+          (event = '$pageview' AND startsWith(toString(properties.$pathname), '/blogs/'))
+          OR event = 'order_completed'
+        )
+      GROUP BY sid
+      HAVING blog_path != ''
+    )
+    SELECT
+      blog_path,
+      count() AS sessions,
+      countIf(converted) AS orders,
+      round(100.0 * countIf(converted) / count(), 2) AS conversion_pct
+    FROM session_meta
+    GROUP BY blog_path
+    HAVING sessions >= 5
+    ORDER BY orders DESC, sessions DESC
+    LIMIT ${limit}
+  `);
+  if (!data) return null;
+  return data.results.map((r) => ({
+    path: String(r[0] ?? ''),
+    sessions: Number(r[1] ?? 0),
+    orders: Number(r[2] ?? 0),
+    conversionPct: Number(r[3] ?? 0),
+  }));
+}

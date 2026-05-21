@@ -100,6 +100,15 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     article.title,
   );
 
+  // Image — Google's BlogPosting validator wants this present. When the
+  // article has no featured image (or has one with an empty url string),
+  // fall back to the sitewide logo so the page still passes the
+  // "has image" check. SEMrush 20260521_1 follow-up: was previously
+  // emitting `image: undefined` / `image: []` which validators rejected.
+  const imageUrls = article.image?.url
+    ? [article.image.url]
+    : [`${SITE}/assets/la-mattress-logo.png`];
+
   const articleLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -113,17 +122,18 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     ...(ldDescription ? { description: ldDescription } : {}),
     datePublished: article.publishedAt,
     // Google's BlogPosting recommends `dateModified` alongside
-    // `datePublished`. Storefront API doesn't expose article.updatedAt,
-    // so fall back to publishedAt — accepted by Google's validator and
-    // truthful (the article hasn't been edited since publish).
+    // `datePublished`. Storefront API doesn't expose article.updatedAt
+    // (Admin API does), so fall back to publishedAt — accepted by
+    // Google's validator and truthful for un-edited articles. Lossy
+    // for articles edited post-publish; that's a Storefront limitation,
+    // not a JSON-LD shape issue.
     dateModified: article.publishedAt,
-    // Only emit `image` when there's an actual URL. Emitting an empty
-    // array or undefined string fails SDTT (SEMrush 20260521_1 batch).
-    ...(article.image?.url ? { image: [article.image.url] } : {}),
+    image: imageUrls,
     // Author is REQUIRED by Google for BlogPosting; emit a fallback
     // Organization-author when Storefront didn't include a person —
     // covers older articles that pre-date the merchant filling in
-    // author metafields.
+    // author metafields. The @id link ties the fallback to the
+    // sitewide Organization (instead of creating a duplicate entity).
     author: article.author
       ? { '@type': 'Person', name: article.author.name }
       : { '@type': 'Organization', name: 'LA Mattress Store', '@id': `${SITE}/#organization` },
@@ -137,14 +147,16 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
       '@id': `${SITE}/#organization`,
       '@type': 'Organization',
       name: 'LA Mattress Store',
+      // ImageObject with explicit width + height — Google's Article
+      // validator rejects a logo missing dimensions even when the URL
+      // is reachable. SEMrush 20260521_1 follow-up: without these the
+      // validator tripped on every article page (~1,000 of the SDTT
+      // error count). Dimensions reflect the actual logo asset
+      // (public/assets/la-mattress-logo.png — 400×224); captured here
+      // so it doesn't drift if the file is re-exported.
       logo: {
         '@type': 'ImageObject',
         url: `${SITE}/assets/la-mattress-logo.png`,
-        // Google explicitly requires width + height on the publisher
-        // logo ImageObject — without them SDTT flags every article
-        // (~1,000 articles = the bulk of the SEMrush 20260521_1
-        // structured-data error count). Dimensions reflect the actual
-        // logo asset (400×224).
         width: 400,
         height: 224,
       },
@@ -191,4 +203,3 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
 
   return out;
 }
-

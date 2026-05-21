@@ -27,7 +27,12 @@
  * this guard prevents a stale leak from breaking the live site.
  */
 
-import redirectsJson from '@/data/url-inventory/redirects.json';
+// Relative path (not '@/data/...') so the unit-test suite can import
+// this file via Node 22's experimental-strip-types without a TS path-
+// alias resolver. The `@/` alias still works inside Next.js builds via
+// tsconfig + webpack — both forms resolve to the same file at compile
+// time. Tests run outside Next, hence the relative path.
+import redirectsJson from '../data/url-inventory/redirects.json' with { type: 'json' };
 
 // Phase 293: resolve internal links that 301-redirect.
 //
@@ -47,15 +52,34 @@ import redirectsJson from '@/data/url-inventory/redirects.json';
 // link with no hop. Idempotent (a resolved dest is never itself a
 // source, by construction). Map is built once at module init (~1097
 // rules; cheap) with cycle + depth guards.
-type RedirectRule = { source: string; destination: string };
+export type RedirectRule = { source: string; destination: string };
 
 function normRedirectPath(p: string): string {
   const x = p.split('#')[0].split('?')[0];
   return x.length > 1 && x.endsWith('/') ? x.slice(0, -1) : x;
 }
 
-const REDIRECT_TARGET: Map<string, string> = (() => {
-  const rules = (redirectsJson as { redirects?: RedirectRule[] }).redirects ?? [];
+/**
+ * Build a flat source → terminal-destination map from a list of
+ * redirect rules, collapsing chains and tolerating cycles.
+ *
+ * Pure function — extracted from the module-init IIFE so the unit-test
+ * suite can exercise the chain-collapse + cycle-guard against
+ * synthesised fixtures (cowork 20260521 follow-up).
+ *
+ * Behavior:
+ *   - Drops malformed rules (non-string source or destination).
+ *   - Drops self-redirects (source === destination).
+ *   - Strips query / hash + trailing slash from each source key.
+ *   - Chain-collapses up to 12 hops; bails on cycle (seen-set guard)
+ *     or when the destination is no longer a redirect source.
+ *
+ * The 12-hop cap is a defensive ceiling — `redirects.json` has never
+ * had a chain longer than 3 in practice, but a future merchant adding
+ * 20 layered redirects via Shopify Admin shouldn't be able to make
+ * this loop forever.
+ */
+export function buildRedirectTarget(rules: ReadonlyArray<RedirectRule>): Map<string, string> {
   const direct = new Map<string, string>();
   for (const r of rules) {
     if (typeof r?.source !== 'string' || typeof r?.destination !== 'string') continue;
@@ -64,21 +88,43 @@ const REDIRECT_TARGET: Map<string, string> = (() => {
   }
   // Collapse chains (A→B, B→C ⇒ A→C) so a single rewrite lands on the
   // terminal URL — no residual hop for the crawler to follow.
+  //
+  // Cycle handling (cowork 20260521): if the chain loops back on
+  // itself (A→B→A), DROP the entry from the output. The previous
+  // collapse landed at A which is a self-redirect — runtime
+  // Next.js would then redirect /a → /a forever. Dropping leaves
+  // the path serving a 404 instead, which is recoverable. The
+  // depth cap is a separate safeguard for runaway-but-not-cyclic
+  // chains (>12 hops); those keep their last reachable destination
+  // since they don't necessarily loop, they just go deeper than
+  // we want to walk.
   const out = new Map<string, string>();
   for (const start of direct.keys()) {
     let dest = direct.get(start) as string;
     const seen = new Set<string>([start]);
+    let isCycle = false;
     for (let i = 0; i < 12; i += 1) {
       const key = normRedirectPath(dest);
+      if (seen.has(key)) {
+        // Walking forward from `dest`'s key would re-enter a node we
+        // already passed → cycle. Mark + bail without writing the
+        // entry.
+        isCycle = true;
+        break;
+      }
       const next = direct.get(key);
-      if (next === undefined || seen.has(key)) break;
+      if (next === undefined) break;  // dest is terminal — no further hop
       seen.add(key);
       dest = next;
     }
-    out.set(start, dest);
+    if (!isCycle) out.set(start, dest);
   }
   return out;
-})();
+}
+
+const REDIRECT_TARGET: Map<string, string> = buildRedirectTarget(
+  (redirectsJson as { redirects?: RedirectRule[] }).redirects ?? [],
+);
 
 // Root-relative hrefs only (leading "/"; never protocol-relative "//"
 // or external http(s)). Lookbehind on whitespace so `data-href=` /
@@ -93,6 +139,27 @@ function resolveRedirectHrefs(html: string): string {
     const dest = REDIRECT_TARGET.get(normRedirectPath(path));
     return dest ? `href=${q}${dest}${suffix}${q}` : full;
   });
+}
+
+/**
+ * Resolve a single internal path through the redirects table. Returns
+ * the chain-collapsed terminal destination if `path` is a known
+ * redirect source; otherwise returns the input unchanged.
+ *
+ * Used by the HTML sitemap page (and any other coded route that renders
+ * `<Link href={…}>` from an inventory snapshot) so the rendered hrefs
+ * point at canonical URLs, not the stale handles `redirects.json`
+ * already 301s away. SEMrush counts a hardcoded link to a redirect
+ * source as a "Permanent redirect in internal links" hit even when the
+ * 301 itself works correctly — same data, single source of truth.
+ *
+ * Query strings + hash fragments are preserved on the destination.
+ */
+export function resolveRedirectPath(path: string): string {
+  if (typeof path !== 'string' || !path.startsWith('/') || path.startsWith('//')) return path;
+  const [base, ...rest] = path.split(/(?=[?#])/);
+  const dest = REDIRECT_TARGET.get(normRedirectPath(base));
+  return dest ? dest + rest.join('') : path;
 }
 
 const HOSTS_TO_REWRITE = [

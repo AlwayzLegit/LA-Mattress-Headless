@@ -39,8 +39,14 @@ export type Anomaly = {
 export type AnomalyOrderSummary = {
   totalOrders: number;
   totalRevenue: number;
+  /** Average order value in the current window. Used by the AOV-shift detector. */
+  avgOrderValue: number;
   currency: string;
-  prev: { totalOrders: number; totalRevenue: number } | null;
+  /**
+   * Previous-period totals. avgOrderValue carried alongside so the
+   * AOV-shift detector can compare windows apples-to-apples.
+   */
+  prev: { totalOrders: number; totalRevenue: number; avgOrderValue: number } | null;
 };
 
 export type AnomalyRefundHealth = {
@@ -54,6 +60,16 @@ export type AnomalyCustomerInsights = {
   newCustomers: number;
   returningCustomers: number;
   repeatRatePct: number;
+  /**
+   * Previous-period customer split. Set when the dashboard fetched the
+   * vs-previous data; null otherwise. Used by the new-customer-share-down
+   * detector to compare windows.
+   */
+  prev: {
+    totalCustomers: number;
+    newCustomers: number;
+    returningCustomers: number;
+  } | null;
 };
 
 export type AnomalyLowStockVariant = {
@@ -105,7 +121,16 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
   // Threshold tuned to avoid normal week-over-week noise (which can
   // swing ±15% even on a stable site) while catching real drops. Skip
   // when previous period has $0 — there's nothing to compare against.
-  if (input.orderSummary?.prev && input.orderSummary.prev.totalRevenue > 0) {
+  //
+  // Cowork 20260521 follow-up: also requires ≥10 orders in the current
+  // window. On low-volume days a single missing high-AOV order can
+  // swing the %-delta past 25%, which trains merchants to ignore the
+  // strip. Same guard applied to the revenue-up sibling (#7).
+  if (
+    input.orderSummary?.prev &&
+    input.orderSummary.prev.totalRevenue > 0 &&
+    input.orderSummary.totalOrders >= 10
+  ) {
     const cur = input.orderSummary.totalRevenue;
     const prev = input.orderSummary.prev.totalRevenue;
     const deltaPct = ((cur - prev) / prev) * 100;
@@ -125,7 +150,12 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
   // Two tiers: > 10% = critical (process / quality / fraud issue),
   // > 5% = warn (worth a look). Anything under 5% is normal noise for
   // a mattress business with delivery returns.
-  if (input.refundHealth && input.refundHealth.totalOrders >= 5) {
+  //
+  // Cowork 20260521 follow-up: bumped the sample guard from 5 → 20
+  // orders. At 5 orders a single refund = 20% rate which always tripped
+  // critical; at 20 orders one refund = 5% which sits right at the
+  // boundary — meaningful but not panic-worthy.
+  if (input.refundHealth && input.refundHealth.totalOrders >= 20) {
     const r = input.refundHealth.refundRatePct;
     if (r > 10) {
       out.push({
@@ -155,12 +185,17 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
   // QA round 2 B2: requires at least 5 cart viewers in the CURRENT
   // window. Without this, the detector would fire critical on 2 carts
   // viewed + 1 checkout started ("50pp jump from 0%") which is
-  // mathematically true but statistically meaningless. Same pattern as
-  // the refund-rate detector's totalOrders >= 5 guard.
+  // mathematically true but statistically meaningless.
+  //
+  // Cowork 20260521 follow-up: also requires ≥5 cart viewers in the
+  // PREVIOUS window. Without this, "now 80%, was 0%" can fire when
+  // prev had 1 cart_view that left without checking out — same noise
+  // problem from the other side.
   if (
     input.cartAbandonmentNow !== null &&
     input.cartAbandonmentPrev !== null &&
-    (input.cartViewersNow ?? 0) >= 5
+    (input.cartViewersNow ?? 0) >= 5 &&
+    (input.cartViewersPrev ?? 0) >= 5
   ) {
     const ppDelta = (input.cartAbandonmentNow - input.cartAbandonmentPrev) * 100;
     if (ppDelta >= 10) {
@@ -232,6 +267,107 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
             ? `Top empty query: "${topZero.query}" (${topZero.zeroResult} searches). Consider adding matching products or a redirect.`
             : `Consider expanding the catalog or adding redirects for common terms.`,
           href: '#section-catalog',
+        });
+      }
+    }
+  }
+
+  // 7. Revenue SPIKE up — the positive sibling of detector #1. Cuts
+  // both ways: a 50% jump might mean a viral product, a big enterprise
+  // order, or a data-pipeline bug double-counting. Worth surfacing as
+  // info so the merchant can confirm before celebrating.
+  //
+  // Severity caps at warn (not critical) because a positive surprise
+  // doesn't require the same urgency as a negative one. Tier:
+  //   >= 50% spike → warn (probably a real signal worth confirming)
+  //   >= 30% spike → info (could be normal variance; nudge to look)
+  //
+  // Cowork 20260521 follow-up: same volume guard as the revenue-down
+  // sibling — requires ≥10 current-window orders so a 3-order quiet
+  // day with one extra big purchase doesn't trip "+200% spike".
+  if (
+    input.orderSummary?.prev &&
+    input.orderSummary.prev.totalRevenue > 0 &&
+    input.orderSummary.totalOrders >= 10
+  ) {
+    const cur = input.orderSummary.totalRevenue;
+    const prev = input.orderSummary.prev.totalRevenue;
+    const deltaPct = ((cur - prev) / prev) * 100;
+    if (deltaPct >= 30) {
+      out.push({
+        id: 'revenue-up',
+        severity: deltaPct >= 50 ? 'warn' : 'info',
+        headline: `Revenue up ${deltaPct.toFixed(0)}% vs prior ${input.rangeLabel.toLowerCase()}`,
+        detail: `${fmtUsd(cur)} this window vs ${fmtUsd(prev)} previous. Confirm channel / product mix before extrapolating.`,
+        href: '#section-acquisition',
+      });
+    }
+  }
+
+  // 8. AOV shifted significantly.
+  //
+  // ±15% AOV move is the threshold — small enough to catch a real
+  // signal (a discount campaign that's hurting margins, or a mix
+  // shift toward premium products) but large enough to ignore normal
+  // single-large-order skew.
+  //
+  // Reported relative (not pp) because AOV is a money value, not a rate.
+  //
+  // Cowork 20260521 follow-up: bumped sample guard from 5 → 15 orders
+  // both windows. At this merchant's AOV (~$2,400), a single $4,000
+  // line item swings AOV +17% on a 5-order denominator — well above the
+  // 15% threshold, but that's just one high-end mattress in a five-order
+  // week. 15 orders puts the threshold past the typical noise band.
+  if (
+    input.orderSummary?.prev &&
+    input.orderSummary.prev.avgOrderValue > 0 &&
+    input.orderSummary.totalOrders >= 15 &&
+    input.orderSummary.prev.totalOrders >= 15
+  ) {
+    const cur = input.orderSummary.avgOrderValue;
+    const prev = input.orderSummary.prev.avgOrderValue;
+    const deltaPct = ((cur - prev) / prev) * 100;
+    if (Math.abs(deltaPct) >= 15) {
+      const direction = deltaPct > 0 ? 'up' : 'down';
+      out.push({
+        id: 'aov-shift',
+        // Either direction is "warn" — a sudden drop signals discount
+        // over-application; a sudden jump signals mix-shift you may
+        // not have planned for. Both deserve a look.
+        severity: 'warn',
+        headline: `AOV ${direction} ${Math.abs(deltaPct).toFixed(0)}% vs prior ${input.rangeLabel.toLowerCase()}`,
+        detail: `Now ${fmtUsd(cur)}, was ${fmtUsd(prev)}. Check Top products + Revenue by source for mix changes.`,
+        href: '#section-revenue',
+      });
+    }
+  }
+
+  // 9. New-customer share collapsed.
+  //
+  // Acquisition health metric — if "new customers / total customers"
+  // dropped sharply window-over-window, paid acquisition is probably
+  // off (channel paused, budget capped, campaign turned off). Reported
+  // in percentage points because shares are already a rate.
+  //
+  // Threshold: drop ≥ 15pp. Sample-size guard: skip when either
+  // window has fewer than 5 customers (small samples make share %
+  // unstable).
+  if (input.customerInsights?.prev) {
+    const cur = input.customerInsights;
+    const prev = cur.prev!;
+    const curTotal = cur.newCustomers + cur.returningCustomers;
+    const prevTotal = prev.newCustomers + prev.returningCustomers;
+    if (curTotal >= 5 && prevTotal >= 5) {
+      const curShare = curTotal > 0 ? (cur.newCustomers / curTotal) * 100 : 0;
+      const prevShare = prevTotal > 0 ? (prev.newCustomers / prevTotal) * 100 : 0;
+      const ppDelta = curShare - prevShare;
+      if (ppDelta <= -15) {
+        out.push({
+          id: 'new-customer-share-down',
+          severity: ppDelta <= -25 ? 'critical' : 'warn',
+          headline: `New-customer share down ${Math.abs(ppDelta).toFixed(0)}pp vs prior ${input.rangeLabel.toLowerCase()}`,
+          detail: `Now ${curShare.toFixed(0)}% new, was ${prevShare.toFixed(0)}%. Paid acquisition may have stalled — check Traffic sources.`,
+          href: '#section-acquisition',
         });
       }
     }

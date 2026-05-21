@@ -1,8 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { canonicalizeRouteParams } from './lib/route-canonicalization';
 
 /**
- * Edge middleware — protects /admin/* with HTTP Basic Auth and emits
- * defense-in-depth no-index headers.
+ * Edge middleware — two responsibilities:
+ *
+ *   1. Protect /admin/* with HTTP Basic Auth + no-index headers.
+ *   2. Canonicalize storefront URLs by stripping query-param noise
+ *      (tracking IDs, malformed `?amp;...` from copy-pasted entity-
+ *      encoded emails, empty filter values, etc.) via 301 redirect.
+ *      See lib/route-canonicalization.ts for the allow-list.
  *
  * Why Basic Auth at the edge (instead of a custom login page):
  *   - Native browser prompt; no UI to build/maintain.
@@ -58,6 +64,35 @@ function unauthorized(reason: string): NextResponse {
 }
 
 export function middleware(req: NextRequest): NextResponse {
+  const pathname = req.nextUrl.pathname;
+
+  // Storefront param-stripping. Skip when there are no query params
+  // (fast path — most requests). When something needs cleaning, 301
+  // to the canonical URL so crawlers never see the noisy variant.
+  // Runs BEFORE the admin-auth branch because /admin/* is excluded
+  // from the route-canonicalization allow-list anyway (returns
+  // shouldRedirect=false). SEMrush 20260521_1 follow-up.
+  if (!pathname.startsWith('/admin') && req.nextUrl.search) {
+    const { shouldRedirect, cleanSearch } = canonicalizeRouteParams(
+      pathname,
+      req.nextUrl.searchParams,
+    );
+    if (shouldRedirect) {
+      const target = new URL(pathname, req.nextUrl);
+      const qs = cleanSearch.toString();
+      if (qs) target.search = qs;
+      return NextResponse.redirect(target, 301);
+    }
+    return NextResponse.next();
+  }
+
+  // /admin/* requires Basic Auth — fall through to the existing auth
+  // logic. Non-admin storefront paths with no query params just
+  // pass through (returned above).
+  if (!pathname.startsWith('/admin')) {
+    return NextResponse.next();
+  }
+
   // If either env var isn't set, lock the dashboard rather than let it
   // through. Misconfiguration shouldn't accidentally expose data.
   if (!ADMIN_USER || !ADMIN_PASSWORD) {
@@ -100,10 +135,23 @@ export function middleware(req: NextRequest): NextResponse {
 }
 
 /**
- * Run on /admin and every path under it. Exclude static asset paths
- * (/_next/static, /favicon, image files) so middleware doesn't run on
- * every page asset — only on the actual admin routes.
+ * Two matcher groups:
+ *   1. /admin/* — Basic Auth + no-index headers (this was the original
+ *      scope; behaviour unchanged).
+ *   2. The four storefront route trees where query-param noise was
+ *      flagged by SEMrush 20260521_1 (orphan-page count). Static asset
+ *      paths under /_next/ etc. are NOT matched, so middleware doesn't
+ *      fire on every chunk or image.
+ *
+ * Adding /search to canonicalize `?q=` while stripping any junk
+ * params alongside.
  */
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: [
+    '/admin/:path*',
+    '/products/:path*',
+    '/collections/:path*',
+    '/blogs/:path*',
+    '/search',
+  ],
 };

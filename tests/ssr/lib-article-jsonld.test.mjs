@@ -3,96 +3,107 @@
  * (+ optional FAQPage) JSON-LD emitter for /blogs/[blog]/[article].
  *
  * Locks down the SEMrush 20260521_1 batch-4 fixes that target the
- * ~1,000 "Structured data that contains markup errors" flags coming from
- * the blog corpus:
+ * ~666 article pages flagged for structured-data errors. Each universal
+ * BlogPosting-field fix lives behind a test below:
  *
- *   1. publisher.logo has explicit width + height (Google requires).
- *   2. dateModified is always emitted (falls back to publishedAt when
- *      Storefront doesn't expose updatedAt).
+ *   1. publisher.logo is an ImageObject with explicit width + height —
+ *      Google's Article validator rejects dimensionless logos and tripped
+ *      on every article page before the fix.
+ *   2. dateModified is always emitted (falls back to publishedAt — the
+ *      Storefront API doesn't expose updatedAt).
  *   3. author is always emitted — falls back to an Organization-author
  *      stub for articles missing the metafield (BlogPosting REQUIRES
  *      author per Google's rich-results spec).
- *   4. image is omitted entirely (not undefined) when there's no URL —
- *      schema validators reject `image: undefined` literally.
+ *   4. image is always emitted — falls back to the sitewide logo when
+ *      the article has no featured image. Validators reject the empty
+ *      / undefined forms.
  *
- * Article fixtures are minimal — only the fields the JSON-LD generator
- * reads. Constructed inline rather than a shared fixture file.
+ * The Article type comes from @/lib/shopify via `import type`, erased
+ * by Node 22's experimental-strip-types. No `server-only` reach.
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
 const { getArticleJsonLd } = await import('../../lib/article-jsonld.ts');
 
+/**
+ * Minimal Article fixture builder. Pass overrides to vary the shape;
+ * defaults match a typical Shopify Storefront response for a published
+ * article in the mattress-buying-guide blog.
+ */
 function makeArticle(overrides = {}) {
   return {
     id: 'gid://shopify/Article/1',
-    handle: 'test-article',
-    title: 'A Test Article',
-    contentHtml: '<p>Body text here.</p>',
-    excerpt: 'A short excerpt.',
-    publishedAt: '2024-01-15T10:00:00Z',
-    image: { url: 'https://cdn.example.com/hero.jpg' },
-    author: { name: 'Jane Doe', bio: null },
-    tags: [],
-    seo: { title: null, description: null },
+    handle: 'best-mattress-los-angeles',
+    title: 'Best Mattress in Los Angeles',
+    excerpt: 'A guide to choosing a mattress in LA.',
+    publishedAt: '2026-05-01T10:00:00Z',
+    image: { url: 'https://cdn.example.com/article.jpg' },
+    author: { name: 'Anna', bio: null },
+    contentHtml: '<p>Article body content.</p>',
+    tags: ['mattress', 'los-angeles'],
     blog: { handle: 'mattress-buying-guide', title: 'Mattress Buying Guide' },
+    seo: { title: null, description: 'A guide to choosing a mattress in LA.' },
     ...overrides,
   };
 }
 
 function getArticle(lds) {
-  const found = lds.find((x) => x.key === 'ld-article');
-  return found ? found.data : null;
+  return lds.find((x) => x.key === 'ld-article')?.data;
 }
 
 function getBreadcrumb(lds) {
-  const found = lds.find((x) => x.key === 'ld-breadcrumb-article');
-  return found ? found.data : null;
+  return lds.find((x) => x.key === 'ld-breadcrumb-article')?.data;
 }
 
-/* --- publisher.logo dimensions (the big one) -------------------------- */
+function getFaq(lds) {
+  return lds.find((x) => x.key === 'ld-article-faq')?.data;
+}
 
-test('publisher.logo has width + height (Google requires for ImageObject)', () => {
+/* --- publisher.logo dimensions (the big SEMrush 20260521_1 fix) ------- */
+
+test('publisher.logo is an ImageObject with explicit width + height', () => {
+  // Google's Article validator rejects a logo missing dimensions. The
+  // previous shape emitted just `{ '@type': 'ImageObject', url: '...' }`
+  // which fired on all 666 article pages.
   const ld = getArticle(getArticleJsonLd(makeArticle()));
-  assert.ok(ld.publisher, 'publisher should be emitted');
-  assert.ok(ld.publisher.logo, 'publisher.logo should be emitted');
+  assert.equal(ld.publisher['@type'], 'Organization');
+  assert.ok(ld.publisher.logo, 'publisher.logo must be present');
   assert.equal(ld.publisher.logo['@type'], 'ImageObject');
+  assert.equal(typeof ld.publisher.logo.url, 'string');
   assert.equal(typeof ld.publisher.logo.width, 'number');
   assert.equal(typeof ld.publisher.logo.height, 'number');
   assert.ok(ld.publisher.logo.width > 0);
   assert.ok(ld.publisher.logo.height > 0);
 });
 
-test('publisher has @id linking to site Organization', () => {
+test('publisher.logo width fits Google\'s 600px recommendation', () => {
   const ld = getArticle(getArticleJsonLd(makeArticle()));
+  assert.ok(
+    ld.publisher.logo.width <= 600,
+    'Google recommends max 600px logo width on Article publisher',
+  );
+});
+
+test('publisher has @id linking to site Organization', () => {
   // @id link ties article publisher to the sitewide Organization schema
   // — keeps Google's entity graph as one node, not two.
+  const ld = getArticle(getArticleJsonLd(makeArticle()));
   assert.equal(ld.publisher['@id'], 'https://www.mattressstoreslosangeles.com/#organization');
 });
 
-/* --- dateModified ---------------------------------------------------- */
+/* --- dateModified (Google requirement) -------------------------------- */
 
-test('emits dateModified (Google BlogPosting recommends it)', () => {
-  const ld = getArticle(getArticleJsonLd(makeArticle()));
-  assert.ok(ld.dateModified, 'dateModified should be present');
+test('emits dateModified alongside datePublished', () => {
+  const ld = getArticle(getArticleJsonLd(makeArticle({ publishedAt: '2026-05-01T10:00:00Z' })));
+  assert.equal(ld.datePublished, '2026-05-01T10:00:00Z');
+  assert.equal(ld.dateModified, '2026-05-01T10:00:00Z');
+  // For now they're identical — Storefront API doesn't expose updatedAt.
+  // Documented in the source as a known lossiness; future Admin-API
+  // pull could differentiate. Test just verifies dateModified is present.
 });
 
-test('dateModified falls back to publishedAt when no updatedAt available', () => {
-  // Storefront API doesn't expose article.updatedAt, so dateModified
-  // tracks publishedAt — accepted by Google's validator.
-  const ld = getArticle(getArticleJsonLd(makeArticle({ publishedAt: '2024-05-21T12:00:00Z' })));
-  assert.equal(ld.dateModified, '2024-05-21T12:00:00Z');
-  assert.equal(ld.datePublished, '2024-05-21T12:00:00Z');
-});
-
-/* --- author guard ---------------------------------------------------- */
-
-test('falls back to Organization author when article.author is null', () => {
-  const ld = getArticle(getArticleJsonLd(makeArticle({ author: null })));
-  assert.ok(ld.author, 'author must always be present (Google BlogPosting requirement)');
-  assert.equal(ld.author['@type'], 'Organization');
-  assert.equal(ld.author.name, 'LA Mattress Store');
-});
+/* --- author guard (Google REQUIRES) ----------------------------------- */
 
 test('uses Person author when present', () => {
   const ld = getArticle(getArticleJsonLd(makeArticle({ author: { name: 'Editor Smith', bio: null } })));
@@ -100,25 +111,79 @@ test('uses Person author when present', () => {
   assert.equal(ld.author.name, 'Editor Smith');
 });
 
-/* --- image guard ----------------------------------------------------- */
-
-test('omits image entirely when article has no cover image', () => {
-  // `image: undefined` literally fails SDTT — must omit the key, not
-  // set it to undefined.
-  const ld = getArticle(getArticleJsonLd(makeArticle({ image: null })));
-  assert.equal('image' in ld, false, 'image key must not appear when no URL');
+test('falls back to Organization author when article.author is null', () => {
+  // Google's BlogPosting validator REQUIRES author. The previous shape
+  // emitted `author: undefined` for articles whose merchant hadn't filled
+  // the author metafield — which JSON.stringify drops, leaving the field
+  // missing entirely. Organization-author fallback (linked by @id to
+  // the sitewide Organization) keeps the field present + lossless.
+  const ld = getArticle(getArticleJsonLd(makeArticle({ author: null })));
+  assert.ok(ld.author, 'author must always be present (Google BlogPosting requirement)');
+  assert.equal(ld.author['@type'], 'Organization');
+  assert.equal(ld.author.name, 'LA Mattress Store');
+  assert.equal(ld.author['@id'], 'https://www.mattressstoreslosangeles.com/#organization');
 });
 
-test('omits image when image.url is empty string', () => {
-  const ld = getArticle(getArticleJsonLd(makeArticle({ image: { url: '' } })));
-  assert.equal('image' in ld, false);
-});
+/* --- image fallback when article has none ----------------------------- */
 
-test('emits image as array when present', () => {
+test('uses featured image when present', () => {
   const ld = getArticle(getArticleJsonLd(makeArticle({
-    image: { url: 'https://cdn.example.com/test.jpg' },
+    image: { url: 'https://cdn.example.com/featured.jpg' },
   })));
-  assert.deepEqual(ld.image, ['https://cdn.example.com/test.jpg']);
+  assert.deepEqual(ld.image, ['https://cdn.example.com/featured.jpg']);
+});
+
+test('falls back to sitewide logo when article has no image', () => {
+  // Google's BlogPosting validator wants an image present. When the
+  // article doesn't have a featured image, fall back to the sitewide
+  // logo so the page still passes the "has image" check.
+  const ld = getArticle(getArticleJsonLd(makeArticle({ image: null })));
+  assert.ok(Array.isArray(ld.image));
+  assert.equal(ld.image.length, 1);
+  assert.match(ld.image[0], /la-mattress-logo\.png$/);
+});
+
+test('falls back to sitewide logo when image.url is empty string', () => {
+  const ld = getArticle(getArticleJsonLd(makeArticle({ image: { url: '' } })));
+  assert.ok(Array.isArray(ld.image));
+  assert.match(ld.image[0], /la-mattress-logo\.png$/);
+});
+
+/* --- Description / keywords ----------------------------------------- */
+
+test('uses seo.description when present', () => {
+  const ld = getArticle(getArticleJsonLd(makeArticle({
+    seo: { title: null, description: 'Custom SEO description.' },
+    excerpt: 'Excerpt fallback.',
+  })));
+  assert.equal(ld.description, 'Custom SEO description.');
+});
+
+test('falls back to excerpt when seo.description is missing', () => {
+  const ld = getArticle(getArticleJsonLd(makeArticle({
+    seo: { title: null, description: null },
+    excerpt: 'Excerpt fallback.',
+  })));
+  assert.equal(ld.description, 'Excerpt fallback.');
+});
+
+test('falls back to title when no description / excerpt', () => {
+  const ld = getArticle(getArticleJsonLd(makeArticle({
+    seo: { title: null, description: null },
+    excerpt: null,
+    title: 'Title is the last resort.',
+  })));
+  assert.equal(ld.description, 'Title is the last resort.');
+});
+
+test('keywords emitted when tags array is non-empty', () => {
+  const ld = getArticle(getArticleJsonLd(makeArticle({ tags: ['mattress', 'sleep'] })));
+  assert.equal(ld.keywords, 'mattress, sleep');
+});
+
+test('keywords omitted when tags array is empty', () => {
+  const ld = getArticle(getArticleJsonLd(makeArticle({ tags: [] })));
+  assert.equal(ld.keywords, undefined);
 });
 
 /* --- BlogPosting core fields ----------------------------------------- */
@@ -133,66 +198,69 @@ test('BlogPosting LD has all Google-required fields', () => {
   assert.ok(ld.publisher, 'publisher required');
   assert.ok(ld.publisher.logo.width && ld.publisher.logo.height, 'publisher.logo needs dimensions');
   assert.ok(ld.mainEntityOfPage, 'mainEntityOfPage required');
+  assert.ok(ld.image, 'image required');
   assert.equal(ld.inLanguage, 'en-US');
 });
 
 /* --- BreadcrumbList -------------------------------------------------- */
 
-test('Breadcrumb has 3 levels: Home → Blog → Article', () => {
-  const ld = getBreadcrumb(getArticleJsonLd(makeArticle()));
-  assert.equal(ld['@type'], 'BreadcrumbList');
-  assert.equal(ld.itemListElement.length, 3);
-  assert.equal(ld.itemListElement[0].name, 'Home');
-  assert.equal(ld.itemListElement[1].name, 'Mattress Buying Guide');
-  assert.equal(ld.itemListElement[2].name, 'A Test Article');
+test('breadcrumb has 3 levels: Home > Blog > Article', () => {
+  const lds = getArticleJsonLd(makeArticle());
+  const bc = getBreadcrumb(lds);
+  assert.equal(bc['@type'], 'BreadcrumbList');
+  assert.equal(bc.itemListElement.length, 3);
+  assert.equal(bc.itemListElement[0].name, 'Home');
+  assert.equal(bc.itemListElement[1].name, 'Mattress Buying Guide');
+  assert.equal(bc.itemListElement[2].name, 'Best Mattress in Los Angeles');
 });
 
-test('Breadcrumb @id matches BlogPosting.breadcrumb reference', () => {
+test('breadcrumb @id matches BlogPosting.breadcrumb reference', () => {
   const lds = getArticleJsonLd(makeArticle());
   const article = getArticle(lds);
-  const breadcrumb = getBreadcrumb(lds);
-  // The two LD blobs reference each other via @id — Google ties them.
-  assert.equal(article.breadcrumb['@id'], breadcrumb['@id']);
+  const bc = getBreadcrumb(lds);
+  // The two are connected by @id — same URL fragment with #breadcrumb.
+  assert.equal(article.breadcrumb['@id'], bc['@id']);
+  assert.match(bc['@id'], /#breadcrumb$/);
 });
 
-/* --- FAQPage (when 3+ Q&A pairs) ------------------------------------- */
+/* --- FAQ extraction --------------------------------------------------- */
 
-test('FAQPage emitted when body has 3+ H3-Q / P-A pairs', () => {
-  const article = makeArticle({
+test('emits FAQPage when article body has 3+ <h3>?</h3><p> pairs', () => {
+  const lds = getArticleJsonLd(makeArticle({
     contentHtml: `
-      <p>Intro.</p>
-      <h3>What is X?</h3><p>X is...</p>
-      <h3>Why does Y happen?</h3><p>Because of Z.</p>
-      <h3>How does it work?</h3><p>It works by...</p>
+      <h2>Intro</h2><p>Some intro.</p>
+      <h3>What's the best mattress brand?</h3><p>Tempur-Pedic and Stearns &amp; Foster top the list.</p>
+      <h3>How long should a mattress last?</h3><p>10–15 years for a hybrid.</p>
+      <h3>Is online cheaper?</h3><p>Same MAP pricing, just different delivery.</p>
     `,
-  });
-  const lds = getArticleJsonLd(article);
-  const faq = lds.find((x) => x.key === 'ld-article-faq');
-  assert.ok(faq, 'FAQPage should be emitted with 3+ Q&A pairs');
-  assert.equal(faq.data['@type'], 'FAQPage');
-  assert.equal(faq.data.mainEntity.length, 3);
+  }));
+  const faq = getFaq(lds);
+  assert.ok(faq, 'FAQPage should emit at 3 Q&A pairs');
+  assert.equal(faq['@type'], 'FAQPage');
+  assert.equal(faq.mainEntity.length, 3);
+  assert.equal(faq.mainEntity[0].name, "What's the best mattress brand?");
+  assert.equal(faq.mainEntity[0].acceptedAnswer.text, 'Tempur-Pedic and Stearns & Foster top the list.');
 });
 
-test('FAQPage NOT emitted when fewer than 3 pairs (Google rich-result rule)', () => {
-  const article = makeArticle({
-    contentHtml: '<h3>Only one?</h3><p>Just this.</p>',
-  });
-  const lds = getArticleJsonLd(article);
-  const faq = lds.find((x) => x.key === 'ld-article-faq');
-  assert.equal(faq, undefined);
-});
-
-test('FAQPage filter: H3 without `?` is ignored (section heading, not a question)', () => {
-  // Topical <h3>s in the same articles look like questions but don't
-  // end in `?` — the disambiguator.
-  const article = makeArticle({
+test('does NOT emit FAQPage when fewer than 3 Q&A pairs are present', () => {
+  const lds = getArticleJsonLd(makeArticle({
     contentHtml: `
-      <h3>Tempur-Pedic</h3><p>Premium brand.</p>
-      <h3>Stearns & Foster</h3><p>Luxury brand.</p>
-      <h3>Diamond</h3><p>Value brand.</p>
+      <h3>What's the best brand?</h3><p>Tempur-Pedic.</p>
+      <h3>How long?</h3><p>10 years.</p>
     `,
-  });
-  const lds = getArticleJsonLd(article);
-  const faq = lds.find((x) => x.key === 'ld-article-faq');
-  assert.equal(faq, undefined, 'section headings should not become FAQ entries');
+  }));
+  assert.equal(getFaq(lds), undefined);
+});
+
+test('FAQ extraction ignores h3 sections that are not questions', () => {
+  // The trailing-? check disambiguates question headings from brand /
+  // section / topic headings (which also use <h3> in real articles).
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h3>Tempur-Pedic</h3><p>Premium memory foam.</p>
+      <h3>Stearns &amp; Foster</h3><p>Hybrid construction.</p>
+      <h3>Helix</h3><p>Online-native.</p>
+    `,
+  }));
+  assert.equal(getFaq(lds), undefined);
 });

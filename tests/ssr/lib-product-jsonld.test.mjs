@@ -194,6 +194,33 @@ test('emits full images array when populated', () => {
   assert.deepEqual(ld.image, ['https://cdn.example.com/1.jpg', 'https://cdn.example.com/2.jpg']);
 });
 
+/* --- Description guard (SEMrush 20260521_1 follow-up) --- */
+
+test('omits description when empty string', () => {
+  const ld = getProduct(getProductJsonLd(makeProduct({ description: '' })));
+  assert.equal(ld.description, undefined);
+});
+
+test('omits description when whitespace only', () => {
+  const ld = getProduct(getProductJsonLd(makeProduct({ description: '   \n  \t  ' })));
+  assert.equal(ld.description, undefined);
+});
+
+test('omits description when null (defensive — Storefront type is string but)', () => {
+  const ld = getProduct(getProductJsonLd(makeProduct({ description: null })));
+  assert.equal(ld.description, undefined);
+});
+
+test('emits description when populated, trimmed at 5000 chars', () => {
+  // Real-world products easily exceed 5000 chars in the body. The cap
+  // protects against the Schema.org soft size limit; trim verifies the
+  // empty-after-trim check fires only when trimmed string is empty.
+  const ld = getProduct(getProductJsonLd(makeProduct({
+    description: '  A genuinely useful product body that goes on for a while.  ',
+  })));
+  assert.equal(ld.description, 'A genuinely useful product body that goes on for a while.');
+});
+
 /* --- pickPrimaryCollection (exported helper, used for breadcrumb) ------ */
 
 test('pickPrimaryCollection: skips meta collections, returns first real one', () => {
