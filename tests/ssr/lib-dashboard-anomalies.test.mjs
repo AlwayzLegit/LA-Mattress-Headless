@@ -41,12 +41,14 @@ test('returns empty array when no data is present', () => {
 /* --- Revenue-down detector --- */
 
 test('revenue-down: fires when revenue is down 30%', () => {
+  // Volume guard (cowork 20260521): requires ≥10 current-window orders.
+  // Test uses 14/$7000 vs 20/$10000 to clear that floor.
   const out = detectAnomalies(emptyInput({
     orderSummary: {
-      totalOrders: 7,
+      totalOrders: 14,
       totalRevenue: 7000,
       currency: 'USD',
-      prev: { totalOrders: 10, totalRevenue: 10000 },
+      prev: { totalOrders: 20, totalRevenue: 10000 },
     },
   }));
   const a = out.find((x) => x.id === 'revenue-down');
@@ -56,12 +58,13 @@ test('revenue-down: fires when revenue is down 30%', () => {
 });
 
 test('revenue-down: critical when down 50%', () => {
+  // ≥10 orders both windows clears the volume guard.
   const out = detectAnomalies(emptyInput({
     orderSummary: {
-      totalOrders: 5,
+      totalOrders: 10,
       totalRevenue: 5000,
       currency: 'USD',
-      prev: { totalOrders: 10, totalRevenue: 10000 },
+      prev: { totalOrders: 20, totalRevenue: 10000 },
     },
   }));
   const a = out.find((x) => x.id === 'revenue-down');
@@ -122,11 +125,14 @@ test('refund-rate: does NOT fire under 5%', () => {
   assert.equal(out.length, 0);
 });
 
-test('refund-rate: does NOT fire when totalOrders < 5 (small-sample guard)', () => {
-  // 1 refund out of 3 orders = 33%, but it's just noise on a small
-  // sample. Detector should ignore.
+test('refund-rate: does NOT fire below the 20-order sample guard', () => {
+  // Cowork 20260521 raised the floor from 5 → 20 orders. At 5 orders,
+  // 1 refund = 20% rate which always tripped critical. At 20+, one
+  // refund = 5% — right at the boundary, meaningful but not panicky.
+  // This test exercises the under-floor case: 15 orders is below the
+  // new floor → detector silent regardless of the rate.
   const out = detectAnomalies(emptyInput({
-    refundHealth: { totalOrders: 3, refundRatePct: 33, cancellationRatePct: 0 },
+    refundHealth: { totalOrders: 15, refundRatePct: 33, cancellationRatePct: 0 },
   }));
   assert.equal(out.length, 0);
 });
@@ -183,17 +189,29 @@ test('cart-abandonment: does NOT fire on a tiny sample (QA round 2 B2)', () => {
   assert.equal(out.find((x) => x.id === 'cart-abandonment-up'), undefined);
 });
 
-test('cart-abandonment: fires once the sample crosses the 5-viewer threshold', () => {
-  // Same delta as the above test, but with enough viewers to be a
-  // meaningful signal — should now fire.
+test('cart-abandonment: fires once BOTH windows cross the 5-viewer threshold', () => {
+  // Cowork 20260521 follow-up: both cartViewersNow AND cartViewersPrev
+  // must clear ≥5. Otherwise "was 0%, now 80%" can fire when the
+  // previous window had 1 cart_view that left without checking out.
   const out = detectAnomalies(emptyInput({
     cartAbandonmentNow: 0.50,
-    cartAbandonmentPrev: 0.00,
+    cartAbandonmentPrev: 0.10,
     cartViewersNow: 5,
-    cartViewersPrev: 0,
+    cartViewersPrev: 5,
   }));
   const a = out.find((x) => x.id === 'cart-abandonment-up');
-  assert.ok(a, 'should fire when cartViewersNow >= 5');
+  assert.ok(a, 'should fire when both windows have ≥5 cart viewers');
+});
+
+test('cart-abandonment: does NOT fire when only cartViewersPrev is below the floor', () => {
+  // Cowork 20260521 follow-up: the prev-window guard.
+  const out = detectAnomalies(emptyInput({
+    cartAbandonmentNow: 0.80,
+    cartAbandonmentPrev: 0.00,
+    cartViewersNow: 50,
+    cartViewersPrev: 1,  // ← below floor
+  }));
+  assert.equal(out.find((x) => x.id === 'cart-abandonment-up'), undefined);
 });
 
 /* --- Conversion-down detector --- */
@@ -362,10 +380,11 @@ test('revenue-up: does NOT fire when revenue went down (sibling owns the other h
 
 test('aov-shift: fires when AOV up 20%', () => {
   // Revenue stayed flat but AOV moved — classic mix-shift toward premium.
+  // Volume guard (cowork 20260521): bumped to ≥15 orders both windows.
   const out = detectAnomalies(emptyInput({
     orderSummary: {
-      totalOrders: 10, totalRevenue: 12000, avgOrderValue: 1200, currency: 'USD',
-      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
+      totalOrders: 15, totalRevenue: 18000, avgOrderValue: 1200, currency: 'USD',
+      prev: { totalOrders: 15, totalRevenue: 15000, avgOrderValue: 1000 },
     },
   }));
   const a = out.find((x) => x.id === 'aov-shift');
@@ -376,8 +395,8 @@ test('aov-shift: fires when AOV up 20%', () => {
 test('aov-shift: fires when AOV down 20% (discount-campaign signal)', () => {
   const out = detectAnomalies(emptyInput({
     orderSummary: {
-      totalOrders: 10, totalRevenue: 8000, avgOrderValue: 800, currency: 'USD',
-      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
+      totalOrders: 15, totalRevenue: 12000, avgOrderValue: 800, currency: 'USD',
+      prev: { totalOrders: 15, totalRevenue: 15000, avgOrderValue: 1000 },
     },
   }));
   const a = out.find((x) => x.id === 'aov-shift');
@@ -395,12 +414,15 @@ test('aov-shift: does NOT fire on 10% AOV move (noise)', () => {
   assert.equal(out.find((x) => x.id === 'aov-shift'), undefined);
 });
 
-test('aov-shift: does NOT fire on small-sample window (< 5 orders)', () => {
-  // 1 order at $1000 vs 1 prior at $1500 = -33% AOV, but it's noise.
+test('aov-shift: does NOT fire below the 15-order sample guard', () => {
+  // Cowork 20260521 raised the floor from 5 → 15 orders. At AOV ~$2,400
+  // (this merchant's level), a single $4,000 line item swings AOV +17%
+  // on a 5-order denominator — past the 15% threshold but pure noise.
+  // 10 orders both windows is below the new floor → detector silent.
   const out = detectAnomalies(emptyInput({
     orderSummary: {
-      totalOrders: 1, totalRevenue: 1000, avgOrderValue: 1000, currency: 'USD',
-      prev: { totalOrders: 1, totalRevenue: 1500, avgOrderValue: 1500 },
+      totalOrders: 10, totalRevenue: 12000, avgOrderValue: 1200, currency: 'USD',
+      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
     },
   }));
   assert.equal(out.find((x) => x.id === 'aov-shift'), undefined);
@@ -483,19 +505,21 @@ test('new-customer-share-down: does NOT fire on tiny samples (< 5 customers)', (
 /* --- Composition: multiple anomalies fire together --- */
 
 test('multiple detectors fire together in severity-arbitrary order', () => {
-  // A bad-day scenario: revenue down, refunds elevated, inventory oversold.
+  // A bad-day scenario: revenue down (with the new ≥10 volume guard
+  // satisfied), refund sample too small (<20), inventory oversold.
   const out = detectAnomalies(emptyInput({
     orderSummary: {
-      totalOrders: 4, totalRevenue: 3000, currency: 'USD',
-      prev: { totalOrders: 10, totalRevenue: 10000 },
+      totalOrders: 15, totalRevenue: 3000, currency: 'USD',
+      prev: { totalOrders: 20, totalRevenue: 10000 },
     },
-    refundHealth: { totalOrders: 4, refundRatePct: 0, cancellationRatePct: 0 },  // <5 orders → skip
+    refundHealth: { totalOrders: 15, refundRatePct: 0, cancellationRatePct: 0 },  // <20 orders → skip
     lowStock: [
       { productHandle: 'x', productTitle: 'X', variantTitle: 'Default Title', quantity: -1, productId: '1' },
     ],
   }));
   const ids = new Set(out.map((a) => a.id));
-  // Revenue and oversold should fire; refund should NOT (totalOrders < 5).
+  // Revenue and oversold should fire; refund should NOT (sample under
+  // the 20-order floor).
   assert.ok(ids.has('revenue-down'));
   assert.ok(ids.has('oversold-inventory'));
   assert.equal(ids.has('refund-rate-elevated'), false);

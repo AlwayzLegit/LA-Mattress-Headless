@@ -425,7 +425,7 @@ export default async function DashboardPage({
           <div className="dash-card">
             <div className="dash-card-hd">
               <h2 className="h3" style={{ margin: 0 }}>Orders by hour · {rangeKey}</h2>
-              <span className="muted" style={{ fontSize: 12 }}>Shopify · UTC · order count</span>
+              <span className="muted" style={{ fontSize: 12 }}>Shopify · Pacific · order count</span>
             </div>
             {orderSummary ? (
               <HourOfDayHeatmap points={orderSummary.hourly} />
@@ -1684,7 +1684,7 @@ function DayOfWeekHeatmap({ points }: { points: DashboardDailyPoint[] }) {
 function HourOfDayHeatmap({ points }: { points: DashboardHourPoint[] }) {
   const max = Math.max(...points.map((p) => p.orders), 1);
   return (
-    <div className="dash-hour-heatmap" role="table" aria-label="Orders by hour of day (UTC)">
+    <div className="dash-hour-heatmap" role="table" aria-label="Orders by hour of day (Pacific)">
       {points.map((p) => {
         const intensity = p.orders / max;
         const label = p.hour.toString().padStart(2, '0');
@@ -1693,7 +1693,7 @@ function HourOfDayHeatmap({ points }: { points: DashboardHourPoint[] }) {
             <div
               className="dash-hour-bar"
               style={{ background: `rgba(10, 122, 64, ${0.10 + intensity * 0.90})` }}
-              title={`${label}:00 UTC · ${p.orders} ${p.orders === 1 ? 'order' : 'orders'}`}
+              title={`${label}:00 PT · ${p.orders} ${p.orders === 1 ? 'order' : 'orders'}`}
             >
               <span className="dash-hour-value tnum">{p.orders > 0 ? p.orders : ''}</span>
             </div>

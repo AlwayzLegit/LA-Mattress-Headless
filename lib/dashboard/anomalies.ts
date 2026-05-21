@@ -121,7 +121,16 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
   // Threshold tuned to avoid normal week-over-week noise (which can
   // swing ±15% even on a stable site) while catching real drops. Skip
   // when previous period has $0 — there's nothing to compare against.
-  if (input.orderSummary?.prev && input.orderSummary.prev.totalRevenue > 0) {
+  //
+  // Cowork 20260521 follow-up: also requires ≥10 orders in the current
+  // window. On low-volume days a single missing high-AOV order can
+  // swing the %-delta past 25%, which trains merchants to ignore the
+  // strip. Same guard applied to the revenue-up sibling (#7).
+  if (
+    input.orderSummary?.prev &&
+    input.orderSummary.prev.totalRevenue > 0 &&
+    input.orderSummary.totalOrders >= 10
+  ) {
     const cur = input.orderSummary.totalRevenue;
     const prev = input.orderSummary.prev.totalRevenue;
     const deltaPct = ((cur - prev) / prev) * 100;
@@ -141,7 +150,12 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
   // Two tiers: > 10% = critical (process / quality / fraud issue),
   // > 5% = warn (worth a look). Anything under 5% is normal noise for
   // a mattress business with delivery returns.
-  if (input.refundHealth && input.refundHealth.totalOrders >= 5) {
+  //
+  // Cowork 20260521 follow-up: bumped the sample guard from 5 → 20
+  // orders. At 5 orders a single refund = 20% rate which always tripped
+  // critical; at 20 orders one refund = 5% which sits right at the
+  // boundary — meaningful but not panic-worthy.
+  if (input.refundHealth && input.refundHealth.totalOrders >= 20) {
     const r = input.refundHealth.refundRatePct;
     if (r > 10) {
       out.push({
@@ -171,12 +185,17 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
   // QA round 2 B2: requires at least 5 cart viewers in the CURRENT
   // window. Without this, the detector would fire critical on 2 carts
   // viewed + 1 checkout started ("50pp jump from 0%") which is
-  // mathematically true but statistically meaningless. Same pattern as
-  // the refund-rate detector's totalOrders >= 5 guard.
+  // mathematically true but statistically meaningless.
+  //
+  // Cowork 20260521 follow-up: also requires ≥5 cart viewers in the
+  // PREVIOUS window. Without this, "now 80%, was 0%" can fire when
+  // prev had 1 cart_view that left without checking out — same noise
+  // problem from the other side.
   if (
     input.cartAbandonmentNow !== null &&
     input.cartAbandonmentPrev !== null &&
-    (input.cartViewersNow ?? 0) >= 5
+    (input.cartViewersNow ?? 0) >= 5 &&
+    (input.cartViewersPrev ?? 0) >= 5
   ) {
     const ppDelta = (input.cartAbandonmentNow - input.cartAbandonmentPrev) * 100;
     if (ppDelta >= 10) {
@@ -262,7 +281,15 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
   // doesn't require the same urgency as a negative one. Tier:
   //   >= 50% spike → warn (probably a real signal worth confirming)
   //   >= 30% spike → info (could be normal variance; nudge to look)
-  if (input.orderSummary?.prev && input.orderSummary.prev.totalRevenue > 0) {
+  //
+  // Cowork 20260521 follow-up: same volume guard as the revenue-down
+  // sibling — requires ≥10 current-window orders so a 3-order quiet
+  // day with one extra big purchase doesn't trip "+200% spike".
+  if (
+    input.orderSummary?.prev &&
+    input.orderSummary.prev.totalRevenue > 0 &&
+    input.orderSummary.totalOrders >= 10
+  ) {
     const cur = input.orderSummary.totalRevenue;
     const prev = input.orderSummary.prev.totalRevenue;
     const deltaPct = ((cur - prev) / prev) * 100;
@@ -282,15 +309,20 @@ export function detectAnomalies(input: AnomalyInput): Anomaly[] {
   // ±15% AOV move is the threshold — small enough to catch a real
   // signal (a discount campaign that's hurting margins, or a mix
   // shift toward premium products) but large enough to ignore normal
-  // single-large-order skew. Sample-size guarded: skip when either
-  // window has fewer than 5 orders.
+  // single-large-order skew.
   //
   // Reported relative (not pp) because AOV is a money value, not a rate.
+  //
+  // Cowork 20260521 follow-up: bumped sample guard from 5 → 15 orders
+  // both windows. At this merchant's AOV (~$2,400), a single $4,000
+  // line item swings AOV +17% on a 5-order denominator — well above the
+  // 15% threshold, but that's just one high-end mattress in a five-order
+  // week. 15 orders puts the threshold past the typical noise band.
   if (
     input.orderSummary?.prev &&
     input.orderSummary.prev.avgOrderValue > 0 &&
-    input.orderSummary.totalOrders >= 5 &&
-    input.orderSummary.prev.totalOrders >= 5
+    input.orderSummary.totalOrders >= 15 &&
+    input.orderSummary.prev.totalOrders >= 15
   ) {
     const cur = input.orderSummary.avgOrderValue;
     const prev = input.orderSummary.prev.avgOrderValue;

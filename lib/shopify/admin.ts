@@ -18,6 +18,7 @@ import {
   summarizeCustomerLifetime,
   type CustomerLifetimeSummary,
 } from '@/lib/dashboard/customer-lifetime';
+import { aggregateRefundsByLineItem } from '@/lib/dashboard/refund-aggregation';
 
 // Re-export so admin.ts callers can keep their `import { numericIdFromGid }
 // from '@/lib/shopify/admin'` paths unchanged. The pure helper now lives
@@ -170,12 +171,12 @@ export async function getOrderSummary(days = 30): Promise<DashboardOrderSummary 
  */
 export type DashboardDailyPoint = { date: string; orders: number; revenue: number };
 /**
- * Hour-of-day bucket — 24 entries, hour ∈ [0, 23] in UTC. Aggregated
- * across every day in the current window so the dashboard can render
- * a "when do orders come in" view independent of which calendar day
- * they happened on. UTC chosen (not Pacific) so the bucketing is
- * deterministic regardless of where the server's TZ floats; the
- * dashboard renderer adds an offset note for the merchant's eye.
+ * Hour-of-day bucket — 24 entries, hour ∈ [0, 23] in the store's
+ * physical timezone (America/Los_Angeles). Aggregated across every
+ * day in the current window so the dashboard can render a "when do
+ * orders come in" view independent of which calendar day they
+ * happened on. PT chosen (cowork 20260521 follow-up; was UTC) so
+ * the merchant doesn't have to do a 7-8h mental subtraction.
  */
 export type DashboardHourPoint = { hour: number; orders: number; revenue: number };
 export type DashboardOrderSummaryWithTrends = DashboardOrderSummary & {
@@ -247,15 +248,33 @@ export async function getOrderSummaryWithTrends(days = 30): Promise<DashboardOrd
     .map(([date, v]) => ({ date, orders: v.orders, revenue: v.revenue }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
-  // Hour-of-day bucket — 24 fixed slots, UTC, zero-filled. Counts how
-  // many orders fall into each hour across every day in the window, so
-  // a 30-day window with one order/day at 2pm UTC gives buckets[14] = 30.
-  // Renderer turns this into the "when do orders come in" heatmap.
+  // Hour-of-day bucket — 24 fixed slots in America/Los_Angeles, zero-
+  // filled. Counts how many orders fall into each hour across every
+  // day in the window, so a 30-day window with one order/day at 2pm PT
+  // gives buckets[14] = 30. Renderer turns this into the "when do
+  // orders come in" heatmap.
+  //
+  // Cowork 20260521 follow-up: was UTC, which forced the merchant to
+  // do a 7-8h mental subtraction every time they read the card. Five
+  // physical showrooms in LA + a customer base concentrated in
+  // California → America/Los_Angeles is the operationally correct
+  // zone. Hardcoded for this single-store deploy; if the dashboard
+  // ever ships multi-store, swap to `Shop.ianaTimezone` from the
+  // Shopify Admin API.
+  const STORE_TZ = 'America/Los_Angeles';
+  const hourFmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: STORE_TZ,
+    hour: 'numeric',
+    hour12: false,
+  });
   const hourlyBuckets: DashboardHourPoint[] = Array.from({ length: 24 }, (_, h) => ({
     hour: h, orders: 0, revenue: 0,
   }));
   for (const o of orders) {
-    const hour = new Date(o.createdAt).getUTCHours();
+    // Intl.DateTimeFormat returns '0' through '23' (en-US, hour12:false).
+    // '24' would mean midnight-end-of-day in some locales; en-US uses
+    // '0' so the modulo is defensive, not load-bearing.
+    const hour = Number(hourFmt.format(new Date(o.createdAt))) % 24;
     const bucket = hourlyBuckets[hour];
     if (bucket) {
       bucket.orders += 1;
@@ -783,14 +802,9 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
   // QA round 2 B4: aggregate refundLineItems across every refund record
   // on the order, grouped by the original line item id. Powers the
   // per-line "(N refunded, $X)" vs "(N restocked, no refund)" callout.
-  const refundsByLineItem = new Map<string, number>();
-  for (const r of o.refunds) {
-    for (const rli of r.refundLineItems.nodes) {
-      const id = rli.lineItem.id;
-      const subtotal = Number.parseFloat(rli.subtotalSet.shopMoney.amount || '0');
-      refundsByLineItem.set(id, (refundsByLineItem.get(id) ?? 0) + subtotal);
-    }
-  }
+  // Pure helper in lib/dashboard/refund-aggregation.ts so the
+  // edge-case logic is unit-testable (cowork 20260521 follow-up).
+  const refundsByLineItem = aggregateRefundsByLineItem(o.refunds);
 
   return {
     id: numericIdFromGid(o.id),
