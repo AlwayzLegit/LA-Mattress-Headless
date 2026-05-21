@@ -414,6 +414,32 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
             <a href={`tel:${SITE_PHONE_TEL}`} className="tnum">{SITE_PHONE_DISPLAY}</a> — we&rsquo;ll help you pick over the phone and book delivery the same day.
           </p>
         </section>
+
+        {/* SEMrush 20260521_1: surface the LA-pillar articles from the
+            locations index — high-PageRank page that previously had no
+            outbound link to the new buying guides. Pulls each pillar
+            ~one click closer to root. */}
+        <section className="section" style={{ marginTop: 'var(--s-6)' }}>
+          <h2 className="h2">Read before you visit</h2>
+          <ul style={{ maxWidth: '60ch', paddingLeft: 'var(--s-5)' }}>
+            <li style={{ marginBottom: 'var(--s-2)' }}>
+              <Link href="/blogs/mattress-buying-guide/best-mattress-los-angeles">Best mattress in Los Angeles (2026 guide)</Link>
+              {' '}— a tour of the brands and price tiers we stock and who they fit.
+            </li>
+            <li style={{ marginBottom: 'var(--s-2)' }}>
+              <Link href="/blogs/mattress-buying-guide/mattress-store-near-me-los-angeles">Mattress store near me — LA showrooms guide</Link>
+              {' '}— which showroom matches which LA neighborhood.
+            </li>
+            <li style={{ marginBottom: 'var(--s-2)' }}>
+              <Link href="/blogs/mattress-buying-guide/mattress-financing-options-los-angeles">LA mattress financing — 0% APR options</Link>
+              {' '}— Synchrony, Acima, Affirm/Klarna alternatives, and lay-away math.
+            </li>
+            <li style={{ marginBottom: 'var(--s-2)' }}>
+              <Link href="/blogs/mattress-buying-guide/how-to-choose-a-mattress">How to choose a mattress</Link>
+              {' '}— our showroom-tested decision framework by sleep style.
+            </li>
+          </ul>
+        </section>
       </article>
     </main>
   );
