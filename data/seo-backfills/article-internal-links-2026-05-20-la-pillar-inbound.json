@@ -1,0 +1,130 @@
+{
+  "ts": "2026-05-21T05:44:39Z",
+  "mode": "apply",
+  "execution": "Direct via Shopify Admin MCP (graphql_mutation articleUpdate) — appended a `<h2>Related reading</h2><ul>...</ul>` section to each of 8 older popular articles that link TO the 3 new LA pillar articles (best-mattress-los-angeles, mattress-store-near-me-los-angeles, mattress-financing-options-los-angeles) created in PR #209. Closes the missing inbound-link side of the LA pillar work flagged out-of-scope in Phase 297.",
+  "operator": "Claude (Anthropic)",
+  "cms_hygiene": "Same pattern as prior cluster batches (PRs #215/#216/#217/#218/#219): fetched canonical bodies via graphql_query, generated new bodies locally by appending the Related reading section preserving every word of merchant-authored content, then articleUpdate via MCP. Zero userErrors across all 8 mutations.",
+  "articles_updated": [
+    {
+      "id": "gid://shopify/Article/28755656794",
+      "handle": "12-steps-buying-new-mattress-5647",
+      "role": "comprehensive shopper guide — links to ALL 3 LA pillars + sibling",
+      "updatedAt": "2026-05-21T05:38:56Z",
+      "related_links_added": [
+        "best-mattress-los-angeles",
+        "mattress-store-near-me-los-angeles",
+        "mattress-financing-options-los-angeles",
+        "where-to-buy-a-mattress-in-los-angeles"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588865634557",
+      "handle": "the-best-mattresses-a-comprehensive-guide-to-finding-your-perfect-sl",
+      "role": "best-mattress general guide — feeds best-mattress-LA pillar",
+      "updatedAt": "2026-05-21T05:41:26Z",
+      "related_links_added": [
+        "best-mattress-los-angeles",
+        "mattress-store-near-me-los-angeles",
+        "how-to-choose-the-best-mattress-size"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588889293053",
+      "handle": "how-much-should-you-spend-on-a-mattress",
+      "role": "budget guide — feeds financing pillar",
+      "updatedAt": "2026-05-21T05:43:08Z",
+      "related_links_added": [
+        "mattress-financing-options-los-angeles",
+        "how-does-financing-a-mattress-work",
+        "best-mattress-los-angeles"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588898238717",
+      "handle": "how-does-financing-a-mattress-work",
+      "role": "financing explainer — feeds financing pillar",
+      "updatedAt": "2026-05-21T05:35:59Z",
+      "related_links_added": [
+        "mattress-financing-options-los-angeles",
+        "how-much-should-you-spend-on-a-mattress",
+        "best-mattress-los-angeles"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588899582205",
+      "handle": "buying-a-mattress-online-vs-buying-in-store",
+      "role": "in-store decision — feeds store-near-me pillar",
+      "updatedAt": "2026-05-21T05:36:44Z",
+      "related_links_added": [
+        "mattress-store-near-me-los-angeles",
+        "where-to-buy-a-mattress-in-los-angeles",
+        "best-mattress-los-angeles"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588914557181",
+      "handle": "6-questions-you-should-ask-your-mattress-sales-associate",
+      "role": "store-visit guide — feeds store-near-me pillar",
+      "updatedAt": "2026-05-21T05:37:37Z",
+      "related_links_added": [
+        "mattress-store-near-me-los-angeles",
+        "where-to-buy-a-mattress-in-los-angeles",
+        "best-mattress-los-angeles"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/588938313981",
+      "handle": "mattress-faqs-complete-guide",
+      "role": "general FAQ — feeds ALL 3 LA pillars",
+      "updatedAt": "2026-05-21T05:40:12Z",
+      "related_links_added": [
+        "best-mattress-los-angeles",
+        "mattress-store-near-me-los-angeles",
+        "mattress-financing-options-los-angeles"
+      ]
+    },
+    {
+      "id": "gid://shopify/Article/600284332285",
+      "handle": "where-to-buy-a-mattress-in-los-angeles",
+      "role": "LA-sibling — feeds all 3 LA pillars (closes the LA-cluster loop)",
+      "updatedAt": "2026-05-21T05:44:39Z",
+      "related_links_added": [
+        "mattress-store-near-me-los-angeles",
+        "best-mattress-los-angeles",
+        "mattress-financing-options-los-angeles"
+      ]
+    }
+  ],
+  "totals": {
+    "articles_updated": 8,
+    "new_internal_links_added": 25,
+    "user_errors": 0
+  },
+  "skipped_article": {
+    "handle": "buying-a-mattress-in-store-vs-online",
+    "reason": "Duplicate of buying-a-mattress-online-vs-buying-in-store (same topic, near-identical content, just reversed handle). 45KB body — kept the smaller 8KB version that fully covers the in-store-vs-online comparison."
+  },
+  "la_pillar_inbound_summary": {
+    "best-mattress-los-angeles": {
+      "inbound_links_from_this_batch": 8,
+      "from": ["12-steps", "the-best-mattresses-guide", "how-much-should-spend", "how-does-financing", "buying-online-vs-store", "6-questions", "mattress-faqs", "where-to-buy-la"]
+    },
+    "mattress-store-near-me-los-angeles": {
+      "inbound_links_from_this_batch": 6,
+      "from": ["12-steps", "the-best-mattresses-guide", "buying-online-vs-store", "6-questions", "mattress-faqs", "where-to-buy-la"]
+    },
+    "mattress-financing-options-los-angeles": {
+      "inbound_links_from_this_batch": 5,
+      "from": ["12-steps", "how-much-should-spend", "how-does-financing", "mattress-faqs", "where-to-buy-la"]
+    }
+  },
+  "seo_impact": "Closes the inbound-link side of the LA pillar work. Each of the 3 LA pillars now has 5-8 inbound contextual links from older high-traffic articles — building meaningful internal authority for the local SERP queries those pillars target. The where-to-buy-a-mattress-in-los-angeles sibling article is now part of the LA pillar cluster, linking outward to all 3 pillars. 25 new internal links total.",
+  "cumulative_progress_all_clusters": {
+    "pain_cluster": { "articles": 10, "links": 43, "prs": ["#215", "#216", "#217"] },
+    "size_cluster": { "articles": 9, "links": 34, "prs": ["#218"] },
+    "material_cluster": { "articles": 9, "links": 36, "prs": ["#219"] },
+    "la_pillar_inbound": { "articles": 8, "links": 25, "prs": ["this PR"] },
+    "total_articles": 36,
+    "total_internal_links_added": 138
+  }
+}
