@@ -260,6 +260,13 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
               width={400}
               height={224}
               priority
+              // .logo-img renders at height:38px, width:auto → ~68px wide
+              // at 400:224 aspect. Without `sizes` Next/Image's srcset
+              // selection assumes 100vw and serves the largest variant
+              // (~640px+); with sizes set, the browser picks the 96-128px
+              // variant (covers 2x DPI). Drops the logo payload from
+              // ~30 KB to ~6-8 KB on the LCP-blocking nav.
+              sizes="68px"
             />
           </Link>
           <nav className="nav-items">
@@ -402,6 +409,11 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
               className="logo-img"
               width={400}
               height={224}
+              // Same rendered size as the main nav logo (.logo-img — 38px
+              // tall, ~68px wide). The image is reused from cache when
+              // the mobile drawer opens, but `sizes` still helps the
+              // first cold-load through Next/Image's srcset selection.
+              sizes="68px"
             />
             <button ref={mobileCloseRef} className="icon-btn" type="button" onClick={closeMobile} aria-label="Close menu">
               <Icon name="close" size={22} />

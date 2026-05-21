@@ -88,6 +88,13 @@ export function Footer() {
             className="footer-sig-logo"
             width={400}
             height={224}
+            // .footer-sig-logo renders at height:72px desktop / 56px
+            // mobile, width:auto → ~129px wide desktop / ~100px mobile
+            // at 400:224 aspect. Without `sizes` Next/Image picks the
+            // largest srcset variant; with sizes set, the browser picks
+            // the ~256px variant for 2x DPI screens — substantially
+            // smaller than the no-hint default.
+            sizes="(max-width: 880px) 100px, 129px"
           />
           <div className="footer-sig-tagline">
             <div className="footer-sig-tag-line">Family-owned in Los Angeles since 2012</div>
