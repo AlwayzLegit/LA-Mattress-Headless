@@ -11,7 +11,6 @@
  * than sharing a util — the page keeps its own copy for read-time.
  */
 import type { getArticleByHandle } from '@/lib/shopify';
-import { firstNonEmpty } from '@/lib/seo';
 
 type Article = NonNullable<Awaited<ReturnType<typeof getArticleByHandle>>>;
 export type ArticleLd = { key: string; data: unknown };
@@ -23,6 +22,16 @@ function countWordsFromHtml(html: string): number {
   const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   if (!text) return 0;
   return text.split(' ').length;
+}
+
+// Inlined from lib/seo.ts so Node 22's experimental-strip-types test
+// runner can import this file without the `@/` alias. Identical
+// semantics — picks the first string in the list with non-empty content.
+function firstNonEmpty(...candidates: (string | null | undefined)[]): string {
+  for (const c of candidates) {
+    if (typeof c === 'string' && c.trim().length > 0) return c;
+  }
+  return '';
 }
 
 /**
@@ -103,8 +112,21 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     breadcrumb: { '@id': `${url}#breadcrumb` },
     ...(ldDescription ? { description: ldDescription } : {}),
     datePublished: article.publishedAt,
-    image: article.image ? [article.image.url] : undefined,
-    author: article.author ? { '@type': 'Person', name: article.author.name } : undefined,
+    // Google's BlogPosting recommends `dateModified` alongside
+    // `datePublished`. Storefront API doesn't expose article.updatedAt,
+    // so fall back to publishedAt — accepted by Google's validator and
+    // truthful (the article hasn't been edited since publish).
+    dateModified: article.publishedAt,
+    // Only emit `image` when there's an actual URL. Emitting an empty
+    // array or undefined string fails SDTT (SEMrush 20260521_1 batch).
+    ...(article.image?.url ? { image: [article.image.url] } : {}),
+    // Author is REQUIRED by Google for BlogPosting; emit a fallback
+    // Organization-author when Storefront didn't include a person —
+    // covers older articles that pre-date the merchant filling in
+    // author metafields.
+    author: article.author
+      ? { '@type': 'Person', name: article.author.name }
+      : { '@type': 'Organization', name: 'LA Mattress Store', '@id': `${SITE}/#organization` },
     publisher: {
       // @id link to the canonical Organization schema emitted from
       // app/layout.tsx (lib/structured-data.ts buildOrganizationLd).
@@ -115,7 +137,17 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
       '@id': `${SITE}/#organization`,
       '@type': 'Organization',
       name: 'LA Mattress Store',
-      logo: { '@type': 'ImageObject', url: `${SITE}/assets/la-mattress-logo.png` },
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE}/assets/la-mattress-logo.png`,
+        // Google explicitly requires width + height on the publisher
+        // logo ImageObject — without them SDTT flags every article
+        // (~1,000 articles = the bulk of the SEMrush 20260521_1
+        // structured-data error count). Dimensions reflect the actual
+        // logo asset (400×224).
+        width: 400,
+        height: 224,
+      },
     },
     articleSection: article.blog.title,
     ...(wordCount ? { wordCount } : {}),
