@@ -1,6 +1,7 @@
 'use client';
 
 import Script from 'next/script';
+import { usePathname } from 'next/navigation';
 import { useReportWebVitals } from 'next/web-vitals';
 
 // GA4 client-side analytics. Wired in Phase 277 (SEO measurement plan).
@@ -30,8 +31,14 @@ declare global {
 }
 
 export function AnalyticsGa4() {
+  // QA #224: skip GA4 on /admin/* so internal staff traffic doesn't
+  // skew the same site-wide funnel + acquisition data the dashboard
+  // pulls from PostHog (and GA4 mirrors).
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin') ?? false;
+
   useReportWebVitals((metric) => {
-    if (!MEASUREMENT_ID || typeof window.gtag !== 'function') return;
+    if (isAdmin || !MEASUREMENT_ID || typeof window.gtag !== 'function') return;
     // Standard GA4 web-vitals event payload (matches the official
     // web-vitals → GA4 recipe). value is rounded to an integer because
     // GA4 stores event params as int64.
@@ -43,7 +50,7 @@ export function AnalyticsGa4() {
     });
   });
 
-  if (!MEASUREMENT_ID) return null;
+  if (!MEASUREMENT_ID || isAdmin) return null;
 
   return (
     <>
