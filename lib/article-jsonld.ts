@@ -91,6 +91,59 @@ function extractFaqFromHtml(html: string): Array<{ question: string; answer: str
   return faqs.length >= 3 ? faqs : [];
 }
 
+/**
+ * Extract HowTo steps from article body HTML.
+ *
+ * Targets the explicit step convention used by step-by-step guides
+ * (e.g. how-to-choose-a-mattress): an <h2> or <h3> beginning with
+ * "Step N:" or "Step N." followed by paragraph text until the next
+ * heading. Example:
+ *
+ *   <h2>Step 1: Start with your sleep position</h2>
+ *   <p>Your dominant sleep position is the single most important factor...</p>
+ *   <ul><li>...</li></ul>
+ *
+ * Returns an empty array when fewer than 3 explicit steps are found —
+ * Google's HowTo rich-result guidelines need a meaningful step
+ * sequence, and articles that USE the "Step N:" convention always
+ * have at least 3 steps. Articles without that convention (most
+ * how-to-* articles in the corpus, like how-to-choose-mattress-
+ * firmness which uses topical h2s instead of step-h2s) correctly
+ * return [] and stay on the plain BlogPosting schema.
+ *
+ * Each step's `text` is the stripped, entity-decoded HTML between the
+ * heading and the next heading, capped at Google's 500-char soft
+ * recommendation. `name` is the heading text minus the "Step N:" prefix.
+ */
+function extractHowToStepsFromHtml(html: string): Array<{ name: string; text: string }> {
+  if (!html) return [];
+  const steps: Array<{ name: string; text: string }> = [];
+  // Match <h2>Step N[:.] <name></h2> OR <h3>Step N[:.] <name></h3>,
+  // capturing the name and the body until the next h2/h3 (or EOF).
+  // The `?:` non-capturing group inside the heading allows attrs like
+  // `<h2 id="step-1">`.
+  const re = /<h[23]\b[^>]*>\s*Step\s+(\d+)\s*[:.—–-]\s*([^<]+?)\s*<\/h[23]>([\s\S]*?)(?=<h[23]\b|$)/gi;
+  const stripTags = (s: string) => s.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const decodeEntities = (s: string) =>
+    s
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&rsquo;/g, '’')
+      .replace(/&lsquo;/g, '‘')
+      .replace(/&nbsp;/g, ' ');
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
+    const name = decodeEntities(m[2].trim());
+    const text = decodeEntities(stripTags(m[3])).slice(0, 500);
+    if (!name || !text) continue;
+    steps.push({ name, text });
+  }
+  return steps.length >= 3 ? steps : [];
+}
+
 export function getArticleJsonLd(article: Article): ArticleLd[] {
   const url = `${SITE}/blogs/${article.blog.handle}/${article.handle}`;
   const wordCount = countWordsFromHtml(article.contentHtml);
@@ -181,6 +234,33 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     { key: 'ld-article', data: articleLd },
     { key: 'ld-breadcrumb-article', data: breadcrumbLd },
   ];
+
+  // HowTo schema — only when the article body has 3+ explicit
+  // "Step N:" headings. Articles like how-to-choose-a-mattress use this
+  // convention (13 steps); articles like how-to-choose-mattress-
+  // firmness use topical h2s and correctly fall through to plain
+  // BlogPosting. Emits alongside BlogPosting (Google allows both on
+  // the same page) — adds collapsible-step rich-result eligibility.
+  const howToSteps = extractHowToStepsFromHtml(article.contentHtml);
+  if (howToSteps.length > 0) {
+    out.push({
+      key: 'ld-article-howto',
+      data: {
+        '@context': 'https://schema.org',
+        '@type': 'HowTo',
+        name: article.title,
+        ...(ldDescription ? { description: ldDescription } : {}),
+        ...(article.image?.url ? { image: article.image.url } : {}),
+        step: howToSteps.map((s, i) => ({
+          '@type': 'HowToStep',
+          position: i + 1,
+          name: s.name,
+          text: s.text,
+          url: `${url}#step-${i + 1}`,
+        })),
+      },
+    });
+  }
 
   // FAQPage schema — only when the article body has 3+ Q&A pairs
   // matching the H3-question / P-answer convention. Surfaces as Rich

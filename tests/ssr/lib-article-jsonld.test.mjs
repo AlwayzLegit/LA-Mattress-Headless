@@ -60,6 +60,10 @@ function getFaq(lds) {
   return lds.find((x) => x.key === 'ld-article-faq')?.data;
 }
 
+function getHowTo(lds) {
+  return lds.find((x) => x.key === 'ld-article-howto')?.data;
+}
+
 /* --- publisher.logo dimensions (the big SEMrush 20260521_1 fix) ------- */
 
 test('publisher.logo is an ImageObject with explicit width + height', () => {
@@ -263,4 +267,107 @@ test('FAQ extraction ignores h3 sections that are not questions', () => {
     `,
   }));
   assert.equal(getFaq(lds), undefined);
+});
+
+/* --- HowTo extraction (Google rich-result for step-by-step guides) --- */
+
+test('emits HowTo schema when article body has 3+ "Step N:" h2 headings', () => {
+  // Mirrors the real shape of /blogs/mattress-buying-guide/how-to-choose-a-mattress
+  // which has 13 `<h2>Step N: ...</h2>` headings followed by body paragraphs.
+  const lds = getArticleJsonLd(makeArticle({
+    title: 'How to Choose a Mattress',
+    contentHtml: `
+      <p>Intro paragraph.</p>
+      <h2>Step 1: Start with your sleep position</h2>
+      <p>Your dominant sleep position is the single most important factor.</p>
+      <h2>Step 2: Factor in your body weight</h2>
+      <p>Body weight changes how any mattress feels.</p>
+      <h2>Step 3: Choose a mattress type</h2>
+      <p>There are four core types: memory foam, hybrid, latex, innerspring.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo, 'HowTo should emit at 3+ Step headings');
+  assert.equal(howTo['@type'], 'HowTo');
+  assert.equal(howTo.name, 'How to Choose a Mattress');
+  assert.equal(howTo.step.length, 3);
+  assert.equal(howTo.step[0]['@type'], 'HowToStep');
+  assert.equal(howTo.step[0].position, 1);
+  assert.equal(howTo.step[0].name, 'Start with your sleep position');
+  assert.match(howTo.step[0].text, /sleep position/);
+  assert.match(howTo.step[0].url, /#step-1$/);
+});
+
+test('HowTo step names strip the "Step N:" prefix', () => {
+  // Anchor-text purpose: SERP rich result shows the step NAME, not
+  // "Step 1: ...". The prefix should be stripped at extraction.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1: Find your sleep position</h2><p>Side, back, or stomach.</p>
+      <h2>Step 2: Factor in weight</h2><p>Light vs heavy bodies.</p>
+      <h2>Step 3: Pick a type</h2><p>Memory foam vs hybrid.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.equal(howTo.step[0].name, 'Find your sleep position');
+  assert.equal(howTo.step[1].name, 'Factor in weight');
+  assert.equal(howTo.step[2].name, 'Pick a type');
+});
+
+test('HowTo accepts h3 step headings too', () => {
+  // Some guides use h3 for steps when h2 is reserved for sections.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>The Process</h2>
+      <h3>Step 1: Measure the room</h3><p>Use a tape measure.</p>
+      <h3>Step 2: Pick a size</h3><p>Queen, king, or California king.</p>
+      <h3>Step 3: Order online or in-store</h3><p>Both work fine.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo);
+  assert.equal(howTo.step.length, 3);
+});
+
+test('does NOT emit HowTo when article uses topical h2s instead of "Step N:"', () => {
+  // The how-to-choose-mattress-firmness article uses topical h2s
+  // ("What Is Mattress Firmness?", "Firmness vs. Support", "The Firmness
+  // Scale", etc.) rather than the "Step N:" convention — correctly
+  // stays on plain BlogPosting without bad HowTo schema.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>What Is Mattress Firmness?</h2><p>Description.</p>
+      <h2>The Firmness Scale</h2><p>Description.</p>
+      <h2>Firmness by Sleep Position</h2><p>Description.</p>
+      <h2>How Body Weight Changes Everything</h2><p>Description.</p>
+    `,
+  }));
+  assert.equal(getHowTo(lds), undefined);
+});
+
+test('does NOT emit HowTo when fewer than 3 Step headings (insufficient sequence)', () => {
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1: Just one step</h2><p>Body.</p>
+      <h2>Step 2: And another</h2><p>Body.</p>
+    `,
+  }));
+  assert.equal(getHowTo(lds), undefined);
+});
+
+test('HowTo schema includes name + url + description from article metadata', () => {
+  const lds = getArticleJsonLd(makeArticle({
+    title: 'How to Clean a Mattress',
+    seo: { title: null, description: 'Step-by-step mattress cleaning.' },
+    image: { url: 'https://cdn.example.com/cleaning.jpg' },
+    contentHtml: `
+      <h2>Step 1: Strip the bed</h2><p>Remove all bedding.</p>
+      <h2>Step 2: Vacuum thoroughly</h2><p>Use the upholstery attachment.</p>
+      <h2>Step 3: Spot-treat stains</h2><p>Mild detergent works best.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.equal(howTo.name, 'How to Clean a Mattress');
+  assert.equal(howTo.description, 'Step-by-step mattress cleaning.');
+  assert.equal(howTo.image, 'https://cdn.example.com/cleaning.jpg');
 });
