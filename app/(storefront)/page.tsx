@@ -1,23 +1,23 @@
 import type { Metadata } from 'next';
 
-import { Hero } from './_components/hero';
+import { Hero } from '../_components/hero';
 import {
   ShopByCategory,
   BrandStrip,
   WhyUs,
   QuizTeaser,
   Reviews,
-} from './_components/sections/static-sections';
-import { PopularProducts } from './_components/sections/popular-products';
-import { Showrooms } from './_components/sections/showrooms';
-import { FAQ } from './_components/sections/faq';
-import { RecentlyViewedRail } from './_components/recently-viewed';
+} from '../_components/sections/static-sections';
+import { PopularProducts } from '../_components/sections/popular-products';
+import { Showrooms } from '../_components/sections/showrooms';
+import { FAQ } from '../_components/sections/faq';
+import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd } from '@/lib/faq';
 import { composeBrandTitle } from '@/lib/seo';
 import { LOCAL_BUSINESS_LD } from '@/lib/structured-data';
 import { getSitewideReviewsExtension } from '@/lib/judgeme';
 import { getShopBrand, getHeroSlides } from '@/lib/shopify';
-import { FALLBACK_HERO_SLIDES } from './_components/hero-slides';
+import { FALLBACK_HERO_SLIDES } from '../_components/hero-slides';
 
 const LOCAL_BUSINESS_ID = 'https://www.mattressstoreslosangeles.com/#localbusiness';
 

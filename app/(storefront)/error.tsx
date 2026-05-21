@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
-import { Icon } from './_components/icon';
+import { Icon } from '../_components/icon';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 export default function Error({

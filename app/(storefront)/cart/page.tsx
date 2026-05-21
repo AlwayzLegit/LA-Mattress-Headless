@@ -15,7 +15,7 @@ import { OrderNote } from './order-note';
 import { FreeShippingBar } from './free-shipping-bar';
 import { Icon } from '@/app/_components/icon';
 import { RecentlyViewedRail } from '@/app/_components/recently-viewed';
-import { RelatedRail } from '@/app/products/[handle]/related-rail';
+import { RelatedRail } from '@/app/(storefront)/products/[handle]/related-rail';
 import { formatMoney } from '@/lib/format';
 
 export const metadata: Metadata = {
