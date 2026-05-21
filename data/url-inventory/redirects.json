@@ -3,7 +3,7 @@
   "$source": "Shopify Admin → URL Redirects export (CSV), 2026-05-05.",
   "$status": "imported",
   "$applicationNote": "Loaded by next.config.mjs at build time and emitted as Next.js redirects(). Edge-evaluated.",
-  "$count": 1100,
+  "$count": 1131,
   "$importedAt": "2026-05-05T09:22:35.804Z",
   "$importStats": {
     "csvRows": 372,
@@ -5664,7 +5664,25 @@
       "destination": "/collections/floor-model-discontinued-mattress-clearance-sale",
       "permanent": true,
       "$note": "Sold/unpublished floor-sample clearance product, still linked → clearance collection. SEMrush 20260518 4xx."
+    },
+    {
+      "source": "/pages/hancock-park-best-mattress-store",
+      "destination": "/pages/best-mattress-store-la-brea",
+      "permanent": true,
+      "$note": "Alternate word-order variant slug discovered 4xx in SEMrush audit 20260521. Hancock Park is served by the La Brea showroom — same destination as the existing /pages/best-mattress-store-hancock-park redirect (one of two valid CMS slugs in the wild)."
+    },
+    {
+      "source": "/pages/best-mattress-store-glendale",
+      "destination": "/pages/mattress-store-in-glendale",
+      "permanent": true,
+      "$note": "Variant slug without -ca suffix discovered 4xx in SEMrush audit 20260521. Matches the same showroom as /pages/best-mattress-store-glendale-ca (already redirected)."
+    },
+    {
+      "source": "/collections/box-spring-foundations",
+      "destination": "/collections/foundations",
+      "permanent": true,
+      "$note": "Legacy collection slug discovered 4xx in SEMrush audit 20260521. The active collection (id 465220174077, title 'Mattress Foundations & Box Springs') lives at /collections/foundations."
     }
   ],
-  "$auditNote": "Redirect chains flattened to single-hop and stray 302s normalized to 301 on 2026-05-17 (SEMrush audit)."
+  "$auditNote": "Redirect chains flattened to single-hop and stray 302s normalized to 301 on 2026-05-17 (SEMrush audit). Added 3 backfill redirects on 2026-05-21 for slugs discovered 4xx in the SEMrush mega audit (two showroom variants + a legacy foundations collection)."
 }
