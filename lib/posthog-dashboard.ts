@@ -262,7 +262,7 @@ export async function getQuizFunnel(days = 30): Promise<QuizFunnel | null> {
 }
 
 /**
- * Phase 300: quiz funnel for the previous period of equal length.
+ * Phase 300b: quiz funnel for the previous period of equal length.
  * Same shape as getQuizFunnel, windowed to days*2..days ago. Caller
  * computes completion-rate / click-rate deltas vs the current period.
  */
@@ -286,6 +286,49 @@ export async function getQuizFunnelPrev(days = 30): Promise<QuizFunnel | null> {
     completed: counts.get('quiz_completed') ?? 0,
     clicked: counts.get('quiz_recommendation_clicked') ?? 0,
   };
+}
+
+/* ------------------------------------------------------------------------ *
+ * Device breakdown — sessions + order_completed by $device_type
+ *
+ * Surfaces the mobile-vs-desktop conversion gap. Mobile traffic on a
+ * mattress site usually 70-80% of sessions, but desktop converts at
+ * 2-3x the rate — so the gap matters for merchandising decisions
+ * (mobile-first hero copy, cart UX investment, etc).
+ * ------------------------------------------------------------------------ */
+
+export type DeviceRow = {
+  deviceType: string;
+  sessions: number;
+  orders: number;
+  conversionPct: number;
+};
+
+export async function getDeviceBreakdown(days = 30): Promise<DeviceRow[] | null> {
+  const data = await hogQL(`
+    SELECT
+      coalesce(nullif(toString(properties.$device_type), ''), '(unknown)') AS device,
+      count(DISTINCT properties.$session_id) AS sessions,
+      countIf(event = 'order_completed') AS orders
+    FROM events
+    WHERE timestamp >= now() - INTERVAL ${days} DAY
+      AND properties.$session_id IS NOT NULL
+    GROUP BY device
+    ORDER BY sessions DESC
+    LIMIT 6
+  `);
+  if (!data) return null;
+  return data.results.map((row) => {
+    const deviceType = String(row[0] ?? '(unknown)');
+    const sessions = Number(row[1] ?? 0);
+    const orders = Number(row[2] ?? 0);
+    return {
+      deviceType,
+      sessions,
+      orders,
+      conversionPct: sessions > 0 ? (orders / sessions) * 100 : 0,
+    };
+  });
 }
 
 /* ------------------------------------------------------------------------ *

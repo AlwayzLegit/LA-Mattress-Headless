@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {
   ADMIN_CONFIGURED,
   getCatalogHealth,
+  getLowStock,
   getOrderSummaryWithTrends,
   getSeoGaps,
   getTopProducts,
@@ -15,6 +16,7 @@ import {
 import {
   getConversionFunnel,
   getConversionFunnelPrev,
+  getDeviceBreakdown,
   getQuizFunnel,
   getQuizFunnelPrev,
   getRevenueBySource,
@@ -22,6 +24,13 @@ import {
   getTopSearches,
   getTopTrafficSources,
 } from '@/lib/posthog-dashboard';
+
+// Shopify Admin product editor URL — built from the store domain so
+// the deep-link routes to the right store. Falls back to the generic
+// admin.shopify.com home if the env var isn't set (dev / preview).
+const SHOPIFY_ADMIN_BASE = process.env.SHOPIFY_STORE_DOMAIN
+  ? `https://admin.shopify.com/store/${process.env.SHOPIFY_STORE_DOMAIN.replace(/\.myshopify\.com$/, '')}`
+  : 'https://admin.shopify.com';
 
 /**
  * Internal admin dashboard at /admin/dashboard.
@@ -108,6 +117,7 @@ export default async function DashboardPage({
     catalog,
     topProducts,
     seoGaps,
+    lowStock,
     funnel,
     funnelPrev,
     entryPages,
@@ -116,11 +126,13 @@ export default async function DashboardPage({
     quizFunnel,
     quizFunnelPrev,
     revenueBySource,
+    deviceBreakdown,
   ] = await Promise.all([
     getOrderSummaryWithTrends(days).catch(() => null),
     getCatalogHealth().catch(() => null),
     getTopProducts(days).catch(() => null),
     getSeoGaps().catch(() => null),
+    getLowStock(3).catch(() => null),
     POSTHOG_CONFIGURED ? getConversionFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getConversionFunnelPrev(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopEntryPages(7, 10).catch(() => null) : Promise.resolve(null),
@@ -129,7 +141,17 @@ export default async function DashboardPage({
     POSTHOG_CONFIGURED ? getQuizFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizFunnelPrev(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getRevenueBySource(days, 8).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getDeviceBreakdown(days).catch(() => null) : Promise.resolve(null),
   ]);
+
+  // Cart + checkout abandonment derived from the conversion funnel.
+  // No additional query — these are framings of the same data the
+  // funnel card already has. Useful to call out because shoppers
+  // typically know cart abandonment is the leakiest part of the
+  // funnel, and a dedicated card with the right framing surfaces it
+  // more clearly than a row inside the funnel visualization.
+  const abandonment = funnel ? computeAbandonment(funnel.steps) : null;
+  const abandonmentPrev = funnelPrev ? computeAbandonment(funnelPrev.steps) : null;
 
   // Funnel conversion rate (overall: last step / first step) for the
   // current and previous windows. Used to render a vs-previous delta
@@ -197,6 +219,12 @@ export default async function DashboardPage({
                   <DeltaBadge current={orderSummary.avgOrderValue} prev={orderSummary.prev?.avgOrderValue} />
                 </div>
               </div>
+              {orderSummary.daily.length >= 2 ? (
+                <>
+                  <h3 className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>Revenue trend</h3>
+                  <RevenueLineChart points={orderSummary.daily} currency={orderSummary.currency} />
+                </>
+              ) : null}
               <h3 className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>Recent orders</h3>
               <table className="dash-table">
                 <thead>
@@ -341,6 +369,135 @@ export default async function DashboardPage({
             <p className="muted">No quiz data yet — events ship in PostHog Phase 1.</p>
           ) : (
             <PostHogConfigHint />
+          )}
+        </div>
+
+        {/* Cart + checkout abandonment */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Cart abandonment · {rangeKey}</h2>
+            <span className="muted" style={{ fontSize: 12 }}>PostHog · derived from funnel</span>
+          </div>
+          {abandonment ? (
+            <ul className="dash-list">
+              <li className={abandonment.cartAbandonment > 0.7 ? 'dash-warn' : ''}>
+                <span>Cart → checkout drop</span>
+                <strong>
+                  {(abandonment.cartAbandonment * 100).toFixed(1)}%
+                  <RateDelta current={abandonment.cartAbandonment} prev={abandonmentPrev?.cartAbandonment ?? null} />
+                </strong>
+              </li>
+              <li className={abandonment.checkoutAbandonment > 0.5 ? 'dash-warn' : ''}>
+                <span>Checkout → order drop</span>
+                <strong>
+                  {(abandonment.checkoutAbandonment * 100).toFixed(1)}%
+                  <RateDelta current={abandonment.checkoutAbandonment} prev={abandonmentPrev?.checkoutAbandonment ?? null} />
+                </strong>
+              </li>
+              <li>
+                <span>Cart viewers</span>
+                <strong>{abandonment.cartViewers.toLocaleString()}</strong>
+              </li>
+              <li>
+                <span>Checkout starters</span>
+                <strong>{abandonment.checkoutStarters.toLocaleString()}</strong>
+              </li>
+              <li>
+                <span>Orders</span>
+                <strong>{abandonment.orders.toLocaleString()}</strong>
+              </li>
+            </ul>
+          ) : POSTHOG_CONFIGURED ? (
+            <p className="muted">No funnel data yet.</p>
+          ) : (
+            <PostHogConfigHint />
+          )}
+        </div>
+
+        {/* Device breakdown */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Devices · {rangeKey}</h2>
+            <span className="muted" style={{ fontSize: 12 }}>PostHog · sessions + conversion</span>
+          </div>
+          {deviceBreakdown ? (
+            deviceBreakdown.length === 0 ? (
+              <p className="muted">No session data yet.</p>
+            ) : (
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Device</th>
+                    <th>Sessions</th>
+                    <th>Conv %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {deviceBreakdown.map((d) => (
+                    <tr key={d.deviceType}>
+                      <td>{d.deviceType}</td>
+                      <td className="tnum">{d.sessions.toLocaleString()}</td>
+                      <td className="tnum">{d.conversionPct.toFixed(2)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          ) : POSTHOG_CONFIGURED ? (
+            <p className="muted">Device data unavailable.</p>
+          ) : (
+            <PostHogConfigHint />
+          )}
+        </div>
+
+        {/* Low-stock alerts */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Low stock alerts</h2>
+            <span className="muted" style={{ fontSize: 12 }}>Shopify · ≤3 on hand</span>
+          </div>
+          {lowStock ? (
+            lowStock.length === 0 ? (
+              <p className="muted">No variants below threshold. 🎉</p>
+            ) : (
+              <ul className="dash-list-compact">
+                {lowStock.map((v) => (
+                  <li key={v.productId + v.variantTitle} className={v.quantity <= 0 ? 'dash-warn' : ''}>
+                    <a
+                      href={`${SHOPIFY_ADMIN_BASE}/products/${v.productId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {v.productTitle}
+                    </a>
+                    {v.variantTitle && v.variantTitle !== 'Default Title' ? (
+                      <span className="muted"> · {v.variantTitle}</span>
+                    ) : null}
+                    <span className="muted">
+                      {' · '}
+                      {v.sku ? <code style={{ fontSize: 11 }}>{v.sku}</code> : '(no SKU)'}
+                      {' · '}
+                      <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{v.quantity}</strong> on hand
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )
+          ) : (
+            <p className="muted">Inventory data unavailable.</p>
+          )}
+        </div>
+
+        {/* Day-of-week order heatmap */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Orders by weekday · {rangeKey}</h2>
+            <span className="muted" style={{ fontSize: 12 }}>Shopify · order count</span>
+          </div>
+          {orderSummary && orderSummary.daily.length >= 7 ? (
+            <DayOfWeekHeatmap points={orderSummary.daily} />
+          ) : (
+            <p className="muted">Need at least 7 days of order data.</p>
           )}
         </div>
 
@@ -571,7 +728,15 @@ export default async function DashboardPage({
                     {seoGaps.sampleProducts.map((p) => (
                       <li key={p.handle}>
                         <Link href={`/products/${p.handle}`} prefetch={false}>{p.title}</Link>
-                        <span className="muted"> · gap: {p.gap}</span>
+                        <span className="muted"> · gap: {p.gap} · </span>
+                        <a
+                          href={`${SHOPIFY_ADMIN_BASE}/products/${p.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ fontSize: 12 }}
+                        >
+                          fix in Shopify →
+                        </a>
                       </li>
                     ))}
                   </ul>
@@ -803,6 +968,146 @@ function funnelConversionRate(steps: Array<{ persons: number }> | undefined | nu
   const last = steps[steps.length - 1].persons;
   if (first === 0) return null;
   return last / first;
+}
+
+/**
+ * Phase 300b: derive cart/checkout abandonment from the funnel.
+ *
+ *   cartAbandonment     = 1 - (checkout_started / cart_view)
+ *   checkoutAbandonment = 1 - (order_completed / checkout_started)
+ *
+ * Returns null when the relevant numerator steps are missing from the
+ * funnel definition (defensive — the FUNNEL_STEPS const in
+ * posthog-dashboard.ts should always include these events).
+ */
+function computeAbandonment(steps: Array<{ event: string; persons: number }>): {
+  cartViewers: number;
+  checkoutStarters: number;
+  orders: number;
+  cartAbandonment: number;
+  checkoutAbandonment: number;
+} | null {
+  const byEvent = new Map(steps.map((s) => [s.event, s.persons]));
+  const cartViewers = byEvent.get('cart_view') ?? 0;
+  const checkoutStarters = byEvent.get('checkout_started') ?? 0;
+  const orders = byEvent.get('order_completed') ?? 0;
+  return {
+    cartViewers,
+    checkoutStarters,
+    orders,
+    cartAbandonment: cartViewers > 0 ? 1 - checkoutStarters / cartViewers : 0,
+    checkoutAbandonment: checkoutStarters > 0 ? 1 - orders / checkoutStarters : 0,
+  };
+}
+
+/**
+ * Phase 300b: full-width revenue trend chart for the selected range.
+ * Same data source as the inline Sparkline but with axis labels +
+ * grid lines + Y-axis tick at the max value, so it reads as a real
+ * chart instead of a decoration.
+ *
+ * SVG only — no charting library. Renders inside the
+ * "Last N days" card under the KPI row.
+ */
+function RevenueLineChart({ points, currency }: { points: DashboardDailyPoint[]; currency: string }) {
+  const values = points.map((p) => p.revenue);
+  const max = Math.max(...values, 0);
+  if (max === 0) return <p className="muted" style={{ fontSize: 13 }}>No revenue in this window.</p>;
+  const W = 600;
+  const H = 120;
+  const padL = 48;   // left padding for Y-axis label
+  const padR = 8;
+  const padT = 8;
+  const padB = 20;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  const stepX = points.length > 1 ? innerW / (points.length - 1) : innerW;
+  const xy = points.map((p, i) => {
+    const x = padL + i * stepX;
+    const y = padT + innerH - (p.revenue / max) * innerH;
+    return { x, y, p };
+  });
+  const path = xy.map(({ x, y }) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+  const areaPath = `${padL},${padT + innerH} ${path} ${(padL + innerW).toFixed(1)},${padT + innerH}`;
+  const fmt = (v: number) => new Intl.NumberFormat('en-US', {
+    style: 'currency', currency: currency || 'USD',
+    maximumFractionDigits: 0, notation: max >= 10000 ? 'compact' : 'standard',
+  }).format(v);
+  // X-axis tick labels: first + middle + last day. With dense ranges
+  // showing every day would crowd the axis.
+  const firstLabel = points[0]?.date.slice(5);
+  const lastLabel = points[points.length - 1]?.date.slice(5);
+  const midIdx = Math.floor(points.length / 2);
+  const midLabel = points[midIdx]?.date.slice(5);
+  return (
+    <svg
+      className="dash-line-chart"
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="xMidYMid meet"
+      role="img"
+      aria-label="Revenue trend chart"
+    >
+      {/* Y-axis grid lines at 0/50%/100% of max */}
+      <line x1={padL} y1={padT} x2={padL + innerW} y2={padT} stroke="var(--line)" strokeWidth="0.5" />
+      <line x1={padL} y1={padT + innerH / 2} x2={padL + innerW} y2={padT + innerH / 2} stroke="var(--line)" strokeWidth="0.5" strokeDasharray="2 2" />
+      <line x1={padL} y1={padT + innerH} x2={padL + innerW} y2={padT + innerH} stroke="var(--line)" strokeWidth="0.5" />
+      {/* Y-axis labels */}
+      <text x={padL - 6} y={padT + 4} fontSize="10" textAnchor="end" fill="var(--text-2)">{fmt(max)}</text>
+      <text x={padL - 6} y={padT + innerH + 4} fontSize="10" textAnchor="end" fill="var(--text-2)">$0</text>
+      {/* X-axis tick labels */}
+      <text x={padL} y={H - 4} fontSize="10" textAnchor="start" fill="var(--text-2)">{firstLabel}</text>
+      <text x={padL + innerW / 2} y={H - 4} fontSize="10" textAnchor="middle" fill="var(--text-2)">{midLabel}</text>
+      <text x={padL + innerW} y={H - 4} fontSize="10" textAnchor="end" fill="var(--text-2)">{lastLabel}</text>
+      {/* Filled area under the line */}
+      <polygon points={areaPath} fill="currentColor" opacity="0.08" />
+      {/* The line itself */}
+      <polyline fill="none" stroke="currentColor" strokeWidth="1.5" points={path} />
+    </svg>
+  );
+}
+
+/**
+ * Phase 300b: orders-by-weekday heatmap. Buckets the daily series into
+ * the 7 weekdays, then renders 7 vertical bars colored by intensity.
+ * Useful for showroom staffing decisions ("we close at 9 PM but
+ * Sundays are dead from 4 onward") and delivery-route planning.
+ */
+function DayOfWeekHeatmap({ points }: { points: DashboardDailyPoint[] }) {
+  const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const buckets = [0, 0, 0, 0, 0, 0, 0];
+  let weekCount = 0;
+  for (const p of points) {
+    // p.date is YYYY-MM-DD in UTC. UTC interpretation is consistent
+    // with the bucket logic in getOrderSummaryWithTrends.
+    const dow = new Date(p.date + 'T00:00:00Z').getUTCDay();
+    buckets[dow] += p.orders;
+  }
+  // Approximate full weeks in the range (range/7) — used to show
+  // per-week averages so longer ranges aren't visually unfair to
+  // shorter ones.
+  weekCount = points.length / 7;
+  const max = Math.max(...buckets, 1);
+  return (
+    <div className="dash-heatmap" role="table" aria-label="Orders by weekday">
+      {buckets.map((n, dow) => {
+        const intensity = n / max;
+        const avgPerWeek = weekCount > 0 ? n / weekCount : n;
+        return (
+          <div key={dow} className="dash-heatmap-cell" role="row">
+            <div className="dash-heatmap-label">{WEEKDAYS[dow]}</div>
+            <div
+              className="dash-heatmap-bar"
+              style={{ background: `rgba(10, 122, 64, ${0.15 + intensity * 0.85})` }}
+              title={`${n} orders total · ~${avgPerWeek.toFixed(1)} per week avg`}
+            >
+              <span className="dash-heatmap-value tnum">{n}</span>
+            </div>
+            <div className="dash-heatmap-sub muted tnum">{avgPerWeek.toFixed(1)}/wk</div>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 /* ------------------------------------------------------------------------ *
