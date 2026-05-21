@@ -1256,7 +1256,7 @@ function DayOfWeekHeatmap({ points }: { points: DashboardDailyPoint[] }) {
             <div
               className="dash-heatmap-bar"
               style={{ background: `rgba(10, 122, 64, ${0.15 + intensity * 0.85})` }}
-              title={`${n} orders total · ~${avgPerWeek.toFixed(1)} per week avg`}
+              title={`${n} ${n === 1 ? 'order' : 'orders'} total · ~${avgPerWeek.toFixed(1)} per week avg`}
             >
               <span className="dash-heatmap-value tnum">{n}</span>
             </div>

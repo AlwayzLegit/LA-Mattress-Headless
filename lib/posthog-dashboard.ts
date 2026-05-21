@@ -165,8 +165,8 @@ export async function getTopSearches(days = 30, limit = 15): Promise<SearchQuery
     SELECT
       lower(trim(toString(properties.query))) AS q,
       count() AS searches,
-      countIf(toInt32OrNull(toString(properties.result_count)) = 0) AS zero_result,
-      round(100.0 * countIf(toInt32OrNull(toString(properties.result_count)) = 0) / count(), 1) AS zero_pct
+      countIf(toIntOrNull(toString(properties.result_count)) = 0) AS zero_result,
+      round(100.0 * countIf(toIntOrNull(toString(properties.result_count)) = 0) / count(), 1) AS zero_pct
     FROM events
     WHERE event = 'search'
       AND timestamp >= now() - INTERVAL ${days} DAY
@@ -358,7 +358,7 @@ export async function getRevenueBySource(days = 30, limit = 8): Promise<RevenueB
         '(direct)'
       ) AS source,
       count() AS orders,
-      sum(toFloat64OrZero(toString(properties.value))) AS revenue
+      sum(toFloatOrZero(toString(properties.value))) AS revenue
     FROM events
     WHERE event = 'order_completed'
       AND timestamp >= now() - INTERVAL ${days} DAY
