@@ -34,8 +34,18 @@ export const ORGANIZATION_LD = {
  * Phase 268: build the Organization JSON-LD using Shopify Brand data
  * when available, falling back to the static ORGANIZATION_LD above for
  * any fields the merchant hasn't filled out.
+ *
+ * Optional `aggregate` enrichment (sitewide rating + count from
+ * Judge.me) attaches an aggregateRating to the brand entity. The
+ * Organization is emitted on every storefront page via the segment
+ * layout, so the brand-level review signal travels with every URL —
+ * eligible for the sitewide review snippet in SERP on brand-intent
+ * queries like "LA Mattress" or "mattress store los angeles".
  */
-export function buildOrganizationLd(shop: ShopBrand | null) {
+export function buildOrganizationLd(
+  shop: ShopBrand | null,
+  aggregate?: { rating: number; count: number } | null,
+) {
   const logo = shop?.brand?.logo?.url ?? FALLBACK_LOGO;
   const name = shop?.name ?? SITE_BRAND;
   return {
@@ -47,6 +57,17 @@ export function buildOrganizationLd(shop: ShopBrand | null) {
     logo,
     telephone: SITE_PHONE_SCHEMA,
     ...(SOCIAL_PROFILES.length > 0 ? { sameAs: [...SOCIAL_PROFILES] } : {}),
+    ...(aggregate && aggregate.count > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: aggregate.rating.toFixed(1),
+            reviewCount: aggregate.count,
+            bestRating: '5',
+            worstRating: '1',
+          },
+        }
+      : {}),
   };
 }
 
