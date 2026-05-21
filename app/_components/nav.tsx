@@ -102,6 +102,7 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
   learn: {
     cols: [
       { title: 'Buying guides', links: [
+        { label: 'Best mattress in Los Angeles', href: '/blogs/mattress-buying-guide/best-mattress-los-angeles' },
         { label: 'How to choose a mattress',  href: '/blogs/mattress-buying-guide/how-to-choose-a-mattress' },
         { label: 'Best for back pain',        href: '/blogs/mattress-buying-guide/best-mattress-for-back-pain' },
         { label: 'Best for side sleepers',    href: '/blogs/mattress-buying-guide/best-mattress-for-side-sleepers' },
@@ -119,6 +120,8 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
       { title: 'Tools', links: [
         { label: 'Sleep quiz',          href: '/sleep-quiz' },
         { label: 'Find a showroom',     href: '/pages/mattress-store-locations' },
+        { label: 'Mattress store near me', href: '/blogs/mattress-buying-guide/mattress-store-near-me-los-angeles' },
+        { label: 'Financing options',     href: '/blogs/mattress-buying-guide/mattress-financing-options-los-angeles' },
       ]},
     ],
     tiles: [

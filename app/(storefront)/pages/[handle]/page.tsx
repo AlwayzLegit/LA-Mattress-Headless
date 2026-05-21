@@ -107,7 +107,21 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // seo.title to the headline; ensureTitleDistinctFromH1 appends the
   // keyword-bearing brand suffix only when it would otherwise collapse.
   // Caps to TITLE_MAX internally (replaces the prior capTitle call).
-  const title = ensureTitleDistinctFromH1(firstNonEmpty(page.seo.title, titleFallback), page.title);
+  let title = ensureTitleDistinctFromH1(firstNonEmpty(page.seo.title, titleFallback), page.title);
+  // SEMrush 20260521_1: `/pages/memorial-day-sale-2026` and
+  // `/collections/memorial-day-sale` both rendered "Memorial Day Sale |
+  // LA Mattress Store" — the merchant authored both with the same
+  // base title. The page-handle convention is `<sale>-<YYYY>`, so
+  // when the handle carries a year that isn't already in the title,
+  // graft the year onto the title to break the duplicate. Affects only
+  // year-stamped sale pages; everything else is untouched.
+  const yearInHandle = /\b(20\d{2})\b/.exec(page.handle)?.[1];
+  if (yearInHandle && !title.includes(yearInHandle)) {
+    title = ensureTitleDistinctFromH1(
+      title.replace(/( \| LA Mattress Store)?$/, ` ${yearInHandle}$1`),
+      page.title,
+    );
+  }
   const description = truncDescription(
     firstNonEmpty(page.seo.description, page.bodySummary, `${page.title} — LA Mattress Store`),
   );
