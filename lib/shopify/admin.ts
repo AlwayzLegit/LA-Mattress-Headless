@@ -562,7 +562,18 @@ export type DashboardOrderDetailLineItem = {
   variantTitle: string | null;
   sku: string | null;
   quantity: number;
+  /** Units that have been refunded across all refund records on this order. */
   quantityRefunded: number;
+  /**
+   * Dollar amount refunded on THIS line, aggregated across all refund
+   * records. Distinct from quantityRefunded — a restock-only refund
+   * decrements the quantity without returning any money, so a line can
+   * have quantityRefunded > 0 with amountRefunded = 0. The order detail
+   * page renders "(N refunded, $X)" when amountRefunded > 0 and
+   * "(N restocked, no refund)" when it's a pure inventory return.
+   * QA round 2 B4.
+   */
+  amountRefunded: number;
   productId: string | null;
   productHandle: string | null;
   unitPrice: number;
@@ -681,6 +692,14 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
         createdAt: string;
         note: string | null;
         totalRefundedSet: { shopMoney: { amount: string; currencyCode: string } };
+        refundLineItems: {
+          nodes: Array<{
+            quantity: number;
+            restockType: string | null;
+            lineItem: { id: string };
+            subtotalSet: { shopMoney: { amount: string; currencyCode: string } };
+          }>;
+        };
       }>;
     } | null;
   }>(
@@ -712,6 +731,14 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
         refunds(first: 10) {
           id createdAt note
           totalRefundedSet { shopMoney { amount currencyCode } }
+          refundLineItems(first: 50) {
+            nodes {
+              quantity
+              restockType
+              lineItem { id }
+              subtotalSet { shopMoney { amount currencyCode } }
+            }
+          }
         }
       }
     }`,
@@ -721,6 +748,18 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
   if (!data || !data.order) return null;
   const o = data.order;
   const currency = o.currentTotalPriceSet.shopMoney.currencyCode || 'USD';
+
+  // QA round 2 B4: aggregate refundLineItems across every refund record
+  // on the order, grouped by the original line item id. Powers the
+  // per-line "(N refunded, $X)" vs "(N restocked, no refund)" callout.
+  const refundsByLineItem = new Map<string, number>();
+  for (const r of o.refunds) {
+    for (const rli of r.refundLineItems.nodes) {
+      const id = rli.lineItem.id;
+      const subtotal = Number.parseFloat(rli.subtotalSet.shopMoney.amount || '0');
+      refundsByLineItem.set(id, (refundsByLineItem.get(id) ?? 0) + subtotal);
+    }
+  }
 
   return {
     id: numericIdFromGid(o.id),
@@ -762,6 +801,10 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
       // 0 in case Shopify returns refundable > quantity (shouldn't but
       // belt-and-suspenders for the partial-refund edge case).
       quantityRefunded: Math.max(li.quantity - li.refundableQuantity, 0),
+      // Dollar value of all refundLineItems matched to this line. Zero
+      // when only restock-only refunds reduced the quantity (the
+      // quantity went down without money being returned). QA round 2 B4.
+      amountRefunded: refundsByLineItem.get(li.id) ?? 0,
       productId: li.product ? numericIdFromGid(li.product.id) : null,
       productHandle: li.product?.handle ?? null,
       unitPrice: Number.parseFloat(li.originalUnitPriceSet.shopMoney.amount || '0'),

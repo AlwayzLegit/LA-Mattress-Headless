@@ -237,7 +237,9 @@ export default async function OrderDetailPage({
                       {li.quantity}
                       {li.quantityRefunded > 0 ? (
                         <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
-                          ({li.quantityRefunded} refunded)
+                          {li.amountRefunded > 0
+                            ? `(${li.quantityRefunded} refunded, ${fmtMoney(li.amountRefunded, li.currency)})`
+                            : `(${li.quantityRefunded} restocked, no refund)`}
                         </span>
                       ) : null}
                     </td>
