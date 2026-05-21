@@ -4544,6 +4544,50 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   color: var(--text-2);
   opacity: 0.85;
 }
+/* Phase 300b: full-width revenue line chart + day-of-week heatmap. */
+.dash-line-chart {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-top: var(--s-2);
+  color: var(--text-1);
+}
+.dash-heatmap {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: var(--s-2);
+}
+.dash-heatmap-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  text-align: center;
+}
+.dash-heatmap-label {
+  font-size: 11px;
+  color: var(--text-2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.dash-heatmap-bar {
+  border-radius: var(--r-1);
+  padding: 12px 4px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.dash-heatmap-value {
+  display: block;
+}
+.dash-heatmap-sub {
+  font-size: 10px;
+  margin-top: 2px;
+}
 .dash-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

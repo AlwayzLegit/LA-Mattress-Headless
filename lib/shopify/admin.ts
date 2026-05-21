@@ -404,7 +404,10 @@ export type DashboardSeoGaps = {
   productsMissingSeoDescription: number;
   productsMissingSku: number;
   productsMissingImage: number;
-  sampleProducts: Array<{ handle: string; title: string; gap: string }>;
+  // Phase 300b: productId added so the dashboard can render a
+  // "Fix in Shopify" deep link straight to each gap'd product's
+  // editor without a second lookup.
+  sampleProducts: Array<{ id: string; handle: string; title: string; gap: string }>;
 };
 
 export async function getSeoGaps(): Promise<DashboardSeoGaps | null> {
@@ -413,6 +416,7 @@ export async function getSeoGaps(): Promise<DashboardSeoGaps | null> {
   const data = await adminGql<{
     products: {
       nodes: Array<{
+        id: string;
         handle: string;
         title: string;
         seo: { title: string | null; description: string | null };
@@ -424,7 +428,7 @@ export async function getSeoGaps(): Promise<DashboardSeoGaps | null> {
     `query SeoGaps {
       products(first: 100, query: "status:active", sortKey: ID) {
         nodes {
-          handle title
+          id handle title
           seo { title description }
           featuredMedia { id }
           variants(first: 1) { nodes { sku } }
@@ -449,7 +453,12 @@ export async function getSeoGaps(): Promise<DashboardSeoGaps | null> {
     if (noSku) missingSku += 1;
     if (noImage) missingImage += 1;
     if (samples.length < 8 && (noTitle || noImage)) {
-      samples.push({ handle: p.handle, title: p.title, gap: noTitle ? 'seo.title' : 'image' });
+      samples.push({
+        id: numericIdFromGid(p.id),
+        handle: p.handle,
+        title: p.title,
+        gap: noTitle ? 'seo.title' : 'image',
+      });
     }
   }
   return {
@@ -459,4 +468,78 @@ export async function getSeoGaps(): Promise<DashboardSeoGaps | null> {
     productsMissingImage: missingImage,
     sampleProducts: samples,
   };
+}
+
+
+/* ------------------------------------------------------------------------ *
+ * Low-stock alerts — variants with inventoryQuantity at or below threshold
+ *
+ * Surfaces variants the merchant should reorder before they sell out.
+ * Threshold defaults to 3 because mattresses are slow-turning inventory —
+ * a "running low" signal needs to fire well before zero so reorder can
+ * happen without missing same-day delivery promises. Threshold is a
+ * parameter so the dashboard can tune it.
+ *
+ * Returns the offending variants with parent product info so the merchant
+ * can deep-link straight to the Shopify Admin product editor.
+ * ------------------------------------------------------------------------ */
+
+export type DashboardLowStockVariant = {
+  productId: string;        // numeric ID for Shopify admin URL
+  productHandle: string;
+  productTitle: string;
+  variantTitle: string;
+  sku: string | null;
+  quantity: number;
+};
+
+export async function getLowStock(threshold = 3): Promise<DashboardLowStockVariant[] | null> {
+  // Shopify variant search query: inventory_quantity:<=<n> + product status active.
+  // Limit 20 — long lists past that bloat the card; merchant should drill
+  // into Shopify Admin for the full report once any rows surface here.
+  const data = await adminGql<{
+    productVariants: {
+      nodes: Array<{
+        id: string;
+        title: string;
+        sku: string | null;
+        inventoryQuantity: number | null;
+        product: { id: string; handle: string; title: string; status: string };
+      }>;
+    };
+  }>(
+    `query LowStock($q: String!) {
+      productVariants(first: 20, query: $q) {
+        nodes {
+          id title sku inventoryQuantity
+          product { id handle title status }
+        }
+      }
+    }`,
+    { q: `inventory_quantity:<=${threshold} product_status:active` },
+  );
+  if (!data) return null;
+  return data.productVariants.nodes
+    // Defensive: the search query already excludes draft/archived but
+    // belt-and-suspenders for the unlikely case the API returns one.
+    .filter((v) => v.product.status === 'ACTIVE')
+    .map((v) => ({
+      productId: numericIdFromGid(v.product.id),
+      productHandle: v.product.handle,
+      productTitle: v.product.title,
+      variantTitle: v.title,
+      sku: v.sku,
+      quantity: v.inventoryQuantity ?? 0,
+    }))
+    .sort((a, b) => a.quantity - b.quantity);
+}
+
+/**
+ * Extract the numeric portion of a Shopify GID (e.g.
+ * gid://shopify/Product/12345 -> "12345"). Used to build
+ * admin.shopify.com deep-links from GraphQL IDs.
+ */
+export function numericIdFromGid(gid: string): string {
+  const m = /\/(\d+)$/.exec(gid);
+  return m ? m[1] : gid;
 }
