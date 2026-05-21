@@ -14,6 +14,10 @@
 import 'server-only';
 import * as Sentry from '@sentry/nextjs';
 import { numericIdFromGid } from './gid';
+import {
+  summarizeCustomerLifetime,
+  type CustomerLifetimeSummary,
+} from '@/lib/dashboard/customer-lifetime';
 
 // Re-export so admin.ts callers can keep their `import { numericIdFromGid }
 // from '@/lib/shopify/admin'` paths unchanged. The pure helper now lives
@@ -1038,4 +1042,70 @@ export async function getRefundHealth(days = 30): Promise<DashboardRefundHealth 
       .map(([reason, count]) => ({ reason, count }))
       .sort((a, b) => b.count - a.count),
   };
+}
+
+/* ------------------------------------------------------------------------ *
+ * Customer Lifetime Value — sample of top customers by lifetime spend
+ *
+ * Powers the LTV + lifecycle-distribution cards in the dashboard's
+ * Customers section. Returns a Shopify-sorted top-N (default 250) so
+ * the bucketing surfaces the SHAPE of the top of the customer curve
+ * rather than the unbiased population. The existing window-scoped
+ * getCustomerInsights answers "what % of THIS window's customers are
+ * repeat"; this one answers "who are our best lifetime customers and
+ * how many repeat orders does the top of the curve have".
+ *
+ * Single Shopify query — sortKey=AMOUNT_SPENT, reverse=true. Each
+ * page is 250 customers max per Shopify's limit; we take one page.
+ * Returns null on any fetch error (dashboard renders a "data
+ * unavailable" state per the no-throws convention).
+ * ------------------------------------------------------------------------ */
+
+export type DashboardCustomerLifetime = CustomerLifetimeSummary;
+
+export async function getCustomerLifetime(sampleSize = 250): Promise<DashboardCustomerLifetime | null> {
+  // Clamp the sample size to Shopify's per-page max of 250 — the API
+  // rejects larger first: values with a parse error. Anything below
+  // 250 is accepted as-is.
+  const first = Math.min(Math.max(sampleSize, 1), 250);
+
+  const data = await adminGql<{
+    customers: {
+      nodes: Array<{
+        id: string;
+        displayName: string | null;
+        email: string | null;
+        numberOfOrders: string | number | null;
+        amountSpent: { amount: string; currencyCode: string };
+      }>;
+    };
+  }>(
+    `query CustomerLifetime($first: Int!) {
+      customers(first: $first, sortKey: AMOUNT_SPENT, reverse: true) {
+        nodes {
+          id
+          displayName
+          email
+          numberOfOrders
+          amountSpent { amount currencyCode }
+        }
+      }
+    }`,
+    { first },
+  );
+  if (!data) return null;
+
+  // Map raw Shopify response into the shape the pure summarizer expects.
+  // numberOfOrders comes back as a string from Shopify (GraphQL
+  // UnsignedInt64 scalar) — defensive coerce to number.
+  const customers = data.customers.nodes.map((c) => ({
+    id: numericIdFromGid(c.id),
+    displayName: c.displayName ?? '(no name)',
+    email: c.email,
+    ordersCount: Number(c.numberOfOrders ?? 0),
+    amountSpent: Number.parseFloat(c.amountSpent.amount || '0'),
+    currency: c.amountSpent.currencyCode || 'USD',
+  }));
+
+  return summarizeCustomerLifetime(customers);
 }

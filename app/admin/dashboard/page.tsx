@@ -5,6 +5,7 @@ import {
   ADMIN_CONFIGURED,
   getCatalogHealth,
   getCustomerInsights,
+  getCustomerLifetime,
   getLowStock,
   getOrderSummaryWithTrends,
   getRefundHealth,
@@ -163,6 +164,7 @@ export default async function DashboardPage({
     seoGaps,
     lowStock,
     customerInsights,
+    customerLifetime,
     refundHealth,
     funnel,
     funnelPrev,
@@ -180,6 +182,7 @@ export default async function DashboardPage({
     getSeoGaps().catch(() => null),
     getLowStock(3).catch(() => null),
     getCustomerInsights(days).catch(() => null),
+    getCustomerLifetime(250).catch(() => null),
     getRefundHealth(days).catch(() => null),
     POSTHOG_CONFIGURED ? getConversionFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getConversionFunnelPrev(days).catch(() => null) : Promise.resolve(null),
@@ -526,7 +529,7 @@ export default async function DashboardPage({
                   </ul>
                   {customerInsights.topRepeaters.length > 0 ? (
                     <>
-                      <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Top repeat buyers</h3>
+                      <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Top repeat buyers (in window)</h3>
                       <ul className="dash-list-compact">
                         {customerInsights.topRepeaters.map((c) => (
                           <li key={c.customerId}>
@@ -551,6 +554,94 @@ export default async function DashboardPage({
               )
             ) : (
               <p className="muted">Customer data unavailable.</p>
+            )}
+          </div>
+
+          {/* Customer LTV — top spenders all-time */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Customer LTV</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                Shopify · top {customerLifetime?.sampleSize ?? 250} by lifetime spend
+              </span>
+            </div>
+            {customerLifetime && customerLifetime.sampleSize > 0 ? (
+              <>
+                <ul className="dash-list">
+                  <li>
+                    <span>Mean LTV</span>
+                    <strong>{fmtMoney(customerLifetime.averageLtv, customerLifetime.currency)}</strong>
+                  </li>
+                  <li>
+                    <span>Median LTV</span>
+                    <strong>{fmtMoney(customerLifetime.medianLtv, customerLifetime.currency)}</strong>
+                  </li>
+                </ul>
+                {customerLifetime.topByLtv.length > 0 ? (
+                  <>
+                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Top lifetime spenders</h3>
+                    <ul className="dash-list-compact">
+                      {customerLifetime.topByLtv.map((c) => (
+                        <li key={c.id}>
+                          <a
+                            href={`${SHOPIFY_ADMIN_BASE}/customers/${c.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {c.displayName}
+                          </a>
+                          <span className="muted">
+                            {' · '}
+                            <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{c.ordersCount}</strong>{' orders · '}
+                            <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtMoney(c.amountSpent, c.currency)}</strong>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <p className="muted">No customer LTV data available.</p>
+            )}
+          </div>
+
+          {/* Customer lifecycle distribution */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Lifecycle distribution</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                Shopify · top {customerLifetime?.sampleSize ?? 250} · skewed toward big spenders
+              </span>
+            </div>
+            {customerLifetime && customerLifetime.sampleSize > 0 ? (
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Lifetime orders</th>
+                    <th>Customers</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customerLifetime.buckets.map((b) => (
+                    <tr key={b.label}>
+                      <td>{b.label}</td>
+                      <td className="tnum">
+                        {b.customers}
+                        {customerLifetime.sampleSize > 0 ? (
+                          <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                            ({((b.customers / customerLifetime.sampleSize) * 100).toFixed(0)}%)
+                          </span>
+                        ) : null}
+                      </td>
+                      <td className="tnum">{fmtMoney(b.revenue, customerLifetime.currency)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="muted">No lifecycle data available.</p>
             )}
           </div>
         </div>
