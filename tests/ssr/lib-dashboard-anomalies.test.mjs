@@ -303,6 +303,183 @@ test('zero-result searches: does NOT fire when zero-rate is under 25%', () => {
   assert.equal(out.find((x) => x.id === 'zero-result-searches-high'), undefined);
 });
 
+/* --- Revenue-up detector (positive sibling of revenue-down) --- */
+
+test('revenue-up: info when up 30%', () => {
+  const out = detectAnomalies(emptyInput({
+    orderSummary: {
+      totalOrders: 13,
+      totalRevenue: 13000,
+      avgOrderValue: 1000,
+      currency: 'USD',
+      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
+    },
+  }));
+  const a = out.find((x) => x.id === 'revenue-up');
+  assert.ok(a, 'should fire revenue-up at +30%');
+  assert.equal(a.severity, 'info');
+  assert.match(a.headline, /30%/);
+});
+
+test('revenue-up: warn when up 50% (real signal worth confirming)', () => {
+  const out = detectAnomalies(emptyInput({
+    orderSummary: {
+      totalOrders: 15,
+      totalRevenue: 15000,
+      avgOrderValue: 1000,
+      currency: 'USD',
+      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
+    },
+  }));
+  const a = out.find((x) => x.id === 'revenue-up');
+  assert.equal(a.severity, 'warn');
+});
+
+test('revenue-up: does NOT fire on a 20% lift (within noise band)', () => {
+  const out = detectAnomalies(emptyInput({
+    orderSummary: {
+      totalOrders: 12, totalRevenue: 12000, avgOrderValue: 1000, currency: 'USD',
+      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
+    },
+  }));
+  assert.equal(out.find((x) => x.id === 'revenue-up'), undefined);
+});
+
+test('revenue-up: does NOT fire when revenue went down (sibling owns the other half)', () => {
+  // Revenue-down detector covers the negative side; revenue-up shouldn't
+  // fire on negative deltas even though the conditional structure is
+  // mirrored.
+  const out = detectAnomalies(emptyInput({
+    orderSummary: {
+      totalOrders: 7, totalRevenue: 7000, avgOrderValue: 1000, currency: 'USD',
+      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
+    },
+  }));
+  assert.equal(out.find((x) => x.id === 'revenue-up'), undefined);
+});
+
+/* --- AOV-shift detector --- */
+
+test('aov-shift: fires when AOV up 20%', () => {
+  // Revenue stayed flat but AOV moved — classic mix-shift toward premium.
+  const out = detectAnomalies(emptyInput({
+    orderSummary: {
+      totalOrders: 10, totalRevenue: 12000, avgOrderValue: 1200, currency: 'USD',
+      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
+    },
+  }));
+  const a = out.find((x) => x.id === 'aov-shift');
+  assert.ok(a);
+  assert.match(a.headline, /up 20%/);
+});
+
+test('aov-shift: fires when AOV down 20% (discount-campaign signal)', () => {
+  const out = detectAnomalies(emptyInput({
+    orderSummary: {
+      totalOrders: 10, totalRevenue: 8000, avgOrderValue: 800, currency: 'USD',
+      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
+    },
+  }));
+  const a = out.find((x) => x.id === 'aov-shift');
+  assert.ok(a);
+  assert.match(a.headline, /down 20%/);
+});
+
+test('aov-shift: does NOT fire on 10% AOV move (noise)', () => {
+  const out = detectAnomalies(emptyInput({
+    orderSummary: {
+      totalOrders: 10, totalRevenue: 11000, avgOrderValue: 1100, currency: 'USD',
+      prev: { totalOrders: 10, totalRevenue: 10000, avgOrderValue: 1000 },
+    },
+  }));
+  assert.equal(out.find((x) => x.id === 'aov-shift'), undefined);
+});
+
+test('aov-shift: does NOT fire on small-sample window (< 5 orders)', () => {
+  // 1 order at $1000 vs 1 prior at $1500 = -33% AOV, but it's noise.
+  const out = detectAnomalies(emptyInput({
+    orderSummary: {
+      totalOrders: 1, totalRevenue: 1000, avgOrderValue: 1000, currency: 'USD',
+      prev: { totalOrders: 1, totalRevenue: 1500, avgOrderValue: 1500 },
+    },
+  }));
+  assert.equal(out.find((x) => x.id === 'aov-shift'), undefined);
+});
+
+/* --- New-customer-share-down detector --- */
+
+test('new-customer-share-down: warn when share drops 20pp', () => {
+  // 80% new → 60% new = -20pp share.
+  const out = detectAnomalies(emptyInput({
+    customerInsights: {
+      totalCustomers: 10,
+      newCustomers: 6,
+      returningCustomers: 4,
+      repeatRatePct: 40,
+      prev: { totalCustomers: 10, newCustomers: 8, returningCustomers: 2 },
+    },
+  }));
+  const a = out.find((x) => x.id === 'new-customer-share-down');
+  assert.ok(a);
+  assert.equal(a.severity, 'warn');
+});
+
+test('new-customer-share-down: critical when share drops 30pp', () => {
+  const out = detectAnomalies(emptyInput({
+    customerInsights: {
+      totalCustomers: 10,
+      newCustomers: 5,
+      returningCustomers: 5,
+      repeatRatePct: 50,
+      prev: { totalCustomers: 10, newCustomers: 8, returningCustomers: 2 },
+    },
+  }));
+  // 80 - 50 = 30pp drop
+  const a = out.find((x) => x.id === 'new-customer-share-down');
+  assert.equal(a.severity, 'critical');
+});
+
+test('new-customer-share-down: does NOT fire when share only dropped 10pp', () => {
+  const out = detectAnomalies(emptyInput({
+    customerInsights: {
+      totalCustomers: 10,
+      newCustomers: 7,
+      returningCustomers: 3,
+      repeatRatePct: 30,
+      prev: { totalCustomers: 10, newCustomers: 8, returningCustomers: 2 },
+    },
+  }));
+  assert.equal(out.find((x) => x.id === 'new-customer-share-down'), undefined);
+});
+
+test('new-customer-share-down: does NOT fire when prev is null', () => {
+  const out = detectAnomalies(emptyInput({
+    customerInsights: {
+      totalCustomers: 10,
+      newCustomers: 1,
+      returningCustomers: 9,
+      repeatRatePct: 90,
+      prev: null,
+    },
+  }));
+  assert.equal(out.find((x) => x.id === 'new-customer-share-down'), undefined);
+});
+
+test('new-customer-share-down: does NOT fire on tiny samples (< 5 customers)', () => {
+  // 1/1 vs 1/1 — share went from 100% to 0%, but the sample is too
+  // small to be a meaningful signal. Skip.
+  const out = detectAnomalies(emptyInput({
+    customerInsights: {
+      totalCustomers: 1,
+      newCustomers: 0,
+      returningCustomers: 1,
+      repeatRatePct: 100,
+      prev: { totalCustomers: 1, newCustomers: 1, returningCustomers: 0 },
+    },
+  }));
+  assert.equal(out.find((x) => x.id === 'new-customer-share-down'), undefined);
+});
+
 /* --- Composition: multiple anomalies fire together --- */
 
 test('multiple detectors fire together in severity-arbitrary order', () => {
