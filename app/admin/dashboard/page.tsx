@@ -26,6 +26,7 @@ import {
   getTopSearches,
   getTopTrafficSources,
 } from '@/lib/posthog-dashboard';
+import { refreshDashboard } from './actions';
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -79,11 +80,12 @@ function parseRange(raw: string | string[] | undefined): RangeKey {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ range?: string | string[] }>;
+  searchParams: Promise<{ range?: string | string[]; refreshed?: string | string[] }>;
 }) {
   const params = await searchParams;
   const rangeKey = parseRange(params.range);
   const { days, label: rangeLabel } = RANGE_OPTIONS[rangeKey];
+  const justRefreshed = params.refreshed === '1';
 
   if (!ADMIN_CONFIGURED) {
     return (
@@ -167,6 +169,8 @@ export default async function DashboardPage({
   const quizCompletionNow = quizFunnel && quizFunnel.started > 0 ? quizFunnel.completed / quizFunnel.started : null;
   const quizCompletionPrev = quizFunnelPrev && quizFunnelPrev.started > 0 ? quizFunnelPrev.completed / quizFunnelPrev.started : null;
 
+  const renderedAt = new Date();
+
   return (
     <main className="dashboard">
       <header className="dashboard-head">
@@ -174,12 +178,14 @@ export default async function DashboardPage({
           <div className="eyebrow">Internal</div>
           <h1 className="h2" style={{ margin: 0 }}>LA Mattress dashboard</h1>
           <p className="muted" style={{ marginTop: 4, fontSize: 13 }}>
-            Last refreshed {new Date().toLocaleString()} · auto-refreshes every 5 minutes
+            Rendered {renderedAt.toLocaleString()} · auto-refresh every 5 minutes
+            {justRefreshed ? <span className="dash-refreshed-pill"> · just refreshed</span> : null}
             {!POSTHOG_CONFIGURED ? ' · PostHog widgets disabled (env vars missing)' : null}
           </p>
         </div>
         <div className="dashboard-head-actions">
           <RangePicker active={rangeKey} />
+          <RefreshButton rangeKey={rangeKey} />
           <nav className="dashboard-links">
             <a href="https://jetnine.sentry.io/issues/?project=la-mattress-headless" target="_blank" rel="noopener noreferrer">
               Sentry →
@@ -190,764 +196,798 @@ export default async function DashboardPage({
             <a href="https://vercel.com/alwayzlegits-projects/la-mattress-headless" target="_blank" rel="noopener noreferrer">
               Vercel →
             </a>
-            <a href="https://admin.shopify.com/" target="_blank" rel="noopener noreferrer">
+            <a href={`${SHOPIFY_ADMIN_BASE}/`} target="_blank" rel="noopener noreferrer">
               Shopify Admin →
             </a>
           </nav>
         </div>
       </header>
 
-      <section className="dash-grid">
-        {/* Revenue + orders */}
-        <div className="dash-card dash-card-wide">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>{rangeLabel}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>Shopify Admin</span>
-          </div>
-          {orderSummary ? (
-            <>
-              <div className="dash-stat-row">
-                <div className="dash-stat">
-                  <div className="dash-stat-label">Orders</div>
-                  <div className="dash-stat-value">{orderSummary.totalOrders}</div>
-                  <DeltaBadge current={orderSummary.totalOrders} prev={orderSummary.prev?.totalOrders} />
-                  <Sparkline points={orderSummary.daily} field="orders" />
-                </div>
-                <div className="dash-stat">
-                  <div className="dash-stat-label">Revenue</div>
-                  <div className="dash-stat-value">{fmtMoney(orderSummary.totalRevenue, orderSummary.currency)}</div>
-                  <DeltaBadge current={orderSummary.totalRevenue} prev={orderSummary.prev?.totalRevenue} />
-                  <Sparkline points={orderSummary.daily} field="revenue" />
-                </div>
-                <div className="dash-stat">
-                  <div className="dash-stat-label">Avg order</div>
-                  <div className="dash-stat-value">{fmtMoney(orderSummary.avgOrderValue, orderSummary.currency)}</div>
-                  <DeltaBadge current={orderSummary.avgOrderValue} prev={orderSummary.prev?.avgOrderValue} />
-                </div>
-              </div>
-              {orderSummary.daily.length >= 2 ? (
-                <>
-                  <h3 className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>Revenue trend</h3>
-                  <RevenueLineChart points={orderSummary.daily} currency={orderSummary.currency} />
-                </>
-              ) : null}
-              <h3 className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>Recent orders</h3>
-              <table className="dash-table">
-                <thead>
-                  <tr>
-                    <th>Order</th>
-                    <th>Customer</th>
-                    <th>Total</th>
-                    <th>Fulfillment</th>
-                    <th>When</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orderSummary.recentOrders.length === 0 ? (
-                    <tr><td colSpan={5} className="muted">No orders in this window.</td></tr>
-                  ) : (
-                    orderSummary.recentOrders.map((o) => (
-                      <tr key={o.id}>
-                        <td><strong>{o.name}</strong></td>
-                        <td>{o.customer ?? '—'}</td>
-                        <td className="tnum">{fmtMoney(o.total, o.currency)}</td>
-                        <td>{o.fulfillmentStatus ?? '—'}</td>
-                        <td className="muted" style={{ fontSize: 12 }}>{relativeTime(o.createdAt)}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </>
-          ) : (
-            <p className="muted">Order data unavailable. Check Vercel function logs.</p>
-          )}
-        </div>
+      {/* QA #224: section nav so the 18 cards aren't a wall of tiles.
+          Anchor links jump to each section; scroll-margin-top in CSS
+          keeps the heading from disappearing behind sticky headers. */}
+      <nav className="dashboard-section-nav" aria-label="Dashboard sections">
+        <a href="#section-revenue">Revenue</a>
+        <a href="#section-customers">Customers</a>
+        <a href="#section-funnel">Funnel</a>
+        <a href="#section-acquisition">Acquisition</a>
+        <a href="#section-catalog">Catalog &amp; search</a>
+        <a href="#section-health">System</a>
+      </nav>
 
-        {/* Conversion funnel — LIVE */}
-        <div className="dash-card dash-card-wide">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Conversion funnel · {rangeLabel.toLowerCase()}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>
-              PostHog · unique persons
-              {funnelConvNow !== null ? (
-                <>
-                  {' · '}
-                  <strong style={{ color: 'var(--text-1)' }}>{(funnelConvNow * 100).toFixed(2)}%</strong>
-                  {' end-to-end '}
-                  <RateDelta current={funnelConvNow} prev={funnelConvPrev} />
-                </>
-              ) : null}
-            </span>
-          </div>
-          {funnel ? (
-            <FunnelViz steps={funnel.steps} />
-          ) : POSTHOG_CONFIGURED ? (
-            <p className="muted">Funnel data unavailable. Check Sentry for the failing PostHog query.</p>
-          ) : (
-            <PostHogConfigHint />
-          )}
-        </div>
-
-        {/* Catalog health */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Catalog health</h2>
-            <span className="muted" style={{ fontSize: 12 }}>Shopify</span>
-          </div>
-          {catalog ? (
-            <ul className="dash-list">
-              <li>
-                <span>Total products</span>
-                <strong>{catalog.totalProducts}</strong>
-              </li>
-              <li>
-                <span>On storefront</span>
-                <strong>{catalog.publishedProducts}</strong>
-              </li>
-              <li className={catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts > 0 ? 'dash-warn' : ''}>
-                <span>Active but hidden</span>
-                <strong>{Math.max(catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts, 0)}</strong>
-              </li>
-              <li className={catalog.draftProducts > 0 ? 'dash-warn' : ''}>
-                <span>Drafts</span>
-                <strong>{catalog.draftProducts}</strong>
-              </li>
-              <li>
-                <span>Collections</span>
-                <strong>{catalog.totalCollections}</strong>
-              </li>
-              <li>
-                <span>· with intro_short</span>
-                <strong>{catalog.collectionsWithIntroShort} / {catalog.totalCollections}</strong>
-              </li>
-              <li>
-                <span>· with seo_content</span>
-                <strong>{catalog.collectionsWithSeoContent} / {catalog.totalCollections}</strong>
-              </li>
-              <li>
-                <span>· with descriptionHtml</span>
-                <strong>{catalog.collectionsWithDescriptionHtml} / {catalog.totalCollections}</strong>
-              </li>
-            </ul>
-          ) : (
-            <p className="muted">Catalog data unavailable.</p>
-          )}
-        </div>
-
-        {/* Quiz funnel */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Quiz funnel · {rangeKey}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>
-              PostHog
-              {quizCompletionNow !== null ? (
-                <>{' · completion '}<RateDelta current={quizCompletionNow} prev={quizCompletionPrev} /></>
-              ) : null}
-            </span>
-          </div>
-          {quizFunnel ? (
-            <ul className="dash-list">
-              <li>
-                <span>Started</span>
-                <strong>{quizFunnel.started}</strong>
-              </li>
-              <li>
-                <span>Completed</span>
-                <strong>
-                  {quizFunnel.completed}
-                  {quizFunnel.started > 0 ? (
-                    <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
-                      ({pct(quizFunnel.completed, quizFunnel.started)})
-                    </span>
-                  ) : null}
-                </strong>
-              </li>
-              <li>
-                <span>Clicked recommendation</span>
-                <strong>
-                  {quizFunnel.clicked}
-                  {quizFunnel.completed > 0 ? (
-                    <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
-                      ({pct(quizFunnel.clicked, quizFunnel.completed)})
-                    </span>
-                  ) : null}
-                </strong>
-              </li>
-            </ul>
-          ) : POSTHOG_CONFIGURED ? (
-            <p className="muted">No quiz data yet — events ship in PostHog Phase 1.</p>
-          ) : (
-            <PostHogConfigHint />
-          )}
-        </div>
-
-        {/* Cart + checkout abandonment */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Cart abandonment · {rangeKey}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>PostHog · derived from funnel</span>
-          </div>
-          {abandonment ? (
-            <ul className="dash-list">
-              <li className={abandonment.cartAbandonment > 0.7 ? 'dash-warn' : ''}>
-                <span>Cart → checkout drop</span>
-                <strong>
-                  {(abandonment.cartAbandonment * 100).toFixed(1)}%
-                  <RateDelta current={abandonment.cartAbandonment} prev={abandonmentPrev?.cartAbandonment ?? null} />
-                </strong>
-              </li>
-              <li className={abandonment.checkoutAbandonment > 0.5 ? 'dash-warn' : ''}>
-                <span>Checkout → order drop</span>
-                <strong>
-                  {(abandonment.checkoutAbandonment * 100).toFixed(1)}%
-                  <RateDelta current={abandonment.checkoutAbandonment} prev={abandonmentPrev?.checkoutAbandonment ?? null} />
-                </strong>
-              </li>
-              <li>
-                <span>Cart viewers</span>
-                <strong>{abandonment.cartViewers.toLocaleString()}</strong>
-              </li>
-              <li>
-                <span>Checkout starters</span>
-                <strong>{abandonment.checkoutStarters.toLocaleString()}</strong>
-              </li>
-              <li>
-                <span>Orders</span>
-                <strong>{abandonment.orders.toLocaleString()}</strong>
-              </li>
-            </ul>
-          ) : POSTHOG_CONFIGURED ? (
-            <p className="muted">No funnel data yet.</p>
-          ) : (
-            <PostHogConfigHint />
-          )}
-        </div>
-
-        {/* Device breakdown */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Devices · {rangeKey}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>PostHog · sessions + conversion</span>
-          </div>
-          {deviceBreakdown ? (
-            deviceBreakdown.length === 0 ? (
-              <p className="muted">No session data yet.</p>
-            ) : (
-              <table className="dash-table">
-                <thead>
-                  <tr>
-                    <th>Device</th>
-                    <th>Sessions</th>
-                    <th>Conv %</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {deviceBreakdown.map((d) => (
-                    <tr key={d.deviceType}>
-                      <td>{d.deviceType}</td>
-                      <td className="tnum">{d.sessions.toLocaleString()}</td>
-                      <td className="tnum">{d.conversionPct.toFixed(2)}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )
-          ) : POSTHOG_CONFIGURED ? (
-            <p className="muted">Device data unavailable.</p>
-          ) : (
-            <PostHogConfigHint />
-          )}
-        </div>
-
-        {/* Low-stock alerts */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Low stock alerts</h2>
-            <span className="muted" style={{ fontSize: 12 }}>Shopify · ≤3 on hand</span>
-          </div>
-          {lowStock ? (
-            lowStock.length === 0 ? (
-              <p className="muted">No variants below threshold. 🎉</p>
-            ) : (
-              <ul className="dash-list-compact">
-                {lowStock.map((v) => (
-                  <li key={v.productId + v.variantTitle} className={v.quantity <= 0 ? 'dash-warn' : ''}>
-                    <a
-                      href={`${SHOPIFY_ADMIN_BASE}/products/${v.productId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {v.productTitle}
-                    </a>
-                    {v.variantTitle && v.variantTitle !== 'Default Title' ? (
-                      <span className="muted"> · {v.variantTitle}</span>
-                    ) : null}
-                    <span className="muted">
-                      {' · '}
-                      {v.sku ? <code style={{ fontSize: 11 }}>{v.sku}</code> : '(no SKU)'}
-                      {' · '}
-                      <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{v.quantity}</strong> on hand
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )
-          ) : (
-            <p className="muted">Inventory data unavailable.</p>
-          )}
-        </div>
-
-        {/* Day-of-week order heatmap */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Orders by weekday · {rangeKey}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>Shopify · order count</span>
-          </div>
-          {orderSummary && orderSummary.daily.length >= 7 ? (
-            <DayOfWeekHeatmap points={orderSummary.daily} />
-          ) : (
-            <p className="muted">Need at least 7 days of order data.</p>
-          )}
-        </div>
-
-        {/* Top products */}
-        <div className="dash-card dash-card-wide">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Top products · {rangeLabel.toLowerCase()}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>by units sold · Shopify</span>
-          </div>
-          {topProducts ? (
-            topProducts.topByQuantity.length === 0 ? (
-              <p className="muted">No sales recorded in this window.</p>
-            ) : (
-              <table className="dash-table">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Units</th>
-                    <th>Revenue</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topProducts.topByQuantity.map((p) => (
-                    <tr key={p.productId}>
-                      <td>
-                        <Link href={`/products/${p.productHandle}`} prefetch={false}>
-                          {p.productTitle}
-                        </Link>
-                      </td>
-                      <td className="tnum">{p.quantity}</td>
-                      <td className="tnum">{fmtMoney(p.revenue, p.currency)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )
-          ) : (
-            <p className="muted">Top-products data unavailable.</p>
-          )}
-        </div>
-
-        {/* Top entry pages */}
-        <div className="dash-card dash-card-wide">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Top entry pages · 7d</h2>
-            <span className="muted" style={{ fontSize: 12 }}>PostHog · with bounce %</span>
-          </div>
-          {entryPages ? (
-            entryPages.length === 0 ? (
-              <p className="muted">No session data yet.</p>
-            ) : (
-              <table className="dash-table">
-                <thead>
-                  <tr>
-                    <th>Path</th>
-                    <th>Sessions</th>
-                    <th>Bounces</th>
-                    <th>Bounce %</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {entryPages.map((p) => (
-                    <tr key={p.path}>
-                      <td>
-                        <Link href={p.path} prefetch={false} target="_blank" rel="noopener noreferrer">
-                          {p.path}
-                        </Link>
-                      </td>
-                      <td className="tnum">{p.sessions}</td>
-                      <td className="tnum">{p.bounces}</td>
-                      <td className={`tnum ${p.bouncePct > 70 ? 'dash-warn' : ''}`}>{p.bouncePct.toFixed(1)}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )
-          ) : POSTHOG_CONFIGURED ? (
-            <p className="muted">Entry-page data unavailable.</p>
-          ) : (
-            <PostHogConfigHint />
-          )}
-        </div>
-
-        {/* Top searches */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Top searches · {rangeKey}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
-          </div>
-          {searches ? (
-            searches.length === 0 ? (
-              <p className="muted">No search data yet — event ships in PostHog Phase 1.</p>
-            ) : (
-              <table className="dash-table">
-                <thead>
-                  <tr>
-                    <th>Query</th>
-                    <th>Count</th>
-                    <th>Zero-result</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {searches.map((s) => (
-                    <tr key={s.query}>
-                      <td>
-                        <Link href={`/search?q=${encodeURIComponent(s.query)}`} prefetch={false} target="_blank" rel="noopener noreferrer">
-                          {s.query}
-                        </Link>
-                      </td>
-                      <td className="tnum">{s.searches}</td>
-                      <td className={`tnum ${s.zeroPct > 25 ? 'dash-warn' : ''}`}>
-                        {s.zeroResult > 0 ? `${s.zeroResult} (${s.zeroPct.toFixed(0)}%)` : '0'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )
-          ) : POSTHOG_CONFIGURED ? (
-            <p className="muted">Search data unavailable.</p>
-          ) : (
-            <PostHogConfigHint />
-          )}
-        </div>
-
-        {/* Customer insights */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Customers · {rangeKey}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>Shopify · new vs repeat</span>
-          </div>
-          {customerInsights ? (
-            customerInsights.totalCustomers === 0 ? (
-              <p className="muted">No customer orders in this window.</p>
-            ) : (
+      {/* SECTION: Revenue & orders --- */}
+      <section id="section-revenue" className="dash-section">
+        <h2 className="dash-section-hd">Revenue &amp; orders</h2>
+        <div className="dash-grid">
+          {/* Revenue + orders (KPIs + chart + recent orders) */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>{rangeLabel}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>Shopify Admin</span>
+            </div>
+            {orderSummary ? (
               <>
-                <ul className="dash-list">
-                  <li>
-                    <span>Unique customers</span>
-                    <strong>{customerInsights.totalCustomers}</strong>
-                  </li>
-                  <li>
-                    <span>New customers</span>
-                    <strong>
-                      {customerInsights.newCustomers}
-                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
-                        ({pct(customerInsights.newCustomers, customerInsights.newCustomers + customerInsights.returningCustomers)})
-                      </span>
-                    </strong>
-                  </li>
-                  <li>
-                    <span>Returning customers</span>
-                    <strong>
-                      {customerInsights.returningCustomers}
-                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
-                        ({pct(customerInsights.returningCustomers, customerInsights.newCustomers + customerInsights.returningCustomers)})
-                      </span>
-                    </strong>
-                  </li>
-                  <li className={customerInsights.repeatRatePct < 5 ? '' : 'dash-warn'}>
-                    <span>Repeat in window</span>
-                    <strong>
-                      {customerInsights.repeatInWindow}
-                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
-                        ({customerInsights.repeatRatePct.toFixed(1)}%)
-                      </span>
-                    </strong>
-                  </li>
-                </ul>
-                {customerInsights.topRepeaters.length > 0 ? (
+                <div className="dash-stat-row">
+                  <div className="dash-stat">
+                    <div className="dash-stat-label">Orders</div>
+                    <div className="dash-stat-value">{orderSummary.totalOrders}</div>
+                    <DeltaBadge current={orderSummary.totalOrders} prev={orderSummary.prev?.totalOrders} />
+                    <Sparkline points={orderSummary.daily} field="orders" />
+                  </div>
+                  <div className="dash-stat">
+                    <div className="dash-stat-label">Revenue</div>
+                    <div className="dash-stat-value">{fmtMoney(orderSummary.totalRevenue, orderSummary.currency)}</div>
+                    <DeltaBadge current={orderSummary.totalRevenue} prev={orderSummary.prev?.totalRevenue} />
+                    <Sparkline points={orderSummary.daily} field="revenue" />
+                  </div>
+                  <div className="dash-stat">
+                    <div className="dash-stat-label">Avg order</div>
+                    <div className="dash-stat-value">{fmtMoney(orderSummary.avgOrderValue, orderSummary.currency)}</div>
+                    <DeltaBadge current={orderSummary.avgOrderValue} prev={orderSummary.prev?.avgOrderValue} />
+                  </div>
+                </div>
+                {orderSummary.daily.length >= 2 ? (
                   <>
-                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Top repeat buyers</h3>
-                    <ul className="dash-list-compact">
-                      {customerInsights.topRepeaters.map((c) => (
-                        <li key={c.customerId}>
-                          <a
-                            href={`${SHOPIFY_ADMIN_BASE}/customers/${c.customerId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {c.displayName}
-                          </a>
-                          <span className="muted">
-                            {' · '}
-                            <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{c.ordersInWindow}</strong>{' orders · '}
-                            <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtMoney(c.revenueInWindow, c.currency)}</strong>
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>Revenue trend</h3>
+                    <RevenueLineChart points={orderSummary.daily} currency={orderSummary.currency} />
                   </>
                 ) : null}
-              </>
-            )
-          ) : (
-            <p className="muted">Customer data unavailable.</p>
-          )}
-        </div>
-
-        {/* Refund + cancellation health */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Refunds &amp; cancels · {rangeKey}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>Shopify · share of orders</span>
-          </div>
-          {refundHealth ? (
-            refundHealth.totalOrders === 0 ? (
-              <p className="muted">No orders in this window.</p>
-            ) : (
-              <>
-                <ul className="dash-list">
-                  <li className={refundHealth.refundRatePct > 5 ? 'dash-warn' : ''}>
-                    <span>Refund rate</span>
-                    <strong>
-                      {refundHealth.refundRatePct.toFixed(1)}%
-                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
-                        ({refundHealth.refundedOrders + refundHealth.partiallyRefundedOrders} of {refundHealth.totalOrders})
-                      </span>
-                    </strong>
-                  </li>
-                  <li>
-                    <span>· full refunds</span>
-                    <strong>{refundHealth.refundedOrders}</strong>
-                  </li>
-                  <li>
-                    <span>· partial refunds</span>
-                    <strong>{refundHealth.partiallyRefundedOrders}</strong>
-                  </li>
-                  <li className={refundHealth.cancellationRatePct > 3 ? 'dash-warn' : ''}>
-                    <span>Cancellation rate</span>
-                    <strong>
-                      {refundHealth.cancellationRatePct.toFixed(1)}%
-                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
-                        ({refundHealth.cancelledOrders} of {refundHealth.totalOrders})
-                      </span>
-                    </strong>
-                  </li>
-                  <li>
-                    <span>Refunded $</span>
-                    <strong>{fmtMoney(refundHealth.refundedRevenue, refundHealth.currency)}</strong>
-                  </li>
-                </ul>
-                {refundHealth.cancelReasonBuckets.length > 0 ? (
-                  <>
-                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Cancel reasons</h3>
-                    <ul className="dash-list-compact">
-                      {refundHealth.cancelReasonBuckets.map((b) => (
-                        <li key={b.reason}>
-                          <span>{b.reason.toLowerCase()}</span>
-                          <span className="muted">{' · '}<strong style={{ fontVariantNumeric: 'tabular-nums' }}>{b.count}</strong></span>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                ) : null}
-              </>
-            )
-          ) : (
-            <p className="muted">Refund data unavailable.</p>
-          )}
-        </div>
-
-        {/* Top traffic sources — with donut chart */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Traffic sources · {rangeKey}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
-          </div>
-          {sources ? (
-            sources.length === 0 ? (
-              <p className="muted">No traffic data yet.</p>
-            ) : (
-              <div className="dash-donut-row">
-                <SourceDonut slices={sources.slice(0, 6).map((s) => ({ label: s.source, value: s.visitors }))} />
-                <table className="dash-table dash-table-tight">
+                <h3 className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>Recent orders</h3>
+                <table className="dash-table">
                   <thead>
                     <tr>
-                      <th>Source</th>
-                      <th>Visitors</th>
-                      <th>Sessions</th>
+                      <th>Order</th>
+                      <th>Customer</th>
+                      <th>Total</th>
+                      <th>Fulfillment</th>
+                      <th>When</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {sources.map((s, i) => (
-                      <tr key={s.source}>
+                    {orderSummary.recentOrders.length === 0 ? (
+                      <tr><td colSpan={5} className="muted">No orders in this window.</td></tr>
+                    ) : (
+                      orderSummary.recentOrders.map((o) => (
+                        <tr key={o.id}>
+                          <td><strong>{o.name}</strong></td>
+                          <td>{o.customer ?? '—'}</td>
+                          <td className="tnum">{fmtMoney(o.total, o.currency)}</td>
+                          <td>{o.fulfillmentStatus ?? '—'}</td>
+                          <td className="muted" style={{ fontSize: 12 }}>{relativeTime(o.createdAt)}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </>
+            ) : (
+              <p className="muted">Order data unavailable. Check Vercel function logs.</p>
+            )}
+          </div>
+
+          {/* Top products */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Top products · {rangeLabel.toLowerCase()}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>by units sold · Shopify</span>
+            </div>
+            {topProducts ? (
+              topProducts.topByQuantity.length === 0 ? (
+                <p className="muted">No sales recorded in this window.</p>
+              ) : (
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Units</th>
+                      <th>Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topProducts.topByQuantity.map((p) => (
+                      <tr key={p.productId}>
                         <td>
-                          <span
-                            className="dash-donut-swatch"
-                            style={{ background: donutColor(i) }}
-                            aria-hidden="true"
-                          />
-                          {s.source}
+                          <Link href={`/products/${p.productHandle}`} prefetch={false}>
+                            {p.productTitle}
+                          </Link>
                         </td>
-                        <td className="tnum">{s.visitors}</td>
-                        <td className="tnum">{s.sessions}</td>
+                        <td className="tnum">{p.quantity}</td>
+                        <td className="tnum">{fmtMoney(p.revenue, p.currency)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
-            )
-          ) : POSTHOG_CONFIGURED ? (
-            <p className="muted">Traffic-source data unavailable.</p>
-          ) : (
-            <PostHogConfigHint />
-          )}
-        </div>
-
-        {/* Revenue + AOV by source */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Revenue by source · {rangeKey}</h2>
-            <span className="muted" style={{ fontSize: 12 }}>PostHog · initial UTM</span>
-          </div>
-          {revenueBySource ? (
-            revenueBySource.length === 0 ? (
-              <p className="muted">No order events tracked yet — webhook fires order_completed.</p>
+              )
             ) : (
-              <table className="dash-table">
-                <thead>
-                  <tr>
-                    <th>Source</th>
-                    <th>Orders</th>
-                    <th>Revenue</th>
-                    <th>AOV</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {revenueBySource.map((r) => {
-                    const aov = r.orders > 0 ? r.revenue / r.orders : 0;
-                    return (
-                      <tr key={r.source}>
-                        <td>{r.source}</td>
-                        <td className="tnum">{r.orders}</td>
-                        <td className="tnum">{fmtMoney(r.revenue, 'USD')}</td>
-                        <td className="tnum">{r.orders > 0 ? fmtMoney(aov, 'USD') : '—'}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )
-          ) : POSTHOG_CONFIGURED ? (
-            <p className="muted">Revenue-by-source unavailable.</p>
-          ) : (
-            <PostHogConfigHint />
-          )}
-        </div>
-
-        {/* SEO gaps */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>SEO gaps</h2>
-            <span className="muted" style={{ fontSize: 12 }}>sample of 100 active products</span>
+              <p className="muted">Top-products data unavailable.</p>
+            )}
           </div>
-          {seoGaps ? (
-            <>
+
+          {/* Day-of-week order heatmap */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Orders by weekday · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>Shopify · order count</span>
+            </div>
+            {orderSummary && orderSummary.daily.length >= 7 ? (
+              <DayOfWeekHeatmap points={orderSummary.daily} />
+            ) : (
+              <p className="muted">Need at least 7 days of order data.</p>
+            )}
+          </div>
+
+          {/* Refund + cancellation health */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Refunds &amp; cancels · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>Shopify · share of orders</span>
+            </div>
+            {refundHealth ? (
+              refundHealth.totalOrders === 0 ? (
+                <p className="muted">No orders in this window.</p>
+              ) : (
+                <>
+                  <ul className="dash-list">
+                    <li className={refundHealth.refundRatePct > 5 ? 'dash-warn' : ''}>
+                      <span>Refund rate</span>
+                      <strong>
+                        {refundHealth.refundRatePct.toFixed(1)}%
+                        <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                          ({refundHealth.refundedOrders + refundHealth.partiallyRefundedOrders} of {refundHealth.totalOrders})
+                        </span>
+                      </strong>
+                    </li>
+                    <li>
+                      <span>· full refunds</span>
+                      <strong>{refundHealth.refundedOrders}</strong>
+                    </li>
+                    <li>
+                      <span>· partial refunds</span>
+                      <strong>{refundHealth.partiallyRefundedOrders}</strong>
+                    </li>
+                    <li className={refundHealth.cancellationRatePct > 3 ? 'dash-warn' : ''}>
+                      <span>Cancellation rate</span>
+                      <strong>
+                        {refundHealth.cancellationRatePct.toFixed(1)}%
+                        <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                          ({refundHealth.cancelledOrders} of {refundHealth.totalOrders})
+                        </span>
+                      </strong>
+                    </li>
+                    <li>
+                      <span>Refunded $</span>
+                      <strong>{fmtMoney(refundHealth.refundedRevenue, refundHealth.currency)}</strong>
+                    </li>
+                  </ul>
+                  {refundHealth.cancelReasonBuckets.length > 0 ? (
+                    <>
+                      <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Cancel reasons</h3>
+                      <ul className="dash-list-compact">
+                        {refundHealth.cancelReasonBuckets.map((b) => (
+                          <li key={b.reason}>
+                            <span>{b.reason.toLowerCase()}</span>
+                            <span className="muted">{' · '}<strong style={{ fontVariantNumeric: 'tabular-nums' }}>{b.count}</strong></span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
+                </>
+              )
+            ) : (
+              <p className="muted">Refund data unavailable.</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: Customers --- */}
+      <section id="section-customers" className="dash-section">
+        <h2 className="dash-section-hd">Customers</h2>
+        <div className="dash-grid">
+          {/* Customer insights */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Customers · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>Shopify · new vs repeat</span>
+            </div>
+            {customerInsights ? (
+              customerInsights.totalCustomers === 0 ? (
+                <p className="muted">No customer orders in this window.</p>
+              ) : (
+                <>
+                  <ul className="dash-list">
+                    <li>
+                      <span>Unique customers</span>
+                      <strong>{customerInsights.totalCustomers}</strong>
+                    </li>
+                    <li>
+                      <span>New customers</span>
+                      <strong>
+                        {customerInsights.newCustomers}
+                        <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                          ({pct(customerInsights.newCustomers, customerInsights.newCustomers + customerInsights.returningCustomers)})
+                        </span>
+                      </strong>
+                    </li>
+                    <li>
+                      <span>Returning customers</span>
+                      <strong>
+                        {customerInsights.returningCustomers}
+                        <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                          ({pct(customerInsights.returningCustomers, customerInsights.newCustomers + customerInsights.returningCustomers)})
+                        </span>
+                      </strong>
+                    </li>
+                    <li className={customerInsights.repeatRatePct < 5 ? '' : 'dash-warn'}>
+                      <span>Repeat in window</span>
+                      <strong>
+                        {customerInsights.repeatInWindow}
+                        <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                          ({customerInsights.repeatRatePct.toFixed(1)}%)
+                        </span>
+                      </strong>
+                    </li>
+                  </ul>
+                  {customerInsights.topRepeaters.length > 0 ? (
+                    <>
+                      <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Top repeat buyers</h3>
+                      <ul className="dash-list-compact">
+                        {customerInsights.topRepeaters.map((c) => (
+                          <li key={c.customerId}>
+                            <a
+                              href={`${SHOPIFY_ADMIN_BASE}/customers/${c.customerId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {c.displayName}
+                            </a>
+                            <span className="muted">
+                              {' · '}
+                              <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{c.ordersInWindow}</strong>{' orders · '}
+                              <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtMoney(c.revenueInWindow, c.currency)}</strong>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
+                </>
+              )
+            ) : (
+              <p className="muted">Customer data unavailable.</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: Funnel & conversion --- */}
+      <section id="section-funnel" className="dash-section">
+        <h2 className="dash-section-hd">Funnel &amp; conversion</h2>
+        <div className="dash-grid">
+          {/* Conversion funnel — LIVE */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Conversion funnel · {rangeLabel.toLowerCase()}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                PostHog · unique persons
+                {funnelConvNow !== null ? (
+                  <>
+                    {' · '}
+                    <strong style={{ color: 'var(--text-1)' }}>{(funnelConvNow * 100).toFixed(2)}%</strong>
+                    {' end-to-end '}
+                    <RateDelta current={funnelConvNow} prev={funnelConvPrev} />
+                  </>
+                ) : null}
+              </span>
+            </div>
+            {funnel ? (
+              <FunnelViz steps={funnel.steps} />
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Funnel data unavailable. Check Sentry for the failing PostHog query.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Cart + checkout abandonment */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Cart abandonment · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · derived from funnel</span>
+            </div>
+            {abandonment ? (
               <ul className="dash-list">
-                <li className={seoGaps.productsMissingSeoTitle > 5 ? 'dash-warn' : ''}>
-                  <span>Missing seo.title</span>
-                  <strong>{seoGaps.productsMissingSeoTitle}</strong>
+                <li className={abandonment.cartAbandonment > 0.7 ? 'dash-warn' : ''}>
+                  <span>Cart → checkout drop</span>
+                  <strong>
+                    {(abandonment.cartAbandonment * 100).toFixed(1)}%
+                    <RateDelta current={abandonment.cartAbandonment} prev={abandonmentPrev?.cartAbandonment ?? null} />
+                  </strong>
                 </li>
-                <li className={seoGaps.productsMissingSeoDescription > 5 ? 'dash-warn' : ''}>
-                  <span>Missing seo.description</span>
-                  <strong>{seoGaps.productsMissingSeoDescription}</strong>
+                <li className={abandonment.checkoutAbandonment > 0.5 ? 'dash-warn' : ''}>
+                  <span>Checkout → order drop</span>
+                  <strong>
+                    {(abandonment.checkoutAbandonment * 100).toFixed(1)}%
+                    <RateDelta current={abandonment.checkoutAbandonment} prev={abandonmentPrev?.checkoutAbandonment ?? null} />
+                  </strong>
                 </li>
-                <li className={seoGaps.productsMissingSku > 5 ? 'dash-warn' : ''}>
-                  <span>Missing SKU</span>
-                  <strong>{seoGaps.productsMissingSku}</strong>
+                <li>
+                  <span>Cart viewers</span>
+                  <strong>{abandonment.cartViewers.toLocaleString()}</strong>
                 </li>
-                <li className={seoGaps.productsMissingImage > 0 ? 'dash-warn' : ''}>
-                  <span>Missing featured image</span>
-                  <strong>{seoGaps.productsMissingImage}</strong>
+                <li>
+                  <span>Checkout starters</span>
+                  <strong>{abandonment.checkoutStarters.toLocaleString()}</strong>
+                </li>
+                <li>
+                  <span>Orders</span>
+                  <strong>{abandonment.orders.toLocaleString()}</strong>
                 </li>
               </ul>
-              {seoGaps.sampleProducts.length > 0 ? (
-                <>
-                  <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Examples</h3>
-                  <ul className="dash-list-compact">
-                    {seoGaps.sampleProducts.map((p) => (
-                      <li key={p.handle}>
-                        <Link href={`/products/${p.handle}`} prefetch={false}>{p.title}</Link>
-                        <span className="muted"> · gap: {p.gap} · </span>
-                        <a
-                          href={`${SHOPIFY_ADMIN_BASE}/products/${p.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ fontSize: 12 }}
-                        >
-                          fix in Shopify →
-                        </a>
-                      </li>
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">No funnel data yet.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Quiz funnel */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Quiz funnel · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                PostHog
+                {quizCompletionNow !== null ? (
+                  <>{' · completion '}<RateDelta current={quizCompletionNow} prev={quizCompletionPrev} /></>
+                ) : null}
+              </span>
+            </div>
+            {quizFunnel ? (
+              <ul className="dash-list">
+                <li>
+                  <span>Started</span>
+                  <strong>{quizFunnel.started}</strong>
+                </li>
+                <li>
+                  <span>Completed</span>
+                  <strong>
+                    {quizFunnel.completed}
+                    {quizFunnel.started > 0 ? (
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                        ({pct(quizFunnel.completed, quizFunnel.started)})
+                      </span>
+                    ) : null}
+                  </strong>
+                </li>
+                <li>
+                  <span>Clicked recommendation</span>
+                  <strong>
+                    {quizFunnel.clicked}
+                    {quizFunnel.completed > 0 ? (
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                        ({pct(quizFunnel.clicked, quizFunnel.completed)})
+                      </span>
+                    ) : null}
+                  </strong>
+                </li>
+              </ul>
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">No quiz data yet — events ship in PostHog Phase 1.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Sessions by device — QA found the Conv% column was 0%
+              across the board because server-fired order_completed
+              webhooks lack $session_id and $device_type, so the orders
+              numerator was always zero. Dropped the broken column and
+              renamed; share-of-traffic % takes its place. */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Sessions by device · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · share of sessions</span>
+            </div>
+            {deviceBreakdown ? (
+              deviceBreakdown.length === 0 ? (
+                <p className="muted">No session data yet.</p>
+              ) : (
+                <DeviceTable rows={deviceBreakdown} />
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Device data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: Acquisition --- */}
+      <section id="section-acquisition" className="dash-section">
+        <h2 className="dash-section-hd">Acquisition</h2>
+        <div className="dash-grid">
+          {/* Top traffic sources — with donut chart */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Traffic sources · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
+            </div>
+            {sources ? (
+              sources.length === 0 ? (
+                <p className="muted">No traffic data yet.</p>
+              ) : (
+                <div className="dash-donut-row">
+                  <SourceDonut slices={sources.slice(0, 6).map((s) => ({ label: s.source, value: s.visitors }))} />
+                  <table className="dash-table dash-table-tight">
+                    <thead>
+                      <tr>
+                        <th>Source</th>
+                        <th>Visitors</th>
+                        <th>Sessions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sources.map((s, i) => (
+                        <tr key={s.source}>
+                          <td>
+                            <span
+                              className="dash-donut-swatch"
+                              style={{ background: donutColor(i) }}
+                              aria-hidden="true"
+                            />
+                            {s.source}
+                          </td>
+                          <td className="tnum">{s.visitors}</td>
+                          <td className="tnum">{s.sessions}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Traffic-source data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Revenue + AOV by source */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Revenue by source · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · initial UTM</span>
+            </div>
+            {revenueBySource ? (
+              revenueBySource.length === 0 ? (
+                <p className="muted">No order events tracked yet — webhook fires order_completed.</p>
+              ) : (
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Source</th>
+                      <th>Orders</th>
+                      <th>Revenue</th>
+                      <th>AOV</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {revenueBySource.map((r) => {
+                      const aov = r.orders > 0 ? r.revenue / r.orders : 0;
+                      return (
+                        <tr key={r.source}>
+                          <td>{r.source}</td>
+                          <td className="tnum">{r.orders}</td>
+                          <td className="tnum">{fmtMoney(r.revenue, 'USD')}</td>
+                          <td className="tnum">{r.orders > 0 ? fmtMoney(aov, 'USD') : '—'}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Revenue-by-source unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Top entry pages */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Top entry pages · 7d</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · with bounce %</span>
+            </div>
+            {entryPages ? (
+              entryPages.length === 0 ? (
+                <p className="muted">No session data yet.</p>
+              ) : (
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Path</th>
+                      <th>Sessions</th>
+                      <th>Bounces</th>
+                      <th>Bounce %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {entryPages.map((p) => (
+                      <tr key={p.path}>
+                        <td>
+                          <Link href={p.path} prefetch={false} target="_blank" rel="noopener noreferrer">
+                            {p.path}
+                          </Link>
+                        </td>
+                        <td className="tnum">{p.sessions}</td>
+                        <td className="tnum">{p.bounces}</td>
+                        <td className={`tnum ${p.bouncePct > 70 ? 'dash-warn' : ''}`}>{p.bouncePct.toFixed(1)}%</td>
+                      </tr>
                     ))}
-                  </ul>
-                </>
-              ) : null}
-            </>
-          ) : (
-            <p className="muted">SEO-gap data unavailable.</p>
-          )}
-        </div>
-
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Errors</h2>
-            <span className="muted" style={{ fontSize: 12 }}>Sentry</span>
+                  </tbody>
+                </table>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Entry-page data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
           </div>
-          <p className="muted" style={{ marginTop: 0 }}>
-            Sentry hosts the issue list. The 5 noise issues (browser-extension + Google App webview)
-            are ignored after PR #196. Real production errors will surface here going forward.
-          </p>
-          <a
-            className="btn btn-ghost"
-            href="https://jetnine.sentry.io/issues/?project=la-mattress-headless&query=is%3Aunresolved"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ marginTop: 'var(--s-3)' }}
-          >
-            Open in Sentry →
-          </a>
         </div>
+      </section>
 
-        {/* Site Speed */}
-        <div className="dash-card">
-          <div className="dash-card-hd">
-            <h2 className="h3" style={{ margin: 0 }}>Site speed</h2>
-            <span className="muted" style={{ fontSize: 12 }}>Vercel Speed Insights</span>
+      {/* SECTION: Catalog & search --- */}
+      <section id="section-catalog" className="dash-section">
+        <h2 className="dash-section-hd">Catalog &amp; search</h2>
+        <div className="dash-grid">
+          {/* Catalog health */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Catalog health</h2>
+              <span className="muted" style={{ fontSize: 12 }}>Shopify</span>
+            </div>
+            {catalog ? (
+              <ul className="dash-list">
+                <li>
+                  <span>Total products</span>
+                  <strong>{catalog.totalProducts}</strong>
+                </li>
+                <li>
+                  <span>On storefront</span>
+                  <strong>{catalog.publishedProducts}</strong>
+                </li>
+                <li className={catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts > 0 ? 'dash-warn' : ''}>
+                  <span>Active but hidden</span>
+                  <strong>{Math.max(catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts, 0)}</strong>
+                </li>
+                <li className={catalog.draftProducts > 0 ? 'dash-warn' : ''}>
+                  <span>Drafts</span>
+                  <strong>{catalog.draftProducts}</strong>
+                </li>
+                <li>
+                  <span>Collections</span>
+                  <strong>{catalog.totalCollections}</strong>
+                </li>
+                <li>
+                  <span>· with intro_short</span>
+                  <strong>{catalog.collectionsWithIntroShort} / {catalog.totalCollections}</strong>
+                </li>
+                <li>
+                  <span>· with seo_content</span>
+                  <strong>{catalog.collectionsWithSeoContent} / {catalog.totalCollections}</strong>
+                </li>
+                <li>
+                  <span>· with descriptionHtml</span>
+                  <strong>{catalog.collectionsWithDescriptionHtml} / {catalog.totalCollections}</strong>
+                </li>
+              </ul>
+            ) : (
+              <p className="muted">Catalog data unavailable.</p>
+            )}
           </div>
-          <p className="muted" style={{ marginTop: 0 }}>
-            Core Web Vitals per route (LCP / INP / CLS). Live in Vercel&rsquo;s Insights tab.
-          </p>
-          <a
-            className="btn btn-ghost"
-            href="https://vercel.com/alwayzlegits-projects/la-mattress-headless/insights"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ marginTop: 'var(--s-3)' }}
-          >
-            Open in Vercel →
-          </a>
+
+          {/* Low-stock alerts */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Low stock alerts</h2>
+              <span className="muted" style={{ fontSize: 12 }}>Shopify · ≤3 on hand</span>
+            </div>
+            {lowStock ? (
+              lowStock.length === 0 ? (
+                <p className="muted">No variants below threshold.</p>
+              ) : (
+                <ul className="dash-list-compact">
+                  {lowStock.map((v) => (
+                    <li key={v.productId + v.variantTitle} className={v.quantity <= 0 ? 'dash-warn' : ''}>
+                      <a
+                        href={`${SHOPIFY_ADMIN_BASE}/products/${v.productId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {v.productTitle}
+                      </a>
+                      {v.variantTitle && v.variantTitle !== 'Default Title' ? (
+                        <span className="muted"> · {v.variantTitle}</span>
+                      ) : null}
+                      <span className="muted">
+                        {' · '}
+                        {v.sku ? <code style={{ fontSize: 11 }}>{v.sku}</code> : '(no SKU)'}
+                        {' · '}
+                        <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{v.quantity}</strong> on hand
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )
+            ) : (
+              <p className="muted">Inventory data unavailable.</p>
+            )}
+          </div>
+
+          {/* Top searches */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Top searches · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
+            </div>
+            {searches ? (
+              searches.length === 0 ? (
+                <p className="muted">No search data yet — event ships in PostHog Phase 1.</p>
+              ) : (
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Query</th>
+                      <th>Count</th>
+                      <th>Zero-result</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {searches.map((s) => (
+                      <tr key={s.query}>
+                        <td>
+                          <Link href={`/search?q=${encodeURIComponent(s.query)}`} prefetch={false} target="_blank" rel="noopener noreferrer">
+                            {s.query}
+                          </Link>
+                        </td>
+                        <td className="tnum">{s.searches}</td>
+                        <td className={`tnum ${s.zeroPct > 25 ? 'dash-warn' : ''}`}>
+                          {s.zeroResult > 0 ? `${s.zeroResult} (${s.zeroPct.toFixed(0)}%)` : '0'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Search data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* SEO gaps */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>SEO gaps</h2>
+              <span className="muted" style={{ fontSize: 12 }}>sample of 100 active products</span>
+            </div>
+            {seoGaps ? (
+              <>
+                <ul className="dash-list">
+                  <li className={seoGaps.productsMissingSeoTitle > 5 ? 'dash-warn' : ''}>
+                    <span>Missing seo.title</span>
+                    <strong>{seoGaps.productsMissingSeoTitle}</strong>
+                  </li>
+                  <li className={seoGaps.productsMissingSeoDescription > 5 ? 'dash-warn' : ''}>
+                    <span>Missing seo.description</span>
+                    <strong>{seoGaps.productsMissingSeoDescription}</strong>
+                  </li>
+                  <li className={seoGaps.productsMissingSku > 5 ? 'dash-warn' : ''}>
+                    <span>Missing SKU</span>
+                    <strong>{seoGaps.productsMissingSku}</strong>
+                  </li>
+                  <li className={seoGaps.productsMissingImage > 0 ? 'dash-warn' : ''}>
+                    <span>Missing featured image</span>
+                    <strong>{seoGaps.productsMissingImage}</strong>
+                  </li>
+                </ul>
+                {seoGaps.sampleProducts.length > 0 ? (
+                  <>
+                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Examples</h3>
+                    <ul className="dash-list-compact">
+                      {seoGaps.sampleProducts.map((p) => (
+                        <li key={p.handle}>
+                          <Link href={`/products/${p.handle}`} prefetch={false}>{p.title}</Link>
+                          <span className="muted"> · gap: {p.gap} · </span>
+                          <a
+                            href={`${SHOPIFY_ADMIN_BASE}/products/${p.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontSize: 12 }}
+                          >
+                            fix in Shopify →
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <p className="muted">SEO-gap data unavailable.</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: System health --- */}
+      <section id="section-health" className="dash-section">
+        <h2 className="dash-section-hd">System health</h2>
+        <div className="dash-grid">
+          {/* Errors */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Errors</h2>
+              <span className="muted" style={{ fontSize: 12 }}>Sentry</span>
+            </div>
+            <p className="muted" style={{ marginTop: 0 }}>
+              Sentry hosts the issue list. The 5 noise issues (browser-extension + Google App webview)
+              are ignored after PR #196. Real production errors will surface here going forward.
+            </p>
+            <a
+              className="btn btn-ghost"
+              href="https://jetnine.sentry.io/issues/?project=la-mattress-headless&query=is%3Aunresolved"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ marginTop: 'var(--s-3)' }}
+            >
+              Open in Sentry →
+            </a>
+          </div>
+
+          {/* Site Speed */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Site speed</h2>
+              <span className="muted" style={{ fontSize: 12 }}>Vercel Speed Insights</span>
+            </div>
+            <p className="muted" style={{ marginTop: 0 }}>
+              Core Web Vitals per route (LCP / INP / CLS). Live in Vercel&rsquo;s Insights tab.
+            </p>
+            <a
+              className="btn btn-ghost"
+              href="https://vercel.com/alwayzlegits-projects/la-mattress-headless/insights"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ marginTop: 'var(--s-3)' }}
+            >
+              Open in Vercel →
+            </a>
+          </div>
         </div>
       </section>
     </main>
@@ -1022,6 +1062,59 @@ function RangePicker({ active }: { active: RangeKey }) {
         </Link>
       ))}
     </div>
+  );
+}
+
+/**
+ * QA #224: a hard refresh button. Browser reload would only re-fetch
+ * within the current 5-min revalidate window; this form posts to the
+ * refreshDashboard server action which calls revalidateTag +
+ * revalidatePath to bust the Data Cache + Full Route Cache before
+ * re-rendering. Renders as a plain submit button next to the range
+ * picker; no JS needed.
+ */
+function RefreshButton({ rangeKey }: { rangeKey: RangeKey }) {
+  return (
+    <form action={refreshDashboard} className="dash-refresh-form">
+      <input type="hidden" name="range" value={rangeKey} />
+      <button type="submit" className="dash-refresh-btn" title="Force refresh — bust cache and re-fetch">
+        ↻ Refresh
+      </button>
+    </form>
+  );
+}
+
+/**
+ * Sessions-by-device table. Used to show Conv% but that column was
+ * always 0% because order_completed events fire from a server webhook
+ * without $session_id or $device_type (so the numerator was 0 across
+ * the board). Now shows share-of-traffic per device, which is the
+ * useful number for mobile-vs-desktop merchandising decisions anyway.
+ *
+ * Lives as a sub-component (vs inline IIFE) because it needs to compute
+ * the total across rows for the share %, which inline JSX gets ugly.
+ */
+function DeviceTable({ rows }: { rows: Array<{ deviceType: string; sessions: number }> }) {
+  const total = rows.reduce((s, d) => s + d.sessions, 0);
+  return (
+    <table className="dash-table">
+      <thead>
+        <tr>
+          <th>Device</th>
+          <th>Sessions</th>
+          <th>Share</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((d) => (
+          <tr key={d.deviceType}>
+            <td>{d.deviceType}</td>
+            <td className="tnum">{d.sessions.toLocaleString()}</td>
+            <td className="tnum">{total > 0 ? `${((d.sessions / total) * 100).toFixed(1)}%` : '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 

@@ -4518,6 +4518,77 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   font-weight: 600;
 }
 .dash-range-btn-active:hover { background: var(--text-1); color: var(--surface-1); }
+/* QA #224: hard refresh button + "just refreshed" pill */
+.dash-refresh-form {
+  display: inline-flex;
+  margin: 0;
+}
+.dash-refresh-btn {
+  font-size: 12px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface-1);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  font-family: inherit;
+}
+.dash-refresh-btn:hover { background: var(--surface-2, #f5f5f5); color: var(--text-1); }
+.dash-refresh-btn:active { transform: translateY(1px); }
+.dash-refreshed-pill {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(10, 122, 64, 0.12);
+  color: #0a7a40;
+  font-weight: 600;
+  font-size: 11px;
+  vertical-align: middle;
+}
+/* QA #224: section-aware dashboard layout. Each <section> becomes a
+   labeled band with its own grid; the section nav up top jumps between
+   them. Scroll-margin keeps the heading clear of any sticky header. */
+.dash-section {
+  margin-top: var(--s-6);
+}
+.dash-section:first-of-type { margin-top: var(--s-5); }
+.dash-section-hd {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--text-2);
+  margin: 0 0 var(--s-3) 0;
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: var(--s-5);
+}
+.dashboard-section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+.dashboard-section-nav a {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--r-2);
+  background: var(--surface-2, #f5f5f5);
+  color: var(--text-2);
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+}
+.dashboard-section-nav a:hover {
+  background: var(--text-1);
+  color: var(--surface-1);
+}
 .dash-stat-delta {
   display: inline-block;
   margin-top: 4px;
