@@ -25,7 +25,7 @@ const LABELS: Record<string, string> = {
   '/sleep-quiz': '2-minute sleep quiz',
   '/pages/mattress-sizes': 'mattress size guide',
   '/pages/mattress-store-financing': 'financing options',
-  '/pages/mattress-warranty': 'warranty coverage',
+  '/pages/warranty': 'warranty coverage',
   '/pages/shipping-and-delivery': 'delivery details',
   '/pages/mattress-store-delivery': 'delivery details',
   '/pages/love-your-bed-guarantee': '120-night guarantee',

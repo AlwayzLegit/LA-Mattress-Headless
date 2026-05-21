@@ -753,30 +753,24 @@ const G = {
     href: '/blogs/mattress-buying-guide/how-to-choose-the-best-mattress-size',
     label: 'How to choose the right mattress size',
   },
-  kingVsCal: {
-    href: '/blogs/mattress-buying-guide/king-vs-california-king',
-    label: 'King vs. California King: which is bigger?',
-  },
-  calVsKing: {
-    href: '/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference',
-    label: 'California King vs. King: the real difference',
-  },
-  queenGuide: {
-    href: '/blogs/mattress-buying-guide/queen-mattress-size-guide-inches-feet-how-to-pick-the-perfect-fit',
-    label: 'Queen mattress size guide (inches & feet)',
+  // SEMrush 20260521_1: the previous G.kingVsCal and G.calVsKing both
+  // redirected to /blogs/.../what-s-the-difference-between-eastern-king-
+  // and-california-king (data/url-inventory/redirects.json). Two PLP
+  // links rendering with different anchor text but landing on the same
+  // article — tripped "Permanent redirects" SEMrush flag + UX confusion.
+  // One entry, anchor text matches the canonical article.
+  kingCalCompare: {
+    href: '/blogs/mattress-buying-guide/what-s-the-difference-between-eastern-king-and-california-king',
+    label: 'Eastern King vs. California King: the real difference',
   },
   fullVsQueen: {
     href: '/blogs/mattress-buying-guide/full-vs-queen-mattress',
-    label: 'Full vs. Queen: how to pick',
+    label: 'Full vs. Queen mattress: how to pick',
   },
-  fullSize: {
-    href: '/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed',
-    label: 'What is the standard size of a full bed?',
-  },
-  fullSpace: {
-    href: '/blogs/mattress-buying-guide/how-much-space-does-a-full-size-mattress-really-give-you',
-    label: 'How much room does a full really give you?',
-  },
+  // SEMrush 20260521_1: G.fullSize, G.fullSpace, G.queenGuide all
+  // redirected to /blogs/.../full-vs-queen-mattress — consolidated
+  // content (one article now covers full + queen sizing). The
+  // single canonical entry is G.fullVsQueen above.
   couples: {
     href: '/blogs/sleep-blog/what-is-the-best-mattress-size-for-couples',
     label: 'Best mattress size for couples',
@@ -863,11 +857,11 @@ export function categoryGuidesFor(handle: string): CategoryGuide[] {
 
   // Size-specific (California King before the generic "king" match).
   if (h.includes('california-king') || h.includes('cal-king')) {
-    return [G.kingVsCal, G.calVsKing, G.chooseSize, G.couples];
+    return [G.kingCalCompare, G.chooseSize, G.couples];
   }
-  if (h.includes('king')) return [G.kingVsCal, G.chooseSize, G.couples];
-  if (h.includes('queen')) return [G.queenGuide, G.fullVsQueen, G.chooseSize, G.couples];
-  if (h.includes('full')) return [G.fullSize, G.fullSpace, G.fullVsQueen, G.chooseSize];
+  if (h.includes('king')) return [G.kingCalCompare, G.chooseSize, G.couples];
+  if (h.includes('queen')) return [G.fullVsQueen, G.chooseSize, G.couples];
+  if (h.includes('full')) return [G.fullVsQueen, G.chooseSize];
   if (h.includes('twin') || h.includes('split')) return [G.chooseSize, G.couples];
 
   // Use-case / material.

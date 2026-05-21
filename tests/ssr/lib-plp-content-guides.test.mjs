@@ -84,20 +84,24 @@ test('adjustable-beds → adjustable-bed health benefits + financing', () => {
 
 /* --- Regression: existing size routing still works ------------------ */
 
-test('queen-size-mattresses still routes to queen guide cluster', () => {
+test('queen-size-mattresses routes to canonical full-vs-queen guide (post-redirect-dedup)', () => {
+  // SEMrush 20260521_1 batch: the previous queen-mattress-size-guide
+  // article redirected to /blogs/.../full-vs-queen-mattress. Pointing
+  // here directly avoids the SEMrush "Permanent redirects" flag.
   const guides = categoryGuidesFor('queen-size-mattresses');
-  assert.ok(guides.length >= 3);
+  assert.ok(guides.length >= 2);
   assertGuideShape(guides);
-  // The queen size guide article — unchanged from prior behavior.
-  assert.ok(guides.some((g) => g.href.includes('queen-mattress-size-guide')));
+  assert.ok(guides.some((g) => g.href.endsWith('/full-vs-queen-mattress')));
 });
 
-test('california-king-mattresses still routes to cal-king guide cluster (before generic king)', () => {
+test('california-king-mattresses routes to canonical Eastern-King-vs-CA-King guide', () => {
+  // SEMrush 20260521_1 batch: the previous two articles (king-vs-cal,
+  // california-king-vs-king-what-s-the-real-difference) both
+  // redirected to /blogs/.../what-s-the-difference-between-eastern-
+  // king-and-california-king. Dedup to the canonical destination.
   const guides = categoryGuidesFor('california-king-mattresses');
   assertGuideShape(guides);
-  // The cal-king-specific comparison article must appear (not just
-  // generic king-vs-cal).
-  assert.ok(guides.some((g) => g.href.includes('california-king-vs-king-what-s-the-real-difference')));
+  assert.ok(guides.some((g) => g.href.includes('what-s-the-difference-between-eastern-king-and-california-king')));
 });
 
 /* --- Broad fallbacks ------------------------------------------------ */
