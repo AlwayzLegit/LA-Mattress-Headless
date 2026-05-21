@@ -27,6 +27,7 @@ import {
   getTopTrafficSources,
 } from '@/lib/posthog-dashboard';
 import { refreshDashboard } from './actions';
+import { computeAbandonment, funnelConversionRate } from '@/lib/dashboard/funnel-math';
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -1211,49 +1212,10 @@ function Sparkline({ points, field }: { points: DashboardDailyPoint[]; field: 'o
 }
 
 /**
- * Compute the overall funnel conversion rate (last step persons / first
- * step persons). Returns null when there's no data for either end.
- * Lives at module scope so both the current and previous-period
- * funnels reuse the same definition — keeps the "vs previous"
- * comparison apples-to-apples.
+ * funnelConversionRate + computeAbandonment moved to
+ * lib/dashboard/funnel-math.ts so the unit-test suite can exercise the
+ * math without rendering this page. Imported at the top of the file.
  */
-function funnelConversionRate(steps: Array<{ persons: number }> | undefined | null): number | null {
-  if (!steps || steps.length < 2) return null;
-  const first = steps[0].persons;
-  const last = steps[steps.length - 1].persons;
-  if (first === 0) return null;
-  return last / first;
-}
-
-/**
- * Phase 300b: derive cart/checkout abandonment from the funnel.
- *
- *   cartAbandonment     = 1 - (checkout_started / cart_view)
- *   checkoutAbandonment = 1 - (order_completed / checkout_started)
- *
- * Returns null when the relevant numerator steps are missing from the
- * funnel definition (defensive — the FUNNEL_STEPS const in
- * posthog-dashboard.ts should always include these events).
- */
-function computeAbandonment(steps: Array<{ event: string; persons: number }>): {
-  cartViewers: number;
-  checkoutStarters: number;
-  orders: number;
-  cartAbandonment: number;
-  checkoutAbandonment: number;
-} | null {
-  const byEvent = new Map(steps.map((s) => [s.event, s.persons]));
-  const cartViewers = byEvent.get('cart_view') ?? 0;
-  const checkoutStarters = byEvent.get('checkout_started') ?? 0;
-  const orders = byEvent.get('order_completed') ?? 0;
-  return {
-    cartViewers,
-    checkoutStarters,
-    orders,
-    cartAbandonment: cartViewers > 0 ? 1 - checkoutStarters / cartViewers : 0,
-    checkoutAbandonment: checkoutStarters > 0 ? 1 - orders / checkoutStarters : 0,
-  };
-}
 
 /**
  * Phase 300b: full-width revenue trend chart for the selected range.
