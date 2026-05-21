@@ -165,8 +165,8 @@ export async function getTopSearches(days = 30, limit = 15): Promise<SearchQuery
     SELECT
       lower(trim(toString(properties.query))) AS q,
       count() AS searches,
-      countIf(toIntOrNull(toString(properties.result_count)) = 0) AS zero_result,
-      round(100.0 * countIf(toIntOrNull(toString(properties.result_count)) = 0) / count(), 1) AS zero_pct
+      countIf(toString(properties.result_count) = '0') AS zero_result,
+      round(100.0 * countIf(toString(properties.result_count) = '0') / count(), 1) AS zero_pct
     FROM events
     WHERE event = 'search'
       AND timestamp >= now() - INTERVAL ${days} DAY
@@ -372,4 +372,81 @@ export async function getRevenueBySource(days = 30, limit = 8): Promise<RevenueB
     orders: Number(r[1] ?? 0),
     revenue: Number(r[2] ?? 0),
   }));
+}
+
+/* ------------------------------------------------------------------------ *
+ * Showroom traffic — pageviews + sessions on each of the 5 LA showroom
+ * pages, last N days.
+ *
+ * The five canonical showroom pages live at /pages/<handle> and the
+ * handles come from lib/showrooms.ts (the same source the storefront
+ * Showrooms section + showroom-detail page use). The query filters
+ * $pageview events to these paths and aggregates per-page so the
+ * dashboard can answer "which showroom is getting the most online
+ * attention" without the merchant having to scroll through Top entry
+ * pages and pick out the rows by hand.
+ *
+ * Zero-traffic showrooms are included in the output (with pageviews =
+ * sessions = 0) so the card always renders all five locations — easier
+ * to read than a list that hides quiet branches.
+ * ------------------------------------------------------------------------ */
+
+export type ShowroomTrafficRow = {
+  handle: string;
+  /** Human-readable showroom name from lib/showrooms.ts ("Hancock Park"). */
+  name: string;
+  /** The /pages/<handle> URL, exposed for in-card deep-link rendering. */
+  pagePath: string;
+  pageviews: number;
+  sessions: number;
+};
+
+export async function getShowroomTraffic(
+  days = 30,
+  showrooms: ReadonlyArray<{ handle: string; name: string }>,
+): Promise<ShowroomTrafficRow[] | null> {
+  if (showrooms.length === 0) return [];
+
+  // Build the HogQL `IN ('a', 'b', ...)` list from the showroom handles.
+  // Handles come from a code-defined const (lib/showrooms.ts) so SQL-
+  // injection concerns don't apply — defensively single-quote anyway.
+  const paths = showrooms.map((s) => `/pages/${s.handle}`);
+  const inList = paths.map((p) => `'${p.replace(/'/g, "\\'")}'`).join(', ');
+
+  const data = await hogQL(`
+    SELECT
+      toString(properties.$pathname) AS path,
+      count() AS pageviews,
+      count(DISTINCT properties.$session_id) AS sessions
+    FROM events
+    WHERE event = '$pageview'
+      AND timestamp >= now() - INTERVAL ${days} DAY
+      AND toString(properties.$pathname) IN (${inList})
+    GROUP BY path
+  `);
+  if (!data) return null;
+
+  // PostHog returns one row per path that actually had traffic. Map by
+  // pathname so we can left-join against the canonical showroom list —
+  // the renderer wants all 5 rows even when some have 0 traffic.
+  const byPath = new Map<string, { pageviews: number; sessions: number }>();
+  for (const row of data.results) {
+    const p = String(row[0] ?? '');
+    byPath.set(p, {
+      pageviews: Number(row[1] ?? 0),
+      sessions: Number(row[2] ?? 0),
+    });
+  }
+
+  return showrooms.map((s) => {
+    const pagePath = `/pages/${s.handle}`;
+    const hit = byPath.get(pagePath);
+    return {
+      handle: s.handle,
+      name: s.name,
+      pagePath,
+      pageviews: hit?.pageviews ?? 0,
+      sessions: hit?.sessions ?? 0,
+    };
+  }).sort((a, b) => b.pageviews - a.pageviews);
 }

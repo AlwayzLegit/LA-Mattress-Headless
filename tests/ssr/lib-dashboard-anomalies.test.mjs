@@ -22,6 +22,12 @@ function emptyInput(overrides = {}) {
     funnelConvPrev: null,
     cartAbandonmentNow: null,
     cartAbandonmentPrev: null,
+    // Default to a comfortable sample size so cart-abandonment tests
+    // that pass cartAbandonment{Now,Prev} don't have to also remember
+    // to override the small-sample guard. Tests that explicitly want
+    // to verify the guard override these to a small number.
+    cartViewersNow: 100,
+    cartViewersPrev: 100,
     rangeLabel: 'Last 30 days',
     ...overrides,
   };
@@ -161,6 +167,33 @@ test('cart-abandonment: does NOT fire when prev is null', () => {
     cartAbandonmentPrev: null,
   }));
   assert.equal(out.find((x) => x.id === 'cart-abandonment-up'), undefined);
+});
+
+test('cart-abandonment: does NOT fire on a tiny sample (QA round 2 B2)', () => {
+  // The scenario QA round 2 caught on production: 2 cart_view events,
+  // 1 checkout_started, prior window all zeros. The math says "50pp
+  // jump from 0%", but it's noise. Detector should skip when current
+  // cart viewers < 5.
+  const out = detectAnomalies(emptyInput({
+    cartAbandonmentNow: 0.50,
+    cartAbandonmentPrev: 0.00,
+    cartViewersNow: 2,
+    cartViewersPrev: 0,
+  }));
+  assert.equal(out.find((x) => x.id === 'cart-abandonment-up'), undefined);
+});
+
+test('cart-abandonment: fires once the sample crosses the 5-viewer threshold', () => {
+  // Same delta as the above test, but with enough viewers to be a
+  // meaningful signal — should now fire.
+  const out = detectAnomalies(emptyInput({
+    cartAbandonmentNow: 0.50,
+    cartAbandonmentPrev: 0.00,
+    cartViewersNow: 5,
+    cartViewersPrev: 0,
+  }));
+  const a = out.find((x) => x.id === 'cart-abandonment-up');
+  assert.ok(a, 'should fire when cartViewersNow >= 5');
 });
 
 /* --- Conversion-down detector --- */

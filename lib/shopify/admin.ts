@@ -14,6 +14,10 @@
 import 'server-only';
 import * as Sentry from '@sentry/nextjs';
 import { numericIdFromGid } from './gid';
+import {
+  summarizeCustomerLifetime,
+  type CustomerLifetimeSummary,
+} from '@/lib/dashboard/customer-lifetime';
 
 // Re-export so admin.ts callers can keep their `import { numericIdFromGid }
 // from '@/lib/shopify/admin'` paths unchanged. The pure helper now lives
@@ -562,7 +566,18 @@ export type DashboardOrderDetailLineItem = {
   variantTitle: string | null;
   sku: string | null;
   quantity: number;
+  /** Units that have been refunded across all refund records on this order. */
   quantityRefunded: number;
+  /**
+   * Dollar amount refunded on THIS line, aggregated across all refund
+   * records. Distinct from quantityRefunded — a restock-only refund
+   * decrements the quantity without returning any money, so a line can
+   * have quantityRefunded > 0 with amountRefunded = 0. The order detail
+   * page renders "(N refunded, $X)" when amountRefunded > 0 and
+   * "(N restocked, no refund)" when it's a pure inventory return.
+   * QA round 2 B4.
+   */
+  amountRefunded: number;
   productId: string | null;
   productHandle: string | null;
   unitPrice: number;
@@ -595,7 +610,15 @@ export type DashboardOrderDetail = {
   cancelReason: string | null;
   displayFinancialStatus: string | null;
   displayFulfillmentStatus: string | null;
+  /** Current total — net of refunds. From Shopify's currentTotalPriceSet. */
   total: number;
+  /**
+   * Original total — what the customer was charged at order time. From
+   * Shopify's totalPriceSet (no "current" prefix). Differs from `total`
+   * for partially-refunded orders. Same value the dashboard's Recent
+   * orders table shows in the Total column.
+   */
+  originalTotal: number;
   subtotal: number;
   totalTax: number;
   totalShipping: number;
@@ -634,6 +657,7 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
       displayFinancialStatus: string | null;
       displayFulfillmentStatus: string | null;
       currentTotalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+      totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
       currentSubtotalPriceSet: { shopMoney: { amount: string; currencyCode: string } } | null;
       currentTotalTaxSet: { shopMoney: { amount: string; currencyCode: string } } | null;
       totalShippingPriceSet: { shopMoney: { amount: string; currencyCode: string } } | null;
@@ -672,6 +696,14 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
         createdAt: string;
         note: string | null;
         totalRefundedSet: { shopMoney: { amount: string; currencyCode: string } };
+        refundLineItems: {
+          nodes: Array<{
+            quantity: number;
+            restockType: string | null;
+            lineItem: { id: string };
+            subtotalSet: { shopMoney: { amount: string; currencyCode: string } };
+          }>;
+        };
       }>;
     } | null;
   }>(
@@ -680,6 +712,7 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
         id name createdAt processedAt cancelledAt cancelReason
         displayFinancialStatus displayFulfillmentStatus
         currentTotalPriceSet { shopMoney { amount currencyCode } }
+        totalPriceSet { shopMoney { amount currencyCode } }
         currentSubtotalPriceSet { shopMoney { amount currencyCode } }
         currentTotalTaxSet { shopMoney { amount currencyCode } }
         totalShippingPriceSet { shopMoney { amount currencyCode } }
@@ -702,6 +735,14 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
         refunds(first: 10) {
           id createdAt note
           totalRefundedSet { shopMoney { amount currencyCode } }
+          refundLineItems(first: 50) {
+            nodes {
+              quantity
+              restockType
+              lineItem { id }
+              subtotalSet { shopMoney { amount currencyCode } }
+            }
+          }
         }
       }
     }`,
@@ -711,6 +752,18 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
   if (!data || !data.order) return null;
   const o = data.order;
   const currency = o.currentTotalPriceSet.shopMoney.currencyCode || 'USD';
+
+  // QA round 2 B4: aggregate refundLineItems across every refund record
+  // on the order, grouped by the original line item id. Powers the
+  // per-line "(N refunded, $X)" vs "(N restocked, no refund)" callout.
+  const refundsByLineItem = new Map<string, number>();
+  for (const r of o.refunds) {
+    for (const rli of r.refundLineItems.nodes) {
+      const id = rli.lineItem.id;
+      const subtotal = Number.parseFloat(rli.subtotalSet.shopMoney.amount || '0');
+      refundsByLineItem.set(id, (refundsByLineItem.get(id) ?? 0) + subtotal);
+    }
+  }
 
   return {
     id: numericIdFromGid(o.id),
@@ -723,6 +776,7 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
     displayFinancialStatus: o.displayFinancialStatus,
     displayFulfillmentStatus: o.displayFulfillmentStatus,
     total: Number.parseFloat(o.currentTotalPriceSet.shopMoney.amount || '0'),
+    originalTotal: Number.parseFloat(o.totalPriceSet.shopMoney.amount || '0'),
     subtotal: Number.parseFloat(o.currentSubtotalPriceSet?.shopMoney.amount || '0'),
     totalTax: Number.parseFloat(o.currentTotalTaxSet?.shopMoney.amount || '0'),
     totalShipping: Number.parseFloat(o.totalShippingPriceSet?.shopMoney.amount || '0'),
@@ -751,6 +805,10 @@ export async function getOrderDetail(numericId: string): Promise<DashboardOrderD
       // 0 in case Shopify returns refundable > quantity (shouldn't but
       // belt-and-suspenders for the partial-refund edge case).
       quantityRefunded: Math.max(li.quantity - li.refundableQuantity, 0),
+      // Dollar value of all refundLineItems matched to this line. Zero
+      // when only restock-only refunds reduced the quantity (the
+      // quantity went down without money being returned). QA round 2 B4.
+      amountRefunded: refundsByLineItem.get(li.id) ?? 0,
       productId: li.product ? numericIdFromGid(li.product.id) : null,
       productHandle: li.product?.handle ?? null,
       unitPrice: Number.parseFloat(li.originalUnitPriceSet.shopMoney.amount || '0'),
@@ -984,4 +1042,70 @@ export async function getRefundHealth(days = 30): Promise<DashboardRefundHealth 
       .map(([reason, count]) => ({ reason, count }))
       .sort((a, b) => b.count - a.count),
   };
+}
+
+/* ------------------------------------------------------------------------ *
+ * Customer Lifetime Value — sample of top customers by lifetime spend
+ *
+ * Powers the LTV + lifecycle-distribution cards in the dashboard's
+ * Customers section. Returns a Shopify-sorted top-N (default 250) so
+ * the bucketing surfaces the SHAPE of the top of the customer curve
+ * rather than the unbiased population. The existing window-scoped
+ * getCustomerInsights answers "what % of THIS window's customers are
+ * repeat"; this one answers "who are our best lifetime customers and
+ * how many repeat orders does the top of the curve have".
+ *
+ * Single Shopify query — sortKey=AMOUNT_SPENT, reverse=true. Each
+ * page is 250 customers max per Shopify's limit; we take one page.
+ * Returns null on any fetch error (dashboard renders a "data
+ * unavailable" state per the no-throws convention).
+ * ------------------------------------------------------------------------ */
+
+export type DashboardCustomerLifetime = CustomerLifetimeSummary;
+
+export async function getCustomerLifetime(sampleSize = 250): Promise<DashboardCustomerLifetime | null> {
+  // Clamp the sample size to Shopify's per-page max of 250 — the API
+  // rejects larger first: values with a parse error. Anything below
+  // 250 is accepted as-is.
+  const first = Math.min(Math.max(sampleSize, 1), 250);
+
+  const data = await adminGql<{
+    customers: {
+      nodes: Array<{
+        id: string;
+        displayName: string | null;
+        email: string | null;
+        numberOfOrders: string | number | null;
+        amountSpent: { amount: string; currencyCode: string };
+      }>;
+    };
+  }>(
+    `query CustomerLifetime($first: Int!) {
+      customers(first: $first, sortKey: AMOUNT_SPENT, reverse: true) {
+        nodes {
+          id
+          displayName
+          email
+          numberOfOrders
+          amountSpent { amount currencyCode }
+        }
+      }
+    }`,
+    { first },
+  );
+  if (!data) return null;
+
+  // Map raw Shopify response into the shape the pure summarizer expects.
+  // numberOfOrders comes back as a string from Shopify (GraphQL
+  // UnsignedInt64 scalar) — defensive coerce to number.
+  const customers = data.customers.nodes.map((c) => ({
+    id: numericIdFromGid(c.id),
+    displayName: c.displayName ?? '(no name)',
+    email: c.email,
+    ordersCount: Number(c.numberOfOrders ?? 0),
+    amountSpent: Number.parseFloat(c.amountSpent.amount || '0'),
+    currency: c.amountSpent.currencyCode || 'USD',
+  }));
+
+  return summarizeCustomerLifetime(customers);
 }

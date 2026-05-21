@@ -168,18 +168,34 @@ export default async function OrderDetailPage({
                   <td className="tnum" style={{ textAlign: 'right' }}>{fmtMoney(order.totalTax, order.currency)}</td>
                 </tr>
               ) : null}
-              <tr style={{ fontWeight: 700, borderTop: '1px solid var(--line)' }}>
-                <td>Total</td>
-                <td className="tnum" style={{ textAlign: 'right' }}>{fmtMoney(order.total, order.currency)}</td>
-              </tr>
               {order.totalRefunded > 0 ? (
-                <tr className="dash-warn">
-                  <td>Refunded</td>
-                  <td className="tnum" style={{ textAlign: 'right' }}>
-                    −{fmtMoney(order.totalRefunded, order.currency)}
-                  </td>
+                // Partially-refunded path. Show the original charge first so
+                // the reader sees "what the customer paid" before "what's
+                // left after refunds". The dashboard's Recent orders table
+                // shows the ORIGINAL total ($X) in its Total column — this
+                // keeps the two views numerically consistent.
+                <>
+                  <tr style={{ fontWeight: 700, borderTop: '1px solid var(--line)' }}>
+                    <td>Original total</td>
+                    <td className="tnum" style={{ textAlign: 'right' }}>{fmtMoney(order.originalTotal, order.currency)}</td>
+                  </tr>
+                  <tr className="dash-warn">
+                    <td>Refunded</td>
+                    <td className="tnum" style={{ textAlign: 'right' }}>
+                      −{fmtMoney(order.totalRefunded, order.currency)}
+                    </td>
+                  </tr>
+                  <tr style={{ fontWeight: 700 }}>
+                    <td>Net total</td>
+                    <td className="tnum" style={{ textAlign: 'right' }}>{fmtMoney(order.total, order.currency)}</td>
+                  </tr>
+                </>
+              ) : (
+                <tr style={{ fontWeight: 700, borderTop: '1px solid var(--line)' }}>
+                  <td>Total</td>
+                  <td className="tnum" style={{ textAlign: 'right' }}>{fmtMoney(order.total, order.currency)}</td>
                 </tr>
-              ) : null}
+              )}
             </tbody>
           </table>
         </div>
@@ -221,7 +237,9 @@ export default async function OrderDetailPage({
                       {li.quantity}
                       {li.quantityRefunded > 0 ? (
                         <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
-                          ({li.quantityRefunded} refunded)
+                          {li.amountRefunded > 0
+                            ? `(${li.quantityRefunded} refunded, ${fmtMoney(li.amountRefunded, li.currency)})`
+                            : `(${li.quantityRefunded} restocked, no refund)`}
                         </span>
                       ) : null}
                     </td>

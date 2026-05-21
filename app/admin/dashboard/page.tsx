@@ -5,6 +5,7 @@ import {
   ADMIN_CONFIGURED,
   getCatalogHealth,
   getCustomerInsights,
+  getCustomerLifetime,
   getLowStock,
   getOrderSummaryWithTrends,
   getRefundHealth,
@@ -24,6 +25,7 @@ import {
   getQuizFunnel,
   getQuizFunnelPrev,
   getRevenueBySource,
+  getShowroomTraffic,
   getTopEntryPages,
   getTopSearches,
   getTopTrafficSources,
@@ -32,6 +34,7 @@ import { refreshDashboard } from './actions';
 import { computeAbandonment, funnelConversionRate } from '@/lib/dashboard/funnel-math';
 import { detectAnomalies } from '@/lib/dashboard/anomalies';
 import { formatRateDelta, formatRelativeDelta } from '@/lib/dashboard/delta';
+import { SHOWROOMS } from '@/lib/showrooms';
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -163,6 +166,7 @@ export default async function DashboardPage({
     seoGaps,
     lowStock,
     customerInsights,
+    customerLifetime,
     refundHealth,
     funnel,
     funnelPrev,
@@ -173,6 +177,7 @@ export default async function DashboardPage({
     quizFunnelPrev,
     revenueBySource,
     deviceBreakdown,
+    showroomTraffic,
   ] = await Promise.all([
     getOrderSummaryWithTrends(days).catch(() => null),
     getCatalogHealth().catch(() => null),
@@ -180,6 +185,7 @@ export default async function DashboardPage({
     getSeoGaps().catch(() => null),
     getLowStock(3).catch(() => null),
     getCustomerInsights(days).catch(() => null),
+    getCustomerLifetime(250).catch(() => null),
     getRefundHealth(days).catch(() => null),
     POSTHOG_CONFIGURED ? getConversionFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getConversionFunnelPrev(days).catch(() => null) : Promise.resolve(null),
@@ -190,6 +196,9 @@ export default async function DashboardPage({
     POSTHOG_CONFIGURED ? getQuizFunnelPrev(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getRevenueBySource(days, 8).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getDeviceBreakdown(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED
+      ? getShowroomTraffic(days, SHOWROOMS.map((s) => ({ handle: s.handle, name: s.name }))).catch(() => null)
+      : Promise.resolve(null),
   ]);
 
   // Cart + checkout abandonment derived from the conversion funnel.
@@ -224,6 +233,8 @@ export default async function DashboardPage({
     funnelConvPrev,
     cartAbandonmentNow: abandonment?.cartAbandonment ?? null,
     cartAbandonmentPrev: abandonmentPrev?.cartAbandonment ?? null,
+    cartViewersNow: abandonment?.cartViewers ?? null,
+    cartViewersPrev: abandonmentPrev?.cartViewers ?? null,
     rangeLabel,
   });
 
@@ -524,7 +535,7 @@ export default async function DashboardPage({
                   </ul>
                   {customerInsights.topRepeaters.length > 0 ? (
                     <>
-                      <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Top repeat buyers</h3>
+                      <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Top repeat buyers (in window)</h3>
                       <ul className="dash-list-compact">
                         {customerInsights.topRepeaters.map((c) => (
                           <li key={c.customerId}>
@@ -549,6 +560,94 @@ export default async function DashboardPage({
               )
             ) : (
               <p className="muted">Customer data unavailable.</p>
+            )}
+          </div>
+
+          {/* Customer LTV — top spenders all-time */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Customer LTV</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                Shopify · top {customerLifetime?.sampleSize ?? 250} by lifetime spend
+              </span>
+            </div>
+            {customerLifetime && customerLifetime.sampleSize > 0 ? (
+              <>
+                <ul className="dash-list">
+                  <li>
+                    <span>Mean LTV</span>
+                    <strong>{fmtMoney(customerLifetime.averageLtv, customerLifetime.currency)}</strong>
+                  </li>
+                  <li>
+                    <span>Median LTV</span>
+                    <strong>{fmtMoney(customerLifetime.medianLtv, customerLifetime.currency)}</strong>
+                  </li>
+                </ul>
+                {customerLifetime.topByLtv.length > 0 ? (
+                  <>
+                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Top lifetime spenders</h3>
+                    <ul className="dash-list-compact">
+                      {customerLifetime.topByLtv.map((c) => (
+                        <li key={c.id}>
+                          <a
+                            href={`${SHOPIFY_ADMIN_BASE}/customers/${c.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {c.displayName}
+                          </a>
+                          <span className="muted">
+                            {' · '}
+                            <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{c.ordersCount}</strong>{' orders · '}
+                            <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtMoney(c.amountSpent, c.currency)}</strong>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <p className="muted">No customer LTV data available.</p>
+            )}
+          </div>
+
+          {/* Customer lifecycle distribution */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Lifecycle distribution</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                Shopify · top {customerLifetime?.sampleSize ?? 250} · skewed toward big spenders
+              </span>
+            </div>
+            {customerLifetime && customerLifetime.sampleSize > 0 ? (
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Lifetime orders</th>
+                    <th>Customers</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customerLifetime.buckets.map((b) => (
+                    <tr key={b.label}>
+                      <td>{b.label}</td>
+                      <td className="tnum">
+                        {b.customers}
+                        {customerLifetime.sampleSize > 0 ? (
+                          <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                            ({((b.customers / customerLifetime.sampleSize) * 100).toFixed(0)}%)
+                          </span>
+                        ) : null}
+                      </td>
+                      <td className="tnum">{fmtMoney(b.revenue, customerLifetime.currency)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="muted">No lifecycle data available.</p>
             )}
           </div>
         </div>
@@ -829,6 +928,21 @@ export default async function DashboardPage({
               <PostHogConfigHint />
             )}
           </div>
+
+          {/* Showroom traffic — pageviews per LA location */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Showroom traffic · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · pageviews per LA location</span>
+            </div>
+            {showroomTraffic ? (
+              <ShowroomTrafficTable rows={showroomTraffic} />
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Showroom traffic unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
         </div>
       </section>
 
@@ -853,7 +967,22 @@ export default async function DashboardPage({
                   <strong>{catalog.publishedProducts}</strong>
                 </li>
                 <li className={catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts > 0 ? 'dash-warn' : ''}>
-                  <span>Active but hidden</span>
+                  <span>
+                    Active but hidden
+                    {catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts > 0 ? (
+                      <>
+                        {' '}
+                        <a
+                          href={`${SHOPIFY_ADMIN_BASE}/products?selectedView=all&status=active&published_status=unpublished`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ fontSize: 11 }}
+                        >
+                          (review →)
+                        </a>
+                      </>
+                    ) : null}
+                  </span>
                   <strong>{Math.max(catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts, 0)}</strong>
                 </li>
                 <li className={catalog.draftProducts > 0 ? 'dash-warn' : ''}>
@@ -1184,6 +1313,57 @@ function DeviceTable({ rows }: { rows: Array<{ deviceType: string; sessions: num
             <td>{d.deviceType}</td>
             <td className="tnum">{d.sessions.toLocaleString()}</td>
             <td className="tnum">{total > 0 ? `${((d.sessions / total) * 100).toFixed(1)}%` : '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+/**
+ * Showroom traffic table. One row per LA showroom (always renders all
+ * 5, even when some have zero traffic in the window — easier to read
+ * than a list that hides quiet branches). Pageviews + sessions per
+ * showroom + share of total showroom traffic in the window. Showroom
+ * names link to the corresponding /pages/<handle> on the storefront
+ * (new tab) so the merchant can sanity-check the page they're
+ * measuring.
+ */
+function ShowroomTrafficTable({
+  rows,
+}: {
+  rows: ReadonlyArray<{
+    handle: string;
+    name: string;
+    pagePath: string;
+    pageviews: number;
+    sessions: number;
+  }>;
+}) {
+  const totalViews = rows.reduce((s, r) => s + r.pageviews, 0);
+  return (
+    <table className="dash-table">
+      <thead>
+        <tr>
+          <th>Showroom</th>
+          <th>Pageviews</th>
+          <th>Sessions</th>
+          <th>Share</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.handle} className={r.pageviews === 0 ? 'muted' : undefined}>
+            <td>
+              <Link href={r.pagePath} prefetch={false} target="_blank" rel="noopener noreferrer">
+                {r.name}
+              </Link>
+            </td>
+            <td className="tnum">{r.pageviews.toLocaleString()}</td>
+            <td className="tnum">{r.sessions.toLocaleString()}</td>
+            <td className="tnum">
+              {totalViews > 0 ? `${((r.pageviews / totalViews) * 100).toFixed(1)}%` : '—'}
+            </td>
           </tr>
         ))}
       </tbody>
