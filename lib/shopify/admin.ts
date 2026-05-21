@@ -543,3 +543,208 @@ export function numericIdFromGid(gid: string): string {
   const m = /\/(\d+)$/.exec(gid);
   return m ? m[1] : gid;
 }
+
+/* ------------------------------------------------------------------------ *
+ * Customer insights — new vs returning + repeat purchase rate, in window
+ *
+ * "New" = orders where customer.numberOfOrders (lifetime, snapshot at the
+ * order moment via Shopify's stored counter) is 1.
+ * "Returning" = numberOfOrders >= 2.
+ * "Repeat purchase rate" = customers with >= 2 orders within this window
+ * divided by total unique customers within this window. This is the
+ * in-window repeat rate, not the lifetime LTV repeat rate — chosen
+ * because the dashboard already has a "window" mental model from the
+ * range picker, and "did they come back within N days" is the
+ * actionable signal for merchandising decisions.
+ *
+ * Pulls the same first-250 order page as getOrderSummaryWithTrends but
+ * with a different selection set (customer focus). The two queries
+ * could in theory be merged into one — left split because the customer
+ * card is independently lazy-loadable in future and the GraphQL
+ * response is small enough that two parallel calls are net-faster than
+ * one bigger one through Shopify's rate-limit cost model.
+ * ------------------------------------------------------------------------ */
+
+export type DashboardCustomerInsights = {
+  totalCustomers: number;
+  newCustomers: number;
+  returningCustomers: number;
+  repeatInWindow: number;
+  repeatRatePct: number;
+  topRepeaters: Array<{
+    customerId: string;
+    displayName: string;
+    ordersInWindow: number;
+    revenueInWindow: number;
+    currency: string;
+  }>;
+};
+
+export async function getCustomerInsights(days = 30): Promise<DashboardCustomerInsights | null> {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const data = await adminGql<{
+    orders: {
+      nodes: Array<{
+        id: string;
+        totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+        customer: {
+          id: string;
+          displayName: string | null;
+          numberOfOrders: string | number | null;
+        } | null;
+      }>;
+    };
+  }>(
+    `query CustomerInsights($q: String!) {
+      orders(first: 250, query: $q, sortKey: CREATED_AT, reverse: true) {
+        nodes {
+          id
+          totalPriceSet { shopMoney { amount currencyCode } }
+          customer { id displayName numberOfOrders }
+        }
+      }
+    }`,
+    { q: `created_at:>=${since}` },
+  );
+  if (!data) return null;
+  const orders = data.orders.nodes;
+  let newCustomers = 0;
+  let returningCustomers = 0;
+  const byCustomer = new Map<string, { displayName: string; orders: number; revenue: number; currency: string }>();
+  for (const o of orders) {
+    if (!o.customer) continue;
+    const cid = o.customer.id;
+    // numberOfOrders is returned as a string from Shopify; coerce defensively.
+    const lifetimeOrders = Number(o.customer.numberOfOrders ?? 0);
+    if (lifetimeOrders <= 1) newCustomers += 1;
+    else returningCustomers += 1;
+    const amount = Number.parseFloat(o.totalPriceSet.shopMoney.amount || '0');
+    const currency = o.totalPriceSet.shopMoney.currencyCode || 'USD';
+    const existing = byCustomer.get(cid);
+    if (existing) {
+      existing.orders += 1;
+      existing.revenue += amount;
+    } else {
+      byCustomer.set(cid, {
+        displayName: o.customer.displayName ?? '(no name)',
+        orders: 1,
+        revenue: amount,
+        currency,
+      });
+    }
+  }
+  const totalCustomers = byCustomer.size;
+  const repeatInWindow = [...byCustomer.values()].filter((c) => c.orders >= 2).length;
+  const repeatRatePct = totalCustomers > 0 ? (repeatInWindow / totalCustomers) * 100 : 0;
+  const topRepeaters = [...byCustomer.entries()]
+    .filter(([, c]) => c.orders >= 2)
+    .sort((a, b) => b[1].orders - a[1].orders || b[1].revenue - a[1].revenue)
+    .slice(0, 6)
+    .map(([id, c]) => ({
+      customerId: numericIdFromGid(id),
+      displayName: c.displayName,
+      ordersInWindow: c.orders,
+      revenueInWindow: c.revenue,
+      currency: c.currency,
+    }));
+  return {
+    totalCustomers,
+    newCustomers,
+    returningCustomers,
+    repeatInWindow,
+    repeatRatePct,
+    topRepeaters,
+  };
+}
+
+/* ------------------------------------------------------------------------ *
+ * Refund / cancellation health — orders by financial + cancellation status
+ *
+ * Counts the share of in-window orders that ended up refunded (full or
+ * partial) or cancelled. A spike here usually points at product-quality
+ * issues, delivery breakdowns, or fraud — all of which the merchant
+ * needs to see ASAP, not in the next monthly report.
+ *
+ * Cancellation reasons are bucketed into the standard Shopify enum
+ * values (CUSTOMER, FRAUD, INVENTORY, DECLINED, OTHER) — empty bucket
+ * means no cancellations of that type, kept in output for stable shape.
+ * ------------------------------------------------------------------------ */
+
+export type DashboardRefundHealth = {
+  totalOrders: number;
+  refundedOrders: number;
+  partiallyRefundedOrders: number;
+  cancelledOrders: number;
+  refundRatePct: number;
+  cancellationRatePct: number;
+  refundedRevenue: number;
+  currency: string;
+  cancelReasonBuckets: Array<{ reason: string; count: number }>;
+};
+
+export async function getRefundHealth(days = 30): Promise<DashboardRefundHealth | null> {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const data = await adminGql<{
+    orders: {
+      nodes: Array<{
+        id: string;
+        cancelledAt: string | null;
+        cancelReason: string | null;
+        displayFinancialStatus: string | null;
+        totalRefundedSet: { shopMoney: { amount: string; currencyCode: string } } | null;
+        currentTotalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+      }>;
+    };
+  }>(
+    `query RefundHealth($q: String!) {
+      orders(first: 250, query: $q, sortKey: CREATED_AT, reverse: true) {
+        nodes {
+          id
+          cancelledAt
+          cancelReason
+          displayFinancialStatus
+          totalRefundedSet { shopMoney { amount currencyCode } }
+          currentTotalPriceSet { shopMoney { amount currencyCode } }
+        }
+      }
+    }`,
+    { q: `created_at:>=${since}` },
+  );
+  if (!data) return null;
+  const orders = data.orders.nodes;
+  let refundedOrders = 0;
+  let partiallyRefundedOrders = 0;
+  let cancelledOrders = 0;
+  let refundedRevenue = 0;
+  let currency = 'USD';
+  const reasonCounts = new Map<string, number>();
+  for (const o of orders) {
+    if (o.cancelledAt) {
+      cancelledOrders += 1;
+      const r = o.cancelReason ?? 'OTHER';
+      reasonCounts.set(r, (reasonCounts.get(r) ?? 0) + 1);
+    }
+    if (o.displayFinancialStatus === 'REFUNDED') refundedOrders += 1;
+    else if (o.displayFinancialStatus === 'PARTIALLY_REFUNDED') partiallyRefundedOrders += 1;
+    if (o.totalRefundedSet) {
+      refundedRevenue += Number.parseFloat(o.totalRefundedSet.shopMoney.amount || '0');
+      currency = o.totalRefundedSet.shopMoney.currencyCode || currency;
+    } else if (o.currentTotalPriceSet) {
+      currency = o.currentTotalPriceSet.shopMoney.currencyCode || currency;
+    }
+  }
+  const totalOrders = orders.length;
+  return {
+    totalOrders,
+    refundedOrders,
+    partiallyRefundedOrders,
+    cancelledOrders,
+    refundRatePct: totalOrders > 0 ? ((refundedOrders + partiallyRefundedOrders) / totalOrders) * 100 : 0,
+    cancellationRatePct: totalOrders > 0 ? (cancelledOrders / totalOrders) * 100 : 0,
+    refundedRevenue,
+    currency,
+    cancelReasonBuckets: [...reasonCounts.entries()]
+      .map(([reason, count]) => ({ reason, count }))
+      .sort((a, b) => b.count - a.count),
+  };
+}

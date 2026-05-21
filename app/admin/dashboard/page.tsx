@@ -3,8 +3,10 @@ import Link from 'next/link';
 import {
   ADMIN_CONFIGURED,
   getCatalogHealth,
+  getCustomerInsights,
   getLowStock,
   getOrderSummaryWithTrends,
+  getRefundHealth,
   getSeoGaps,
   getTopProducts,
   type DashboardDailyPoint,
@@ -118,6 +120,8 @@ export default async function DashboardPage({
     topProducts,
     seoGaps,
     lowStock,
+    customerInsights,
+    refundHealth,
     funnel,
     funnelPrev,
     entryPages,
@@ -133,6 +137,8 @@ export default async function DashboardPage({
     getTopProducts(days).catch(() => null),
     getSeoGaps().catch(() => null),
     getLowStock(3).catch(() => null),
+    getCustomerInsights(days).catch(() => null),
+    getRefundHealth(days).catch(() => null),
     POSTHOG_CONFIGURED ? getConversionFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getConversionFunnelPrev(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopEntryPages(7, 10).catch(() => null) : Promise.resolve(null),
@@ -623,7 +629,144 @@ export default async function DashboardPage({
           )}
         </div>
 
-        {/* Top traffic sources */}
+        {/* Customer insights */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Customers · {rangeKey}</h2>
+            <span className="muted" style={{ fontSize: 12 }}>Shopify · new vs repeat</span>
+          </div>
+          {customerInsights ? (
+            customerInsights.totalCustomers === 0 ? (
+              <p className="muted">No customer orders in this window.</p>
+            ) : (
+              <>
+                <ul className="dash-list">
+                  <li>
+                    <span>Unique customers</span>
+                    <strong>{customerInsights.totalCustomers}</strong>
+                  </li>
+                  <li>
+                    <span>New customers</span>
+                    <strong>
+                      {customerInsights.newCustomers}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                        ({pct(customerInsights.newCustomers, customerInsights.newCustomers + customerInsights.returningCustomers)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Returning customers</span>
+                    <strong>
+                      {customerInsights.returningCustomers}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                        ({pct(customerInsights.returningCustomers, customerInsights.newCustomers + customerInsights.returningCustomers)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li className={customerInsights.repeatRatePct < 5 ? '' : 'dash-warn'}>
+                    <span>Repeat in window</span>
+                    <strong>
+                      {customerInsights.repeatInWindow}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                        ({customerInsights.repeatRatePct.toFixed(1)}%)
+                      </span>
+                    </strong>
+                  </li>
+                </ul>
+                {customerInsights.topRepeaters.length > 0 ? (
+                  <>
+                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Top repeat buyers</h3>
+                    <ul className="dash-list-compact">
+                      {customerInsights.topRepeaters.map((c) => (
+                        <li key={c.customerId}>
+                          <a
+                            href={`${SHOPIFY_ADMIN_BASE}/customers/${c.customerId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {c.displayName}
+                          </a>
+                          <span className="muted">
+                            {' · '}
+                            <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{c.ordersInWindow}</strong>{' orders · '}
+                            <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtMoney(c.revenueInWindow, c.currency)}</strong>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </>
+            )
+          ) : (
+            <p className="muted">Customer data unavailable.</p>
+          )}
+        </div>
+
+        {/* Refund + cancellation health */}
+        <div className="dash-card">
+          <div className="dash-card-hd">
+            <h2 className="h3" style={{ margin: 0 }}>Refunds &amp; cancels · {rangeKey}</h2>
+            <span className="muted" style={{ fontSize: 12 }}>Shopify · share of orders</span>
+          </div>
+          {refundHealth ? (
+            refundHealth.totalOrders === 0 ? (
+              <p className="muted">No orders in this window.</p>
+            ) : (
+              <>
+                <ul className="dash-list">
+                  <li className={refundHealth.refundRatePct > 5 ? 'dash-warn' : ''}>
+                    <span>Refund rate</span>
+                    <strong>
+                      {refundHealth.refundRatePct.toFixed(1)}%
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                        ({refundHealth.refundedOrders + refundHealth.partiallyRefundedOrders} of {refundHealth.totalOrders})
+                      </span>
+                    </strong>
+                  </li>
+                  <li>
+                    <span>· full refunds</span>
+                    <strong>{refundHealth.refundedOrders}</strong>
+                  </li>
+                  <li>
+                    <span>· partial refunds</span>
+                    <strong>{refundHealth.partiallyRefundedOrders}</strong>
+                  </li>
+                  <li className={refundHealth.cancellationRatePct > 3 ? 'dash-warn' : ''}>
+                    <span>Cancellation rate</span>
+                    <strong>
+                      {refundHealth.cancellationRatePct.toFixed(1)}%
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                        ({refundHealth.cancelledOrders} of {refundHealth.totalOrders})
+                      </span>
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Refunded $</span>
+                    <strong>{fmtMoney(refundHealth.refundedRevenue, refundHealth.currency)}</strong>
+                  </li>
+                </ul>
+                {refundHealth.cancelReasonBuckets.length > 0 ? (
+                  <>
+                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Cancel reasons</h3>
+                    <ul className="dash-list-compact">
+                      {refundHealth.cancelReasonBuckets.map((b) => (
+                        <li key={b.reason}>
+                          <span>{b.reason.toLowerCase()}</span>
+                          <span className="muted">{' · '}<strong style={{ fontVariantNumeric: 'tabular-nums' }}>{b.count}</strong></span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </>
+            )
+          ) : (
+            <p className="muted">Refund data unavailable.</p>
+          )}
+        </div>
+
+        {/* Top traffic sources — with donut chart */}
         <div className="dash-card">
           <div className="dash-card-hd">
             <h2 className="h3" style={{ margin: 0 }}>Traffic sources · {rangeKey}</h2>
@@ -633,24 +776,34 @@ export default async function DashboardPage({
             sources.length === 0 ? (
               <p className="muted">No traffic data yet.</p>
             ) : (
-              <table className="dash-table">
-                <thead>
-                  <tr>
-                    <th>Source</th>
-                    <th>Visitors</th>
-                    <th>Sessions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sources.map((s) => (
-                    <tr key={s.source}>
-                      <td>{s.source}</td>
-                      <td className="tnum">{s.visitors}</td>
-                      <td className="tnum">{s.sessions}</td>
+              <div className="dash-donut-row">
+                <SourceDonut slices={sources.slice(0, 6).map((s) => ({ label: s.source, value: s.visitors }))} />
+                <table className="dash-table dash-table-tight">
+                  <thead>
+                    <tr>
+                      <th>Source</th>
+                      <th>Visitors</th>
+                      <th>Sessions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {sources.map((s, i) => (
+                      <tr key={s.source}>
+                        <td>
+                          <span
+                            className="dash-donut-swatch"
+                            style={{ background: donutColor(i) }}
+                            aria-hidden="true"
+                          />
+                          {s.source}
+                        </td>
+                        <td className="tnum">{s.visitors}</td>
+                        <td className="tnum">{s.sessions}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )
           ) : POSTHOG_CONFIGURED ? (
             <p className="muted">Traffic-source data unavailable.</p>
@@ -659,7 +812,7 @@ export default async function DashboardPage({
           )}
         </div>
 
-        {/* Revenue by source */}
+        {/* Revenue + AOV by source */}
         <div className="dash-card">
           <div className="dash-card-hd">
             <h2 className="h3" style={{ margin: 0 }}>Revenue by source · {rangeKey}</h2>
@@ -675,16 +828,21 @@ export default async function DashboardPage({
                     <th>Source</th>
                     <th>Orders</th>
                     <th>Revenue</th>
+                    <th>AOV</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {revenueBySource.map((r) => (
-                    <tr key={r.source}>
-                      <td>{r.source}</td>
-                      <td className="tnum">{r.orders}</td>
-                      <td className="tnum">{fmtMoney(r.revenue, 'USD')}</td>
-                    </tr>
-                  ))}
+                  {revenueBySource.map((r) => {
+                    const aov = r.orders > 0 ? r.revenue / r.orders : 0;
+                    return (
+                      <tr key={r.source}>
+                        <td>{r.source}</td>
+                        <td className="tnum">{r.orders}</td>
+                        <td className="tnum">{fmtMoney(r.revenue, 'USD')}</td>
+                        <td className="tnum">{r.orders > 0 ? fmtMoney(aov, 'USD') : '—'}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )
@@ -1138,4 +1296,76 @@ function relativeTime(iso: string): string {
 function pct(num: number, denom: number): string {
   if (denom <= 0) return '—';
   return `${((num / denom) * 100).toFixed(1)}%`;
+}
+
+/**
+ * Phase 300c: 6-color rotation used by both the donut chart and the
+ * legend swatches. Picked from the existing design tokens so the chart
+ * doesn't introduce new colors — donut sits next to the existing
+ * funnel viz and needs to read as part of the same dashboard.
+ */
+const DONUT_PALETTE = ['#0a7a40', '#1b6ec2', '#b35900', '#8a4baf', '#b3611c', '#5f6b76'];
+function donutColor(i: number): string {
+  return DONUT_PALETTE[i % DONUT_PALETTE.length];
+}
+
+/**
+ * Phase 300c: SVG donut chart for traffic-source mix. Renders each slice
+ * as a stroked arc on a single circle (using stroke-dasharray instead of
+ * SVG path arcs — half the math, same visual result). Center hole reads
+ * the top-source share so the chart works at a glance.
+ *
+ * SVG only — no charting library. Hides itself if total <= 0 (no data).
+ */
+function SourceDonut({ slices }: { slices: Array<{ label: string; value: number }> }) {
+  const total = slices.reduce((s, x) => s + x.value, 0);
+  if (total <= 0) return null;
+  const r = 38;
+  const circ = 2 * Math.PI * r;
+  let cumulative = 0;
+  // Sort slices descending for stable visual order — biggest first.
+  const ordered = [...slices].sort((a, b) => b.value - a.value);
+  const top = ordered[0];
+  const topPct = (top.value / total) * 100;
+  return (
+    <svg
+      className="dash-donut"
+      viewBox="0 0 100 100"
+      role="img"
+      aria-label="Traffic source breakdown"
+    >
+      {/* Track ring — guards against gaps from rounding */}
+      <circle cx="50" cy="50" r={r} fill="none" stroke="var(--line)" strokeWidth="14" />
+      {ordered.map((s, i) => {
+        const frac = s.value / total;
+        const dash = circ * frac;
+        const offset = circ * (1 - cumulative);
+        cumulative += frac;
+        return (
+          <circle
+            key={s.label}
+            cx="50"
+            cy="50"
+            r={r}
+            fill="none"
+            stroke={donutColor(i)}
+            strokeWidth="14"
+            strokeDasharray={`${dash.toFixed(2)} ${(circ - dash).toFixed(2)}`}
+            strokeDashoffset={offset.toFixed(2)}
+            // Rotate so first slice starts at 12 o'clock instead of 3 o'clock.
+            transform="rotate(-90 50 50)"
+          >
+            <title>{`${s.label}: ${s.value.toLocaleString()} (${(frac * 100).toFixed(1)}%)`}</title>
+          </circle>
+        );
+      })}
+      {/* Center hole text — top source share */}
+      <text x="50" y="48" textAnchor="middle" fontSize="14" fontWeight="600" fill="var(--text-1)">
+        {topPct.toFixed(0)}%
+      </text>
+      <text x="50" y="60" textAnchor="middle" fontSize="8" fill="var(--text-2)">
+        {top.label.slice(0, 14)}
+      </text>
+    </svg>
+  );
 }
