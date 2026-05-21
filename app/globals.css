@@ -4589,6 +4589,62 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   background: var(--text-1);
   color: var(--surface-1);
 }
+/* Anomaly callout strip — sits above the section nav when any
+   detector fires. Each row is its own card colored by severity, with
+   a "Jump to section" link to the relevant in-page anchor. */
+.dash-anomaly-strip {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+}
+@media (min-width: 720px) {
+  .dash-anomaly-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.dash-anomaly {
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-2);
+  border-left: 4px solid var(--line);
+  background: var(--surface-1);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.dash-anomaly-critical {
+  border-left-color: #c0392b;
+  background: rgba(192, 57, 43, 0.06);
+}
+.dash-anomaly-warn {
+  border-left-color: #b3611c;
+  background: rgba(179, 97, 28, 0.06);
+}
+.dash-anomaly-info {
+  border-left-color: #1b6ec2;
+  background: rgba(27, 110, 194, 0.05);
+}
+.dash-anomaly-headline {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-1);
+  margin-bottom: 2px;
+}
+.dash-anomaly-detail {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+.dash-anomaly-link {
+  color: var(--text-1);
+  text-decoration: underline;
+  font-weight: 600;
+  font-size: 12px;
+  margin-left: 4px;
+}
+.dash-anomaly-link:hover {
+  text-decoration: none;
+}
 .dash-stat-delta {
   display: inline-block;
   margin-top: 4px;

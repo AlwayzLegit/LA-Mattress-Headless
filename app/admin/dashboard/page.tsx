@@ -27,6 +27,8 @@ import {
   getTopTrafficSources,
 } from '@/lib/posthog-dashboard';
 import { refreshDashboard } from './actions';
+import { computeAbandonment, funnelConversionRate } from '@/lib/dashboard/funnel-math';
+import { detectAnomalies } from '@/lib/dashboard/anomalies';
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -169,6 +171,24 @@ export default async function DashboardPage({
   const quizCompletionNow = quizFunnel && quizFunnel.started > 0 ? quizFunnel.completed / quizFunnel.started : null;
   const quizCompletionPrev = quizFunnelPrev && quizFunnelPrev.started > 0 ? quizFunnelPrev.completed / quizFunnelPrev.started : null;
 
+  // Anomaly detection runs over the already-fetched data — no additional
+  // queries. Returns an actionable list (revenue spikes, refund-rate
+  // climbs, oversold inventory, conversion drops, etc.) rendered as a
+  // callout strip at the top of the page so the merchant sees "things
+  // worth looking at" before they have to scan 18 cards.
+  const anomalies = detectAnomalies({
+    orderSummary,
+    refundHealth,
+    customerInsights,
+    lowStock,
+    searches,
+    funnelConvNow,
+    funnelConvPrev,
+    cartAbandonmentNow: abandonment?.cartAbandonment ?? null,
+    cartAbandonmentPrev: abandonmentPrev?.cartAbandonment ?? null,
+    rangeLabel,
+  });
+
   const renderedAt = new Date();
 
   return (
@@ -202,6 +222,12 @@ export default async function DashboardPage({
           </nav>
         </div>
       </header>
+
+      {/* Anomaly callouts — only render the strip when something fires.
+          Otherwise the dashboard reads "all clear" by absence, which is
+          the right default (the section nav becomes the first thing
+          below the header). */}
+      {anomalies.length > 0 ? <AnomalyStrip anomalies={anomalies} /> : null}
 
       {/* QA #224: section nav so the 18 cards aren't a wall of tiles.
           Anchor links jump to each section; scroll-margin-top in CSS
@@ -1119,6 +1145,53 @@ function DeviceTable({ rows }: { rows: Array<{ deviceType: string; sessions: num
 }
 
 /**
+ * Anomaly callout strip. Each item is a small card with severity color +
+ * headline + detail + optional jump-to-section link. Server-rendered;
+ * no client JS. Pure presentation — all detection logic lives in
+ * lib/dashboard/anomalies.ts.
+ *
+ * Severity colors come from the same palette as the dash-warn / delta
+ * badges so the dashboard reads as one design.
+ */
+function AnomalyStrip({
+  anomalies,
+}: {
+  anomalies: ReadonlyArray<{
+    id: string;
+    severity: 'critical' | 'warn' | 'info';
+    headline: string;
+    detail: string;
+    href?: string;
+  }>;
+}) {
+  // Order: critical first, then warn, then info. Within a tier the
+  // detector's natural order (revenue → refund → cart → conversion →
+  // inventory → searches) is preserved by Array.sort being stable.
+  const tier = { critical: 0, warn: 1, info: 2 };
+  const ordered = [...anomalies].sort((a, b) => tier[a.severity] - tier[b.severity]);
+  return (
+    <section className="dash-anomaly-strip" aria-label="Things to look at">
+      {ordered.map((a) => (
+        <div key={a.id} className={`dash-anomaly dash-anomaly-${a.severity}`} role="status">
+          <div className="dash-anomaly-headline">{a.headline}</div>
+          <div className="dash-anomaly-detail">
+            {a.detail}
+            {a.href ? (
+              <>
+                {' '}
+                <a href={a.href} className="dash-anomaly-link">
+                  Jump to section →
+                </a>
+              </>
+            ) : null}
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+/**
  * Phase 300: vs-previous delta on an absolute count or revenue value.
  * Renders as a small inline badge under the big KPI number. Hides the
  * delta entirely when prev is null/undefined (no comparable data) —
@@ -1211,49 +1284,10 @@ function Sparkline({ points, field }: { points: DashboardDailyPoint[]; field: 'o
 }
 
 /**
- * Compute the overall funnel conversion rate (last step persons / first
- * step persons). Returns null when there's no data for either end.
- * Lives at module scope so both the current and previous-period
- * funnels reuse the same definition — keeps the "vs previous"
- * comparison apples-to-apples.
+ * funnelConversionRate + computeAbandonment moved to
+ * lib/dashboard/funnel-math.ts so the unit-test suite can exercise the
+ * math without rendering this page. Imported at the top of the file.
  */
-function funnelConversionRate(steps: Array<{ persons: number }> | undefined | null): number | null {
-  if (!steps || steps.length < 2) return null;
-  const first = steps[0].persons;
-  const last = steps[steps.length - 1].persons;
-  if (first === 0) return null;
-  return last / first;
-}
-
-/**
- * Phase 300b: derive cart/checkout abandonment from the funnel.
- *
- *   cartAbandonment     = 1 - (checkout_started / cart_view)
- *   checkoutAbandonment = 1 - (order_completed / checkout_started)
- *
- * Returns null when the relevant numerator steps are missing from the
- * funnel definition (defensive — the FUNNEL_STEPS const in
- * posthog-dashboard.ts should always include these events).
- */
-function computeAbandonment(steps: Array<{ event: string; persons: number }>): {
-  cartViewers: number;
-  checkoutStarters: number;
-  orders: number;
-  cartAbandonment: number;
-  checkoutAbandonment: number;
-} | null {
-  const byEvent = new Map(steps.map((s) => [s.event, s.persons]));
-  const cartViewers = byEvent.get('cart_view') ?? 0;
-  const checkoutStarters = byEvent.get('checkout_started') ?? 0;
-  const orders = byEvent.get('order_completed') ?? 0;
-  return {
-    cartViewers,
-    checkoutStarters,
-    orders,
-    cartAbandonment: cartViewers > 0 ? 1 - checkoutStarters / cartViewers : 0,
-    checkoutAbandonment: checkoutStarters > 0 ? 1 - orders / checkoutStarters : 0,
-  };
-}
 
 /**
  * Phase 300b: full-width revenue trend chart for the selected range.

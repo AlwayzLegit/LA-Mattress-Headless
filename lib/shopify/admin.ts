@@ -13,6 +13,12 @@
 
 import 'server-only';
 import * as Sentry from '@sentry/nextjs';
+import { numericIdFromGid } from './gid';
+
+// Re-export so admin.ts callers can keep their `import { numericIdFromGid }
+// from '@/lib/shopify/admin'` paths unchanged. The pure helper now lives
+// in ./gid so the unit-test suite can import it without `server-only`.
+export { numericIdFromGid };
 
 // Read env vars per-call (not at module init) so Vercel env-var updates
 // take effect on the next function invocation without needing a redeploy.
@@ -535,14 +541,10 @@ export async function getLowStock(threshold = 3): Promise<DashboardLowStockVaria
 }
 
 /**
- * Extract the numeric portion of a Shopify GID (e.g.
- * gid://shopify/Product/12345 -> "12345"). Used to build
- * admin.shopify.com deep-links from GraphQL IDs.
+ * (numericIdFromGid moved to ./gid.ts so the unit-test suite can import
+ * the pure helper without dragging in server-only / Sentry. Re-exported
+ * at the top of this file for callers using the old import path.)
  */
-export function numericIdFromGid(gid: string): string {
-  const m = /\/(\d+)$/.exec(gid);
-  return m ? m[1] : gid;
-}
 
 /* ------------------------------------------------------------------------ *
  * Customer insights — new vs returning + repeat purchase rate, in window
