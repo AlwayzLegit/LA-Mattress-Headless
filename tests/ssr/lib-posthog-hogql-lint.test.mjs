@@ -99,3 +99,91 @@ test('lib/shopify/admin.ts tags every adminGql call with "admin-dashboard"', asy
       'options so the dashboard refresh button can bust its cache.',
   );
 });
+
+/* ------------------------------------------------------------------------ *
+ * Allow-list lint — every HogQL function call must be on the verified list.
+ *
+ * The deny-list above catches the SPECIFIC broken names we've seen ship.
+ * It does NOT catch the NEXT class of bug — a different ClickHouse-named
+ * function someone copy-pastes that happens to not be on either list.
+ * Cowork 20260521 follow-up: flip the model. Maintain an allow-list of
+ * HogQL functions we've confirmed work, and CI rejects any HogQL call
+ * site using a function not on that list.
+ *
+ * Adding a function to the allow-list = signaling "I've run this against
+ * the actual PostHog Query API and it returned data, not a 400". That
+ * gate keeps the next round of "I assumed this exists" out of prod.
+ * ------------------------------------------------------------------------ */
+
+const ALLOWED_HOGQL_FUNCTIONS = new Set([
+  // Aggregates verified in current queries
+  'count', 'countIf', 'sum', 'argMin',
+  // Conversion / nulls — only what's known to work. Notable absentees:
+  // toIntOrNull (proven broken — see deny-list), and ALL width-suffixed
+  // variants (toInt32OrNull, toFloat64OrZero, …).
+  'toString', 'toFloatOrZero', 'coalesce', 'nullif',
+  // Math
+  'round',
+  // String — used by getTopSearches to normalize the query key.
+  'lower', 'trim', 'startsWith',
+  // Time
+  'now',
+]);
+
+// SQL keywords + names that match `\w+\(` syntactically but aren't
+// function calls in HogQL — these get filtered out before the allow-
+// list check fires. Add (lowercased) here when extending HogQL feature
+// coverage triggers a false positive.
+const SQL_KEYWORDS_LOOKING_LIKE_FUNCTIONS = new Set([
+  'if', 'case', 'when', 'then', 'else', 'end',
+  'with', 'as', 'and', 'or', 'not', 'in', 'is', 'null',
+  'distinct', 'select', 'from', 'where', 'group', 'order', 'by',
+  'limit', 'having', 'on', 'join', 'left', 'right', 'inner', 'outer',
+  'interval', 'day', 'hour', 'minute', 'second', 'week', 'month',
+  'true', 'false', 'cast', 'over', 'partition', 'rows', 'between',
+]);
+
+function extractHogqlFunctionNames(hogqlString) {
+  const matches = hogqlString.matchAll(/\b([A-Za-z_]\w*)\s*\(/g);
+  const names = new Set();
+  for (const m of matches) {
+    const name = m[1];
+    if (!SQL_KEYWORDS_LOOKING_LIKE_FUNCTIONS.has(name.toLowerCase())) {
+      names.add(name);
+    }
+  }
+  return names;
+}
+
+test('every HogQL function call in posthog-dashboard.ts is on the allow-list', async () => {
+  const source = await readFile(resolve(REPO_ROOT, 'lib/posthog-dashboard.ts'), 'utf8');
+  // Extract every hogQL`...` template literal body.
+  const hogqlMatches = source.matchAll(/hogQL\(\s*`([\s\S]*?)`/g);
+  const usedFunctions = new Set();
+  const callSites = new Map(); // name → first snippet for error context
+  for (const m of hogqlMatches) {
+    const body = m[1];
+    for (const name of extractHogqlFunctionNames(body)) {
+      usedFunctions.add(name);
+      if (!callSites.has(name)) {
+        // First 80 chars of the surrounding HogQL for error message.
+        const idx = body.search(new RegExp(`\\b${name}\\s*\\(`));
+        callSites.set(name, body.slice(Math.max(0, idx - 20), idx + 60).replace(/\s+/g, ' '));
+      }
+    }
+  }
+  const offenders = [...usedFunctions].filter((fn) => !ALLOWED_HOGQL_FUNCTIONS.has(fn));
+  assert.equal(
+    offenders.length,
+    0,
+    offenders.length === 0
+      ? ''
+      : `HogQL function(s) not on the allow-list: ${offenders.map((n) => `"${n}"`).join(', ')}\n\n` +
+        offenders.map((n) => `  ${n}: …${callSites.get(n)}…`).join('\n') + '\n\n' +
+        `If this function genuinely works in PostHog HogQL, add it to ` +
+        `ALLOWED_HOGQL_FUNCTIONS in tests/ssr/lib-posthog-hogql-lint.test.mjs ` +
+        `and document the verification. If you guessed (a ClickHouse name, ` +
+        `a SQL name from another dialect), pick a verified alternative — see ` +
+        `Sentry LA-MATTRESS-HEADLESS-S for the cost of getting this wrong.`,
+  );
+});
