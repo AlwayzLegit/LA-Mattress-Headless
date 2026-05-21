@@ -293,6 +293,14 @@ export function getProductJsonLd(product: Product): ProductLd[] {
   // SEMrush 20260521 fix: omit the brand block when vendor is blank.
   const vendorTrimmed = product.vendor?.trim() ?? '';
 
+  // Description — Shopify returns this as a string but can be empty
+  // for products where the merchant hasn't filled out the body. Emitting
+  // `description: ""` is invalid per Google's Product spec (and
+  // SEMrush validators), so omit the field when empty. Same guard
+  // pattern as the brand + image fields below. SEMrush 20260521_1
+  // follow-up — each of the 335 flagged PDPs had this single error.
+  const descriptionTrimmed = product.description?.slice(0, 5000).trim() ?? '';
+
   const productLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -304,7 +312,7 @@ export function getProductJsonLd(product: Product): ProductLd[] {
     // instead of two disjoint nodes.
     breadcrumb: { '@id': `${productUrl}#breadcrumb` },
     name: product.title,
-    description: product.description.slice(0, 5000),
+    ...(descriptionTrimmed ? { description: descriptionTrimmed } : {}),
     ...(firstSku ? { sku: firstSku, mpn: firstSku } : {}),
     ...(vendorTrimmed ? { brand: { '@type': 'Brand', name: vendorTrimmed } } : {}),
     ...(product.productType ? { category: product.productType } : {}),
