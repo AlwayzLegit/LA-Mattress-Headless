@@ -11,7 +11,16 @@
  * than sharing a util — the page keeps its own copy for read-time.
  */
 import type { getArticleByHandle } from '@/lib/shopify';
-import { firstNonEmpty } from '@/lib/seo';
+// `firstNonEmpty` is inlined here (rather than imported from ./seo)
+// so the unit-test suite can pull this file via Node 22's experimental-
+// strip-types without TS path-alias / extension headaches. The two-liner
+// isn't worth a shared module dependency.
+function firstNonEmpty(...candidates: (string | null | undefined)[]): string {
+  for (const c of candidates) {
+    if (typeof c === 'string' && c.trim().length > 0) return c;
+  }
+  return '';
+}
 
 type Article = NonNullable<Awaited<ReturnType<typeof getArticleByHandle>>>;
 export type ArticleLd = { key: string; data: unknown };
@@ -91,6 +100,13 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     article.title,
   );
 
+  // Image — Google's BlogPosting validator wants this present. When the
+  // article has no featured image, fall back to the sitewide logo so the
+  // page still passes the "has image" check. The validator accepts either
+  // a string URL or an ImageObject; we use the string form to match the
+  // sitewide Organization pattern.
+  const imageUrls = article.image ? [article.image.url] : [`${SITE}/assets/la-mattress-logo.png`];
+
   const articleLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -103,7 +119,13 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     breadcrumb: { '@id': `${url}#breadcrumb` },
     ...(ldDescription ? { description: ldDescription } : {}),
     datePublished: article.publishedAt,
-    image: article.image ? [article.image.url] : undefined,
+    // dateModified: Google's Article rich-results spec calls for both
+    // dates. Shopify's Storefront API doesn't expose article.updatedAt
+    // (Admin API does), so we use publishedAt as the documented date.
+    // Lossy for articles edited post-publish — Storefront API limitation,
+    // not a JSON-LD shape issue. SEMrush 20260521_1 follow-up.
+    dateModified: article.publishedAt,
+    image: imageUrls,
     author: article.author ? { '@type': 'Person', name: article.author.name } : undefined,
     publisher: {
       // @id link to the canonical Organization schema emitted from
@@ -115,7 +137,18 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
       '@id': `${SITE}/#organization`,
       '@type': 'Organization',
       name: 'LA Mattress Store',
-      logo: { '@type': 'ImageObject', url: `${SITE}/assets/la-mattress-logo.png` },
+      // ImageObject with explicit width + height — Google's Article
+      // validator rejects a logo missing dimensions even when the URL
+      // is reachable. Source file dimensions (public/assets/la-mattress-logo.png)
+      // captured here so it doesn't drift if the file is re-exported.
+      // SEMrush 20260521_1 follow-up: was emitting just url, which
+      // tripped the validator on all 666 article pages.
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE}/assets/la-mattress-logo.png`,
+        width: 400,
+        height: 224,
+      },
     },
     articleSection: article.blog.title,
     ...(wordCount ? { wordCount } : {}),
