@@ -13,6 +13,7 @@ import {
   getTopProducts,
   numericIdFromGid,
   type DashboardDailyPoint,
+  type DashboardHourPoint,
 } from '@/lib/shopify/admin';
 import {
   POSTHOG_CONFIGURED,
@@ -417,6 +418,19 @@ export default async function DashboardPage({
               <DayOfWeekHeatmap points={orderSummary.daily} />
             ) : (
               <p className="muted">Need at least 7 days of order data.</p>
+            )}
+          </div>
+
+          {/* Hour-of-day order heatmap */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Orders by hour · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>Shopify · UTC · order count</span>
+            </div>
+            {orderSummary ? (
+              <HourOfDayHeatmap points={orderSummary.hourly} />
+            ) : (
+              <p className="muted">Order data unavailable.</p>
             )}
           </div>
 
@@ -1649,6 +1663,41 @@ function DayOfWeekHeatmap({ points }: { points: DashboardDailyPoint[] }) {
               <span className="dash-heatmap-value tnum">{n}</span>
             </div>
             <div className="dash-heatmap-sub muted tnum">{avgPerWeek.toFixed(1)}/wk</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * Hour-of-day heatmap. 24 columns (hour 0–23 in UTC), each column's
+ * background intensity scaled to the busiest hour's count. Useful for
+ * "when do orders come in" decisions — does the storefront need a
+ * pre-8am push notification, or are most orders coming in at 11pm?
+ *
+ * UTC because the underlying bucketing in getOrderSummaryWithTrends is
+ * UTC. A subtitle on the parent card spells out the offset note so
+ * the merchant can mentally subtract 7-8h for Pacific. Adding a TZ
+ * picker would be the right next step if this proves heavily-used.
+ */
+function HourOfDayHeatmap({ points }: { points: DashboardHourPoint[] }) {
+  const max = Math.max(...points.map((p) => p.orders), 1);
+  return (
+    <div className="dash-hour-heatmap" role="table" aria-label="Orders by hour of day (UTC)">
+      {points.map((p) => {
+        const intensity = p.orders / max;
+        const label = p.hour.toString().padStart(2, '0');
+        return (
+          <div key={p.hour} className="dash-hour-cell" role="row">
+            <div
+              className="dash-hour-bar"
+              style={{ background: `rgba(10, 122, 64, ${0.10 + intensity * 0.90})` }}
+              title={`${label}:00 UTC · ${p.orders} ${p.orders === 1 ? 'order' : 'orders'}`}
+            >
+              <span className="dash-hour-value tnum">{p.orders > 0 ? p.orders : ''}</span>
+            </div>
+            <div className="dash-hour-label muted tnum">{label}</div>
           </div>
         );
       })}
