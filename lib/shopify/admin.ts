@@ -540,6 +540,241 @@ export async function getLowStock(threshold = 3): Promise<DashboardLowStockVaria
     .sort((a, b) => a.quantity - b.quantity);
 }
 
+/* ------------------------------------------------------------------------ *
+ * Single-order detail — powers /admin/orders/[id] drill-down
+ *
+ * Pulls everything one screen-worth of merchant context needs: line
+ * items + their refunded quantities, fulfillment status + tracking,
+ * payment status, refund history, customer info + lifetime order
+ * count, shipping address, tags, internal note.
+ *
+ * One bigger query (vs N small ones) so the page renders in a single
+ * Admin API round-trip. Shopify's GraphQL nested query cost is well
+ * within the 1000-point budget for this shape.
+ *
+ * Returns null on any error so the page can render a "couldn't load
+ * order — check Sentry" fallback rather than 500.
+ * ------------------------------------------------------------------------ */
+
+export type DashboardOrderDetailLineItem = {
+  id: string;
+  title: string;
+  variantTitle: string | null;
+  sku: string | null;
+  quantity: number;
+  quantityRefunded: number;
+  productId: string | null;
+  productHandle: string | null;
+  unitPrice: number;
+  totalPrice: number;
+  currency: string;
+};
+
+export type DashboardOrderDetailFulfillment = {
+  id: string;
+  status: string;
+  createdAt: string;
+  trackingInfo: Array<{ company: string | null; number: string | null; url: string | null }>;
+};
+
+export type DashboardOrderDetailRefund = {
+  id: string;
+  createdAt: string;
+  totalRefunded: number;
+  currency: string;
+  note: string | null;
+};
+
+export type DashboardOrderDetail = {
+  id: string;            // numeric ID for admin.shopify.com links
+  gid: string;           // full GID for any return-trips
+  name: string;          // "#4045"
+  createdAt: string;
+  processedAt: string | null;
+  cancelledAt: string | null;
+  cancelReason: string | null;
+  displayFinancialStatus: string | null;
+  displayFulfillmentStatus: string | null;
+  total: number;
+  subtotal: number;
+  totalTax: number;
+  totalShipping: number;
+  totalRefunded: number;
+  currency: string;
+  customer: {
+    id: string | null;       // numeric ID for admin link
+    displayName: string | null;
+    email: string | null;
+    phone: string | null;
+    numberOfOrders: number | null;
+  } | null;
+  shippingAddress: { formatted: string[]; name: string | null } | null;
+  lineItems: DashboardOrderDetailLineItem[];
+  fulfillments: DashboardOrderDetailFulfillment[];
+  refunds: DashboardOrderDetailRefund[];
+  tags: string[];
+  note: string | null;
+};
+
+export async function getOrderDetail(numericId: string): Promise<DashboardOrderDetail | null> {
+  // Build the GID from the numeric ID the route segment carries. The
+  // page validates this upstream with a /^\d+$/ check so we don't need
+  // to guard against injection here (the value already came from a
+  // typed URL pattern).
+  const gid = `gid://shopify/Order/${numericId}`;
+
+  const data = await adminGql<{
+    order: {
+      id: string;
+      name: string;
+      createdAt: string;
+      processedAt: string | null;
+      cancelledAt: string | null;
+      cancelReason: string | null;
+      displayFinancialStatus: string | null;
+      displayFulfillmentStatus: string | null;
+      currentTotalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+      currentSubtotalPriceSet: { shopMoney: { amount: string; currencyCode: string } } | null;
+      currentTotalTaxSet: { shopMoney: { amount: string; currencyCode: string } } | null;
+      totalShippingPriceSet: { shopMoney: { amount: string; currencyCode: string } } | null;
+      totalRefundedSet: { shopMoney: { amount: string; currencyCode: string } } | null;
+      tags: string[];
+      note: string | null;
+      customer: {
+        id: string;
+        displayName: string | null;
+        email: string | null;
+        phone: string | null;
+        numberOfOrders: string | number | null;
+      } | null;
+      shippingAddress: { formatted: string[]; name: string | null } | null;
+      lineItems: {
+        nodes: Array<{
+          id: string;
+          title: string;
+          variantTitle: string | null;
+          sku: string | null;
+          quantity: number;
+          refundableQuantity: number;
+          originalUnitPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+          originalTotalSet: { shopMoney: { amount: string; currencyCode: string } };
+          product: { id: string; handle: string } | null;
+        }>;
+      };
+      fulfillments: Array<{
+        id: string;
+        status: string;
+        createdAt: string;
+        trackingInfo: Array<{ company: string | null; number: string | null; url: string | null }>;
+      }>;
+      refunds: Array<{
+        id: string;
+        createdAt: string;
+        note: string | null;
+        totalRefundedSet: { shopMoney: { amount: string; currencyCode: string } };
+      }>;
+    } | null;
+  }>(
+    `query OrderDetail($id: ID!) {
+      order(id: $id) {
+        id name createdAt processedAt cancelledAt cancelReason
+        displayFinancialStatus displayFulfillmentStatus
+        currentTotalPriceSet { shopMoney { amount currencyCode } }
+        currentSubtotalPriceSet { shopMoney { amount currencyCode } }
+        currentTotalTaxSet { shopMoney { amount currencyCode } }
+        totalShippingPriceSet { shopMoney { amount currencyCode } }
+        totalRefundedSet { shopMoney { amount currencyCode } }
+        tags note
+        customer { id displayName email phone numberOfOrders }
+        shippingAddress { formatted name }
+        lineItems(first: 50) {
+          nodes {
+            id title variantTitle sku quantity refundableQuantity
+            originalUnitPriceSet { shopMoney { amount currencyCode } }
+            originalTotalSet { shopMoney { amount currencyCode } }
+            product { id handle }
+          }
+        }
+        fulfillments(first: 10) {
+          id status createdAt
+          trackingInfo { company number url }
+        }
+        refunds(first: 10) {
+          id createdAt note
+          totalRefundedSet { shopMoney { amount currencyCode } }
+        }
+      }
+    }`,
+    { id: gid },
+  );
+
+  if (!data || !data.order) return null;
+  const o = data.order;
+  const currency = o.currentTotalPriceSet.shopMoney.currencyCode || 'USD';
+
+  return {
+    id: numericIdFromGid(o.id),
+    gid: o.id,
+    name: o.name,
+    createdAt: o.createdAt,
+    processedAt: o.processedAt,
+    cancelledAt: o.cancelledAt,
+    cancelReason: o.cancelReason,
+    displayFinancialStatus: o.displayFinancialStatus,
+    displayFulfillmentStatus: o.displayFulfillmentStatus,
+    total: Number.parseFloat(o.currentTotalPriceSet.shopMoney.amount || '0'),
+    subtotal: Number.parseFloat(o.currentSubtotalPriceSet?.shopMoney.amount || '0'),
+    totalTax: Number.parseFloat(o.currentTotalTaxSet?.shopMoney.amount || '0'),
+    totalShipping: Number.parseFloat(o.totalShippingPriceSet?.shopMoney.amount || '0'),
+    totalRefunded: Number.parseFloat(o.totalRefundedSet?.shopMoney.amount || '0'),
+    currency,
+    customer: o.customer
+      ? {
+          id: numericIdFromGid(o.customer.id),
+          displayName: o.customer.displayName,
+          email: o.customer.email,
+          phone: o.customer.phone,
+          numberOfOrders: o.customer.numberOfOrders !== null && o.customer.numberOfOrders !== undefined
+            ? Number(o.customer.numberOfOrders)
+            : null,
+        }
+      : null,
+    shippingAddress: o.shippingAddress,
+    lineItems: o.lineItems.nodes.map((li) => ({
+      id: li.id,
+      title: li.title,
+      variantTitle: li.variantTitle,
+      sku: li.sku,
+      quantity: li.quantity,
+      // Shopify's `refundableQuantity` is what's LEFT refundable.
+      // Refunded quantity = original quantity - refundable. Saturate at
+      // 0 in case Shopify returns refundable > quantity (shouldn't but
+      // belt-and-suspenders for the partial-refund edge case).
+      quantityRefunded: Math.max(li.quantity - li.refundableQuantity, 0),
+      productId: li.product ? numericIdFromGid(li.product.id) : null,
+      productHandle: li.product?.handle ?? null,
+      unitPrice: Number.parseFloat(li.originalUnitPriceSet.shopMoney.amount || '0'),
+      totalPrice: Number.parseFloat(li.originalTotalSet.shopMoney.amount || '0'),
+      currency: li.originalUnitPriceSet.shopMoney.currencyCode || currency,
+    })),
+    fulfillments: o.fulfillments.map((f) => ({
+      id: f.id,
+      status: f.status,
+      createdAt: f.createdAt,
+      trackingInfo: f.trackingInfo ?? [],
+    })),
+    refunds: o.refunds.map((r) => ({
+      id: r.id,
+      createdAt: r.createdAt,
+      totalRefunded: Number.parseFloat(r.totalRefundedSet.shopMoney.amount || '0'),
+      currency: r.totalRefundedSet.shopMoney.currencyCode || currency,
+      note: r.note,
+    })),
+    tags: o.tags ?? [],
+    note: o.note,
+  };
+}
+
 /**
  * (numericIdFromGid moved to ./gid.ts so the unit-test suite can import
  * the pure helper without dragging in server-only / Sentry. Re-exported

@@ -4645,6 +4645,40 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 .dash-anomaly-link:hover {
   text-decoration: none;
 }
+/* Order detail (/admin/orders/[id]) — status badges shown next to the
+   order name in the header. Color tokens mirror the anomaly strip so
+   the two pages read as one design. */
+.dash-order-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.dash-order-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.dash-order-badge-green {
+  background: rgba(10, 122, 64, 0.12);
+  color: #0a7a40;
+}
+.dash-order-badge-warn {
+  background: rgba(179, 97, 28, 0.12);
+  color: #b3611c;
+}
+.dash-order-badge-critical {
+  background: rgba(192, 57, 43, 0.12);
+  color: #c0392b;
+}
+.dash-order-badge-neutral {
+  background: var(--surface-2, #f5f5f5);
+  color: var(--text-2);
+}
 .dash-stat-delta {
   display: inline-block;
   margin-top: 4px;
