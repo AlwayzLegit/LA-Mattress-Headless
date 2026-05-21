@@ -302,8 +302,12 @@ export default async function DashboardPage({
                 <strong>{catalog.totalProducts}</strong>
               </li>
               <li>
-                <span>Published</span>
+                <span>On storefront</span>
                 <strong>{catalog.publishedProducts}</strong>
+              </li>
+              <li className={catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts > 0 ? 'dash-warn' : ''}>
+                <span>Active but hidden</span>
+                <strong>{Math.max(catalog.totalProducts - catalog.publishedProducts - catalog.draftProducts, 0)}</strong>
               </li>
               <li className={catalog.draftProducts > 0 ? 'dash-warn' : ''}>
                 <span>Drafts</span>

@@ -94,18 +94,26 @@ function initPostHog() {
 export function AnalyticsPostHog() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // QA #224: don't track internal admin traffic. Otherwise the
+  // dashboard pollutes the very metrics it reports — staff loading
+  // /admin/dashboard was showing up in the Top entry pages card with
+  // its own sessions + bounce rate. Pathname check is sufficient: the
+  // SDK never initializes on admin routes, so no $pageview, no
+  // autocapture, no session replay.
+  const isAdmin = pathname?.startsWith('/admin') ?? false;
 
   useEffect(() => {
+    if (isAdmin) return;
     initPostHog();
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
-    if (!KEY || !initialized) return;
+    if (isAdmin || !KEY || !initialized) return;
     // Fire pageview on every Next.js route change. URL search params are
     // included so funnel filters can split by source / utm / sort.
     const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
     posthog.capture('$pageview', { $current_url: url });
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, isAdmin]);
 
   return null;
 }
