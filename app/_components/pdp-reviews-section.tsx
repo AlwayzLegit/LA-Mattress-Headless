@@ -1,6 +1,7 @@
 import { ReviewsBadge } from './reviews-badge';
 import { shopifyProductIdFromGid } from '@/lib/judgeme';
 import { JudgemeWidget } from './judgeme-widget';
+import { StripInternalNofollow } from './strip-internal-nofollow';
 import { TrackReviewWidget } from './track-review-widget';
 import type { ProductReviews } from '@/lib/shopify';
 
@@ -57,6 +58,12 @@ export function PdpReviewsSection({ productGid, productHandle, reviews }: Props)
         <>
           <JudgemeWidget productId={productId} />
           <TrackReviewWidget productId={productId} />
+          {/* SEMrush 20260521_1 follow-up: Judge.me's widget injects
+              anchors with rel="nofollow" on in-page form/pagination
+              links. This client mutator strips those after the
+              widget hydrates. See lib/strip-nofollow.ts for the pure
+              decision logic. */}
+          <StripInternalNofollow />
         </>
       ) : (
         <p className="muted">
