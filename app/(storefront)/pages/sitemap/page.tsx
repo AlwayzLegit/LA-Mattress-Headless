@@ -6,6 +6,7 @@ import {
   publishedPages,
   products as inventoryProducts,
 } from '@/lib/inventory';
+import { resolveRedirectPath } from '@/lib/sanitize';
 
 /**
  * HTML sitemap — every collection, every blog (with every article in it),
@@ -82,7 +83,7 @@ export default function HtmlSitemapPage() {
             .sort((a, b) => a.title.localeCompare(b.title))
             .map((c) => (
               <li key={c.handle}>
-                <Link href={`/collections/${c.handle}`}>{c.title}</Link>
+                <Link href={resolveRedirectPath(`/collections/${c.handle}`)}>{c.title}</Link>
               </li>
             ))}
         </ul>
@@ -96,7 +97,7 @@ export default function HtmlSitemapPage() {
             .sort((a, b) => a.title.localeCompare(b.title))
             .map((p) => (
               <li key={p.handle}>
-                <Link href={`/pages/${p.handle}`}>{p.title}</Link>
+                <Link href={resolveRedirectPath(`/pages/${p.handle}`)}>{p.title}</Link>
               </li>
             ))}
         </ul>
@@ -116,7 +117,7 @@ export default function HtmlSitemapPage() {
       {liveBlogs.map((blog) => (
         <section key={blog.handle} className="html-sitemap-section" aria-labelledby={`hs-blog-${blog.handle}`}>
           <h2 id={`hs-blog-${blog.handle}`} className="h2">
-            <Link href={`/blogs/${blog.handle}`}>{blog.title}</Link>
+            <Link href={resolveRedirectPath(`/blogs/${blog.handle}`)}>{blog.title}</Link>
             <span className="muted html-sitemap-count">
               · {blog.articles?.length ?? 0} articles
             </span>
@@ -128,7 +129,7 @@ export default function HtmlSitemapPage() {
                 .sort((a, b) => (a.title ?? a.handle).localeCompare(b.title ?? b.handle))
                 .map((a) => (
                   <li key={a.handle}>
-                    <Link href={`/blogs/${blog.handle}/${a.handle}`}>
+                    <Link href={resolveRedirectPath(`/blogs/${blog.handle}/${a.handle}`)}>
                       {a.title ?? a.handle}
                     </Link>
                   </li>
@@ -151,7 +152,7 @@ export default function HtmlSitemapPage() {
             .sort((a, b) => a.handle.localeCompare(b.handle))
             .map((p) => (
               <li key={p.handle}>
-                <Link href={`/products/${p.handle}`}>
+                <Link href={resolveRedirectPath(`/products/${p.handle}`)}>
                   {p.handle
                     .split('-')
                     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))

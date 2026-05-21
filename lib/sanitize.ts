@@ -27,7 +27,12 @@
  * this guard prevents a stale leak from breaking the live site.
  */
 
-import redirectsJson from '@/data/url-inventory/redirects.json';
+// Relative path (not '@/data/...') so the unit-test suite can import
+// this file via Node 22's experimental-strip-types without a TS path-
+// alias resolver. The `@/` alias still works inside Next.js builds via
+// tsconfig + webpack — both forms resolve to the same file at compile
+// time. Tests run outside Next, hence the relative path.
+import redirectsJson from '../data/url-inventory/redirects.json' with { type: 'json' };
 
 // Phase 293: resolve internal links that 301-redirect.
 //
@@ -93,6 +98,27 @@ function resolveRedirectHrefs(html: string): string {
     const dest = REDIRECT_TARGET.get(normRedirectPath(path));
     return dest ? `href=${q}${dest}${suffix}${q}` : full;
   });
+}
+
+/**
+ * Resolve a single internal path through the redirects table. Returns
+ * the chain-collapsed terminal destination if `path` is a known
+ * redirect source; otherwise returns the input unchanged.
+ *
+ * Used by the HTML sitemap page (and any other coded route that renders
+ * `<Link href={…}>` from an inventory snapshot) so the rendered hrefs
+ * point at canonical URLs, not the stale handles `redirects.json`
+ * already 301s away. SEMrush counts a hardcoded link to a redirect
+ * source as a "Permanent redirect in internal links" hit even when the
+ * 301 itself works correctly — same data, single source of truth.
+ *
+ * Query strings + hash fragments are preserved on the destination.
+ */
+export function resolveRedirectPath(path: string): string {
+  if (typeof path !== 'string' || !path.startsWith('/') || path.startsWith('//')) return path;
+  const [base, ...rest] = path.split(/(?=[?#])/);
+  const dest = REDIRECT_TARGET.get(normRedirectPath(base));
+  return dest ? dest + rest.join('') : path;
 }
 
 const HOSTS_TO_REWRITE = [
