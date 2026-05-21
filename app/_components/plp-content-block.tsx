@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Icon } from './icon';
 import { categoryFaqFor, categoryGuidesFor } from '@/lib/plp-content';
 import { renderFaqAnswer } from '@/lib/faq-render';
-import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { resolveRedirectPath, sanitizeShopifyHtml } from '@/lib/sanitize';
 
 /**
  * Below-the-product-grid content block on every /collections/[handle].
@@ -96,7 +96,7 @@ export function PlpContentBlock({
               <ul className="plp-content-link-list">
                 {guides.map((g) => (
                   <li key={g.href}>
-                    <Link href={g.href} className="link-arrow">
+                    <Link href={resolveRedirectPath(g.href)} className="link-arrow">
                       {g.label} <Icon name="arrow-right" size={14} />
                     </Link>
                   </li>
