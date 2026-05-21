@@ -49,8 +49,9 @@ export function generateStaticParams() {
   return inventoryCollections.map((c) => ({ handle: c.handle }));
 }
 
-export async function generateMetadata(props: { params: Promise<Params['params']> }): Promise<Metadata> {
+export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   if (!SHOPIFY_CONFIGURED) return { title: 'Collection' };
   const collection = await getCollectionByHandle({ handle: params.handle, first: 1 }).catch(() => null);
   if (!collection) return { title: 'Collection not found' };
@@ -63,10 +64,21 @@ export async function generateMetadata(props: { params: Promise<Params['params']
     ),
   );
   const url = `/collections/${collection.handle}`;
+  // SEMrush 20260521_1 follow-up — paginated cursor URLs (`?after=...`)
+  // and applied filters (`filter.v.option.size=Queen`, etc.) duplicate
+  // the bare PLP with a different slice. The canonical link already
+  // points back to the bare URL, but flagged URLs still showed up
+  // (low word count / thin variants). robots: noindex (follow) blocks
+  // indexing of cursor + filtered URLs while letting Googlebot follow
+  // links to products — standard PLP pagination/faceted-nav SEO.
+  const hasCursor = Boolean(searchParams?.after);
+  const hasFilters = Object.keys(searchParams ?? {}).some((k) => k.startsWith('filter.'));
+  const isPaginatedOrFiltered = hasCursor || hasFilters;
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
+    ...(isPaginatedOrFiltered ? { robots: { index: false, follow: true } } : {}),
     // Per Next.js metadata rules: a route declaring its own `openGraph`
     // object replaces the parent layout's wholesale, and the file-system
     // OG image convention (`app/opengraph-image.tsx`) is NOT auto-merged
