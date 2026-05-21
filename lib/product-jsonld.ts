@@ -249,30 +249,49 @@ export function getProductJsonLd(product: Product): ProductLd[] {
       offer.gtin = v.barcode;
     }
     if (v.compareAtPrice && Number.parseFloat(v.compareAtPrice.amount) > Number.parseFloat(v.price.amount)) {
-      // priceSpecification with the strikethrough price helps Google
-      // surface "X% off" in Shopping rich results.
+      // Strikethrough / list pricing per Google's Sale price rich-results
+      // recipe. The Offer.price stays at the SALE price; priceSpecification
+      // carries the ORIGINAL price tagged with priceType=ListPrice so
+      // Shopping surfaces the "X% off" annotation.
+      //
+      // SEMrush 20260521 fix: the previous shape used a nonexistent
+      // `referencePrice` property which fired one schema-validation error
+      // per discounted variant — about half of the 2,752 sitewide
+      // structured-data errors were this single property. Replaced with
+      // the canonical ListPrice + UnitPriceSpecification pattern.
       offer.priceSpecification = {
         '@type': 'UnitPriceSpecification',
-        price: v.price.amount,
-        priceCurrency: v.price.currencyCode,
-        referencePrice: {
-          '@type': 'PriceSpecification',
-          price: v.compareAtPrice.amount,
-          priceCurrency: v.compareAtPrice.currencyCode,
-        },
+        price: v.compareAtPrice.amount,
+        priceCurrency: v.compareAtPrice.currencyCode,
+        priceType: 'https://schema.org/ListPrice',
       };
     }
-    if (sizeLabel) {
-      offer.itemOffered = {
-        '@type': 'Product',
-        name: `${product.title} — ${sizeLabel}`,
-        size: sizeLabel,
-      };
-    }
+    // Intentionally NOT emitting Offer.itemOffered on per-variant offers.
+    // Previously rendered a nested Product { name, size } that was
+    // schema-incomplete (no image, no offers, no sku) and tripped Semrush
+    // validators on every discounted variant. Google reads the AggregateOffer
+    // sibling + the variant URL (?variant=...) + the variant SKU for size
+    // disambiguation in Shopping; the inner Product wasn't adding signal.
     return offer;
   });
 
   const additionalProperty = buildAdditionalProperties(product);
+
+  // Image list is built defensively — schema validators reject an
+  // empty image: [] array (the field is supposed to be either omitted
+  // or non-empty). Fall back to featuredImage, then omit entirely if
+  // the product has no images at all. SEMrush 20260521 fix.
+  const imageUrls = product.images.length
+    ? product.images.map((i) => i.url)
+    : product.featuredImage
+      ? [product.featuredImage.url]
+      : [];
+
+  // Brand name needs to be non-empty. product.vendor is a free-text
+  // Shopify field — when a merchant hasn't set a vendor it's an empty
+  // string, which renders as { name: '' } and fires a validator error.
+  // SEMrush 20260521 fix: omit the brand block when vendor is blank.
+  const vendorTrimmed = product.vendor?.trim() ?? '';
 
   const productLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -287,10 +306,10 @@ export function getProductJsonLd(product: Product): ProductLd[] {
     name: product.title,
     description: product.description.slice(0, 5000),
     ...(firstSku ? { sku: firstSku, mpn: firstSku } : {}),
-    brand: { '@type': 'Brand', name: product.vendor },
+    ...(vendorTrimmed ? { brand: { '@type': 'Brand', name: vendorTrimmed } } : {}),
     ...(product.productType ? { category: product.productType } : {}),
     ...(product.specs.materialType ? { material: product.specs.materialType } : {}),
-    image: product.images.length ? product.images.map((i) => i.url) : (product.featuredImage ? [product.featuredImage.url] : []),
+    ...(imageUrls.length > 0 ? { image: imageUrls } : {}),
     // dateModified signals content freshness to Google. Shopify's
     // Storefront API exposes updatedAt on every Product (it bumps on
     // any merchant edit — price, copy, image, variant change). Helps
