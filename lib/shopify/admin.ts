@@ -1194,3 +1194,124 @@ export async function getCustomerLifetime(sampleSize = 250): Promise<DashboardCu
 
   return summarizeCustomerLifetime(customers);
 }
+
+/* ────────────────────────────────────────────────────────────────────── *
+ * Order classification — new vs repeat customer breakdown for the window
+ *
+ * For each order in the last N days, classify by the customer's
+ * lifetime order count (Shopify's `customer.numberOfOrders` at fetch
+ * time). Buckets:
+ *
+ *   - first:  numberOfOrders == 1 → the customer's first-ever order
+ *             (only possible if this order IS that first one)
+ *   - second: numberOfOrders == 2 → first repeat, the "did they come
+ *             back?" milestone
+ *   - loyal:  numberOfOrders >= 3 → multiple repeat purchases
+ *
+ * Each bucket carries count + revenue + derived AOV. The split is the
+ * single most actionable customer-segmentation view for the merchant —
+ * it answers "are we acquiring new buyers or just servicing existing
+ * ones" without needing a multi-month cohort analysis.
+ *
+ * Caveats:
+ *   - numberOfOrders is point-in-time at fetch, not order-time. A
+ *     customer who placed 3 orders this week shows numberOfOrders=3 on
+ *     all 3. So the "first" bucket really counts orders from customers
+ *     whose lifetime total is still 1 (no follow-up yet). Close enough
+ *     for a top-of-page health check; not a true cohort analysis.
+ *   - Guest checkouts (no customer attached) are counted in a fourth
+ *     `guest` bucket so they don't get misclassified as "first".
+ * ────────────────────────────────────────────────────────────────────── */
+
+export type DashboardCustomerTier = {
+  count: number;
+  revenue: number;
+  avgOrderValue: number;
+};
+
+export type DashboardOrderClassification = {
+  currency: string;
+  totalOrders: number;
+  totalRevenue: number;
+  first: DashboardCustomerTier;
+  second: DashboardCustomerTier;
+  loyal: DashboardCustomerTier;
+  guest: DashboardCustomerTier;
+};
+
+export async function getOrderClassification(days = 30): Promise<DashboardOrderClassification | null> {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  // Pull a generous page of orders for the window. Shopify caps `first`
+  // at 250; that's enough for ~250 orders per window which covers the
+  // entire current-period dataset for any range this dashboard supports
+  // (7d / 30d / 90d) given the merchant's current order volume.
+  const data = await adminGql<{
+    orders: {
+      nodes: Array<{
+        id: string;
+        totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+        customer: { id: string; numberOfOrders: string | number | null } | null;
+      }>;
+    };
+  }>(
+    `query OrderClassification($q: String!) {
+      orders(first: 250, query: $q, sortKey: CREATED_AT, reverse: true) {
+        nodes {
+          id
+          totalPriceSet { shopMoney { amount currencyCode } }
+          customer { id numberOfOrders }
+        }
+      }
+    }`,
+    { q: `created_at:>=${since}` },
+  );
+  if (!data) return null;
+
+  const orders = data.orders.nodes;
+  const currency = orders[0]?.totalPriceSet.shopMoney.currencyCode ?? 'USD';
+
+  const buckets = {
+    first: { count: 0, revenue: 0 },
+    second: { count: 0, revenue: 0 },
+    loyal: { count: 0, revenue: 0 },
+    guest: { count: 0, revenue: 0 },
+  };
+  let totalRevenue = 0;
+
+  for (const o of orders) {
+    const revenue = Number.parseFloat(o.totalPriceSet.shopMoney.amount || '0');
+    totalRevenue += revenue;
+    if (!o.customer) {
+      buckets.guest.count++;
+      buckets.guest.revenue += revenue;
+      continue;
+    }
+    const n = Number(o.customer.numberOfOrders ?? 0);
+    if (n <= 1) {
+      buckets.first.count++;
+      buckets.first.revenue += revenue;
+    } else if (n === 2) {
+      buckets.second.count++;
+      buckets.second.revenue += revenue;
+    } else {
+      buckets.loyal.count++;
+      buckets.loyal.revenue += revenue;
+    }
+  }
+
+  const finalize = (b: { count: number; revenue: number }): DashboardCustomerTier => ({
+    count: b.count,
+    revenue: b.revenue,
+    avgOrderValue: b.count > 0 ? b.revenue / b.count : 0,
+  });
+
+  return {
+    currency,
+    totalOrders: orders.length,
+    totalRevenue,
+    first: finalize(buckets.first),
+    second: finalize(buckets.second),
+    loyal: finalize(buckets.loyal),
+    guest: finalize(buckets.guest),
+  };
+}
