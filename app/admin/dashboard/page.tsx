@@ -28,6 +28,7 @@ import {
 } from '@/lib/posthog-dashboard';
 import { refreshDashboard } from './actions';
 import { computeAbandonment, funnelConversionRate } from '@/lib/dashboard/funnel-math';
+import { detectAnomalies } from '@/lib/dashboard/anomalies';
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -170,6 +171,24 @@ export default async function DashboardPage({
   const quizCompletionNow = quizFunnel && quizFunnel.started > 0 ? quizFunnel.completed / quizFunnel.started : null;
   const quizCompletionPrev = quizFunnelPrev && quizFunnelPrev.started > 0 ? quizFunnelPrev.completed / quizFunnelPrev.started : null;
 
+  // Anomaly detection runs over the already-fetched data — no additional
+  // queries. Returns an actionable list (revenue spikes, refund-rate
+  // climbs, oversold inventory, conversion drops, etc.) rendered as a
+  // callout strip at the top of the page so the merchant sees "things
+  // worth looking at" before they have to scan 18 cards.
+  const anomalies = detectAnomalies({
+    orderSummary,
+    refundHealth,
+    customerInsights,
+    lowStock,
+    searches,
+    funnelConvNow,
+    funnelConvPrev,
+    cartAbandonmentNow: abandonment?.cartAbandonment ?? null,
+    cartAbandonmentPrev: abandonmentPrev?.cartAbandonment ?? null,
+    rangeLabel,
+  });
+
   const renderedAt = new Date();
 
   return (
@@ -203,6 +222,12 @@ export default async function DashboardPage({
           </nav>
         </div>
       </header>
+
+      {/* Anomaly callouts — only render the strip when something fires.
+          Otherwise the dashboard reads "all clear" by absence, which is
+          the right default (the section nav becomes the first thing
+          below the header). */}
+      {anomalies.length > 0 ? <AnomalyStrip anomalies={anomalies} /> : null}
 
       {/* QA #224: section nav so the 18 cards aren't a wall of tiles.
           Anchor links jump to each section; scroll-margin-top in CSS
@@ -1116,6 +1141,53 @@ function DeviceTable({ rows }: { rows: Array<{ deviceType: string; sessions: num
         ))}
       </tbody>
     </table>
+  );
+}
+
+/**
+ * Anomaly callout strip. Each item is a small card with severity color +
+ * headline + detail + optional jump-to-section link. Server-rendered;
+ * no client JS. Pure presentation — all detection logic lives in
+ * lib/dashboard/anomalies.ts.
+ *
+ * Severity colors come from the same palette as the dash-warn / delta
+ * badges so the dashboard reads as one design.
+ */
+function AnomalyStrip({
+  anomalies,
+}: {
+  anomalies: ReadonlyArray<{
+    id: string;
+    severity: 'critical' | 'warn' | 'info';
+    headline: string;
+    detail: string;
+    href?: string;
+  }>;
+}) {
+  // Order: critical first, then warn, then info. Within a tier the
+  // detector's natural order (revenue → refund → cart → conversion →
+  // inventory → searches) is preserved by Array.sort being stable.
+  const tier = { critical: 0, warn: 1, info: 2 };
+  const ordered = [...anomalies].sort((a, b) => tier[a.severity] - tier[b.severity]);
+  return (
+    <section className="dash-anomaly-strip" aria-label="Things to look at">
+      {ordered.map((a) => (
+        <div key={a.id} className={`dash-anomaly dash-anomaly-${a.severity}`} role="status">
+          <div className="dash-anomaly-headline">{a.headline}</div>
+          <div className="dash-anomaly-detail">
+            {a.detail}
+            {a.href ? (
+              <>
+                {' '}
+                <a href={a.href} className="dash-anomaly-link">
+                  Jump to section →
+                </a>
+              </>
+            ) : null}
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }
 
