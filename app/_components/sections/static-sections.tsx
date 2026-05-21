@@ -90,6 +90,45 @@ export async function BrandStrip() {
   );
 }
 
+/* ───── Featured guides ──────────────────────────────────
+ * SEMrush 20260521_1 follow-up — surfaces the cornerstone buying-guide
+ * articles from the homepage, the highest-PageRank page on the site.
+ * Adds substantial inbound link equity to each article and pulls the
+ * cluster out of the crawl-depth tail (articles previously needed
+ * 3+ clicks from home — nav Guides mega → blog index → list →
+ * article). Curated (no Shopify fetch needed); same wordmark-strip
+ * pattern as BrandStrip above for visual consistency. */
+const FEATURED_GUIDES: { label: string; href: string }[] = [
+  { label: 'Best mattress in Los Angeles',          href: '/blogs/mattress-buying-guide/best-mattress-los-angeles' },
+  { label: 'How to choose a mattress',              href: '/blogs/mattress-buying-guide/how-to-choose-a-mattress' },
+  { label: 'Best for back pain',                    href: '/blogs/mattress-buying-guide/best-mattress-for-back-pain' },
+  { label: 'Best for side sleepers',                href: '/blogs/mattress-buying-guide/best-mattress-for-side-sleepers' },
+  { label: 'How much to spend',                     href: '/blogs/mattress-buying-guide/how-much-should-you-spend-on-a-mattress' },
+  { label: 'Mattress sizes explained',              href: '/blogs/mattress-buying-guide/how-to-choose-the-best-mattress-size' },
+];
+
+export function FeaturedGuides() {
+  return (
+    <section className="brand-strip-section">
+      <div className="container">
+        <div className="brand-strip-head">
+          <span className="eyebrow">Read before you buy</span>
+          <Link href="/blogs" className="link-arrow link-arrow-sm">
+            All buying guides <Icon name="arrow-right" size={12} />
+          </Link>
+        </div>
+        <div className="brand-strip">
+          {FEATURED_GUIDES.map((g) => (
+            <Link href={g.href} key={g.href} className="brand-tile">
+              <span className="brand-wordmark">{g.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ───── Why LA Mattress ───────────────────────────────── */
 export function WhyUs() {
   const items = [

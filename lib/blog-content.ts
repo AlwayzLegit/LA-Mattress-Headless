@@ -21,6 +21,13 @@ const INTROS: Record<string, string> = {
     "Mattress care decides whether your investment lasts 8 years or 15. The articles below cover the four habits that move that needle the most: rotation cadence by mattress type, the right protector for your sleep style, stain and odor recovery, and end-of-life disposal (recycling, not landfill — every white-glove delivery we make includes free haul-away of the old mattress). Built from what our delivery and service teams see on a daily basis.",
   'sales':
     "Memorial Day, Labor Day, Black Friday, end-of-quarter clearance — the articles below cover what's on sale right now, what the markdown actually means relative to MSRP, and which models tend to repeat at the deepest discounts. Floor-model and clearance inventory rotates weekly across our 5 LA showrooms, so calling ahead to confirm availability before driving over is worth the 30 seconds.",
+  // SEMrush 20260521_1 follow-up — /blogs/extra-info was flagged for
+  // low word count on the index page itself (no per-blog intro yet).
+  // This intro gives the index a clear category signal + ~80 words of
+  // body text, clearing the flag and matching the pattern already in
+  // place for sleep-health, sleep-blog, mattress-buying-guide.
+  'extra-info':
+    "Mattress shopping touches every part of a household — bed frames, headboards, foundations, sheets, encasements, recycling, financing, delivery zones, return windows. The articles below collect the practical context that doesn't fit cleanly inside a buying guide: how to dispose of an old mattress in LA, what a foundation actually does (vs a box spring), how recycling fees work in California, headboard attachment for adjustable bases, and the housekeeping topics shoppers ask about at the showroom. None of it is the headline decision — that's what the buying guides cover — but all of it shows up at delivery, and reading it ahead of time saves a phone call.",
 };
 
 const FALLBACK_INTRO =

@@ -26,8 +26,9 @@ export function generateStaticParams() {
   return inventoryBlogs.map((b) => ({ blog: b.handle }));
 }
 
-export async function generateMetadata(props: { params: Promise<Params['params']> }): Promise<Metadata> {
+export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   if (!SHOPIFY_CONFIGURED) return { title: 'Blog' };
   const blog = await getBlogByHandle({ handle: params.blog, first: 1 }).catch(() => null);
   if (!blog) return { title: 'Blog not found' };
@@ -36,10 +37,19 @@ export async function generateMetadata(props: { params: Promise<Params['params']
     firstNonEmpty(blog.seo.description, `Articles from ${blog.title} — LA Mattress Store.`),
   );
   const url = `/blogs/${blog.handle}`;
+  // Paginated cursor URLs (`?after=...`) duplicate the blog index with
+  // a different slice of articles. The canonical link already points
+  // back to the bare URL, but SEMrush still flagged the cursor URLs for
+  // low word count (the visible body is the same skeleton + article
+  // cards). robots: noindex (follow) blocks indexing of cursor URLs
+  // while still letting Googlebot follow the links to articles —
+  // standard Pagination SEO pattern.
+  const isPaginated = Boolean(searchParams?.after);
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
+    ...(isPaginated ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       type: 'website',
       url,

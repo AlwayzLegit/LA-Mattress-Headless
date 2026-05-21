@@ -40,7 +40,7 @@ export async function PopularProducts() {
             <h2 className="h2">Most-shopped mattresses<br />this month.</h2>
           </div>
           <div className="section-head-right">
-            <Link href="/collections/popular" className="link-arrow">Shop all <Icon name="arrow-right" size={14} /></Link>
+            <Link href="/collections/popular" className="link-arrow">Shop all popular mattresses <Icon name="arrow-right" size={14} /></Link>
             <RailScrollButtons
               railId={RAIL_ID}
               leftLabel="Scroll popular mattresses left"

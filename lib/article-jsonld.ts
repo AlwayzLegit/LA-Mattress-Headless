@@ -11,16 +11,6 @@
  * than sharing a util — the page keeps its own copy for read-time.
  */
 import type { getArticleByHandle } from '@/lib/shopify';
-// `firstNonEmpty` is inlined here (rather than imported from ./seo)
-// so the unit-test suite can pull this file via Node 22's experimental-
-// strip-types without TS path-alias / extension headaches. The two-liner
-// isn't worth a shared module dependency.
-function firstNonEmpty(...candidates: (string | null | undefined)[]): string {
-  for (const c of candidates) {
-    if (typeof c === 'string' && c.trim().length > 0) return c;
-  }
-  return '';
-}
 
 type Article = NonNullable<Awaited<ReturnType<typeof getArticleByHandle>>>;
 export type ArticleLd = { key: string; data: unknown };
@@ -32,6 +22,16 @@ function countWordsFromHtml(html: string): number {
   const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   if (!text) return 0;
   return text.split(' ').length;
+}
+
+// Inlined from lib/seo.ts so Node 22's experimental-strip-types test
+// runner can import this file without the `@/` alias. Identical
+// semantics — picks the first string in the list with non-empty content.
+function firstNonEmpty(...candidates: (string | null | undefined)[]): string {
+  for (const c of candidates) {
+    if (typeof c === 'string' && c.trim().length > 0) return c;
+  }
+  return '';
 }
 
 /**
@@ -101,11 +101,13 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
   );
 
   // Image — Google's BlogPosting validator wants this present. When the
-  // article has no featured image, fall back to the sitewide logo so the
-  // page still passes the "has image" check. The validator accepts either
-  // a string URL or an ImageObject; we use the string form to match the
-  // sitewide Organization pattern.
-  const imageUrls = article.image ? [article.image.url] : [`${SITE}/assets/la-mattress-logo.png`];
+  // article has no featured image (or has one with an empty url string),
+  // fall back to the sitewide logo so the page still passes the
+  // "has image" check. SEMrush 20260521_1 follow-up: was previously
+  // emitting `image: undefined` / `image: []` which validators rejected.
+  const imageUrls = article.image?.url
+    ? [article.image.url]
+    : [`${SITE}/assets/la-mattress-logo.png`];
 
   const articleLd = {
     '@context': 'https://schema.org',
@@ -119,14 +121,22 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     breadcrumb: { '@id': `${url}#breadcrumb` },
     ...(ldDescription ? { description: ldDescription } : {}),
     datePublished: article.publishedAt,
-    // dateModified: Google's Article rich-results spec calls for both
-    // dates. Shopify's Storefront API doesn't expose article.updatedAt
-    // (Admin API does), so we use publishedAt as the documented date.
-    // Lossy for articles edited post-publish — Storefront API limitation,
-    // not a JSON-LD shape issue. SEMrush 20260521_1 follow-up.
+    // Google's BlogPosting recommends `dateModified` alongside
+    // `datePublished`. Storefront API doesn't expose article.updatedAt
+    // (Admin API does), so fall back to publishedAt — accepted by
+    // Google's validator and truthful for un-edited articles. Lossy
+    // for articles edited post-publish; that's a Storefront limitation,
+    // not a JSON-LD shape issue.
     dateModified: article.publishedAt,
     image: imageUrls,
-    author: article.author ? { '@type': 'Person', name: article.author.name } : undefined,
+    // Author is REQUIRED by Google for BlogPosting; emit a fallback
+    // Organization-author when Storefront didn't include a person —
+    // covers older articles that pre-date the merchant filling in
+    // author metafields. The @id link ties the fallback to the
+    // sitewide Organization (instead of creating a duplicate entity).
+    author: article.author
+      ? { '@type': 'Person', name: article.author.name }
+      : { '@type': 'Organization', name: 'LA Mattress Store', '@id': `${SITE}/#organization` },
     publisher: {
       // @id link to the canonical Organization schema emitted from
       // app/layout.tsx (lib/structured-data.ts buildOrganizationLd).
@@ -139,10 +149,11 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
       name: 'LA Mattress Store',
       // ImageObject with explicit width + height — Google's Article
       // validator rejects a logo missing dimensions even when the URL
-      // is reachable. Source file dimensions (public/assets/la-mattress-logo.png)
-      // captured here so it doesn't drift if the file is re-exported.
-      // SEMrush 20260521_1 follow-up: was emitting just url, which
-      // tripped the validator on all 666 article pages.
+      // is reachable. SEMrush 20260521_1 follow-up: without these the
+      // validator tripped on every article page (~1,000 of the SDTT
+      // error count). Dimensions reflect the actual logo asset
+      // (public/assets/la-mattress-logo.png — 400×224); captured here
+      // so it doesn't drift if the file is re-exported.
       logo: {
         '@type': 'ImageObject',
         url: `${SITE}/assets/la-mattress-logo.png`,
@@ -192,4 +203,3 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
 
   return out;
 }
-
