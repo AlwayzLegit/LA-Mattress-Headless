@@ -148,6 +148,119 @@ export async function getOrderSummary(days = 30): Promise<DashboardOrderSummary 
   };
 }
 
+/**
+ * Phase 300: order summary enriched with previous-period totals + a
+ * daily revenue/orders series for the sparkline. Two parallel Admin
+ * GraphQL queries — current window + previous window of equal length
+ * ending at `now() - days`. Daily series is built client-side from
+ * the current-window orders (no extra query).
+ *
+ * Used by the dashboard's range-picker (7d / 30d / 90d) to show
+ * "X orders, +Y% vs previous N days" deltas and inline sparklines.
+ */
+export type DashboardDailyPoint = { date: string; orders: number; revenue: number };
+export type DashboardOrderSummaryWithTrends = DashboardOrderSummary & {
+  prev: { totalOrders: number; totalRevenue: number; avgOrderValue: number } | null;
+  daily: DashboardDailyPoint[];
+};
+
+export async function getOrderSummaryWithTrends(days = 30): Promise<DashboardOrderSummaryWithTrends | null> {
+  const now = Date.now();
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const sinceCurrent = new Date(now - days * msPerDay).toISOString();
+  const untilPrev = new Date(now - days * msPerDay).toISOString();
+  const sincePrev = new Date(now - 2 * days * msPerDay).toISOString();
+
+  const query = `query OrderRange($q: String!) {
+    orders(first: 250, query: $q, sortKey: CREATED_AT, reverse: true) {
+      nodes {
+        id name createdAt
+        totalPriceSet { shopMoney { amount currencyCode } }
+        customer { displayName }
+        displayFulfillmentStatus
+        displayFinancialStatus
+      }
+    }
+  }`;
+
+  type Row = {
+    id: string; name: string; createdAt: string;
+    totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
+    customer: { displayName: string | null } | null;
+    displayFulfillmentStatus: string | null;
+    displayFinancialStatus: string | null;
+  };
+
+  const [current, prev] = await Promise.all([
+    adminGql<{ orders: { nodes: Row[] } }>(query, { q: `created_at:>=${sinceCurrent}` }),
+    adminGql<{ orders: { nodes: Row[] } }>(query, { q: `created_at:>=${sincePrev} created_at:<${untilPrev}` }),
+  ]);
+
+  if (!current) return null;
+
+  const orders = current.orders.nodes;
+  const totalRevenue = orders.reduce(
+    (sum, o) => sum + Number.parseFloat(o.totalPriceSet.shopMoney.amount || '0'),
+    0,
+  );
+  const currency = orders[0]?.totalPriceSet.shopMoney.currencyCode ?? 'USD';
+
+  // Daily bucket — keyed by YYYY-MM-DD in UTC so the series is
+  // deterministic regardless of the server's local timezone. Zero-fill
+  // missing days so the sparkline renders as a continuous line rather
+  // than collapsing on quiet days.
+  const buckets = new Map<string, { orders: number; revenue: number }>();
+  for (let i = 0; i < days; i++) {
+    const d = new Date(now - i * msPerDay);
+    const key = d.toISOString().slice(0, 10);
+    buckets.set(key, { orders: 0, revenue: 0 });
+  }
+  for (const o of orders) {
+    const key = o.createdAt.slice(0, 10);
+    const b = buckets.get(key);
+    if (b) {
+      b.orders += 1;
+      b.revenue += Number.parseFloat(o.totalPriceSet.shopMoney.amount || '0');
+    }
+  }
+  const daily: DashboardDailyPoint[] = Array.from(buckets.entries())
+    .map(([date, v]) => ({ date, orders: v.orders, revenue: v.revenue }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  let prevSummary: DashboardOrderSummaryWithTrends['prev'] = null;
+  if (prev) {
+    const prevOrders = prev.orders.nodes;
+    const prevRevenue = prevOrders.reduce(
+      (sum, o) => sum + Number.parseFloat(o.totalPriceSet.shopMoney.amount || '0'),
+      0,
+    );
+    prevSummary = {
+      totalOrders: prevOrders.length,
+      totalRevenue: prevRevenue,
+      avgOrderValue: prevOrders.length ? prevRevenue / prevOrders.length : 0,
+    };
+  }
+
+  return {
+    totalOrders: orders.length,
+    totalRevenue,
+    currency,
+    avgOrderValue: orders.length ? totalRevenue / orders.length : 0,
+    recentOrders: orders.slice(0, 10).map((o) => ({
+      id: o.id,
+      name: o.name,
+      createdAt: o.createdAt,
+      total: Number.parseFloat(o.totalPriceSet.shopMoney.amount || '0'),
+      currency: o.totalPriceSet.shopMoney.currencyCode,
+      customer: o.customer?.displayName ?? null,
+      fulfillmentStatus: o.displayFulfillmentStatus,
+      financialStatus: o.displayFinancialStatus,
+    })),
+    prev: prevSummary,
+    daily,
+  };
+}
+
 export type DashboardCatalogHealth = {
   totalProducts: number;
   publishedProducts: number;
