@@ -64,19 +64,39 @@ const TYPE_COLLECTIONS: SiblingLink[] = [
   { handle: 'organic-mattress', label: 'Organic' },
 ];
 
-type Dimension = 'brand' | 'size' | 'type';
+// SEMrush 20260521_1 follow-up — these are real, populated collections
+// that scored "Pages with only one internal link" because they don't fit
+// the brand/size/type taxonomy. Surfacing them as a fourth sibling group
+// on every brand/size/type PLP adds ~30 inbound links each (one per PLP)
+// and gives shoppers a path to high-intent feel / featured cross-cuts.
+const FEATURED_COLLECTIONS: SiblingLink[] = [
+  { handle: 'best-sellers', label: 'Best sellers' },
+  { handle: 'luxury-mattresses', label: 'Luxury' },
+  { handle: 'soft-mattresses-for-pressure-relief', label: 'Pressure-relief soft' },
+  { handle: 'cooling-pillows', label: 'Cooling pillows' },
+  { handle: 'tempur-pedic-adjustable-bases', label: 'Tempur-Pedic bases' },
+];
+
+type Dimension = 'brand' | 'size' | 'type' | 'featured';
 
 const DIMENSION_OF = new Map<string, Dimension>([
   ...BRAND_COLLECTIONS.map((c) => [c.handle, 'brand' as const] as const),
   ...SIZE_COLLECTIONS.map((c) => [c.handle, 'size' as const] as const),
   ...TYPE_COLLECTIONS.map((c) => [c.handle, 'type' as const] as const),
+  ...FEATURED_COLLECTIONS.map((c) => [c.handle, 'featured' as const] as const),
 ]);
 
 /**
- * For a brand/size/type collection, return the cross-cut sibling groups
- * for the OTHER two dimensions. Returns null for any handle that isn't a
- * recognized single-dimension collection (e.g. `mattresses`, `on-sale`,
- * `best-sellers`) — those get no sub-nav.
+ * For a brand/size/type/featured collection, return the cross-cut
+ * sibling groups for the OTHER dimensions. Returns null for any handle
+ * that isn't a recognized cross-cut collection (e.g. `mattresses`,
+ * `on-sale`) — those get no sub-nav.
+ *
+ * `featured` collections (best-sellers, luxury, pressure-relief, cooling
+ * pillows, tempur adjustable bases) get all three brand/size/type groups
+ * + the featured group minus themselves — they're the most genuine
+ * "shop other ways" entry points since they don't impose a brand/size/
+ * type constraint of their own.
  */
 export function getCollectionSiblings(handle: string): SiblingGroup[] | null {
   const dim = DIMENSION_OF.get(handle);
@@ -85,5 +105,11 @@ export function getCollectionSiblings(handle: string): SiblingGroup[] | null {
   if (dim !== 'brand') groups.push({ heading: 'Shop by brand', links: BRAND_COLLECTIONS });
   if (dim !== 'size') groups.push({ heading: 'Shop by size', links: SIZE_COLLECTIONS });
   if (dim !== 'type') groups.push({ heading: 'Shop by type', links: TYPE_COLLECTIONS });
+  // Featured group always renders — including when the user is already
+  // on a featured PLP (the current page is suppressed by aria-current
+  // styling in the consumer). Adding it to every brand/size/type PLP
+  // is the whole point.
+  const featured = FEATURED_COLLECTIONS.filter((c) => c.handle !== handle);
+  if (featured.length) groups.push({ heading: 'Featured', links: featured });
   return groups;
 }

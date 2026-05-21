@@ -43,6 +43,13 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         { label: 'Latex',        href: '/collections/latex-mattresses' },
         { label: 'Compare all four →', href: '/pages/mattress-types' },
       ]},
+      { title: 'Featured', links: [
+        { label: 'Best sellers',       href: '/collections/best-sellers' },
+        { label: 'Luxury mattresses',  href: '/collections/luxury-mattresses' },
+        { label: 'Soft + pressure relief', href: '/collections/soft-mattresses-for-pressure-relief' },
+        { label: 'Cooling pillows',    href: '/collections/cooling-pillows' },
+        { label: 'Tempur-Pedic bases', href: '/collections/tempur-pedic-adjustable-bases' },
+      ]},
       { title: 'By Size', links: [
         { label: 'Twin',            href: '/collections/twin-size-mattresses' },
         { label: 'Twin XL',         href: '/collections/twin-xl-mattress-sale' },
@@ -66,7 +73,7 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
     ],
     tiles: [
       { eyebrow: 'Bestseller',     title: 'Tempur-Pedic ProAdapt', href: '/products/tempur-pedic-tempur-proadapt-medium-hybrid', img: 'product-tempur-proadapt', fit: 'contain-cream' },
-      { eyebrow: 'On sale · −25%', title: 'Memorial Day savings',  href: '/collections/on-sale',                                  img: 'lifestyle-couple' },
+      { eyebrow: 'On sale · −25%', title: 'Memorial Day savings',  href: '/collections/memorial-day-sale',                          img: 'lifestyle-couple' },
     ],
   },
   brands: {
@@ -99,6 +106,7 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         { label: 'Best for back pain',        href: '/blogs/mattress-buying-guide/best-mattress-for-back-pain' },
         { label: 'Best for side sleepers',    href: '/blogs/mattress-buying-guide/best-mattress-for-side-sleepers' },
         { label: 'How much to spend',         href: '/blogs/mattress-buying-guide/how-much-should-you-spend-on-a-mattress' },
+        { label: 'Purple vs Tempur-Pedic',    href: '/pages/purple-mattress-vs-tempur-pedic' },
         { label: 'All guides →',              href: '/blogs' },
       ]},
       { title: 'Customer support', links: [

@@ -7,11 +7,14 @@ type Col = { title: string; links: { label: string; href: string }[] };
 const COLS: Col[] = [
   { title: 'Shop', links: [
     { label: 'Mattresses',      href: '/collections/mattresses' },
+    { label: 'Best sellers',    href: '/collections/best-sellers' },
+    { label: 'Luxury mattresses', href: '/collections/luxury-mattresses' },
     { label: 'Adjustable Beds', href: '/collections/adjustable-beds' },
     { label: 'Bed Frames',      href: '/collections/bed-frames' },
     { label: 'Brands',          href: '/pages/mattress-brands' },
     { label: 'Accessories',     href: '/collections/sheets-pillowcases' },
     { label: 'Pillows',         href: '/collections/pillows' },
+    { label: 'Cooling pillows', href: '/collections/cooling-pillows' },
     { label: 'Rize Pillows',    href: '/collections/rize-pillows' },
     { label: 'Comforters',      href: '/collections/comforters' },
     { label: 'Mattress Protectors', href: '/collections/mattress-protector' },
