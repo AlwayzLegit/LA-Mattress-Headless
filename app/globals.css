@@ -4588,6 +4588,37 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   font-size: 10px;
   margin-top: 2px;
 }
+/* Phase 300c: traffic-source donut + legend layout */
+.dash-donut-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: var(--s-4);
+  align-items: center;
+}
+@media (max-width: 720px) {
+  .dash-donut-row {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+.dash-donut {
+  width: 140px;
+  height: 140px;
+  display: block;
+}
+.dash-donut-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.dash-table-tight th,
+.dash-table-tight td {
+  padding: 4px 6px;
+  font-size: 12.5px;
+}
 .dash-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
