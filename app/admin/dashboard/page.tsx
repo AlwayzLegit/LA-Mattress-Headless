@@ -27,6 +27,7 @@ import {
   getQuizFunnelPrev,
   getRevenueBySource,
   getShowroomTraffic,
+  getTopConvertingArticles,
   getTopEntryPages,
   getTopSearches,
   getTopTrafficSources,
@@ -179,6 +180,7 @@ export default async function DashboardPage({
     revenueBySource,
     deviceBreakdown,
     showroomTraffic,
+    convertingArticles,
   ] = await Promise.all([
     getOrderSummaryWithTrends(days).catch(() => null),
     getCatalogHealth().catch(() => null),
@@ -200,6 +202,7 @@ export default async function DashboardPage({
     POSTHOG_CONFIGURED
       ? getShowroomTraffic(days, SHOWROOMS.map((s) => ({ handle: s.handle, name: s.name }))).catch(() => null)
       : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getTopConvertingArticles(days, 10).catch(() => null) : Promise.resolve(null),
   ]);
 
   // Cart + checkout abandonment derived from the conversion funnel.
@@ -953,6 +956,48 @@ export default async function DashboardPage({
               <ShowroomTrafficTable rows={showroomTraffic} />
             ) : POSTHOG_CONFIGURED ? (
               <p className="muted">Showroom traffic unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Top-converting blog articles — content-to-revenue attribution */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Top-converting articles · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · same-session attribution</span>
+            </div>
+            {convertingArticles ? (
+              convertingArticles.length === 0 ? (
+                <p className="muted">No blog sessions with ≥5 visits in this window.</p>
+              ) : (
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Article</th>
+                      <th>Sessions</th>
+                      <th>Orders</th>
+                      <th>Conversion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {convertingArticles.map((a) => (
+                      <tr key={a.path}>
+                        <td>
+                          <Link href={a.path} prefetch={false} target="_blank" rel="noopener noreferrer">
+                            {a.path.replace('/blogs/', '').replace('/', ' / ')}
+                          </Link>
+                        </td>
+                        <td className="tnum">{a.sessions.toLocaleString()}</td>
+                        <td className="tnum">{a.orders}</td>
+                        <td className="tnum">{a.conversionPct.toFixed(2)}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Article attribution unavailable.</p>
             ) : (
               <PostHogConfigHint />
             )}
