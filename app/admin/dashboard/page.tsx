@@ -25,6 +25,7 @@ import {
   getQuizFunnel,
   getQuizFunnelPrev,
   getRevenueBySource,
+  getShowroomTraffic,
   getTopEntryPages,
   getTopSearches,
   getTopTrafficSources,
@@ -33,6 +34,7 @@ import { refreshDashboard } from './actions';
 import { computeAbandonment, funnelConversionRate } from '@/lib/dashboard/funnel-math';
 import { detectAnomalies } from '@/lib/dashboard/anomalies';
 import { formatRateDelta, formatRelativeDelta } from '@/lib/dashboard/delta';
+import { SHOWROOMS } from '@/lib/showrooms';
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -175,6 +177,7 @@ export default async function DashboardPage({
     quizFunnelPrev,
     revenueBySource,
     deviceBreakdown,
+    showroomTraffic,
   ] = await Promise.all([
     getOrderSummaryWithTrends(days).catch(() => null),
     getCatalogHealth().catch(() => null),
@@ -193,6 +196,9 @@ export default async function DashboardPage({
     POSTHOG_CONFIGURED ? getQuizFunnelPrev(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getRevenueBySource(days, 8).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getDeviceBreakdown(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED
+      ? getShowroomTraffic(days, SHOWROOMS.map((s) => ({ handle: s.handle, name: s.name }))).catch(() => null)
+      : Promise.resolve(null),
   ]);
 
   // Cart + checkout abandonment derived from the conversion funnel.
@@ -922,6 +928,21 @@ export default async function DashboardPage({
               <PostHogConfigHint />
             )}
           </div>
+
+          {/* Showroom traffic — pageviews per LA location */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Showroom traffic · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · pageviews per LA location</span>
+            </div>
+            {showroomTraffic ? (
+              <ShowroomTrafficTable rows={showroomTraffic} />
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Showroom traffic unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
         </div>
       </section>
 
@@ -1292,6 +1313,57 @@ function DeviceTable({ rows }: { rows: Array<{ deviceType: string; sessions: num
             <td>{d.deviceType}</td>
             <td className="tnum">{d.sessions.toLocaleString()}</td>
             <td className="tnum">{total > 0 ? `${((d.sessions / total) * 100).toFixed(1)}%` : '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+/**
+ * Showroom traffic table. One row per LA showroom (always renders all
+ * 5, even when some have zero traffic in the window — easier to read
+ * than a list that hides quiet branches). Pageviews + sessions per
+ * showroom + share of total showroom traffic in the window. Showroom
+ * names link to the corresponding /pages/<handle> on the storefront
+ * (new tab) so the merchant can sanity-check the page they're
+ * measuring.
+ */
+function ShowroomTrafficTable({
+  rows,
+}: {
+  rows: ReadonlyArray<{
+    handle: string;
+    name: string;
+    pagePath: string;
+    pageviews: number;
+    sessions: number;
+  }>;
+}) {
+  const totalViews = rows.reduce((s, r) => s + r.pageviews, 0);
+  return (
+    <table className="dash-table">
+      <thead>
+        <tr>
+          <th>Showroom</th>
+          <th>Pageviews</th>
+          <th>Sessions</th>
+          <th>Share</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.handle} className={r.pageviews === 0 ? 'muted' : undefined}>
+            <td>
+              <Link href={r.pagePath} prefetch={false} target="_blank" rel="noopener noreferrer">
+                {r.name}
+              </Link>
+            </td>
+            <td className="tnum">{r.pageviews.toLocaleString()}</td>
+            <td className="tnum">{r.sessions.toLocaleString()}</td>
+            <td className="tnum">
+              {totalViews > 0 ? `${((r.pageviews / totalViews) * 100).toFixed(1)}%` : '—'}
+            </td>
           </tr>
         ))}
       </tbody>
