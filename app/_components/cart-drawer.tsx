@@ -10,7 +10,7 @@ import { useFocusTrap } from './use-focus-trap';
 import { CartEmptyRecent } from './cart-empty-recent';
 import { announce } from './announcer';
 import { formatMoney } from '@/lib/format';
-import { FreeShippingBar } from '@/app/cart/free-shipping-bar';
+import { FreeShippingBar } from '@/app/(storefront)/cart/free-shipping-bar';
 import { track } from '@/lib/analytics';
 
 export function CartDrawer() {

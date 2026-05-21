@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCollectionByHandle } from '@/lib/shopify';
-import { parseSort } from '@/app/collections/[handle]/sort-options';
+import { parseSort } from '@/app/(storefront)/collections/[handle]/sort-options';
 import {
   parseFilterSelection,
   selectionToProductFilters,

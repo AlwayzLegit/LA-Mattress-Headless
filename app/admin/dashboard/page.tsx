@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   ADMIN_CONFIGURED,
   getCatalogHealth,
@@ -30,6 +31,7 @@ import {
 import { refreshDashboard } from './actions';
 import { computeAbandonment, funnelConversionRate } from '@/lib/dashboard/funnel-math';
 import { detectAnomalies } from '@/lib/dashboard/anomalies';
+import { formatRateDelta, formatRelativeDelta } from '@/lib/dashboard/delta';
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -83,12 +85,47 @@ function parseRange(raw: string | string[] | undefined): RangeKey {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ range?: string | string[]; refreshed?: string | string[] }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
   const rangeKey = parseRange(params.range);
   const { days, label: rangeLabel } = RANGE_OPTIONS[rangeKey];
   const justRefreshed = params.refreshed === '1';
+
+  // QA #224 B4: cache key fragments by full URL, so /admin/dashboard?x=1
+  // and /admin/dashboard?x=2 allocate separate Next.js Data Cache entries
+  // for the same parsed-range render. Solve by canonicalizing: if the
+  // URL has any param outside the allow-list, or `range` is a value the
+  // whitelist clamps, redirect to the canonical clean URL so subsequent
+  // hits share one cache entry.
+  //
+  // Allow-list:
+  //   range=7d|30d|90d  — the picker
+  //   refreshed=1       — set by the refresh server action's redirect
+  //
+  // Anything else (typos, share-tracker UTM params, random ?x=1) gets
+  // stripped. Bookmarks with stripped params still work — they redirect
+  // once to the clean URL, the second hit comes from cache.
+  const ALLOWED_PARAMS = new Set(['range', 'refreshed']);
+  const canonicalRange = rangeKey;
+  const canonicalRefreshed = justRefreshed;
+  const incoming = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) {
+    if (typeof v === 'string') incoming.set(k, v);
+    else if (Array.isArray(v) && v.length > 0) incoming.set(k, v[v.length - 1] ?? '');
+  }
+  const canonical = new URLSearchParams();
+  // Only include `range` in the canonical URL if it was explicitly
+  // requested — leaving it off matches the default-page shape ('/')
+  // and avoids redirect loops on /admin/dashboard (no params).
+  if (typeof params.range === 'string') canonical.set('range', canonicalRange);
+  if (canonicalRefreshed) canonical.set('refreshed', '1');
+  const hasUnknown = Object.keys(params).some((k) => !ALLOWED_PARAMS.has(k));
+  const rangeIsClamped = typeof params.range === 'string' && params.range !== canonicalRange;
+  if (hasUnknown || rangeIsClamped) {
+    const qs = canonical.toString();
+    redirect(qs ? `/admin/dashboard?${qs}` : '/admin/dashboard');
+  }
 
   if (!ADMIN_CONFIGURED) {
     return (
@@ -1211,23 +1248,24 @@ function AnomalyStrip({
  * counts (single-order swings) shouldn't read as a meaningful trend.
  */
 function DeltaBadge({ current, prev }: { current: number; prev: number | undefined | null }) {
-  if (prev === undefined || prev === null) return null;
-  if (prev === 0 && current === 0) {
-    return <span className="dash-stat-delta dash-stat-delta-flat">no change</span>;
+  const result = formatRelativeDelta(current, prev);
+  switch (result.kind) {
+    case 'hidden':
+    case 'no-comparison':
+      // For absolute KPIs, hide the badge when there's nothing to
+      // compare to — the big number already implies "vs nothing prior".
+      return null;
+    case 'no-change':
+      return <span className="dash-stat-delta dash-stat-delta-flat">no change</span>;
+    case 'new':
+      return <span className="dash-stat-delta dash-stat-delta-up">new</span>;
+    case 'delta':
+      return (
+        <span className={`dash-stat-delta dash-stat-delta-${result.severity}`} title="vs previous period">
+          {result.label}
+        </span>
+      );
   }
-  if (prev === 0) {
-    return <span className="dash-stat-delta dash-stat-delta-up">new</span>;
-  }
-  const deltaPct = ((current - prev) / prev) * 100;
-  const cls = Math.abs(deltaPct) < 0.5
-    ? 'dash-stat-delta-flat'
-    : deltaPct > 0 ? 'dash-stat-delta-up' : 'dash-stat-delta-down';
-  const sign = deltaPct > 0 ? '+' : '';
-  return (
-    <span className={`dash-stat-delta ${cls}`} title="vs previous period">
-      {sign}{deltaPct.toFixed(1)}%
-    </span>
-  );
 }
 
 /**
@@ -1236,19 +1274,48 @@ function DeltaBadge({ current, prev }: { current: number; prev: number | undefin
  * The delta is shown in PERCENTAGE POINTS, not relative percent —
  * "conversion went from 2.1% to 2.6%" is clearer as "+0.5 pp" than
  * "+23.8%" when the absolute numbers are tiny.
+ *
+ * QA #224 fix: when prev is null but current is known, render a muted
+ * "—" instead of hiding entirely. The original behavior left a
+ * missing-badge that could be mistaken for a render bug; the explicit
+ * "—" tells the reader "we tried, no prior data".
  */
 function RateDelta({ current, prev }: { current: number | null; prev: number | null }) {
-  if (current === null || prev === null) return null;
-  const pp = (current - prev) * 100;
-  const cls = Math.abs(pp) < 0.05
-    ? 'dash-stat-delta-flat'
-    : pp > 0 ? 'dash-stat-delta-up' : 'dash-stat-delta-down';
-  const sign = pp > 0 ? '+' : '';
-  return (
-    <span className={`dash-stat-delta-inline ${cls}`} title="vs previous period (percentage points)">
-      {sign}{pp.toFixed(2)} pp
-    </span>
-  );
+  const result = formatRateDelta(current, prev);
+  switch (result.kind) {
+    case 'hidden':
+      return null;
+    case 'no-comparison':
+      return (
+        <span
+          className="dash-stat-delta-inline dash-stat-delta-flat"
+          title="No previous-period data to compare against"
+        >
+          —
+        </span>
+      );
+    case 'no-change':
+      return (
+        <span className="dash-stat-delta-inline dash-stat-delta-flat" title="vs previous period">
+          no change
+        </span>
+      );
+    case 'new':
+      return (
+        <span className="dash-stat-delta-inline dash-stat-delta-up" title="vs previous period">
+          new
+        </span>
+      );
+    case 'delta':
+      return (
+        <span
+          className={`dash-stat-delta-inline dash-stat-delta-${result.severity}`}
+          title="vs previous period (percentage points)"
+        >
+          {result.label}
+        </span>
+      );
+  }
 }
 
 /**

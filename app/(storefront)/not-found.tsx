@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Icon } from './_components/icon';
+import { Icon } from '../_components/icon';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
-import { RecentlyViewedRail } from './_components/recently-viewed';
+import { RecentlyViewedRail } from '../_components/recently-viewed';
 
 export const metadata: Metadata = {
   // Next.js automatically emits <meta name="robots" content="noindex"/> on
