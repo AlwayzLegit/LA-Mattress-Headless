@@ -61,6 +61,40 @@ export async function getConversionFunnel(days = 30): Promise<ConversionFunnel |
   };
 }
 
+/**
+ * Phase 300: conversion funnel for the previous period of equal length,
+ * ending `days` ago. Powers the dashboard's "vs previous N days" delta
+ * on the overall conversion rate (last step / first step).
+ *
+ * Same HogQL shape as getConversionFunnel, just with a different
+ * timestamp window. Returned as a parallel ConversionFunnel so the
+ * caller can compute deltas client-side without re-implementing the
+ * step mapping.
+ */
+export async function getConversionFunnelPrev(days = 30): Promise<ConversionFunnel | null> {
+  const data = await hogQL(`
+    SELECT event, count(DISTINCT person_id) AS persons
+    FROM events
+    WHERE event IN ('plp_view', 'pdp_view', 'add_to_cart', 'cart_view', 'checkout_started', 'order_completed')
+      AND timestamp >= now() - INTERVAL ${days * 2} DAY
+      AND timestamp <  now() - INTERVAL ${days} DAY
+    GROUP BY event
+  `);
+  if (!data) return null;
+  const counts = new Map<string, number>();
+  for (const row of data.results) {
+    counts.set(String(row[0]), Number(row[1] ?? 0));
+  }
+  return {
+    days,
+    steps: FUNNEL_STEPS.map((s) => ({
+      event: s.event,
+      label: s.label,
+      persons: counts.get(s.event) ?? 0,
+    })),
+  };
+}
+
 /* ------------------------------------------------------------------------ *
  * Top entry pages + bounce rate, last N days
  *
@@ -212,6 +246,33 @@ export async function getQuizFunnel(days = 30): Promise<QuizFunnel | null> {
     FROM events
     WHERE event IN ('quiz_step', 'quiz_completed', 'quiz_recommendation_clicked')
       AND timestamp >= now() - INTERVAL ${days} DAY
+    GROUP BY event
+  `);
+  if (!data) return null;
+  const counts = new Map<string, number>();
+  for (const row of data.results) {
+    counts.set(String(row[0]), Number(row[1] ?? 0));
+  }
+  return {
+    days,
+    started: counts.get('quiz_step') ?? 0,
+    completed: counts.get('quiz_completed') ?? 0,
+    clicked: counts.get('quiz_recommendation_clicked') ?? 0,
+  };
+}
+
+/**
+ * Phase 300: quiz funnel for the previous period of equal length.
+ * Same shape as getQuizFunnel, windowed to days*2..days ago. Caller
+ * computes completion-rate / click-rate deltas vs the current period.
+ */
+export async function getQuizFunnelPrev(days = 30): Promise<QuizFunnel | null> {
+  const data = await hogQL(`
+    SELECT event, count(DISTINCT person_id) AS persons
+    FROM events
+    WHERE event IN ('quiz_step', 'quiz_completed', 'quiz_recommendation_clicked')
+      AND timestamp >= now() - INTERVAL ${days * 2} DAY
+      AND timestamp <  now() - INTERVAL ${days} DAY
     GROUP BY event
   `);
   if (!data) return null;
