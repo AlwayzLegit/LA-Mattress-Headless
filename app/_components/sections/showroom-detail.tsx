@@ -11,7 +11,7 @@
 
 import Link from 'next/link';
 import { getBrands } from '@/lib/shopify';
-import type { Showroom } from '@/lib/showrooms';
+import { type Showroom, SHOWROOMS } from '@/lib/showrooms';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { Icon } from '../icon';
 
@@ -23,6 +23,11 @@ export async function ShowroomDetail({
   cmsBody: string | null;
 }) {
   const brands = (await getBrands()).slice().sort((a, b) => a.name.localeCompare(b.name));
+  // SEMrush 20260521_1: cross-link the 4 sibling showrooms so each
+  // showroom page picks up 4 inbound links from each peer (vs the
+  // previous 0 — showrooms only got linked from the locations index
+  // and nav. Helps local-SEO and reduces the 117 crawl-depth flags).
+  const otherShowrooms = SHOWROOMS.filter((s) => s.handle !== showroom.handle);
   const areas = showroom.nearbyAreas;
   const areaList =
     areas.length > 1
@@ -109,6 +114,52 @@ export async function ShowroomDetail({
           />
         </section>
       ) : null}
+
+      <section className="section showroom-other" aria-labelledby="sd-other-h">
+        <div className="eyebrow">Our other LA showrooms</div>
+        <h2 id="sd-other-h" className="h2">{showroom.area} not the closest? Try one of our other stores.</h2>
+        <ul className="showroom-chips" aria-label="Other LA Mattress showrooms">
+          {otherShowrooms.map((s) => (
+            <li key={s.handle}>
+              <Link href={`/pages/${s.handle}`} className="showroom-chip showroom-chip-link">
+                {s.area} — {s.street}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link href="/pages/mattress-store-locations" className="showroom-chip showroom-chip-link">
+              All 5 LA showrooms →
+            </Link>
+          </li>
+        </ul>
+      </section>
+
+      <section className="section showroom-guides" aria-labelledby="sd-guides-h">
+        <div className="eyebrow">Read before you visit</div>
+        <h2 id="sd-guides-h" className="h2">LA-local buying guides</h2>
+        <ul className="showroom-chips" aria-label="LA mattress-shopping articles">
+          <li>
+            <Link href="/blogs/mattress-buying-guide/best-mattress-los-angeles" className="showroom-chip showroom-chip-link">
+              Best mattress in Los Angeles (2026)
+            </Link>
+          </li>
+          <li>
+            <Link href="/blogs/mattress-buying-guide/mattress-store-near-me-los-angeles" className="showroom-chip showroom-chip-link">
+              Mattress store near me — LA showrooms
+            </Link>
+          </li>
+          <li>
+            <Link href="/blogs/mattress-buying-guide/mattress-financing-options-los-angeles" className="showroom-chip showroom-chip-link">
+              LA financing options (0% APR)
+            </Link>
+          </li>
+          <li>
+            <Link href="/blogs/mattress-buying-guide/how-to-choose-a-mattress" className="showroom-chip showroom-chip-link">
+              How to choose a mattress
+            </Link>
+          </li>
+        </ul>
+      </section>
     </>
   );
 }
