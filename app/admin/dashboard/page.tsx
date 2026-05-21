@@ -9,6 +9,7 @@ import {
   getRefundHealth,
   getSeoGaps,
   getTopProducts,
+  numericIdFromGid,
   type DashboardDailyPoint,
 } from '@/lib/shopify/admin';
 import {
@@ -295,7 +296,16 @@ export default async function DashboardPage({
                     ) : (
                       orderSummary.recentOrders.map((o) => (
                         <tr key={o.id}>
-                          <td><strong>{o.name}</strong></td>
+                          <td>
+                            <strong>
+                              <Link
+                                href={`/admin/orders/${numericIdFromGid(o.id)}?range=${rangeKey}`}
+                                prefetch={false}
+                              >
+                                {o.name}
+                              </Link>
+                            </strong>
+                          </td>
                           <td>{o.customer ?? '—'}</td>
                           <td className="tnum">{fmtMoney(o.total, o.currency)}</td>
                           <td>{o.fulfillmentStatus ?? '—'}</td>
