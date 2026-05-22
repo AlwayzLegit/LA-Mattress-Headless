@@ -60,16 +60,26 @@ export type CodedPageLd = { key: string; data: unknown };
 export function getCodedPageJsonLd(handle: CodedPageHandle): CodedPageLd[] {
   const url = `${SITE}/pages/${handle}`;
   const name = META[handle].h1;
+  const description = META[handle].description;
+  // Schema audit (2026-05): match the @id-linkage pattern used by
+  // collection-jsonld.ts and the rest of /pages/* (genericPageLd) so
+  // the WebPage and BreadcrumbList here are first-class graph nodes
+  // linked to the sitewide WebSite + Organization the storefront
+  // layout emits.
   const out: CodedPageLd[] = [
     {
       key: 'ld-page',
       data: {
         '@context': 'https://schema.org',
         '@type': 'WebPage',
+        '@id': `${url}#webpage`,
         name,
         url,
-        isPartOf: { '@type': 'WebSite', url: SITE },
+        description,
         inLanguage: 'en-US',
+        breadcrumb: { '@id': `${url}#breadcrumb` },
+        isPartOf: { '@type': 'WebSite', '@id': `${SITE}/#website` },
+        publisher: { '@id': `${SITE}/#organization` },
       },
     },
     {
@@ -77,6 +87,7 @@ export function getCodedPageJsonLd(handle: CodedPageHandle): CodedPageLd[] {
       data: {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumb`,
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
           { '@type': 'ListItem', position: 2, name, item: url },

@@ -110,7 +110,7 @@ export default function BlogsHubPage() {
   };
 
   return (
-    <>
+    <main>
       <section className="lp-hero">
         <div className="container">
           <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
@@ -202,6 +202,6 @@ export default function BlogsHubPage() {
 
       <script id="ld-breadcrumb-blogs" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <script id="ld-blogs-collection" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
-    </>
+    </main>
   );
 }

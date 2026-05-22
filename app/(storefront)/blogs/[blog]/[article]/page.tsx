@@ -162,7 +162,7 @@ function ArticleView({ article }: { article: Article }) {
   const updatedLabel = new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
   return (
-    <>
+    <main>
       <section className="gd-head">
         <div className="container">
           <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
@@ -289,7 +289,7 @@ function ArticleView({ article }: { article: Article }) {
         </div>
       </section>
 
-    </>
+    </main>
   );
 }
 
