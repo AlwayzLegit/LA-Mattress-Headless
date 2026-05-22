@@ -295,7 +295,14 @@ test('emits HowTo schema when article body has 3+ "Step N:" h2 headings', () => 
   assert.equal(howTo.step[0].position, 1);
   assert.equal(howTo.step[0].name, 'Start with your sleep position');
   assert.match(howTo.step[0].text, /sleep position/);
-  assert.match(howTo.step[0].url, /#step-1$/);
+  // HowTo has @id + mainEntityOfPage linking back to the article URL
+  // so Google's entity graph treats it as a sibling of the BlogPosting.
+  assert.match(howTo['@id'], /#howto$/);
+  assert.ok(howTo.mainEntityOfPage);
+  // Per-step `url` was removed — the article DOM uses heading-slug ids,
+  // not positional #step-N. A fragment that doesn't exist on the page
+  // is worse than no fragment; Google accepts steps without URLs.
+  assert.equal(howTo.step[0].url, undefined);
 });
 
 test('HowTo step names strip the "Step N:" prefix', () => {
@@ -355,7 +362,7 @@ test('does NOT emit HowTo when fewer than 3 Step headings (insufficient sequence
   assert.equal(getHowTo(lds), undefined);
 });
 
-test('HowTo schema includes name + url + description from article metadata', () => {
+test('HowTo schema includes name + description + image-as-ImageObject from article metadata', () => {
   const lds = getArticleJsonLd(makeArticle({
     title: 'How to Clean a Mattress',
     seo: { title: null, description: 'Step-by-step mattress cleaning.' },
@@ -369,5 +376,101 @@ test('HowTo schema includes name + url + description from article metadata', () 
   const howTo = getHowTo(lds);
   assert.equal(howTo.name, 'How to Clean a Mattress');
   assert.equal(howTo.description, 'Step-by-step mattress cleaning.');
-  assert.equal(howTo.image, 'https://cdn.example.com/cleaning.jpg');
+  // Image as ImageObject (not bare URL) — matches publisher.logo pattern
+  // applied to BlogPosting; Google's documented preferred form.
+  assert.equal(howTo.image['@type'], 'ImageObject');
+  assert.equal(howTo.image.url, 'https://cdn.example.com/cleaning.jpg');
+});
+
+/* --- HowTo extraction robustness (code-review follow-ups) ------------ */
+
+test('HowTo extracts step heading even when the prefix is bolded (Shopify WYSIWYG)', () => {
+  // Common Shopify WYSIWYG output wraps the "Step N:" portion in
+  // <strong> — the original regex required the literal "Step N:" to
+  // appear adjacent to the opening h2 with no inline tags, silently
+  // dropping these. The tag-tolerant extractor must handle it.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2><strong>Step 1:</strong> Start with your position</h2><p>Side.</p>
+      <h2><strong>Step 2:</strong> Factor in weight</h2><p>Light.</p>
+      <h2><strong>Step 3:</strong> Pick a type</h2><p>Foam.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo, 'HowTo should emit even with bolded Step prefix');
+  assert.equal(howTo.step.length, 3);
+  assert.equal(howTo.step[0].name, 'Start with your position');
+});
+
+test('HowTo extracts step heading even when name contains inline tags', () => {
+  // `<em>` / `<span>` inside the step name should not stop extraction
+  // (the original [^<]+? lazy match aborted on any `<`).
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1: Choose <em>your</em> mattress size</h2><p>Side.</p>
+      <h2>Step 2: <span>Compare</span> brands</h2><p>Tempur.</p>
+      <h2>Step 3: Visit a <strong>showroom</strong></h2><p>Try it.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo);
+  assert.equal(howTo.step.length, 3);
+  // Name has tags stripped + whitespace collapsed.
+  assert.equal(howTo.step[0].name, 'Choose your mattress size');
+  assert.equal(howTo.step[1].name, 'Compare brands');
+  assert.equal(howTo.step[2].name, 'Visit a showroom');
+});
+
+test('HowTo separator class no longer matches "Step 1.5" as Step 1', () => {
+  // The original `[:.—–-]` class accepted `.` as a separator, so
+  // `Step 1.5 considerations` matched as Step 1 with name "5
+  // considerations". The fix removes `.` from the separator class.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1.5 considerations</h2><p>Body.</p>
+      <h2>Step 1: Real step</h2><p>Body.</p>
+      <h2>Step 2: Real step</h2><p>Body.</p>
+      <h2>Step 3: Real step</h2><p>Body.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo);
+  // The "Step 1.5 considerations" heading should NOT count as a step
+  // — only the three "Step N:" headings do.
+  assert.equal(howTo.step.length, 3);
+  assert.equal(howTo.step[0].name, 'Real step');
+});
+
+test('HowTo name drops trailing " | LA Mattress" / " | LA Mattress Store" suffix', () => {
+  // Some Shopify article titles carry a brand suffix; the visible H1
+  // already strips it via stripBrandSuffix, and the HowTo SERP rich-
+  // result name should follow suit.
+  const lds = getArticleJsonLd(makeArticle({
+    title: 'How to Choose a Mattress | LA Mattress Store',
+    contentHtml: `
+      <h2>Step 1: One</h2><p>Body.</p>
+      <h2>Step 2: Two</h2><p>Body.</p>
+      <h2>Step 3: Three</h2><p>Body.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.equal(howTo.name, 'How to Choose a Mattress');
+});
+
+test('HowTo step body terminates correctly across mixed heading levels', () => {
+  // h2 step → followed by h4 subsection → followed by next h2 step.
+  // The h4 content should be folded into the FIRST step's text (the
+  // lookahead intentionally stops only at h2/h3, not h4+, so step
+  // bodies can contain subsections).
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1: First step</h2><p>Intro.</p><h4>Detail</h4><p>More.</p>
+      <h2>Step 2: Second step</h2><p>Body.</p>
+      <h2>Step 3: Third step</h2><p>Body.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.equal(howTo.step.length, 3);
+  assert.match(howTo.step[0].text, /Intro/);
+  assert.match(howTo.step[0].text, /Detail/);
 });
