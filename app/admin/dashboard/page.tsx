@@ -27,6 +27,7 @@ import {
   getDeviceBreakdown,
   getQuizFunnel,
   getQuizFunnelPrev,
+  getQuizStepDropoff,
   getRevenueBySource,
   getShowroomTraffic,
   getTopConvertingArticles,
@@ -181,6 +182,7 @@ export default async function DashboardPage({
     sources,
     quizFunnel,
     quizFunnelPrev,
+    quizStepDropoff,
     revenueBySource,
     deviceBreakdown,
     showroomTraffic,
@@ -203,6 +205,7 @@ export default async function DashboardPage({
     POSTHOG_CONFIGURED ? getTopTrafficSources(days, 10).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizFunnelPrev(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getQuizStepDropoff(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getRevenueBySource(days, 8).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getDeviceBreakdown(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED
@@ -861,6 +864,66 @@ export default async function DashboardPage({
               </ul>
             ) : POSTHOG_CONFIGURED ? (
               <p className="muted">No quiz data yet — events ship in PostHog Phase 1.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Quiz step drop-off — per-question participation. Answers
+              the "which question is the bail-out point" question that
+              the 3-row Quiz funnel above can't. */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Quiz step drop-off · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                PostHog · unique persons per quiz_step event
+              </span>
+            </div>
+            {quizStepDropoff && quizStepDropoff.steps.length > 0 ? (
+              <>
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Step</th>
+                      <th>Question</th>
+                      <th>Reached</th>
+                      <th>Drop from prior</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {quizStepDropoff.steps.map((s) => (
+                      <tr
+                        key={`${s.step}-${s.questionId}`}
+                        className={s.dropoffFromPrev > 0.25 ? 'dash-warn' : ''}
+                      >
+                        <td className="tnum">{s.step}</td>
+                        <td><code style={{ fontSize: 13 }}>{s.questionId || '(unknown)'}</code></td>
+                        <td className="tnum">{s.persons}</td>
+                        <td className="tnum">
+                          {s.dropoffFromPrev > 0
+                            ? `−${(s.dropoffFromPrev * 100).toFixed(1)}%`
+                            : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td colSpan={2}><strong>quiz_completed</strong></td>
+                      <td className="tnum"><strong>{quizStepDropoff.completedPersons}</strong></td>
+                      <td className="tnum">
+                        {quizStepDropoff.steps.length > 0 && quizStepDropoff.steps[quizStepDropoff.steps.length - 1].persons > 0
+                          ? `−${Math.max(0, (1 - quizStepDropoff.completedPersons / quizStepDropoff.steps[quizStepDropoff.steps.length - 1].persons) * 100).toFixed(1)}%`
+                          : '—'}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-3)' }}>
+                  Steps with &gt; 25% drop are flagged. Drop-off &gt; 30% on any single step
+                  is typically a sign of an unclear or too-personal question.
+                </p>
+              </>
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">No per-step data yet.</p>
             ) : (
               <PostHogConfigHint />
             )}

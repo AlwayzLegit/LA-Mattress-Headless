@@ -289,6 +289,104 @@ export async function getQuizFunnelPrev(days = 30): Promise<QuizFunnel | null> {
 }
 
 /* ------------------------------------------------------------------------ *
+ * Quiz step drop-off — per-question participation count.
+ *
+ * SleepQuiz captures `quiz_step` events with { step, question_id,
+ * choice, total_steps } per option-select (app/(storefront)/sleep-
+ * quiz/sleep-quiz.tsx). Aggregating distinct persons per step yields
+ * the participation funnel: which question is the bail-out point?
+ *
+ * Persons-per-step is naturally monotonically decreasing because once
+ * a user advances past step N they've reached step N. Re-selects on
+ * back-button visits don't inflate (countDistinct deduplicates by
+ * person_id). Step 0 ≈ "started"; the last populated step ≈ "answered
+ * all questions" (which should equal quiz_completed roughly).
+ *
+ * Drop-off-from-previous is computed in TS for clarity.
+ * ------------------------------------------------------------------------ */
+
+export type QuizStepDropoffRow = {
+  /** 1-indexed step number, for display. */
+  step: number;
+  questionId: string;
+  persons: number;
+  /** Drop-off from the prior step in the array (0-1 fraction). 0 on step 1. */
+  dropoffFromPrev: number;
+};
+
+export type QuizStepDropoff = {
+  days: number;
+  steps: QuizStepDropoffRow[];
+  /** Total people who fired `quiz_completed` in the window — the
+   *  expected "completed" tail of the funnel. */
+  completedPersons: number;
+};
+
+export async function getQuizStepDropoff(days = 30): Promise<QuizStepDropoff | null> {
+  // Two queries in parallel: per-step participation + completion count.
+  // Step is stringified upfront because PostHog stores event properties
+  // with their original JSON type and `toString` round-trips both number
+  // and string cases cleanly (the allow-list-linted HogQL functions
+  // include `toString` but exclude integer-conversion variants which
+  // were proven unreliable in cowork 20260521).
+  const [perStep, completed] = await Promise.all([
+    hogQL(`
+      SELECT
+        toString(properties.step) AS step_str,
+        toString(properties.question_id) AS question_id,
+        count(DISTINCT person_id) AS persons
+      FROM events
+      WHERE event = 'quiz_step'
+        AND timestamp >= now() - INTERVAL ${days} DAY
+        AND properties.step != ''
+      GROUP BY step_str, question_id
+    `),
+    hogQL(`
+      SELECT count(DISTINCT person_id) AS persons
+      FROM events
+      WHERE event = 'quiz_completed'
+        AND timestamp >= now() - INTERVAL ${days} DAY
+    `),
+  ]);
+  if (!perStep) return null;
+
+  // Parse + sort in TS. PostHog returns step as the stringified form;
+  // coerce to number for ordering + display. The questionId carries
+  // through for context labels.
+  const parsed: Array<{ stepNum: number; questionId: string; persons: number }> = [];
+  for (const row of perStep.results) {
+    const stepNum = Number.parseInt(String(row[0] ?? ''), 10);
+    if (!Number.isFinite(stepNum)) continue;
+    parsed.push({
+      stepNum,
+      questionId: String(row[1] ?? ''),
+      persons: Number(row[2] ?? 0),
+    });
+  }
+  parsed.sort((a, b) => a.stepNum - b.stepNum);
+
+  // Compute drop-off vs previous step. Step 0 (the first option-select)
+  // has no prior step → dropoffFromPrev=0.
+  const steps: QuizStepDropoffRow[] = parsed.map((row, i) => {
+    const prev = i > 0 ? parsed[i - 1].persons : row.persons;
+    const dropoff = prev > 0 ? Math.max(0, 1 - row.persons / prev) : 0;
+    return {
+      // 1-indexed for display ("Step 1" not "Step 0").
+      step: row.stepNum + 1,
+      questionId: row.questionId,
+      persons: row.persons,
+      dropoffFromPrev: dropoff,
+    };
+  });
+
+  return {
+    days,
+    steps,
+    completedPersons: Number(completed?.results[0]?.[0] ?? 0),
+  };
+}
+
+/* ------------------------------------------------------------------------ *
  * Device breakdown — sessions + order_completed by $device_type
  *
  * Surfaces the mobile-vs-desktop conversion gap. Mobile traffic on a
