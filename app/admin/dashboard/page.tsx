@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import {
   ADMIN_CONFIGURED,
+  getBlogSeoGaps,
   getCatalogHealth,
   getCustomerInsights,
   getCustomerLifetime,
@@ -10,6 +11,7 @@ import {
   getOrderClassification,
   getOrderSummaryWithTrends,
   getRefundHealth,
+  getRepeatBuyerGap,
   getSeoGaps,
   getTopProducts,
   numericIdFromGid,
@@ -26,7 +28,9 @@ import {
   getDeviceBreakdown,
   getQuizFunnel,
   getQuizFunnelPrev,
+  getQuizStepDropoff,
   getRevenueBySource,
+  getSearchConversion,
   getShowroomTraffic,
   getTopConvertingArticles,
   getTopEntryPages,
@@ -167,18 +171,22 @@ export default async function DashboardPage({
     catalog,
     topProducts,
     seoGaps,
+    blogSeoGaps,
     lowStock,
     customerInsights,
     customerLifetime,
+    repeatBuyerGap,
     orderClassification,
     refundHealth,
     funnel,
     funnelPrev,
     entryPages,
     searches,
+    searchConversion,
     sources,
     quizFunnel,
     quizFunnelPrev,
+    quizStepDropoff,
     revenueBySource,
     deviceBreakdown,
     showroomTraffic,
@@ -188,18 +196,22 @@ export default async function DashboardPage({
     getCatalogHealth().catch(() => null),
     getTopProducts(days).catch(() => null),
     getSeoGaps().catch(() => null),
+    getBlogSeoGaps(250).catch(() => null),
     getLowStock(3).catch(() => null),
     getCustomerInsights(days).catch(() => null),
     getCustomerLifetime(250).catch(() => null),
+    getRepeatBuyerGap(250).catch(() => null),
     getOrderClassification(days).catch(() => null),
     getRefundHealth(days).catch(() => null),
     POSTHOG_CONFIGURED ? getConversionFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getConversionFunnelPrev(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopEntryPages(7, 10).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopSearches(days, 15).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getSearchConversion(days, 10).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopTrafficSources(days, 10).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizFunnelPrev(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getQuizStepDropoff(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getRevenueBySource(days, 8).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getDeviceBreakdown(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED
@@ -742,6 +754,69 @@ export default async function DashboardPage({
               <p className="muted">No orders in this window.</p>
             )}
           </div>
+
+          {/* Repeat-buyer gap — for mattress retail where the primary
+              product has a 7-10y replacement cycle, "true" cohort
+              retention is near-zero. The actionable signal is HOW
+              repeat buyers come back: same-day add-ons, planned
+              follow-ups, or replacement cycle. Each bucket tells a
+              different merchandising story. */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Repeat-buyer gap distribution</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                Shopify · 250 most-recent customers with ≥ 2 orders
+              </span>
+            </div>
+            {repeatBuyerGap && repeatBuyerGap.repeatCustomers > 0 ? (
+              <>
+                <ul className="dash-list">
+                  <li>
+                    <span>Sampled repeat customers</span>
+                    <strong>{repeatBuyerGap.repeatCustomers}</strong>
+                  </li>
+                  <li>
+                    <span>Median gap (days)</span>
+                    <strong>{repeatBuyerGap.medianGapDays.toFixed(0)}</strong>
+                  </li>
+                  <li>
+                    <span>25th / 75th percentile</span>
+                    <strong>
+                      {repeatBuyerGap.p25GapDays.toFixed(0)} / {repeatBuyerGap.p75GapDays.toFixed(0)} days
+                    </strong>
+                  </li>
+                </ul>
+                <table className="dash-table" style={{ marginTop: 'var(--s-4)' }}>
+                  <thead>
+                    <tr>
+                      <th>Gap from first order</th>
+                      <th>Customers</th>
+                      <th>Share</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {repeatBuyerGap.buckets.map((b) => (
+                      <tr key={b.label}>
+                        <td>{b.label}</td>
+                        <td className="tnum">{b.customers}</td>
+                        <td className="tnum">
+                          {pct(b.customers, repeatBuyerGap.repeatCustomers)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-3)' }}>
+                  Gap uses customer-record creation date as the proxy for first-order date
+                  (accurate within hours for storefront-acquired customers). Shopify Admin
+                  restricts `Customer.orders` historical access without the `read_all_orders`
+                  scope; this is the documented workaround.
+                </p>
+              </>
+            ) : (
+              <p className="muted">No repeat-buyer data available yet.</p>
+            )}
+          </div>
         </div>
       </section>
 
@@ -858,6 +933,66 @@ export default async function DashboardPage({
               </ul>
             ) : POSTHOG_CONFIGURED ? (
               <p className="muted">No quiz data yet — events ship in PostHog Phase 1.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Quiz step drop-off — per-question participation. Answers
+              the "which question is the bail-out point" question that
+              the 3-row Quiz funnel above can't. */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Quiz step drop-off · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                PostHog · unique persons per quiz_step event
+              </span>
+            </div>
+            {quizStepDropoff && quizStepDropoff.steps.length > 0 ? (
+              <>
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Step</th>
+                      <th>Question</th>
+                      <th>Reached</th>
+                      <th>Drop from prior</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {quizStepDropoff.steps.map((s) => (
+                      <tr
+                        key={`${s.step}-${s.questionId}`}
+                        className={s.dropoffFromPrev > 0.25 ? 'dash-warn' : ''}
+                      >
+                        <td className="tnum">{s.step}</td>
+                        <td><code style={{ fontSize: 13 }}>{s.questionId || '(unknown)'}</code></td>
+                        <td className="tnum">{s.persons}</td>
+                        <td className="tnum">
+                          {s.dropoffFromPrev > 0
+                            ? `−${(s.dropoffFromPrev * 100).toFixed(1)}%`
+                            : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td colSpan={2}><strong>quiz_completed</strong></td>
+                      <td className="tnum"><strong>{quizStepDropoff.completedPersons}</strong></td>
+                      <td className="tnum">
+                        {quizStepDropoff.steps.length > 0 && quizStepDropoff.steps[quizStepDropoff.steps.length - 1].persons > 0
+                          ? `−${Math.max(0, (1 - quizStepDropoff.completedPersons / quizStepDropoff.steps[quizStepDropoff.steps.length - 1].persons) * 100).toFixed(1)}%`
+                          : '—'}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-3)' }}>
+                  Steps with &gt; 25% drop are flagged. Drop-off &gt; 30% on any single step
+                  is typically a sign of an unclear or too-personal question.
+                </p>
+              </>
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">No per-step data yet.</p>
             ) : (
               <PostHogConfigHint />
             )}
@@ -1225,6 +1360,61 @@ export default async function DashboardPage({
             )}
           </div>
 
+          {/* Search-query conversion — Top searches above answers "what
+              are people searching for"; this answers "which of those
+              searches DRIVE PURCHASES". Different question, different
+              merchandising action (boost a converter; fix a non-
+              converter; expand inventory for high-volume zero-result). */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Search → purchase · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                PostHog · per-session first search query (≥ 5 sessions)
+              </span>
+            </div>
+            {searchConversion ? (
+              searchConversion.length === 0 ? (
+                <p className="muted">No qualifying search-to-purchase data yet (queries need ≥ 5 sessions).</p>
+              ) : (
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Query</th>
+                      <th>Sessions</th>
+                      <th>Orders</th>
+                      <th>Conv %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {searchConversion.map((s) => (
+                      <tr key={s.query}>
+                        <td>
+                          <Link
+                            href={`/search?q=${encodeURIComponent(s.query)}`}
+                            prefetch={false}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {s.query}
+                          </Link>
+                        </td>
+                        <td className="tnum">{s.sessions}</td>
+                        <td className="tnum">{s.orders}</td>
+                        <td className={`tnum ${s.conversionPct >= 5 ? '' : ''}`}>
+                          {s.conversionPct.toFixed(1)}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Search-conversion data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
           {/* SEO gaps */}
           <div className="dash-card">
             <div className="dash-card-hd">
@@ -1275,6 +1465,98 @@ export default async function DashboardPage({
               </>
             ) : (
               <p className="muted">SEO-gap data unavailable.</p>
+            )}
+          </div>
+
+          {/* Blog SEO gaps — article-level coverage. Each gap maps to a
+              SEMrush flag we can fix in the JSON-LD layer but the merchant
+              should also fix in source content (Shopify Admin article
+              editor) so the page+schema agree end-to-end. */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Blog SEO health</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                Shopify · {blogSeoGaps?.sampleSize ?? 250} most-recent published articles
+              </span>
+            </div>
+            {blogSeoGaps && blogSeoGaps.sampleSize > 0 ? (
+              <>
+                <ul className="dash-list">
+                  <li className={blogSeoGaps.articlesThinContent > blogSeoGaps.sampleSize * 0.1 ? 'dash-warn' : ''}>
+                    <span>Thin content (&lt; 250 words)</span>
+                    <strong>
+                      {blogSeoGaps.articlesThinContent}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesThinContent, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li className={blogSeoGaps.articlesMissingImage > blogSeoGaps.sampleSize * 0.2 ? 'dash-warn' : ''}>
+                    <span>Missing featured image</span>
+                    <strong>
+                      {blogSeoGaps.articlesMissingImage}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesMissingImage, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li className={blogSeoGaps.articlesMissingAuthor > blogSeoGaps.sampleSize * 0.2 ? 'dash-warn' : ''}>
+                    <span>Missing author</span>
+                    <strong>
+                      {blogSeoGaps.articlesMissingAuthor}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesMissingAuthor, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Missing seo.title</span>
+                    <strong>
+                      {blogSeoGaps.articlesMissingSeoTitle}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesMissingSeoTitle, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Missing seo.description</span>
+                    <strong>
+                      {blogSeoGaps.articlesMissingSeoDescription}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesMissingSeoDescription, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                </ul>
+                {blogSeoGaps.sampleArticles.length > 0 ? (
+                  <>
+                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Examples</h3>
+                    <ul className="dash-list-compact">
+                      {blogSeoGaps.sampleArticles.map((a) => (
+                        <li key={a.id}>
+                          <Link
+                            href={`/blogs/${a.blogHandle}/${a.handle}`}
+                            prefetch={false}
+                          >
+                            {a.title}
+                          </Link>
+                          <span className="muted"> · gap: {a.gap} · </span>
+                          <a
+                            href={`${SHOPIFY_ADMIN_BASE}/articles/${a.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontSize: 12 }}
+                          >
+                            fix in Shopify →
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <p className="muted">Blog SEO data unavailable.</p>
             )}
           </div>
         </div>

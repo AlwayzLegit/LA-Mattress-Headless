@@ -186,6 +186,69 @@ export async function getTopSearches(days = 30, limit = 15): Promise<SearchQuery
 }
 
 /* ------------------------------------------------------------------------ *
+ * Search query conversion — which search queries drive purchases.
+ *
+ * Joins `search` events to `order_completed` events by session_id via a
+ * HogQL CTE: per session, take the FIRST search query (via
+ * `argMin(query, timestamp)`) and a converted flag, then aggregate by
+ * query. Same session-attribution pattern as `getTopConvertingArticles`.
+ *
+ * Sample-size guarded: `HAVING sessions >= 5` so a single conversion on
+ * a long-tail query doesn't inflate to 100%. Tail queries can still be
+ * audited via the existing `getTopSearches` card (which shows volume +
+ * zero-result %); this card is specifically for the "what converts"
+ * decision.
+ *
+ * Caveats noted in source: per-session first-search attribution means
+ * a session with multiple searches credits only the FIRST query. Same
+ * heuristic GA4 and PostHog UI use by default.
+ * ------------------------------------------------------------------------ */
+
+export type SearchConversion = {
+  query: string;
+  sessions: number;
+  orders: number;
+  conversionPct: number;
+};
+
+export async function getSearchConversion(days = 30, limit = 10): Promise<SearchConversion[] | null> {
+  const data = await hogQL(`
+    WITH session_search AS (
+      SELECT
+        properties.$session_id AS sid,
+        argMin(lower(trim(toString(properties.query))), timestamp) AS first_q,
+        countIf(event = 'order_completed') > 0 AS converted
+      FROM events
+      WHERE timestamp >= now() - INTERVAL ${days} DAY
+        AND properties.$session_id != ''
+        AND (
+          (event = 'search' AND toString(properties.query) != '')
+          OR event = 'order_completed'
+        )
+      GROUP BY sid
+      HAVING first_q != ''
+    )
+    SELECT
+      first_q AS q,
+      count() AS sessions,
+      countIf(converted) AS orders,
+      round(100.0 * countIf(converted) / count(), 2) AS conversion_pct
+    FROM session_search
+    GROUP BY q
+    HAVING sessions >= 5
+    ORDER BY orders DESC, sessions DESC
+    LIMIT ${limit}
+  `);
+  if (!data) return null;
+  return data.results.map((r) => ({
+    query: String(r[0] ?? ''),
+    sessions: Number(r[1] ?? 0),
+    orders: Number(r[2] ?? 0),
+    conversionPct: Number(r[3] ?? 0),
+  }));
+}
+
+/* ------------------------------------------------------------------------ *
  * Top traffic sources — utm_source, falling back to referrer host
  * ------------------------------------------------------------------------ */
 
@@ -285,6 +348,104 @@ export async function getQuizFunnelPrev(days = 30): Promise<QuizFunnel | null> {
     started: counts.get('quiz_step') ?? 0,
     completed: counts.get('quiz_completed') ?? 0,
     clicked: counts.get('quiz_recommendation_clicked') ?? 0,
+  };
+}
+
+/* ------------------------------------------------------------------------ *
+ * Quiz step drop-off — per-question participation count.
+ *
+ * SleepQuiz captures `quiz_step` events with { step, question_id,
+ * choice, total_steps } per option-select (app/(storefront)/sleep-
+ * quiz/sleep-quiz.tsx). Aggregating distinct persons per step yields
+ * the participation funnel: which question is the bail-out point?
+ *
+ * Persons-per-step is naturally monotonically decreasing because once
+ * a user advances past step N they've reached step N. Re-selects on
+ * back-button visits don't inflate (countDistinct deduplicates by
+ * person_id). Step 0 ≈ "started"; the last populated step ≈ "answered
+ * all questions" (which should equal quiz_completed roughly).
+ *
+ * Drop-off-from-previous is computed in TS for clarity.
+ * ------------------------------------------------------------------------ */
+
+export type QuizStepDropoffRow = {
+  /** 1-indexed step number, for display. */
+  step: number;
+  questionId: string;
+  persons: number;
+  /** Drop-off from the prior step in the array (0-1 fraction). 0 on step 1. */
+  dropoffFromPrev: number;
+};
+
+export type QuizStepDropoff = {
+  days: number;
+  steps: QuizStepDropoffRow[];
+  /** Total people who fired `quiz_completed` in the window — the
+   *  expected "completed" tail of the funnel. */
+  completedPersons: number;
+};
+
+export async function getQuizStepDropoff(days = 30): Promise<QuizStepDropoff | null> {
+  // Two queries in parallel: per-step participation + completion count.
+  // Step is stringified upfront because PostHog stores event properties
+  // with their original JSON type and `toString` round-trips both number
+  // and string cases cleanly (the allow-list-linted HogQL functions
+  // include `toString` but exclude integer-conversion variants which
+  // were proven unreliable in cowork 20260521).
+  const [perStep, completed] = await Promise.all([
+    hogQL(`
+      SELECT
+        toString(properties.step) AS step_str,
+        toString(properties.question_id) AS question_id,
+        count(DISTINCT person_id) AS persons
+      FROM events
+      WHERE event = 'quiz_step'
+        AND timestamp >= now() - INTERVAL ${days} DAY
+        AND properties.step != ''
+      GROUP BY step_str, question_id
+    `),
+    hogQL(`
+      SELECT count(DISTINCT person_id) AS persons
+      FROM events
+      WHERE event = 'quiz_completed'
+        AND timestamp >= now() - INTERVAL ${days} DAY
+    `),
+  ]);
+  if (!perStep) return null;
+
+  // Parse + sort in TS. PostHog returns step as the stringified form;
+  // coerce to number for ordering + display. The questionId carries
+  // through for context labels.
+  const parsed: Array<{ stepNum: number; questionId: string; persons: number }> = [];
+  for (const row of perStep.results) {
+    const stepNum = Number.parseInt(String(row[0] ?? ''), 10);
+    if (!Number.isFinite(stepNum)) continue;
+    parsed.push({
+      stepNum,
+      questionId: String(row[1] ?? ''),
+      persons: Number(row[2] ?? 0),
+    });
+  }
+  parsed.sort((a, b) => a.stepNum - b.stepNum);
+
+  // Compute drop-off vs previous step. Step 0 (the first option-select)
+  // has no prior step → dropoffFromPrev=0.
+  const steps: QuizStepDropoffRow[] = parsed.map((row, i) => {
+    const prev = i > 0 ? parsed[i - 1].persons : row.persons;
+    const dropoff = prev > 0 ? Math.max(0, 1 - row.persons / prev) : 0;
+    return {
+      // 1-indexed for display ("Step 1" not "Step 0").
+      step: row.stepNum + 1,
+      questionId: row.questionId,
+      persons: row.persons,
+      dropoffFromPrev: dropoff,
+    };
+  });
+
+  return {
+    days,
+    steps,
+    completedPersons: Number(completed?.results[0]?.[0] ?? 0),
   };
 }
 

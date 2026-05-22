@@ -527,6 +527,151 @@ export async function getSeoGaps(): Promise<DashboardSeoGaps | null> {
 }
 
 
+/* ────────────────────────────────────────────────────────────────────── *
+ * Blog SEO health — article-level gaps that drive the SEMrush
+ * "structured-data errors" + "content not optimized" flags.
+ *
+ * Each gap maps to a real risk:
+ *
+ *   - missingImage  → BlogPosting JSON-LD falls back to the sitewide
+ *                     logo (valid schema, but Google's content
+ *                     guidelines prefer an article-representative image).
+ *   - missingAuthor → BlogPosting JSON-LD falls back to an Organization
+ *                     author stub (valid, but a real Person author
+ *                     strengthens E-E-A-T).
+ *   - missingSeoTitle / missingSeoDescription → falls back to the
+ *                     article title / excerpt for SERP. Custom values
+ *                     give the merchant control over the snippet.
+ *   - thinContent   → article body below ~250 words. Maps to SEMrush's
+ *                     "Low word count" + "Content not optimized" flags.
+ *
+ * Sample-based (first N active articles by recency). 250 covers about
+ * 35% of the corpus on a single Admin GraphQL roundtrip; the gap-rate
+ * extrapolates reliably to the whole catalog.
+ *
+ * Returns a list of sample articles with their gap so the dashboard
+ * can deep-link the merchant straight to the Shopify Admin editor.
+ * ────────────────────────────────────────────────────────────────────── */
+
+export type DashboardBlogSeoGaps = {
+  sampleSize: number;
+  articlesMissingImage: number;
+  articlesMissingAuthor: number;
+  articlesMissingSeoTitle: number;
+  articlesMissingSeoDescription: number;
+  articlesThinContent: number;  // body < THIN_WORD_FLOOR words
+  /** Sample articles to highlight (with gap + Admin deep-link). */
+  sampleArticles: Array<{
+    id: string;
+    handle: string;
+    title: string;
+    blogHandle: string;
+    /** Which gap surfaced this article into the sample. */
+    gap: 'image' | 'author' | 'seo-title' | 'seo-description' | 'thin-content';
+  }>;
+};
+
+/** Threshold below which an article is flagged "thin". Mirrors Google's
+ *  rough cut-off for content-quality signals; SEMrush flags below ~250. */
+const THIN_WORD_FLOOR = 250;
+
+export async function getBlogSeoGaps(sampleSize = 250): Promise<DashboardBlogSeoGaps | null> {
+  const first = Math.min(Math.max(sampleSize, 1), 250);
+  // Shopify Admin Article doesn't expose an `seo` field directly (only
+  // Storefront does); the SEO title / description live in metafields
+  // under the standard `global.title_tag` / `global.description_tag`
+  // namespace+key pair the platform writes when a merchant fills in
+  // the SEO section of the article editor.
+  const data = await adminGql<{
+    articles: {
+      nodes: Array<{
+        id: string;
+        handle: string;
+        title: string;
+        body: string | null;
+        image: { id: string } | null;
+        author: { name: string | null } | null;
+        summary: string | null;
+        blog: { handle: string };
+        seoTitle: { value: string | null } | null;
+        seoDescription: { value: string | null } | null;
+      }>;
+    };
+  }>(
+    `query BlogSeoGaps($first: Int!) {
+      articles(first: $first, sortKey: PUBLISHED_AT, reverse: true, query: "published_status:published") {
+        nodes {
+          id handle title body summary
+          image { id }
+          author { name }
+          blog { handle }
+          seoTitle: metafield(namespace: "global", key: "title_tag") { value }
+          seoDescription: metafield(namespace: "global", key: "description_tag") { value }
+        }
+      }
+    }`,
+    { first },
+  );
+  if (!data) return null;
+
+  const articles = data.articles.nodes;
+  let missingImage = 0;
+  let missingAuthor = 0;
+  let missingTitle = 0;
+  let missingDescription = 0;
+  let thin = 0;
+  const samples: DashboardBlogSeoGaps['sampleArticles'] = [];
+
+  for (const a of articles) {
+    const noImage = !a.image;
+    const noAuthor = !a.author?.name?.trim();
+    const noTitle = !a.seoTitle?.value?.trim();
+    const noDesc = !a.seoDescription?.value?.trim();
+    // Body word count — strip HTML, collapse whitespace. Body is null
+    // for articles with no content (Storefront API quirk).
+    const bodyText = (a.body ?? '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const wordCount = bodyText ? bodyText.split(' ').length : 0;
+    const isThin = wordCount > 0 && wordCount < THIN_WORD_FLOOR;
+
+    if (noImage) missingImage += 1;
+    if (noAuthor) missingAuthor += 1;
+    if (noTitle) missingTitle += 1;
+    if (noDesc) missingDescription += 1;
+    if (isThin) thin += 1;
+
+    // Prioritize the most-visible gaps in the sample list. One sample
+    // per article — surface the FIRST gap that hit.
+    if (samples.length < 12) {
+      let gap: DashboardBlogSeoGaps['sampleArticles'][number]['gap'] | null = null;
+      if (isThin) gap = 'thin-content';
+      else if (noImage) gap = 'image';
+      else if (noAuthor) gap = 'author';
+      else if (noDesc) gap = 'seo-description';
+      else if (noTitle) gap = 'seo-title';
+      if (gap) {
+        samples.push({
+          id: numericIdFromGid(a.id),
+          handle: a.handle,
+          title: a.title,
+          blogHandle: a.blog.handle,
+          gap,
+        });
+      }
+    }
+  }
+
+  return {
+    sampleSize: articles.length,
+    articlesMissingImage: missingImage,
+    articlesMissingAuthor: missingAuthor,
+    articlesMissingSeoTitle: missingTitle,
+    articlesMissingSeoDescription: missingDescription,
+    articlesThinContent: thin,
+    sampleArticles: samples,
+  };
+}
+
+
 /* ------------------------------------------------------------------------ *
  * Low-stock alerts — variants with inventoryQuantity at or below threshold
  *
@@ -1193,6 +1338,135 @@ export async function getCustomerLifetime(sampleSize = 250): Promise<DashboardCu
   }));
 
   return summarizeCustomerLifetime(customers);
+}
+
+/* ────────────────────────────────────────────────────────────────────── *
+ * Repeat-buyer gap analysis — for customers with 2+ lifetime orders,
+ * how long do they wait between purchases?
+ *
+ * For a mattress retailer where the primary product lasts 7-10 years,
+ * "true" cohort retention is near-zero. But the customers who DO buy
+ * again typically do so for predictable reasons:
+ *
+ *   - Same-day / same-week: add-on orders for the same household
+ *     (mattress + frame, sheets, etc.) that split between two
+ *     transactions instead of one.
+ *   - Same-month: planned follow-ups (delayed bedding, second
+ *     mattress for a guest room).
+ *   - Quarterly to yearly: another room / family member buying.
+ *   - Long-term (1y+): replacement cycle.
+ *
+ * Each bucket tells a different merchandising story; the distribution
+ * is the actionable signal.
+ *
+ * Implementation note: Shopify Admin's `customer.orders` connection
+ * is restricted to the last 60 days without the `read_all_orders`
+ * scope. For repeat-buyer historical data we use `customer.createdAt`
+ * (when the customer record was created, ≈ first checkout) as the
+ * proxy for "first order date" — accurate within hours for customers
+ * who placed their first order via the storefront. `lastOrder.createdAt`
+ * is queryable as a direct field (no connection restriction).
+ *
+ * Sample: top 250 repeat customers (filtered server-side by
+ * `orders_count:>1`), sorted newest-first by customer createdAt so
+ * recently-acquired repeat buyers surface in the dashboard.
+ * ────────────────────────────────────────────────────────────────────── */
+
+export type RepeatBuyerGapBucket = {
+  label: string;
+  /** Lower bound in days (inclusive). */
+  minDays: number;
+  /** Upper bound in days (exclusive). Number.POSITIVE_INFINITY for the open-ended top tier. */
+  maxDays: number;
+  customers: number;
+};
+
+export type DashboardRepeatBuyerGap = {
+  sampleSize: number;
+  /** Customers with 2+ lifetime orders that were sampled. */
+  repeatCustomers: number;
+  /** Median gap across the repeat-customer sample, in days. */
+  medianGapDays: number;
+  /** 25th percentile gap, in days. */
+  p25GapDays: number;
+  /** 75th percentile gap, in days. */
+  p75GapDays: number;
+  buckets: RepeatBuyerGapBucket[];
+};
+
+const REPEAT_GAP_BUCKETS: ReadonlyArray<Pick<RepeatBuyerGapBucket, 'label' | 'minDays' | 'maxDays'>> = [
+  { label: 'Same day (< 24h)',      minDays: 0,    maxDays: 1 },
+  { label: 'Same week (1-7d)',      minDays: 1,    maxDays: 7 },
+  { label: 'Same month (7-30d)',    minDays: 7,    maxDays: 30 },
+  { label: 'Quarterly (30-90d)',    minDays: 30,   maxDays: 90 },
+  { label: 'Half-year (90-180d)',   minDays: 90,   maxDays: 180 },
+  { label: 'Annual (180-365d)',     minDays: 180,  maxDays: 365 },
+  { label: 'Multi-year (365d+)',    minDays: 365,  maxDays: Number.POSITIVE_INFINITY },
+];
+
+function percentile(sortedAsc: number[], p: number): number {
+  if (sortedAsc.length === 0) return 0;
+  const idx = (sortedAsc.length - 1) * p;
+  const lo = Math.floor(idx);
+  const hi = Math.ceil(idx);
+  if (lo === hi) return sortedAsc[lo];
+  const frac = idx - lo;
+  return sortedAsc[lo] * (1 - frac) + sortedAsc[hi] * frac;
+}
+
+export async function getRepeatBuyerGap(sampleSize = 250): Promise<DashboardRepeatBuyerGap | null> {
+  const first = Math.min(Math.max(sampleSize, 1), 250);
+  const data = await adminGql<{
+    customers: {
+      nodes: Array<{
+        id: string;
+        numberOfOrders: string | number | null;
+        createdAt: string;
+        lastOrder: { createdAt: string } | null;
+      }>;
+    };
+  }>(
+    `query RepeatBuyerGap($first: Int!) {
+      customers(first: $first, sortKey: CREATED_AT, reverse: true, query: "orders_count:>1") {
+        nodes {
+          id numberOfOrders createdAt
+          lastOrder { createdAt }
+        }
+      }
+    }`,
+    { first },
+  );
+  if (!data) return null;
+
+  // For each customer, compute gap = (lastOrder.createdAt - customer.createdAt) days.
+  // Customer.createdAt is when the record was created — accurate within
+  // hours of the first checkout for storefront-acquired customers.
+  // Customers with numberOfOrders === 1 are filtered server-side; defensive
+  // re-check here in case the Shopify filter behavior changes.
+  const gaps: number[] = [];
+  for (const c of data.customers.nodes) {
+    if (Number(c.numberOfOrders ?? 0) < 2 || !c.lastOrder?.createdAt) continue;
+    const first = new Date(c.createdAt).getTime();
+    const last = new Date(c.lastOrder.createdAt).getTime();
+    if (!Number.isFinite(first) || !Number.isFinite(last) || last < first) continue;
+    const days = (last - first) / 86400000;
+    gaps.push(days);
+  }
+
+  gaps.sort((a, b) => a - b);
+  const buckets = REPEAT_GAP_BUCKETS.map((b) => ({
+    ...b,
+    customers: gaps.filter((d) => d >= b.minDays && d < b.maxDays).length,
+  }));
+
+  return {
+    sampleSize: data.customers.nodes.length,
+    repeatCustomers: gaps.length,
+    medianGapDays: percentile(gaps, 0.5),
+    p25GapDays: percentile(gaps, 0.25),
+    p75GapDays: percentile(gaps, 0.75),
+    buckets,
+  };
 }
 
 /* ────────────────────────────────────────────────────────────────────── *
