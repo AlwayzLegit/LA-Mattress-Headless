@@ -34,10 +34,34 @@ export const ORGANIZATION_LD = {
  * Phase 268: build the Organization JSON-LD using Shopify Brand data
  * when available, falling back to the static ORGANIZATION_LD above for
  * any fields the merchant hasn't filled out.
+ *
+ * Optional `aggregate` enrichment (sitewide rating + count from
+ * Judge.me) attaches an aggregateRating to the brand entity. The
+ * Organization is emitted on every storefront page via the segment
+ * layout, so the brand-level review signal travels with every URL —
+ * eligible for the sitewide review snippet in SERP on brand-intent
+ * queries like "LA Mattress" or "mattress store los angeles".
  */
-export function buildOrganizationLd(shop: ShopBrand | null) {
+export function buildOrganizationLd(
+  shop: ShopBrand | null,
+  aggregate?: { rating: number; count: number } | null,
+) {
   const logo = shop?.brand?.logo?.url ?? FALLBACK_LOGO;
   const name = shop?.name ?? SITE_BRAND;
+  // Validate the aggregate before emission. `typeof NaN === 'number'`
+  // passes the upstream getShopAggregate guard, so without Number.isFinite
+  // here NaN would slip through and emit `"ratingValue": "NaN"` sitewide
+  // — invalid JSON-LD that disqualifies the brand snippet. Also clamp
+  // rating to the schema.org 1-5 scale we declare via bestRating /
+  // worstRating; out-of-range values (rating > 5 from upstream bug)
+  // would otherwise produce a validator error.
+  const validAggregate =
+    aggregate &&
+    Number.isFinite(aggregate.rating) &&
+    Number.isFinite(aggregate.count) &&
+    aggregate.count > 0 &&
+    aggregate.rating >= 1 &&
+    aggregate.rating <= 5;
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -47,6 +71,25 @@ export function buildOrganizationLd(shop: ShopBrand | null) {
     logo,
     telephone: SITE_PHONE_SCHEMA,
     ...(SOCIAL_PROFILES.length > 0 ? { sameAs: [...SOCIAL_PROFILES] } : {}),
+    ...(validAggregate
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            // itemReviewed back-link to the Organization @id makes the
+            // "what's being rated" explicit. Without it Google can read
+            // the AggregateRating as a self-attached property with
+            // ambiguous provenance (the 2019 review-snippet update
+            // demoted self-serving Organization ratings); the back-link
+            // declares that customer reviews aggregate to the brand
+            // entity, which is the truthful semantic.
+            itemReviewed: { '@type': 'Organization', '@id': `${SITE}/#organization` },
+            ratingValue: aggregate.rating.toFixed(1),
+            reviewCount: aggregate.count,
+            bestRating: '5',
+            worstRating: '1',
+          },
+        }
+      : {}),
   };
 }
 

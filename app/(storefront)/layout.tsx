@@ -13,6 +13,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
 import { composeBrandTitle } from '@/lib/seo';
 import { getShopBrand, getActiveAnnouncement, getBrands } from '@/lib/shopify';
+import { getShopAggregate } from '@/lib/judgeme';
 import { AnnouncementBar } from '../_components/announcement-bar';
 import { AnalyticsGa4 } from '../_components/analytics-ga4';
 import { AnalyticsPostHog } from '../_components/analytics-posthog';
@@ -102,12 +103,20 @@ export default async function StorefrontLayout({ children }: { children: React.R
   // active (enabled + in date window), it replaces the regular TopBar
   // sitewide. Three fetches run in parallel — all are fast Storefront
   // queries with 5min–1hr ISR caches.
-  const [shop, announcement, brands] = await Promise.all([
+  // SEO 20260521 batch 5: pull the sitewide Judge.me aggregate
+  // (rating + count) here so the Organization JSON-LD emitted on EVERY
+  // storefront page carries an aggregateRating. Single light fetch
+  // (`/widgets/index_information`) with 1-hour ISR caching — same data
+  // the homepage was previously fetching for its LocalBusiness card.
+  // Surfacing it sitewide makes the brand-level review snippet eligible
+  // on every URL (PLPs, PDPs, blogs, pages), not just homepage.
+  const [shop, announcement, brands, shopAggregate] = await Promise.all([
     getShopBrand(),
     getActiveAnnouncement(),
     getBrands(),
+    getShopAggregate(),
   ]);
-  const organizationLd = buildOrganizationLd(shop);
+  const organizationLd = buildOrganizationLd(shop, shopAggregate);
 
   return (
     <>

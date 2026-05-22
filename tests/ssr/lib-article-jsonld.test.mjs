@@ -60,6 +60,10 @@ function getFaq(lds) {
   return lds.find((x) => x.key === 'ld-article-faq')?.data;
 }
 
+function getHowTo(lds) {
+  return lds.find((x) => x.key === 'ld-article-howto')?.data;
+}
+
 /* --- publisher.logo dimensions (the big SEMrush 20260521_1 fix) ------- */
 
 test('publisher.logo is an ImageObject with explicit width + height', () => {
@@ -263,4 +267,210 @@ test('FAQ extraction ignores h3 sections that are not questions', () => {
     `,
   }));
   assert.equal(getFaq(lds), undefined);
+});
+
+/* --- HowTo extraction (Google rich-result for step-by-step guides) --- */
+
+test('emits HowTo schema when article body has 3+ "Step N:" h2 headings', () => {
+  // Mirrors the real shape of /blogs/mattress-buying-guide/how-to-choose-a-mattress
+  // which has 13 `<h2>Step N: ...</h2>` headings followed by body paragraphs.
+  const lds = getArticleJsonLd(makeArticle({
+    title: 'How to Choose a Mattress',
+    contentHtml: `
+      <p>Intro paragraph.</p>
+      <h2>Step 1: Start with your sleep position</h2>
+      <p>Your dominant sleep position is the single most important factor.</p>
+      <h2>Step 2: Factor in your body weight</h2>
+      <p>Body weight changes how any mattress feels.</p>
+      <h2>Step 3: Choose a mattress type</h2>
+      <p>There are four core types: memory foam, hybrid, latex, innerspring.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo, 'HowTo should emit at 3+ Step headings');
+  assert.equal(howTo['@type'], 'HowTo');
+  assert.equal(howTo.name, 'How to Choose a Mattress');
+  assert.equal(howTo.step.length, 3);
+  assert.equal(howTo.step[0]['@type'], 'HowToStep');
+  assert.equal(howTo.step[0].position, 1);
+  assert.equal(howTo.step[0].name, 'Start with your sleep position');
+  assert.match(howTo.step[0].text, /sleep position/);
+  // HowTo has @id + mainEntityOfPage linking back to the article URL
+  // so Google's entity graph treats it as a sibling of the BlogPosting.
+  assert.match(howTo['@id'], /#howto$/);
+  assert.ok(howTo.mainEntityOfPage);
+  // Per-step `url` was removed — the article DOM uses heading-slug ids,
+  // not positional #step-N. A fragment that doesn't exist on the page
+  // is worse than no fragment; Google accepts steps without URLs.
+  assert.equal(howTo.step[0].url, undefined);
+});
+
+test('HowTo step names strip the "Step N:" prefix', () => {
+  // Anchor-text purpose: SERP rich result shows the step NAME, not
+  // "Step 1: ...". The prefix should be stripped at extraction.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1: Find your sleep position</h2><p>Side, back, or stomach.</p>
+      <h2>Step 2: Factor in weight</h2><p>Light vs heavy bodies.</p>
+      <h2>Step 3: Pick a type</h2><p>Memory foam vs hybrid.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.equal(howTo.step[0].name, 'Find your sleep position');
+  assert.equal(howTo.step[1].name, 'Factor in weight');
+  assert.equal(howTo.step[2].name, 'Pick a type');
+});
+
+test('HowTo accepts h3 step headings too', () => {
+  // Some guides use h3 for steps when h2 is reserved for sections.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>The Process</h2>
+      <h3>Step 1: Measure the room</h3><p>Use a tape measure.</p>
+      <h3>Step 2: Pick a size</h3><p>Queen, king, or California king.</p>
+      <h3>Step 3: Order online or in-store</h3><p>Both work fine.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo);
+  assert.equal(howTo.step.length, 3);
+});
+
+test('does NOT emit HowTo when article uses topical h2s instead of "Step N:"', () => {
+  // The how-to-choose-mattress-firmness article uses topical h2s
+  // ("What Is Mattress Firmness?", "Firmness vs. Support", "The Firmness
+  // Scale", etc.) rather than the "Step N:" convention — correctly
+  // stays on plain BlogPosting without bad HowTo schema.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>What Is Mattress Firmness?</h2><p>Description.</p>
+      <h2>The Firmness Scale</h2><p>Description.</p>
+      <h2>Firmness by Sleep Position</h2><p>Description.</p>
+      <h2>How Body Weight Changes Everything</h2><p>Description.</p>
+    `,
+  }));
+  assert.equal(getHowTo(lds), undefined);
+});
+
+test('does NOT emit HowTo when fewer than 3 Step headings (insufficient sequence)', () => {
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1: Just one step</h2><p>Body.</p>
+      <h2>Step 2: And another</h2><p>Body.</p>
+    `,
+  }));
+  assert.equal(getHowTo(lds), undefined);
+});
+
+test('HowTo schema includes name + description + image-as-ImageObject from article metadata', () => {
+  const lds = getArticleJsonLd(makeArticle({
+    title: 'How to Clean a Mattress',
+    seo: { title: null, description: 'Step-by-step mattress cleaning.' },
+    image: { url: 'https://cdn.example.com/cleaning.jpg' },
+    contentHtml: `
+      <h2>Step 1: Strip the bed</h2><p>Remove all bedding.</p>
+      <h2>Step 2: Vacuum thoroughly</h2><p>Use the upholstery attachment.</p>
+      <h2>Step 3: Spot-treat stains</h2><p>Mild detergent works best.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.equal(howTo.name, 'How to Clean a Mattress');
+  assert.equal(howTo.description, 'Step-by-step mattress cleaning.');
+  // Image as ImageObject (not bare URL) — matches publisher.logo pattern
+  // applied to BlogPosting; Google's documented preferred form.
+  assert.equal(howTo.image['@type'], 'ImageObject');
+  assert.equal(howTo.image.url, 'https://cdn.example.com/cleaning.jpg');
+});
+
+/* --- HowTo extraction robustness (code-review follow-ups) ------------ */
+
+test('HowTo extracts step heading even when the prefix is bolded (Shopify WYSIWYG)', () => {
+  // Common Shopify WYSIWYG output wraps the "Step N:" portion in
+  // <strong> — the original regex required the literal "Step N:" to
+  // appear adjacent to the opening h2 with no inline tags, silently
+  // dropping these. The tag-tolerant extractor must handle it.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2><strong>Step 1:</strong> Start with your position</h2><p>Side.</p>
+      <h2><strong>Step 2:</strong> Factor in weight</h2><p>Light.</p>
+      <h2><strong>Step 3:</strong> Pick a type</h2><p>Foam.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo, 'HowTo should emit even with bolded Step prefix');
+  assert.equal(howTo.step.length, 3);
+  assert.equal(howTo.step[0].name, 'Start with your position');
+});
+
+test('HowTo extracts step heading even when name contains inline tags', () => {
+  // `<em>` / `<span>` inside the step name should not stop extraction
+  // (the original [^<]+? lazy match aborted on any `<`).
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1: Choose <em>your</em> mattress size</h2><p>Side.</p>
+      <h2>Step 2: <span>Compare</span> brands</h2><p>Tempur.</p>
+      <h2>Step 3: Visit a <strong>showroom</strong></h2><p>Try it.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo);
+  assert.equal(howTo.step.length, 3);
+  // Name has tags stripped + whitespace collapsed.
+  assert.equal(howTo.step[0].name, 'Choose your mattress size');
+  assert.equal(howTo.step[1].name, 'Compare brands');
+  assert.equal(howTo.step[2].name, 'Visit a showroom');
+});
+
+test('HowTo separator class no longer matches "Step 1.5" as Step 1', () => {
+  // The original `[:.—–-]` class accepted `.` as a separator, so
+  // `Step 1.5 considerations` matched as Step 1 with name "5
+  // considerations". The fix removes `.` from the separator class.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1.5 considerations</h2><p>Body.</p>
+      <h2>Step 1: Real step</h2><p>Body.</p>
+      <h2>Step 2: Real step</h2><p>Body.</p>
+      <h2>Step 3: Real step</h2><p>Body.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo);
+  // The "Step 1.5 considerations" heading should NOT count as a step
+  // — only the three "Step N:" headings do.
+  assert.equal(howTo.step.length, 3);
+  assert.equal(howTo.step[0].name, 'Real step');
+});
+
+test('HowTo name drops trailing " | LA Mattress" / " | LA Mattress Store" suffix', () => {
+  // Some Shopify article titles carry a brand suffix; the visible H1
+  // already strips it via stripBrandSuffix, and the HowTo SERP rich-
+  // result name should follow suit.
+  const lds = getArticleJsonLd(makeArticle({
+    title: 'How to Choose a Mattress | LA Mattress Store',
+    contentHtml: `
+      <h2>Step 1: One</h2><p>Body.</p>
+      <h2>Step 2: Two</h2><p>Body.</p>
+      <h2>Step 3: Three</h2><p>Body.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.equal(howTo.name, 'How to Choose a Mattress');
+});
+
+test('HowTo step body terminates correctly across mixed heading levels', () => {
+  // h2 step → followed by h4 subsection → followed by next h2 step.
+  // The h4 content should be folded into the FIRST step's text (the
+  // lookahead intentionally stops only at h2/h3, not h4+, so step
+  // bodies can contain subsections).
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1: First step</h2><p>Intro.</p><h4>Detail</h4><p>More.</p>
+      <h2>Step 2: Second step</h2><p>Body.</p>
+      <h2>Step 3: Third step</h2><p>Body.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.equal(howTo.step.length, 3);
+  assert.match(howTo.step[0].text, /Intro/);
+  assert.match(howTo.step[0].text, /Detail/);
 });

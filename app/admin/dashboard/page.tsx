@@ -7,6 +7,7 @@ import {
   getCustomerInsights,
   getCustomerLifetime,
   getLowStock,
+  getOrderClassification,
   getOrderSummaryWithTrends,
   getRefundHealth,
   getSeoGaps,
@@ -169,6 +170,7 @@ export default async function DashboardPage({
     lowStock,
     customerInsights,
     customerLifetime,
+    orderClassification,
     refundHealth,
     funnel,
     funnelPrev,
@@ -189,6 +191,7 @@ export default async function DashboardPage({
     getLowStock(3).catch(() => null),
     getCustomerInsights(days).catch(() => null),
     getCustomerLifetime(250).catch(() => null),
+    getOrderClassification(days).catch(() => null),
     getRefundHealth(days).catch(() => null),
     POSTHOG_CONFIGURED ? getConversionFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getConversionFunnelPrev(days).catch(() => null) : Promise.resolve(null),
@@ -665,6 +668,78 @@ export default async function DashboardPage({
               </table>
             ) : (
               <p className="muted">No lifecycle data available.</p>
+            )}
+          </div>
+
+          {/* Order classification — new vs repeat for the current window.
+              Different lens than Lifecycle distribution (which is a sample
+              of top spenders all-time): this is per-order, current-window,
+              answering "are we acquiring or servicing this period?" */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>New vs repeat buyers · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                Shopify · orders bucketed by customer lifetime-order count
+              </span>
+            </div>
+            {orderClassification && orderClassification.totalOrders > 0 ? (
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Tier</th>
+                    <th>Orders</th>
+                    <th>Share</th>
+                    <th>Revenue</th>
+                    <th>AOV</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(
+                    [
+                      ['First order (new customer)', orderClassification.first],
+                      ['Second order (first repeat)', orderClassification.second],
+                      ['Loyal (3+ lifetime orders)', orderClassification.loyal],
+                      ['Guest checkout (no account)', orderClassification.guest],
+                    ] as const
+                  ).map(([label, tier]) => (
+                    <tr key={label}>
+                      <td>{label}</td>
+                      <td className="tnum">{tier.count}</td>
+                      <td className="tnum">
+                        {pct(tier.count, orderClassification.totalOrders)}
+                      </td>
+                      <td className="tnum">
+                        {fmtMoney(tier.revenue, orderClassification.currency)}
+                      </td>
+                      <td className="tnum">
+                        {tier.count > 0 ? fmtMoney(tier.avgOrderValue, orderClassification.currency) : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td><strong>Total</strong></td>
+                    <td className="tnum"><strong>{orderClassification.totalOrders}</strong></td>
+                    <td className="tnum">—</td>
+                    <td className="tnum">
+                      <strong>{fmtMoney(orderClassification.totalRevenue, orderClassification.currency)}</strong>
+                    </td>
+                    <td className="tnum">
+                      <strong>
+                        {orderClassification.totalOrders > 0
+                          ? fmtMoney(
+                              orderClassification.totalRevenue / orderClassification.totalOrders,
+                              orderClassification.currency,
+                            )
+                          : '—'}
+                      </strong>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            ) : (
+              <p className="muted">No orders in this window.</p>
             )}
           </div>
         </div>

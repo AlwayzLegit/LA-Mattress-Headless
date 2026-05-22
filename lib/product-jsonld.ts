@@ -337,7 +337,12 @@ export function getProductJsonLd(product: Product): ProductLd[] {
       // SKU/MPN, size label, return policy, and shipping details.
       offers: variantOffers,
     },
-    ...(product.reviews
+    ...(product.reviews &&
+    Number.isFinite(product.reviews.rating) &&
+    Number.isFinite(product.reviews.count) &&
+    product.reviews.count > 0 &&
+    product.reviews.rating >= 1 &&
+    product.reviews.rating <= 5
       ? {
           aggregateRating: {
             '@type': 'AggregateRating',
