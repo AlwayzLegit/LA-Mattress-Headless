@@ -1821,6 +1821,15 @@ summary:focus-visible,
   .section { padding: var(--s-8) 0; }
   .btn { height: 44px; }
   .btn-lg { height: 52px; }
+  /* QA 2026-05-22: WCAG 2.5.5 / 2.1 AAA requires ≥ 44×44px tap
+     targets. Header icon buttons (cart, search, account, saved,
+     hamburger) were 40×40 in the base style — fine for mouse but
+     too small for thumbs on phones. Bumped to 44×44 inside the
+     mobile breakpoint only; desktop keeps the tighter 40px so the
+     nav doesn't feel chunky. Same fix on .plp-filters-mobile-trigger
+     (was 36px tall pill on mobile PLPs). */
+  .icon-btn { width: 44px; height: 44px; }
+  .plp-filters-mobile-trigger { height: 44px; padding: 10px 16px; }
   .topbar { display: none; }
   .hero { height: clamp(560px, 90vh, 720px); }
   .hero-grad { background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.85) 100%); }
@@ -2009,7 +2018,7 @@ summary:focus-visible,
   display: none;
   padding-bottom: env(safe-area-inset-bottom);
 }
-@media (max-width: 880px) { .pdp-sticky-bar { display: block; } }
+@media (max-width: 1100px) { .pdp-sticky-bar { display: block; } }
 .pdp-sticky-bar.on { transform: translateY(0); }
 
 /* Phase 294: mobile sticky-ATC variant bottom sheet. Only reachable via
@@ -4554,6 +4563,28 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   margin-top: var(--s-6);
 }
 .dash-section:first-of-type { margin-top: var(--s-5); }
+
+/* Single-banner mitigation for "everything's broken" perception when
+   Shopify Admin token is degraded — surfaced when ≥3 admin queries
+   return null in one render. Amber-tinted so it reads as warning, not
+   page-level error. */
+.dash-incident-banner {
+  margin: var(--s-5) 0 0;
+  padding: 14px 18px;
+  border-radius: var(--r-2);
+  background: #fff7ed;
+  border: 1px solid #f59e0b;
+  color: #7c2d12;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.dash-incident-banner code {
+  background: rgba(124, 45, 18, 0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.dash-incident-banner a { color: #7c2d12; text-decoration: underline; }
 .dash-section-hd {
   font-size: 13px;
   text-transform: uppercase;

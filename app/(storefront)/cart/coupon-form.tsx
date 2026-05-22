@@ -55,6 +55,7 @@ export function CouponForm() {
           <div className="cart-coupon-row">
             <input
               id="cart-coupon-input"
+              name="coupon"
               type="text"
               value={code}
               onChange={(e) => { setCode(e.target.value); setError(null); }}
