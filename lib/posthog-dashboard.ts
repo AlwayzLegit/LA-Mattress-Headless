@@ -249,6 +249,90 @@ export async function getSearchConversion(days = 30, limit = 10): Promise<Search
 }
 
 /* ------------------------------------------------------------------------ *
+ * Web Vitals (LCP / INP / CLS / FCP / TTFB) — Google's Core Web Vitals
+ * report shape: per-metric counts split into good / needs-improvement /
+ * poor buckets, using Google's documented thresholds.
+ *
+ * Source: web_vital events fired client-side by app/_components/
+ * analytics-ga4.tsx (via Next.js useReportWebVitals). Each event
+ * carries metric_name, metric_value, metric_rating, metric_path.
+ *
+ * Buckets use Google's published thresholds (web.dev/vitals):
+ *   - LCP:  good ≤ 2500ms,  ni ≤ 4000ms,  poor > 4000ms
+ *   - INP:  good ≤ 200ms,   ni ≤ 500ms,   poor > 500ms
+ *   - CLS:  good ≤ 0.1,     ni ≤ 0.25,    poor > 0.25
+ *   - FCP:  good ≤ 1800ms,  ni ≤ 3000ms,  poor > 3000ms
+ *   - TTFB: good ≤ 800ms,   ni ≤ 1800ms,  poor > 1800ms
+ *
+ * One HogQL query per metric (5 total) so each can apply its own
+ * thresholds via countIf. Run in parallel; failures degrade gracefully
+ * to null on a per-metric basis so a single PostHog hiccup doesn't
+ * black out the whole card.
+ *
+ * Uses only allow-listed HogQL functions (count, countIf, toString,
+ * toFloatOrZero, now). Bucket boundaries inlined as plain integers/
+ * floats — safe because they're hard-coded constants, not user input.
+ * ------------------------------------------------------------------------ */
+
+const WEB_VITAL_METRICS = [
+  { name: 'LCP',  goodMax: 2500,  niMax: 4000 },
+  { name: 'INP',  goodMax: 200,   niMax: 500 },
+  { name: 'CLS',  goodMax: 0.1,   niMax: 0.25 },
+  { name: 'FCP',  goodMax: 1800,  niMax: 3000 },
+  { name: 'TTFB', goodMax: 800,   niMax: 1800 },
+] as const;
+
+export type WebVitalRow = {
+  /** Metric name as web-vitals reports it (LCP, INP, CLS, FCP, TTFB). */
+  metric: string;
+  /** Total samples in the window. */
+  total: number;
+  /** Samples whose value is in Google's "good" range. */
+  good: number;
+  /** Samples in the "needs improvement" range. */
+  needsImprovement: number;
+  /** Samples in the "poor" range. */
+  poor: number;
+  /** "Good" share as a 0-1 fraction. Google's pass criterion is
+   *  goodShare ≥ 0.75 on each metric (a CWV-pass site). */
+  goodShare: number;
+};
+
+async function fetchVitalRow(
+  metric: { name: string; goodMax: number; niMax: number },
+  days: number,
+): Promise<WebVitalRow | null> {
+  const data = await hogQL(`
+    SELECT
+      count() AS total,
+      countIf(toFloatOrZero(toString(properties.metric_value)) <= ${metric.goodMax}) AS good_n,
+      countIf(toFloatOrZero(toString(properties.metric_value)) > ${metric.goodMax}
+              AND toFloatOrZero(toString(properties.metric_value)) <= ${metric.niMax}) AS ni_n,
+      countIf(toFloatOrZero(toString(properties.metric_value)) > ${metric.niMax}) AS poor_n
+    FROM events
+    WHERE event = 'web_vital'
+      AND toString(properties.metric_name) = '${metric.name}'
+      AND timestamp >= now() - INTERVAL ${days} DAY
+  `);
+  if (!data || data.results.length === 0) return null;
+  const [total, good, ni, poor] = data.results[0].map((v) => Number(v ?? 0));
+  return {
+    metric: metric.name,
+    total,
+    good,
+    needsImprovement: ni,
+    poor,
+    goodShare: total > 0 ? good / total : 0,
+  };
+}
+
+export async function getWebVitals(days = 30): Promise<WebVitalRow[] | null> {
+  const rows = await Promise.all(WEB_VITAL_METRICS.map((m) => fetchVitalRow(m, days)));
+  const populated = rows.filter((r): r is WebVitalRow => r !== null);
+  return populated.length > 0 ? populated : null;
+}
+
+/* ------------------------------------------------------------------------ *
  * Top traffic sources — utm_source, falling back to referrer host
  * ------------------------------------------------------------------------ */
 

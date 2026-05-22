@@ -32,6 +32,7 @@ import {
   getRevenueBySource,
   getSearchConversion,
   getShowroomTraffic,
+  getWebVitals,
   getTopConvertingArticles,
   getTopEntryPages,
   getTopSearches,
@@ -191,6 +192,7 @@ export default async function DashboardPage({
     deviceBreakdown,
     showroomTraffic,
     convertingArticles,
+    webVitals,
   ] = await Promise.all([
     getOrderSummaryWithTrends(days).catch(() => null),
     getCatalogHealth().catch(() => null),
@@ -218,6 +220,7 @@ export default async function DashboardPage({
       ? getShowroomTraffic(days, SHOWROOMS.map((s) => ({ handle: s.handle, name: s.name }))).catch(() => null)
       : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopConvertingArticles(days, 10).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getWebVitals(days).catch(() => null) : Promise.resolve(null),
   ]);
 
   // Cart + checkout abandonment derived from the conversion funnel.
@@ -1587,24 +1590,82 @@ export default async function DashboardPage({
             </a>
           </div>
 
-          {/* Site Speed */}
-          <div className="dash-card">
+          {/* Core Web Vitals — Google's CWV report shape (good /
+              needs-improvement / poor counts per metric), backed by
+              client-side useReportWebVitals → PostHog. The Vercel
+              Speed Insights link below is kept for the per-route
+              drill-down view Vercel ships out of the box. */}
+          <div className="dash-card dash-card-wide">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Site speed</h2>
-              <span className="muted" style={{ fontSize: 12 }}>Vercel Speed Insights</span>
+              <h2 className="h3" style={{ margin: 0 }}>Core Web Vitals · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                PostHog · field data via web-vitals → useReportWebVitals
+              </span>
             </div>
-            <p className="muted" style={{ marginTop: 0 }}>
-              Core Web Vitals per route (LCP / INP / CLS). Live in Vercel&rsquo;s Insights tab.
-            </p>
-            <a
-              className="btn btn-ghost"
-              href="https://vercel.com/alwayzlegits-projects/la-mattress-headless/insights"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ marginTop: 'var(--s-3)' }}
-            >
-              Open in Vercel →
-            </a>
+            {webVitals && webVitals.length > 0 ? (
+              <>
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Metric</th>
+                      <th>Samples</th>
+                      <th>Good</th>
+                      <th>Needs improvement</th>
+                      <th>Poor</th>
+                      <th>Good %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {webVitals.map((v) => (
+                      <tr
+                        key={v.metric}
+                        className={v.goodShare < 0.75 ? 'dash-warn' : ''}
+                      >
+                        <td><strong>{v.metric}</strong></td>
+                        <td className="tnum">{v.total}</td>
+                        <td className="tnum">{v.good}</td>
+                        <td className="tnum">{v.needsImprovement}</td>
+                        <td className="tnum">{v.poor}</td>
+                        <td className="tnum">
+                          {(v.goodShare * 100).toFixed(1)}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-3)' }}>
+                  Google&rsquo;s CWV-pass criterion is ≥ 75% Good on each metric (LCP, INP, CLS).
+                  Rows below 75% are flagged. Thresholds per web.dev/vitals.
+                </p>
+                <a
+                  className="btn btn-ghost"
+                  href="https://vercel.com/alwayzlegits-projects/la-mattress-headless/insights"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ marginTop: 'var(--s-3)' }}
+                >
+                  Per-route drill-down in Vercel →
+                </a>
+              </>
+            ) : POSTHOG_CONFIGURED ? (
+              <>
+                <p className="muted">
+                  No web_vital events yet. Events ship on the next storefront
+                  pageview after the analytics-ga4 fix deploys.
+                </p>
+                <a
+                  className="btn btn-ghost"
+                  href="https://vercel.com/alwayzlegits-projects/la-mattress-headless/insights"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ marginTop: 'var(--s-3)' }}
+                >
+                  Open Vercel Speed Insights →
+                </a>
+              </>
+            ) : (
+              <PostHogConfigHint />
+            )}
           </div>
         </div>
       </section>
