@@ -30,6 +30,7 @@ import {
   getQuizFunnelPrev,
   getQuizStepDropoff,
   getRevenueBySource,
+  getSearchConversion,
   getShowroomTraffic,
   getTopConvertingArticles,
   getTopEntryPages,
@@ -181,6 +182,7 @@ export default async function DashboardPage({
     funnelPrev,
     entryPages,
     searches,
+    searchConversion,
     sources,
     quizFunnel,
     quizFunnelPrev,
@@ -205,6 +207,7 @@ export default async function DashboardPage({
     POSTHOG_CONFIGURED ? getConversionFunnelPrev(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopEntryPages(7, 10).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopSearches(days, 15).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getSearchConversion(days, 10).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopTrafficSources(days, 10).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizFunnelPrev(days).catch(() => null) : Promise.resolve(null),
@@ -1352,6 +1355,61 @@ export default async function DashboardPage({
               )
             ) : POSTHOG_CONFIGURED ? (
               <p className="muted">Search data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Search-query conversion — Top searches above answers "what
+              are people searching for"; this answers "which of those
+              searches DRIVE PURCHASES". Different question, different
+              merchandising action (boost a converter; fix a non-
+              converter; expand inventory for high-volume zero-result). */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Search → purchase · {rangeKey}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                PostHog · per-session first search query (≥ 5 sessions)
+              </span>
+            </div>
+            {searchConversion ? (
+              searchConversion.length === 0 ? (
+                <p className="muted">No qualifying search-to-purchase data yet (queries need ≥ 5 sessions).</p>
+              ) : (
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Query</th>
+                      <th>Sessions</th>
+                      <th>Orders</th>
+                      <th>Conv %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {searchConversion.map((s) => (
+                      <tr key={s.query}>
+                        <td>
+                          <Link
+                            href={`/search?q=${encodeURIComponent(s.query)}`}
+                            prefetch={false}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {s.query}
+                          </Link>
+                        </td>
+                        <td className="tnum">{s.sessions}</td>
+                        <td className="tnum">{s.orders}</td>
+                        <td className={`tnum ${s.conversionPct >= 5 ? '' : ''}`}>
+                          {s.conversionPct.toFixed(1)}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Search-conversion data unavailable.</p>
             ) : (
               <PostHogConfigHint />
             )}

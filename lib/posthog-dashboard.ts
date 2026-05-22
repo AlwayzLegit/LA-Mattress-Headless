@@ -186,6 +186,69 @@ export async function getTopSearches(days = 30, limit = 15): Promise<SearchQuery
 }
 
 /* ------------------------------------------------------------------------ *
+ * Search query conversion — which search queries drive purchases.
+ *
+ * Joins `search` events to `order_completed` events by session_id via a
+ * HogQL CTE: per session, take the FIRST search query (via
+ * `argMin(query, timestamp)`) and a converted flag, then aggregate by
+ * query. Same session-attribution pattern as `getTopConvertingArticles`.
+ *
+ * Sample-size guarded: `HAVING sessions >= 5` so a single conversion on
+ * a long-tail query doesn't inflate to 100%. Tail queries can still be
+ * audited via the existing `getTopSearches` card (which shows volume +
+ * zero-result %); this card is specifically for the "what converts"
+ * decision.
+ *
+ * Caveats noted in source: per-session first-search attribution means
+ * a session with multiple searches credits only the FIRST query. Same
+ * heuristic GA4 and PostHog UI use by default.
+ * ------------------------------------------------------------------------ */
+
+export type SearchConversion = {
+  query: string;
+  sessions: number;
+  orders: number;
+  conversionPct: number;
+};
+
+export async function getSearchConversion(days = 30, limit = 10): Promise<SearchConversion[] | null> {
+  const data = await hogQL(`
+    WITH session_search AS (
+      SELECT
+        properties.$session_id AS sid,
+        argMin(lower(trim(toString(properties.query))), timestamp) AS first_q,
+        countIf(event = 'order_completed') > 0 AS converted
+      FROM events
+      WHERE timestamp >= now() - INTERVAL ${days} DAY
+        AND properties.$session_id != ''
+        AND (
+          (event = 'search' AND toString(properties.query) != '')
+          OR event = 'order_completed'
+        )
+      GROUP BY sid
+      HAVING first_q != ''
+    )
+    SELECT
+      first_q AS q,
+      count() AS sessions,
+      countIf(converted) AS orders,
+      round(100.0 * countIf(converted) / count(), 2) AS conversion_pct
+    FROM session_search
+    GROUP BY q
+    HAVING sessions >= 5
+    ORDER BY orders DESC, sessions DESC
+    LIMIT ${limit}
+  `);
+  if (!data) return null;
+  return data.results.map((r) => ({
+    query: String(r[0] ?? ''),
+    sessions: Number(r[1] ?? 0),
+    orders: Number(r[2] ?? 0),
+    conversionPct: Number(r[3] ?? 0),
+  }));
+}
+
+/* ------------------------------------------------------------------------ *
  * Top traffic sources — utm_source, falling back to referrer host
  * ------------------------------------------------------------------------ */
 
