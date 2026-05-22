@@ -11,6 +11,7 @@ import {
   getOrderClassification,
   getOrderSummaryWithTrends,
   getRefundHealth,
+  getRepeatBuyerGap,
   getSeoGaps,
   getTopProducts,
   numericIdFromGid,
@@ -173,6 +174,7 @@ export default async function DashboardPage({
     lowStock,
     customerInsights,
     customerLifetime,
+    repeatBuyerGap,
     orderClassification,
     refundHealth,
     funnel,
@@ -196,6 +198,7 @@ export default async function DashboardPage({
     getLowStock(3).catch(() => null),
     getCustomerInsights(days).catch(() => null),
     getCustomerLifetime(250).catch(() => null),
+    getRepeatBuyerGap(250).catch(() => null),
     getOrderClassification(days).catch(() => null),
     getRefundHealth(days).catch(() => null),
     POSTHOG_CONFIGURED ? getConversionFunnel(days).catch(() => null) : Promise.resolve(null),
@@ -746,6 +749,69 @@ export default async function DashboardPage({
               </table>
             ) : (
               <p className="muted">No orders in this window.</p>
+            )}
+          </div>
+
+          {/* Repeat-buyer gap — for mattress retail where the primary
+              product has a 7-10y replacement cycle, "true" cohort
+              retention is near-zero. The actionable signal is HOW
+              repeat buyers come back: same-day add-ons, planned
+              follow-ups, or replacement cycle. Each bucket tells a
+              different merchandising story. */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Repeat-buyer gap distribution</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                Shopify · 250 most-recent customers with ≥ 2 orders
+              </span>
+            </div>
+            {repeatBuyerGap && repeatBuyerGap.repeatCustomers > 0 ? (
+              <>
+                <ul className="dash-list">
+                  <li>
+                    <span>Sampled repeat customers</span>
+                    <strong>{repeatBuyerGap.repeatCustomers}</strong>
+                  </li>
+                  <li>
+                    <span>Median gap (days)</span>
+                    <strong>{repeatBuyerGap.medianGapDays.toFixed(0)}</strong>
+                  </li>
+                  <li>
+                    <span>25th / 75th percentile</span>
+                    <strong>
+                      {repeatBuyerGap.p25GapDays.toFixed(0)} / {repeatBuyerGap.p75GapDays.toFixed(0)} days
+                    </strong>
+                  </li>
+                </ul>
+                <table className="dash-table" style={{ marginTop: 'var(--s-4)' }}>
+                  <thead>
+                    <tr>
+                      <th>Gap from first order</th>
+                      <th>Customers</th>
+                      <th>Share</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {repeatBuyerGap.buckets.map((b) => (
+                      <tr key={b.label}>
+                        <td>{b.label}</td>
+                        <td className="tnum">{b.customers}</td>
+                        <td className="tnum">
+                          {pct(b.customers, repeatBuyerGap.repeatCustomers)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-3)' }}>
+                  Gap uses customer-record creation date as the proxy for first-order date
+                  (accurate within hours for storefront-acquired customers). Shopify Admin
+                  restricts `Customer.orders` historical access without the `read_all_orders`
+                  scope; this is the documented workaround.
+                </p>
+              </>
+            ) : (
+              <p className="muted">No repeat-buyer data available yet.</p>
             )}
           </div>
         </div>

@@ -1341,6 +1341,135 @@ export async function getCustomerLifetime(sampleSize = 250): Promise<DashboardCu
 }
 
 /* ────────────────────────────────────────────────────────────────────── *
+ * Repeat-buyer gap analysis — for customers with 2+ lifetime orders,
+ * how long do they wait between purchases?
+ *
+ * For a mattress retailer where the primary product lasts 7-10 years,
+ * "true" cohort retention is near-zero. But the customers who DO buy
+ * again typically do so for predictable reasons:
+ *
+ *   - Same-day / same-week: add-on orders for the same household
+ *     (mattress + frame, sheets, etc.) that split between two
+ *     transactions instead of one.
+ *   - Same-month: planned follow-ups (delayed bedding, second
+ *     mattress for a guest room).
+ *   - Quarterly to yearly: another room / family member buying.
+ *   - Long-term (1y+): replacement cycle.
+ *
+ * Each bucket tells a different merchandising story; the distribution
+ * is the actionable signal.
+ *
+ * Implementation note: Shopify Admin's `customer.orders` connection
+ * is restricted to the last 60 days without the `read_all_orders`
+ * scope. For repeat-buyer historical data we use `customer.createdAt`
+ * (when the customer record was created, ≈ first checkout) as the
+ * proxy for "first order date" — accurate within hours for customers
+ * who placed their first order via the storefront. `lastOrder.createdAt`
+ * is queryable as a direct field (no connection restriction).
+ *
+ * Sample: top 250 repeat customers (filtered server-side by
+ * `orders_count:>1`), sorted newest-first by customer createdAt so
+ * recently-acquired repeat buyers surface in the dashboard.
+ * ────────────────────────────────────────────────────────────────────── */
+
+export type RepeatBuyerGapBucket = {
+  label: string;
+  /** Lower bound in days (inclusive). */
+  minDays: number;
+  /** Upper bound in days (exclusive). Number.POSITIVE_INFINITY for the open-ended top tier. */
+  maxDays: number;
+  customers: number;
+};
+
+export type DashboardRepeatBuyerGap = {
+  sampleSize: number;
+  /** Customers with 2+ lifetime orders that were sampled. */
+  repeatCustomers: number;
+  /** Median gap across the repeat-customer sample, in days. */
+  medianGapDays: number;
+  /** 25th percentile gap, in days. */
+  p25GapDays: number;
+  /** 75th percentile gap, in days. */
+  p75GapDays: number;
+  buckets: RepeatBuyerGapBucket[];
+};
+
+const REPEAT_GAP_BUCKETS: ReadonlyArray<Pick<RepeatBuyerGapBucket, 'label' | 'minDays' | 'maxDays'>> = [
+  { label: 'Same day (< 24h)',      minDays: 0,    maxDays: 1 },
+  { label: 'Same week (1-7d)',      minDays: 1,    maxDays: 7 },
+  { label: 'Same month (7-30d)',    minDays: 7,    maxDays: 30 },
+  { label: 'Quarterly (30-90d)',    minDays: 30,   maxDays: 90 },
+  { label: 'Half-year (90-180d)',   minDays: 90,   maxDays: 180 },
+  { label: 'Annual (180-365d)',     minDays: 180,  maxDays: 365 },
+  { label: 'Multi-year (365d+)',    minDays: 365,  maxDays: Number.POSITIVE_INFINITY },
+];
+
+function percentile(sortedAsc: number[], p: number): number {
+  if (sortedAsc.length === 0) return 0;
+  const idx = (sortedAsc.length - 1) * p;
+  const lo = Math.floor(idx);
+  const hi = Math.ceil(idx);
+  if (lo === hi) return sortedAsc[lo];
+  const frac = idx - lo;
+  return sortedAsc[lo] * (1 - frac) + sortedAsc[hi] * frac;
+}
+
+export async function getRepeatBuyerGap(sampleSize = 250): Promise<DashboardRepeatBuyerGap | null> {
+  const first = Math.min(Math.max(sampleSize, 1), 250);
+  const data = await adminGql<{
+    customers: {
+      nodes: Array<{
+        id: string;
+        numberOfOrders: string | number | null;
+        createdAt: string;
+        lastOrder: { createdAt: string } | null;
+      }>;
+    };
+  }>(
+    `query RepeatBuyerGap($first: Int!) {
+      customers(first: $first, sortKey: CREATED_AT, reverse: true, query: "orders_count:>1") {
+        nodes {
+          id numberOfOrders createdAt
+          lastOrder { createdAt }
+        }
+      }
+    }`,
+    { first },
+  );
+  if (!data) return null;
+
+  // For each customer, compute gap = (lastOrder.createdAt - customer.createdAt) days.
+  // Customer.createdAt is when the record was created — accurate within
+  // hours of the first checkout for storefront-acquired customers.
+  // Customers with numberOfOrders === 1 are filtered server-side; defensive
+  // re-check here in case the Shopify filter behavior changes.
+  const gaps: number[] = [];
+  for (const c of data.customers.nodes) {
+    if (Number(c.numberOfOrders ?? 0) < 2 || !c.lastOrder?.createdAt) continue;
+    const first = new Date(c.createdAt).getTime();
+    const last = new Date(c.lastOrder.createdAt).getTime();
+    if (!Number.isFinite(first) || !Number.isFinite(last) || last < first) continue;
+    const days = (last - first) / 86400000;
+    gaps.push(days);
+  }
+
+  gaps.sort((a, b) => a - b);
+  const buckets = REPEAT_GAP_BUCKETS.map((b) => ({
+    ...b,
+    customers: gaps.filter((d) => d >= b.minDays && d < b.maxDays).length,
+  }));
+
+  return {
+    sampleSize: data.customers.nodes.length,
+    repeatCustomers: gaps.length,
+    medianGapDays: percentile(gaps, 0.5),
+    p25GapDays: percentile(gaps, 0.25),
+    p75GapDays: percentile(gaps, 0.75),
+    buckets,
+  };
+}
+
+/* ────────────────────────────────────────────────────────────────────── *
  * Order classification — new vs repeat customer breakdown for the window
  *
  * For each order in the last N days, classify by the customer's
