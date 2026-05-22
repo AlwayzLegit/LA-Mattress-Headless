@@ -1838,7 +1838,15 @@ summary:focus-visible,
   .hero-body { font-size: 15px; }
   .hero-ctas .btn { flex: 1; }
   .hero-controls { bottom: 20px; }
-  .hero-dot { width: 32px; }
+  /* QA 2026-05-22 tap-target sweep: hero slide-indicator dots default
+     to h=14 (visual: 2px bar + 6px padding ×2). Visual stays the same
+     but vertical padding is grown so the touch area meets WCAG 2.5.5
+     44×44 minimum. The bar itself is the visible affordance; the rest
+     is invisible hit-area. */
+  .hero-dot { width: 32px; padding: 21px 0; }
+  /* Hero pause/play button bumped from 32×32 to 44×44 on mobile;
+     the inline SVG inside scales to fit so it still looks proportionate. */
+  .hero-pause { width: 44px; height: 44px; }
   .section-head { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 32px; }
   .section-head-right { width: 100%; justify-content: space-between; }
   .pcard { flex: 0 0 260px; }
@@ -4594,7 +4602,10 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   margin: 0 0 var(--s-3) 0;
   padding-bottom: var(--s-2);
   border-bottom: 1px solid var(--line);
-  scroll-margin-top: var(--s-5);
+  /* QA 2026-05-22: account for the now-sticky `.dashboard-section-nav`
+     (≈54px tall) so jumping to a section doesn't park the heading
+     underneath the sticky chip row. */
+  scroll-margin-top: calc(var(--s-7) + 54px);
 }
 .dashboard-section-nav {
   display: flex;
@@ -4603,6 +4614,17 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   margin-top: var(--s-4);
   padding: var(--s-3) 0;
   border-bottom: 1px solid var(--line);
+  /* QA 2026-05-22: once the merchant scrolls past the nav, they can't
+     jump to another section without scrolling back to the top. Sticky
+     keeps the section anchors in reach throughout the long dashboard.
+     Backdrop-filter blurs whatever's behind it so the chips stay
+     readable over busy cards. */
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: saturate(180%) blur(8px);
+  -webkit-backdrop-filter: saturate(180%) blur(8px);
 }
 .dashboard-section-nav a {
   font-size: 12px;
