@@ -527,6 +527,151 @@ export async function getSeoGaps(): Promise<DashboardSeoGaps | null> {
 }
 
 
+/* ────────────────────────────────────────────────────────────────────── *
+ * Blog SEO health — article-level gaps that drive the SEMrush
+ * "structured-data errors" + "content not optimized" flags.
+ *
+ * Each gap maps to a real risk:
+ *
+ *   - missingImage  → BlogPosting JSON-LD falls back to the sitewide
+ *                     logo (valid schema, but Google's content
+ *                     guidelines prefer an article-representative image).
+ *   - missingAuthor → BlogPosting JSON-LD falls back to an Organization
+ *                     author stub (valid, but a real Person author
+ *                     strengthens E-E-A-T).
+ *   - missingSeoTitle / missingSeoDescription → falls back to the
+ *                     article title / excerpt for SERP. Custom values
+ *                     give the merchant control over the snippet.
+ *   - thinContent   → article body below ~250 words. Maps to SEMrush's
+ *                     "Low word count" + "Content not optimized" flags.
+ *
+ * Sample-based (first N active articles by recency). 250 covers about
+ * 35% of the corpus on a single Admin GraphQL roundtrip; the gap-rate
+ * extrapolates reliably to the whole catalog.
+ *
+ * Returns a list of sample articles with their gap so the dashboard
+ * can deep-link the merchant straight to the Shopify Admin editor.
+ * ────────────────────────────────────────────────────────────────────── */
+
+export type DashboardBlogSeoGaps = {
+  sampleSize: number;
+  articlesMissingImage: number;
+  articlesMissingAuthor: number;
+  articlesMissingSeoTitle: number;
+  articlesMissingSeoDescription: number;
+  articlesThinContent: number;  // body < THIN_WORD_FLOOR words
+  /** Sample articles to highlight (with gap + Admin deep-link). */
+  sampleArticles: Array<{
+    id: string;
+    handle: string;
+    title: string;
+    blogHandle: string;
+    /** Which gap surfaced this article into the sample. */
+    gap: 'image' | 'author' | 'seo-title' | 'seo-description' | 'thin-content';
+  }>;
+};
+
+/** Threshold below which an article is flagged "thin". Mirrors Google's
+ *  rough cut-off for content-quality signals; SEMrush flags below ~250. */
+const THIN_WORD_FLOOR = 250;
+
+export async function getBlogSeoGaps(sampleSize = 250): Promise<DashboardBlogSeoGaps | null> {
+  const first = Math.min(Math.max(sampleSize, 1), 250);
+  // Shopify Admin Article doesn't expose an `seo` field directly (only
+  // Storefront does); the SEO title / description live in metafields
+  // under the standard `global.title_tag` / `global.description_tag`
+  // namespace+key pair the platform writes when a merchant fills in
+  // the SEO section of the article editor.
+  const data = await adminGql<{
+    articles: {
+      nodes: Array<{
+        id: string;
+        handle: string;
+        title: string;
+        body: string | null;
+        image: { id: string } | null;
+        author: { name: string | null } | null;
+        summary: string | null;
+        blog: { handle: string };
+        seoTitle: { value: string | null } | null;
+        seoDescription: { value: string | null } | null;
+      }>;
+    };
+  }>(
+    `query BlogSeoGaps($first: Int!) {
+      articles(first: $first, sortKey: PUBLISHED_AT, reverse: true, query: "published_status:published") {
+        nodes {
+          id handle title body summary
+          image { id }
+          author { name }
+          blog { handle }
+          seoTitle: metafield(namespace: "global", key: "title_tag") { value }
+          seoDescription: metafield(namespace: "global", key: "description_tag") { value }
+        }
+      }
+    }`,
+    { first },
+  );
+  if (!data) return null;
+
+  const articles = data.articles.nodes;
+  let missingImage = 0;
+  let missingAuthor = 0;
+  let missingTitle = 0;
+  let missingDescription = 0;
+  let thin = 0;
+  const samples: DashboardBlogSeoGaps['sampleArticles'] = [];
+
+  for (const a of articles) {
+    const noImage = !a.image;
+    const noAuthor = !a.author?.name?.trim();
+    const noTitle = !a.seoTitle?.value?.trim();
+    const noDesc = !a.seoDescription?.value?.trim();
+    // Body word count — strip HTML, collapse whitespace. Body is null
+    // for articles with no content (Storefront API quirk).
+    const bodyText = (a.body ?? '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const wordCount = bodyText ? bodyText.split(' ').length : 0;
+    const isThin = wordCount > 0 && wordCount < THIN_WORD_FLOOR;
+
+    if (noImage) missingImage += 1;
+    if (noAuthor) missingAuthor += 1;
+    if (noTitle) missingTitle += 1;
+    if (noDesc) missingDescription += 1;
+    if (isThin) thin += 1;
+
+    // Prioritize the most-visible gaps in the sample list. One sample
+    // per article — surface the FIRST gap that hit.
+    if (samples.length < 12) {
+      let gap: DashboardBlogSeoGaps['sampleArticles'][number]['gap'] | null = null;
+      if (isThin) gap = 'thin-content';
+      else if (noImage) gap = 'image';
+      else if (noAuthor) gap = 'author';
+      else if (noDesc) gap = 'seo-description';
+      else if (noTitle) gap = 'seo-title';
+      if (gap) {
+        samples.push({
+          id: numericIdFromGid(a.id),
+          handle: a.handle,
+          title: a.title,
+          blogHandle: a.blog.handle,
+          gap,
+        });
+      }
+    }
+  }
+
+  return {
+    sampleSize: articles.length,
+    articlesMissingImage: missingImage,
+    articlesMissingAuthor: missingAuthor,
+    articlesMissingSeoTitle: missingTitle,
+    articlesMissingSeoDescription: missingDescription,
+    articlesThinContent: thin,
+    sampleArticles: samples,
+  };
+}
+
+
 /* ------------------------------------------------------------------------ *
  * Low-stock alerts — variants with inventoryQuantity at or below threshold
  *

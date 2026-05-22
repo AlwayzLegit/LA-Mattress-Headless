@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import {
   ADMIN_CONFIGURED,
+  getBlogSeoGaps,
   getCatalogHealth,
   getCustomerInsights,
   getCustomerLifetime,
@@ -167,6 +168,7 @@ export default async function DashboardPage({
     catalog,
     topProducts,
     seoGaps,
+    blogSeoGaps,
     lowStock,
     customerInsights,
     customerLifetime,
@@ -188,6 +190,7 @@ export default async function DashboardPage({
     getCatalogHealth().catch(() => null),
     getTopProducts(days).catch(() => null),
     getSeoGaps().catch(() => null),
+    getBlogSeoGaps(250).catch(() => null),
     getLowStock(3).catch(() => null),
     getCustomerInsights(days).catch(() => null),
     getCustomerLifetime(250).catch(() => null),
@@ -1275,6 +1278,98 @@ export default async function DashboardPage({
               </>
             ) : (
               <p className="muted">SEO-gap data unavailable.</p>
+            )}
+          </div>
+
+          {/* Blog SEO gaps — article-level coverage. Each gap maps to a
+              SEMrush flag we can fix in the JSON-LD layer but the merchant
+              should also fix in source content (Shopify Admin article
+              editor) so the page+schema agree end-to-end. */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Blog SEO health</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                Shopify · {blogSeoGaps?.sampleSize ?? 250} most-recent published articles
+              </span>
+            </div>
+            {blogSeoGaps && blogSeoGaps.sampleSize > 0 ? (
+              <>
+                <ul className="dash-list">
+                  <li className={blogSeoGaps.articlesThinContent > blogSeoGaps.sampleSize * 0.1 ? 'dash-warn' : ''}>
+                    <span>Thin content (&lt; 250 words)</span>
+                    <strong>
+                      {blogSeoGaps.articlesThinContent}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesThinContent, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li className={blogSeoGaps.articlesMissingImage > blogSeoGaps.sampleSize * 0.2 ? 'dash-warn' : ''}>
+                    <span>Missing featured image</span>
+                    <strong>
+                      {blogSeoGaps.articlesMissingImage}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesMissingImage, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li className={blogSeoGaps.articlesMissingAuthor > blogSeoGaps.sampleSize * 0.2 ? 'dash-warn' : ''}>
+                    <span>Missing author</span>
+                    <strong>
+                      {blogSeoGaps.articlesMissingAuthor}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesMissingAuthor, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Missing seo.title</span>
+                    <strong>
+                      {blogSeoGaps.articlesMissingSeoTitle}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesMissingSeoTitle, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Missing seo.description</span>
+                    <strong>
+                      {blogSeoGaps.articlesMissingSeoDescription}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>
+                        ({pct(blogSeoGaps.articlesMissingSeoDescription, blogSeoGaps.sampleSize)})
+                      </span>
+                    </strong>
+                  </li>
+                </ul>
+                {blogSeoGaps.sampleArticles.length > 0 ? (
+                  <>
+                    <h3 className="eyebrow" style={{ marginTop: 'var(--s-4)' }}>Examples</h3>
+                    <ul className="dash-list-compact">
+                      {blogSeoGaps.sampleArticles.map((a) => (
+                        <li key={a.id}>
+                          <Link
+                            href={`/blogs/${a.blogHandle}/${a.handle}`}
+                            prefetch={false}
+                          >
+                            {a.title}
+                          </Link>
+                          <span className="muted"> · gap: {a.gap} · </span>
+                          <a
+                            href={`${SHOPIFY_ADMIN_BASE}/articles/${a.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontSize: 12 }}
+                          >
+                            fix in Shopify →
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <p className="muted">Blog SEO data unavailable.</p>
             )}
           </div>
         </div>
