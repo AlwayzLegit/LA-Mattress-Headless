@@ -12,6 +12,7 @@ import { isNoindexArticle } from '@/lib/noindex-articles';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { injectHeadingIds } from '@/lib/article-toc';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
+import { displayAuthorName } from '@/lib/article-author';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
 import { ArticleToc } from './article-toc';
@@ -94,7 +95,12 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
       title,
       description,
       publishedTime: article.publishedAt,
-      authors: article.author ? [article.author.name] : [],
+      // Normalize Shopify's auto-stamped "Shopify API" placeholder to
+      // the editorial-team fallback — same rule as the article JSON-LD
+      // (lib/article-jsonld.ts). Without this the og:article:author
+      // meta tag leaks the placeholder into FB/LinkedIn unfurls and
+      // gets picked up by SEMrush as a real author name.
+      authors: [displayAuthorName(article.author)],
       // Reference app/opengraph-image.tsx explicitly when the article
       // has no cover image. Next.js's file-system OG convention is not
       // auto-merged into a route's openGraph block, so without this
