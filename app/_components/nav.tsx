@@ -44,11 +44,18 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         { label: 'Compare all four →', href: '/pages/mattress-types' },
       ]},
       { title: 'Featured', links: [
-        { label: 'Best sellers',       href: '/collections/best-sellers' },
-        { label: 'Luxury mattresses',  href: '/collections/luxury-mattresses' },
+        // Featured mattress collections only. Categorical accuracy
+        // matters here — these labels live in the Mattresses mega so
+        // shoppers expect every link to be a mattress PLP. Cooling
+        // pillows + Tempur-Pedic bases lived here previously but
+        // they're accessories that route to non-mattress collections;
+        // moved them to "Adjacent" below where cross-sell pairings
+        // naturally belong.
+        { label: 'Best sellers',           href: '/collections/best-sellers' },
+        { label: 'Luxury mattresses',      href: '/collections/luxury-mattresses' },
+        { label: 'Cooling mattresses',     href: '/collections/cooling-mattresses' },
         { label: 'Soft + pressure relief', href: '/collections/soft-mattresses-for-pressure-relief' },
-        { label: 'Cooling pillows',    href: '/collections/cooling-pillows' },
-        { label: 'Tempur-Pedic bases', href: '/collections/tempur-pedic-adjustable-bases' },
+        { label: 'Mattress deals',         href: '/collections/on-sale' },
       ]},
       { title: 'By Size', links: [
         { label: 'Twin',            href: '/collections/twin-size-mattresses' },
@@ -60,13 +67,17 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         { label: 'Size guide →',    href: '/pages/mattress-sizes' },
       ]},
       { title: 'Adjacent', links: [
-        { label: 'Adjustable bases',   href: '/collections/adjustable-beds' },
-        { label: 'Bed frames',         href: '/collections/bed-frames' },
-        { label: 'Bedding & sheets',   href: '/collections/sheets-pillowcases' },
-        { label: 'Pillows',            href: '/collections/pillows' },
-        { label: 'Rize pillows',       href: '/collections/rize-pillows' },
-        { label: 'Mattress toppers',   href: '/collections/mattress-toppers' },
-        { label: 'Comforters',         href: '/collections/comforters' },
+        // Cross-sell + complete-the-bed surfaces. Order roughly by
+        // attach-rate to a mattress purchase: bases first (highest-
+        // margin upsell), then frames, then bedding categories.
+        // Cooling pillows + Tempur-Pedic bases moved here from
+        // Featured — they're accessories, not mattress PLPs.
+        { label: 'Adjustable bases',    href: '/collections/adjustable-beds' },
+        { label: 'Tempur-Pedic bases',  href: '/collections/tempur-pedic-adjustable-bases' },
+        { label: 'Bed frames',          href: '/collections/bed-frames' },
+        { label: 'Bedding & sheets',    href: '/collections/sheets-pillowcases' },
+        { label: 'Pillows',             href: '/collections/pillows' },
+        { label: 'Cooling pillows',     href: '/collections/cooling-pillows' },
         { label: 'Mattress protectors', href: '/collections/mattress-protector' },
         { label: 'Take the sleep quiz →', href: '/sleep-quiz' },
       ]},
