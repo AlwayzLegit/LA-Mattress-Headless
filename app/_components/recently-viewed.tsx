@@ -9,6 +9,7 @@ import { announce } from './announcer';
 import { createLocalStoreApi } from './use-local-store';
 import { ReviewsBadge } from './reviews-badge';
 import { RailScrollButtons } from './sections/rail-scroll-buttons';
+import { Icon } from './icon';
 
 const RAIL_ID = 'recently-viewed-rail';
 
@@ -112,8 +113,8 @@ export function RecentlyViewedRail({
             <h2 id="recently-viewed-heading" className="h2">{heading}</h2>
           </div>
           <div className="section-head-right">
-            <button type="button" className="link-arrow recently-viewed-clear" onClick={onClear} aria-label="Clear recently viewed history">
-              Clear history
+            <button type="button" className="recently-viewed-clear" onClick={onClear} aria-label="Clear recently viewed history">
+              <Icon name="close" size={12} aria-hidden /> Clear history
             </button>
             <RailScrollButtons
               railId={RAIL_ID}
