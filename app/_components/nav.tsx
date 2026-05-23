@@ -35,27 +35,43 @@ const NAV_ITEMS: { label: string; mega: MegaKey | null; href: string; accent?: b
 
 const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
   mattresses: {
+    // Expanded mega columns to expose 8 previously-orphan high-value
+    // PLPs (most have 50-100 published SKUs but weren't reachable from
+    // nav — only via direct URL or search). Industry-standard mattress
+    // retailer mega menus group by Type / Firmness / Sleeper / Size /
+    // Featured / Cross-sell — matches Casper, Saatva, Mattress Firm,
+    // Tempur-Pedic patterns and surfaces the canonical SEO entrances.
     cols: [
       { title: 'By Type', links: [
-        { label: 'Memory Foam',  href: '/collections/memory-foam-mattresses' },
-        { label: 'Hybrid',       href: '/collections/hybrid-mattresses' },
-        { label: 'Innerspring',  href: '/collections/innerspring-mattresses' },
-        { label: 'Latex',        href: '/collections/latex-mattresses' },
-        { label: 'Compare all four →', href: '/pages/mattress-types' },
+        { label: 'Memory Foam',   href: '/collections/memory-foam-mattresses' },
+        { label: 'Hybrid',        href: '/collections/hybrid-mattresses' },
+        { label: 'Pocketed Coil', href: '/collections/pocketed-coil-mattresses' },
+        { label: 'Innerspring',   href: '/collections/innerspring-mattresses' },
+        { label: 'Latex',         href: '/collections/latex-mattresses' },
+        { label: 'Bed-in-a-Box',  href: '/collections/bed-in-a-box-mattresses' },
+        { label: 'Compare all →', href: '/pages/mattress-types' },
       ]},
-      { title: 'Featured', links: [
-        // Featured mattress collections only. Categorical accuracy
-        // matters here — these labels live in the Mattresses mega so
-        // shoppers expect every link to be a mattress PLP. Cooling
-        // pillows + Tempur-Pedic bases lived here previously but
-        // they're accessories that route to non-mattress collections;
-        // moved them to "Adjacent" below where cross-sell pairings
-        // naturally belong.
-        { label: 'Best sellers',           href: '/collections/best-sellers' },
-        { label: 'Luxury mattresses',      href: '/collections/luxury-mattresses' },
-        { label: 'Cooling mattresses',     href: '/collections/cooling-mattresses' },
-        { label: 'Soft + pressure relief', href: '/collections/soft-mattresses-for-pressure-relief' },
-        { label: 'Mattress deals',         href: '/collections/on-sale' },
+      { title: 'By Firmness', links: [
+        // Industry-standard firmness ladder, soft → firm. Each PLP has
+        // 40-65 published SKUs — high-intent shopper filters that
+        // weren't reachable from nav before.
+        { label: 'Ultra Plush',   href: '/collections/ultra-plush-mattresses' },
+        { label: 'Plush',         href: '/collections/plush-mattresses' },
+        { label: 'Medium',        href: '/collections/medium-mattresses' },
+        { label: 'Medium-Firm',   href: '/collections/medium-firm-mattresses' },
+        { label: 'Firm',          href: '/collections/firm-mattress' },
+        { label: 'Extra Firm',    href: '/collections/extra-firm-mattresses' },
+        { label: 'Pillow Top',    href: '/collections/pillow-top-mattresses' },
+      ]},
+      { title: 'By Sleeper', links: [
+        // Use-case PLPs. Top organic-search intents per SEMrush
+        // 20260523 — each handle has 60-99 published SKUs.
+        { label: 'Back pain',         href: '/collections/mattresses-for-back-pain' },
+        { label: 'Side sleepers',     href: '/collections/mattresses-for-side-sleepers' },
+        { label: 'Couples',           href: '/collections/mattresses-for-couples' },
+        { label: 'Pressure relief',   href: '/collections/soft-mattresses-for-pressure-relief' },
+        { label: 'Cooling',           href: '/collections/cooling-mattresses' },
+        { label: 'Take the quiz →',   href: '/sleep-quiz' },
       ]},
       { title: 'By Size', links: [
         { label: 'Twin',            href: '/collections/twin-size-mattresses' },
@@ -64,22 +80,32 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         { label: 'Queen',           href: '/collections/queen-size-mattresses' },
         { label: 'King',            href: '/collections/king-size-mattresses' },
         { label: 'California King', href: '/collections/california-king-mattresses' },
+        { label: 'Split King',      href: '/collections/split-king-mattresses' },
         { label: 'Size guide →',    href: '/pages/mattress-sizes' },
       ]},
-      { title: 'Adjacent', links: [
-        // Cross-sell + complete-the-bed surfaces. Order roughly by
-        // attach-rate to a mattress purchase: bases first (highest-
-        // margin upsell), then frames, then bedding categories.
-        // Cooling pillows + Tempur-Pedic bases moved here from
-        // Featured — they're accessories, not mattress PLPs.
+      { title: 'Featured', links: [
+        // Curated highlights. Order by shopper-intent priority: best
+        // sellers (social proof), luxury (high-margin), popular (broad
+        // signal), then promo slots.
+        { label: 'Best sellers',           href: '/collections/best-sellers' },
+        { label: 'Luxury mattresses',      href: '/collections/luxury-mattresses' },
+        { label: 'Popular',                href: '/collections/popular' },
+        { label: 'Mattress deals',         href: '/collections/on-sale' },
+        { label: 'Clearance & floor models', href: '/collections/floor-model-discontinued-mattress-clearance-sale' },
+      ]},
+      { title: 'Complete the bed', links: [
+        // Cross-sell row. Order roughly by attach-rate to a mattress
+        // purchase: bases first (highest-margin upsell), then frames,
+        // then bedding categories. Was titled "Adjacent" — relabeled
+        // for shopper clarity.
         { label: 'Adjustable bases',    href: '/collections/adjustable-beds' },
         { label: 'Tempur-Pedic bases',  href: '/collections/tempur-pedic-adjustable-bases' },
         { label: 'Bed frames',          href: '/collections/bed-frames' },
-        { label: 'Bedding & sheets',    href: '/collections/sheets-pillowcases' },
+        { label: 'Foundations',         href: '/collections/foundations' },
+        { label: 'Sheets & bedding',    href: '/collections/sheets-pillowcases' },
         { label: 'Pillows',             href: '/collections/pillows' },
         { label: 'Cooling pillows',     href: '/collections/cooling-pillows' },
         { label: 'Mattress protectors', href: '/collections/mattress-protector' },
-        { label: 'Take the sleep quiz →', href: '/sleep-quiz' },
       ]},
     ],
     tiles: [
