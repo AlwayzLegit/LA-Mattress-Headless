@@ -101,17 +101,22 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     description,
     alternates: { canonical: url },
     openGraph: {
-      // The Open Graph spec (https://ogp.me/#types) supports `product`
-      // as a top-level type, and FB / LinkedIn render product unfurls
-      // (price + brand + availability fields) when og:type=product.
-      // Next.js's Metadata API has a narrow discriminated union for
-      // openGraph.type that ships only the website / article / book /
-      // profile / music.* / video.* values — `product` is missing from
-      // their TS types but works fine at runtime because Next.js
-      // stringifies the value into the emitted <meta> tag without
-      // re-validating. Cast through `as never` to bypass the type
-      // check without disabling it project-wide. QA 2026-05-23 P2-3.
-      type: 'product' as never,
+      // QA 2026-05-23 P2-3 attempted to set type='product' here to match
+      // OG spec (https://ogp.me/#types) but Next.js Metadata API's
+      // discriminated-union dispatch crashes at prerender time when the
+      // value isn't one of the recognized literals (website / article /
+      // book / profile / music.* / video.*). Symptom was a Server
+      // Components render error on /products/[handle] during static
+      // generation — broke 3 production deploys (PRs #253-#255 ERROR
+      // state). Reverted to 'website' to unblock the build.
+      //
+      // Follow-up path (not in this hotfix): emit an additional
+      // <meta property="og:type" content="product"> alongside the
+      // Metadata-generated tag via a custom <head> child in the route,
+      // OR upgrade Next.js to a version whose OpenGraph types accept
+      // 'product' natively. For now PDPs unfurl as generic-link cards
+      // on FB/LinkedIn, same as before PR #253.
+      type: 'website',
       url,
       title,
       description,
