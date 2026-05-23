@@ -11,6 +11,7 @@
  * than sharing a util — the page keeps its own copy for read-time.
  */
 import type { getArticleByHandle } from '@/lib/shopify';
+import { displayAuthorName, isEditorialAuthor } from '@/lib/article-author';
 
 type Article = NonNullable<Awaited<ReturnType<typeof getArticleByHandle>>>;
 export type ArticleLd = { key: string; data: unknown };
@@ -199,14 +200,22 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     // not a JSON-LD shape issue.
     dateModified: article.publishedAt,
     image: imageUrls,
-    // Author is REQUIRED by Google for BlogPosting; emit a fallback
-    // Organization-author when Storefront didn't include a person —
-    // covers older articles that pre-date the merchant filling in
-    // author metafields. The @id link ties the fallback to the
-    // sitewide Organization (instead of creating a duplicate entity).
-    author: article.author
-      ? { '@type': 'Person', name: article.author.name }
-      : { '@type': 'Organization', name: 'LA Mattress Store', '@id': `${SITE}/#organization` },
+    // Author is REQUIRED by Google for BlogPosting. Normalize the
+    // Shopify-sourced name first: bulk-imported articles carry
+    // author="Shopify API" (the API user's display name, not a real
+    // byline). displayAuthorName() filters that case and the
+    // missing-author case down to the editorial-team fallback —
+    // surfaced as Organization for E-E-A-T accuracy (the editorial
+    // team isn't a single person). Real human authors emit Person.
+    // The @id link on the editorial fallback ties to the sitewide
+    // Organization so Google's entity graph reads the article and
+    // brand as one connected entity, not two.
+    author: (() => {
+      const name = displayAuthorName(article.author);
+      return isEditorialAuthor(name)
+        ? { '@type': 'Organization', name, '@id': `${SITE}/#organization` }
+        : { '@type': 'Person', name };
+    })(),
     publisher: {
       // @id link to the canonical Organization schema emitted from
       // app/layout.tsx (lib/structured-data.ts buildOrganizationLd).

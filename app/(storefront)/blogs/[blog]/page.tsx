@@ -7,6 +7,7 @@ import { getBlogByHandle } from '@/lib/shopify';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { blogIntroFor } from '@/lib/blog-content';
+import { displayAuthorName } from '@/lib/article-author';
 import { Icon } from '@/app/_components/icon';
 
 type Params = {
@@ -185,7 +186,7 @@ export default async function BlogIndexPage(props: Params) {
                         {a.excerpt ? <p className="gd-card-excerpt">{a.excerpt}</p> : null}
                         <div className="gd-card-foot">
                           <span className="muted">
-                            {a.author?.name ? `By ${a.author.name}` : 'LA Mattress'}
+                            By {displayAuthorName(a.author)}
                           </span>
                           <span className="arrow">
                             Read <Icon name="arrow-right" size={14} />
