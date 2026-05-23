@@ -34,8 +34,17 @@ export function HeaderSearch() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // e.key is typed as `string` but can be undefined in the wild —
+      // IME composition events on Android Chrome dispatch a synthetic
+      // keydown with no `key`, and some mobile keyboards strip it on
+      // numeric-input fields (Sentry LA-MATTRESS-HEADLESS-10: a user
+      // typing in the PLP price-filter triggered exactly this on
+      // Chrome Mobile 148 / Android 10). Optional-chain so the rest
+      // of the handler can short-circuit instead of throwing.
+      const key = e.key?.toLowerCase();
+      if (!key) return;
       const isCmdK =
-        e.key.toLowerCase() === 'k' &&
+        key === 'k' &&
         (e.metaKey || e.ctrlKey) &&
         !e.altKey &&
         !e.shiftKey;
@@ -46,7 +55,7 @@ export function HeaderSearch() {
         return;
       }
 
-      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
       const tag = (t?.tagName ?? '').toLowerCase();
       const editable = tag === 'input' || tag === 'textarea' || tag === 'select' || (t && t.isContentEditable);

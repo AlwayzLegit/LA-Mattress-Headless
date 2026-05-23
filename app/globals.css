@@ -2485,8 +2485,14 @@ summary:focus-visible,
 .rte th { font-weight: 600; color: var(--text); font-size: 14px; letter-spacing: -0.005em; }
 .rte tbody tr:nth-child(even) { background: var(--surface-2, rgba(0, 0, 0, 0.015)); }
 .rte tbody tr:last-child td { border-bottom: 0; }
+.rte caption { caption-side: bottom; font-size: 13px; color: var(--text-2); padding: var(--s-2) 0 0; text-align: left; }
 @media (max-width: 600px) {
-  .rte table { font-size: 14px; }
+  /* Horizontal scroll for the table on narrow viewports so cells stay
+     wide enough to read instead of wrapping into tiny shreds. The
+     wrapper is the table itself rendered with overflow-x — content is
+     announced normally to screen readers (it's still <table> markup);
+     only the visual rendering scrolls. */
+  .rte table { font-size: 14px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .rte th, .rte td { padding: var(--s-2) var(--s-2); }
 }
 
@@ -3315,12 +3321,17 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 
 /* Mobile filter drawer (≤880px). Desktop styles above are unchanged. */
 @media (max-width: 880px) {
-  /* Trigger button — pill, sits in plp-toolbar-left next to product count */
+  /* Trigger button — pill, sits in plp-toolbar-left next to product count.
+     height: 44px meets WCAG 2.5.5 (minimum 44×44 touch target). Was
+     36px previously which was a real fail on phones — earlier 768px-
+     scoped fix existed (line ~1844) but got overridden by this less-
+     specific 880px rule in source order. Defining 44px here means the
+     rule wins regardless of viewport-stack order. */
   .plp-filters-mobile-trigger {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 14px; height: 36px;
+    padding: 10px 16px; height: 44px;
     border: 1px solid var(--line-strong); border-radius: var(--r-pill);
-    background: var(--surface); font: inherit; font-size: 13px; color: var(--text);
+    background: var(--surface); font: inherit; font-size: 14px; color: var(--text);
     cursor: pointer;
   }
   .plp-filters-mobile-trigger:hover { border-color: var(--accent); color: var(--accent); }
