@@ -36,6 +36,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { PostHog } from 'posthog-node';
+import { sendGa4Purchase } from '@/lib/ga4-server';
 
 export const runtime = 'nodejs';
 // Webhooks are POSTed live — never cache, always re-evaluate signatures.
@@ -190,6 +191,26 @@ export async function POST(req: NextRequest) {
   // Allow a fresh client on the next invocation (serverless functions
   // sometimes reuse the module between requests).
   posthogClient = null;
+
+  // Mirror to GA4 via Measurement Protocol — needed because Shopify's
+  // hosted checkout means the client-side `purchase` gtag event never
+  // fires from our domain. Without this server-side mirror, GA4's
+  // revenue + items-purchased reports stay empty and Shopping Ads /
+  // Performance Max attribution breaks. No-op when GA4 env vars unset.
+  await sendGa4Purchase({
+    clientId: distinctId,
+    transactionId: String(order.id),
+    value: Number.parseFloat(order.total_price ?? '0') || 0,
+    currency: order.currency,
+    couponCodes: (order.discount_codes ?? []).map((d) => d.code),
+    items: (order.line_items ?? []).map((li) => ({
+      item_id: li.variant_id ? String(li.variant_id) : String(li.product_id ?? ''),
+      item_name: li.title,
+      item_variant: li.sku,
+      price: Number.parseFloat(li.price ?? '0') || 0,
+      quantity: li.quantity,
+    })),
+  });
 
   return NextResponse.json({ ok: true });
 }

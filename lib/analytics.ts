@@ -231,6 +231,26 @@ export function track<E extends AnalyticsEvent>(name: E['name'], props: E['props
     // Never let analytics break the page. Swallow silently.
   }
 
+  // GA4 mirror for the funnel events. Lets Google Search Console
+  // surface keyword-level attribution + populates GA4's "Ecommerce
+  // purchases" / "Items purchased" reports that Shopping Ads &
+  // Performance Max key off of. Schema follows Google's GA4 Enhanced
+  // Ecommerce spec (developers.google.com/analytics/devguides/collection/ga4/ecommerce)
+  // — event names + payload shape match what Google's reports expect,
+  // so the user doesn't need custom dimensions.
+  //
+  // Gated on gtag being loaded (the AnalyticsGa4 component injects it
+  // only when NEXT_PUBLIC_GA_MEASUREMENT_ID is set). When GA4 isn't
+  // configured this is a silent no-op — identical pattern to PostHog.
+  try {
+    if (typeof window.gtag === 'function') {
+      const ga = toGa4Event(name, props);
+      if (ga) window.gtag('event', ga.event, ga.params);
+    }
+  } catch {
+    /* silent */
+  }
+
   // Sentry breadcrumbs for funnel-critical events (drop-off triage)
   if (
     name === 'add_to_cart' ||
@@ -248,6 +268,89 @@ export function track<E extends AnalyticsEvent>(name: E['name'], props: E['props
     } catch {
       // Sentry not initialized — fine.
     }
+  }
+}
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+/**
+ * Map our PostHog event taxonomy to GA4's standard ecommerce events.
+ * Returns `null` for non-ecommerce events (quiz steps, newsletter signup,
+ * review widget) — those don't have a canonical GA4 mirror and would
+ * just pollute the Reports section.
+ *
+ * Items array follows GA4's structure: `item_id` (Shopify variant gid
+ * truncated to the numeric tail), `item_name`, `price`, `quantity`.
+ * Single-product events emit a 1-item array; cart/checkout events emit
+ * the cart's item list when available. Purchase is mirrored server-side
+ * from the order-paid webhook (lib/ga4-server.ts).
+ */
+function toGa4Event(
+  name: AnalyticsEvent['name'],
+  props: Record<string, unknown>,
+): { event: string; params: Record<string, unknown> } | null {
+  switch (name) {
+    case 'plp_view':
+      return {
+        event: 'view_item_list',
+        params: {
+          item_list_id: props.handle,
+          item_list_name: props.title ?? props.handle,
+        },
+      };
+    case 'pdp_view':
+      return {
+        event: 'view_item',
+        params: {
+          currency: props.currency ?? 'USD',
+          value: typeof props.price === 'number' ? props.price : undefined,
+          items: [
+            {
+              item_id: props.handle,
+              item_name: props.title ?? props.handle,
+              item_brand: props.vendor,
+              item_category: props.product_type,
+              price: props.price,
+              quantity: 1,
+            },
+          ],
+        },
+      };
+    case 'add_to_cart':
+      return {
+        event: 'add_to_cart',
+        params: {
+          currency: props.currency,
+          value: (props.price as number) * (props.quantity as number),
+          items: [
+            {
+              item_id: props.product_handle,
+              item_name: props.product_title ?? props.product_handle,
+              item_variant: props.variant_id,
+              price: props.price,
+              quantity: props.quantity,
+            },
+          ],
+        },
+      };
+    case 'cart_view':
+      return {
+        event: 'view_cart',
+        params: { currency: props.currency, value: props.cart_value },
+      };
+    case 'checkout_started':
+      return {
+        event: 'begin_checkout',
+        params: { currency: props.currency, value: props.cart_value },
+      };
+    case 'search':
+      return { event: 'search', params: { search_term: props.query } };
+    default:
+      return null;
   }
 }
 
