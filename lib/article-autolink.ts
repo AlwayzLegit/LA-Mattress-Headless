@@ -68,11 +68,14 @@ const PHRASE_MAP: Array<[string, string]> = [
   ['bed-in-a-box', '/collections/bed-in-a-box-mattresses'],
   ['bed in a box', '/collections/bed-in-a-box-mattresses'],
 
-  // Firmness collections
+  // Firmness collections — order matters: longest first so "extra
+  // firm mattress" wins over plain "firm mattress" when both appear.
   ['extra firm mattress', '/collections/extra-firm-mattresses'],
   ['medium firm mattress', '/collections/medium-firm-mattresses'],
   ['medium-firm mattress', '/collections/medium-firm-mattresses'],
+  ['ultra plush mattress', '/collections/ultra-plush-mattresses'],
   ['plush mattress', '/collections/plush-mattresses'],
+  ['firm mattress', '/collections/firm-mattress'],
 
   // Size collections
   ['california king mattress', '/collections/california-king-mattresses'],
@@ -83,17 +86,25 @@ const PHRASE_MAP: Array<[string, string]> = [
   ['twin xl mattress', '/collections/twin-xl-mattress-sale'],
   ['twin mattress', '/collections/twin-size-mattresses'],
 
-  // Use-case collections
+  // Use-case collections — long form first, then the shorter anchor
+  // term that catches articles which don't say "mattress for X" but
+  // do discuss the condition by name (e.g. an article about sleep
+  // posture that mentions "back pain" without "mattress for back pain").
   ['mattress for back pain', '/collections/mattresses-for-back-pain'],
   ['mattress for side sleepers', '/collections/mattresses-for-side-sleepers'],
   ['mattress for couples', '/collections/mattresses-for-couples'],
+  ['back pain', '/collections/mattresses-for-back-pain'],
+  ['side sleeper', '/collections/mattresses-for-side-sleepers'],
 
   // Accessories
   ['adjustable bed', '/collections/adjustable-beds'],
   ['adjustable base', '/collections/adjustable-beds'],
+  ['bed frame', '/collections/bed-frames'],
   ['box spring', '/collections/foundations'],
+  ['foundation', '/collections/foundations'],
   ['mattress topper', '/collections/mattress-toppers'],
   ['mattress protector', '/collections/mattress-protector'],
+  ['cooling pillow', '/collections/cooling-pillows'],
 
   // Discoverable resources
   ['sleep quiz', '/sleep-quiz'],
@@ -192,8 +203,16 @@ export function autoLinkArticleBody(html: string): string {
     for (const [phrase, href] of PHRASE_MAP) {
       const dest = href.replace(/\/$/, '');
       if (used.has(dest)) continue;
-      // \b is ASCII-only — fine for English mattress copy.
-      const re = new RegExp(`\\b${escapeRegExp(phrase)}\\b`, 'i');
+      // \b is ASCII-only — fine for English mattress copy. The trailing
+      // suffix lets the same key catch the plural form ("memory foam
+      // mattresses" matches "memory foam mattress") — without it, a
+      // large share of body copy that uses plural phrasing slips past
+      // the linker. For phrases ending in 's' the plural takes 'es'
+      // (mattress → mattresses); for everything else, plain 's' (foam
+      // → foams). Optional/non-capturing so longer-phrase-wins ordering
+      // still holds: each candidate tries match-or-skip in map order.
+      const pluralSuffix = phrase.endsWith('s') ? '(?:es)?' : 's?';
+      const re = new RegExp(`\\b${escapeRegExp(phrase)}${pluralSuffix}\\b`, 'i');
       const match = tok.content.match(re);
       if (!match || match.index === undefined) continue;
       // Wrap the matched text. Preserve original case (match[0])
