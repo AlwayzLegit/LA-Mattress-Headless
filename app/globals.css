@@ -1298,11 +1298,25 @@ summary:focus-visible,
 /* ───── Hero ───── */
 .hero { position: relative; height: clamp(560px, 85vh, 880px); background: var(--brand-navy); overflow: hidden; }
 .hero-stack { position: absolute; inset: 0; }
-.hero-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 700ms var(--ease); }
-.hero-slide.on { opacity: 1; pointer-events: auto; }
+.hero-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 700ms var(--ease); z-index: 0; }
+/* Active slide sits above all inactive ones so during the 700ms cross-
+   fade an outgoing slide's image (or any baked-in image text) can never
+   bleed visually above the incoming slide's CTAs. QA 2026-05-23 P0-3
+   reported "ghost text behind the Find a showroom button" at mobile
+   viewports — the most likely cause is in-image typography on one of
+   the merchant-uploaded Shopify hero_slide background images showing
+   through during transitions. This z-index rule rules CSS stacking out
+   as the culprit; if the bleed persists after deploy, the image asset
+   itself needs cropping. */
+.hero-slide.on { opacity: 1; pointer-events: auto; z-index: 1; }
 /* Hide outgoing slide content immediately so the cross-fade only crosses
    the bg image — text doesn't double-render mid-transition. */
 .hero-slide:not(.on) .hero-content { visibility: hidden; }
+/* Belt-and-braces: keep CTAs above the slide's own gradient + image at
+   any z-index battle. Solves cases where a third-party widget (PostHog
+   survey, Sentry feedback) creates a stacking context that defeats the
+   slide-level z-index. */
+.hero-ctas { position: relative; z-index: 2; }
 .hero-bg { position: absolute; inset: 0; overflow: hidden; background: var(--surface-inv); }
 .hero-bg-img { object-fit: cover; object-position: center; }
 .hero-grad { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.1) 80%); }
