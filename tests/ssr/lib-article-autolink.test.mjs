@@ -135,3 +135,38 @@ test('handles whitespace-only text nodes between tags', () => {
   const out = autoLinkArticleBody('<div><p>   </p></div>');
   assert.equal(out, '<div><p>   </p></div>');
 });
+
+test('matches plural form of a phrase', () => {
+  // The PHRASE_MAP key is "memory foam mattress"; "memory foam
+  // mattresses" should still link via the trailing s? in the regex.
+  // Without this rule, ~half the article corpus that uses plural
+  // phrasing slipped past the linker.
+  const out = autoLinkArticleBody('<p>Most memory foam mattresses sleep cool.</p>');
+  assert.match(out, /<a href="\/collections\/memory-foam-mattresses"[^>]*>memory foam mattresses<\/a>/);
+});
+
+test('extra-firm wins over plain firm when both are present', () => {
+  // Ordering rule: "extra firm mattress" sits before "firm mattress" in
+  // PHRASE_MAP, so when the text starts with the long form the long
+  // form wins. Guards against a future map reorder accidentally
+  // routing extra-firm traffic to the firm-mattress collection.
+  const out = autoLinkArticleBody('<p>An extra firm mattress for back pain.</p>');
+  assert.match(out, /href="\/collections\/extra-firm-mattresses"/);
+  // Only one insert per text node, so "back pain" doesn't get a
+  // second link in this same paragraph.
+  assert.equal((out.match(/data-internal="auto"/g) || []).length, 1);
+});
+
+test('shorter anchor "back pain" links to the back-pain collection', () => {
+  // Articles that discuss back pain without the full "mattress for
+  // back pain" phrasing should still get linked.
+  const out = autoLinkArticleBody('<p>Chronic back pain can disrupt sleep.</p>');
+  assert.match(out, /<a href="\/collections\/mattresses-for-back-pain"[^>]*>back pain<\/a>/);
+});
+
+test('bed frame collection links from singular and plural', () => {
+  const singular = autoLinkArticleBody('<p>A sturdy bed frame is essential.</p>');
+  assert.match(singular, /<a href="\/collections\/bed-frames"[^>]*>bed frame<\/a>/);
+  const plural = autoLinkArticleBody('<p>Modern bed frames look great.</p>');
+  assert.match(plural, /<a href="\/collections\/bed-frames"[^>]*>bed frames<\/a>/);
+});

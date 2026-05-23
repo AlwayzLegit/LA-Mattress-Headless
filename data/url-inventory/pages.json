@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify pages inventory snapshot",
-  "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-05-15T06:52:17.427Z",
+  "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via Shopify MCP",
+  "$pulledAt": "2026-05-23T09:14:55.289Z",
   "$count": 118,
   "pages": [
     {
@@ -26,7 +26,7 @@
       "title": "Mattress Delivery Service | Fast & Reliable",
       "isPublished": true,
       "publishedAt": "2026-05-11T21:19:04Z",
-      "updatedAt": "2026-05-12T06:48:38Z"
+      "updatedAt": "2026-05-15T07:27:12Z"
     },
     {
       "handle": "about-us_old",
@@ -58,7 +58,7 @@
       "title": "Contact LA Mattress Store | We're Here to Help",
       "isPublished": true,
       "publishedAt": "2016-02-19T00:23:00Z",
-      "updatedAt": "2023-08-09T22:43:15Z"
+      "updatedAt": "2026-05-20T16:00:44Z"
     },
     {
       "handle": "best-mattress-store-west-la",
@@ -66,7 +66,7 @@
       "title": "Best Mattress Store in West LA on Pico Blvd",
       "isPublished": true,
       "publishedAt": "2016-03-02T00:24:00Z",
-      "updatedAt": "2026-03-25T19:01:02Z"
+      "updatedAt": "2026-05-17T04:13:37Z"
     },
     {
       "handle": "best-mattress-store-la-brea",
@@ -74,7 +74,7 @@
       "title": "Best Mattress Store in Hancock Park on La Brea Ave",
       "isPublished": true,
       "publishedAt": "2016-03-02T06:18:00Z",
-      "updatedAt": "2026-03-25T19:01:03Z"
+      "updatedAt": "2026-05-17T04:13:37Z"
     },
     {
       "handle": "santa-monica-mattress-store",
@@ -90,15 +90,15 @@
       "title": "Best Mattress Store in Koreatown on Western Ave",
       "isPublished": true,
       "publishedAt": "2016-03-02T07:05:00Z",
-      "updatedAt": "2026-03-25T19:01:01Z"
+      "updatedAt": "2026-05-17T04:13:37Z"
     },
     {
       "handle": "mattress-store-studio-city",
       "id": "gid://shopify/Page/145225859",
-      "title": "Mattress Store Studio City LA Mattress Store",
+      "title": "Best Mattress Store in Studio City on Ventura Blvd",
       "isPublished": true,
       "publishedAt": "2016-03-02T07:29:00Z",
-      "updatedAt": "2026-03-25T19:01:05Z"
+      "updatedAt": "2026-05-17T13:43:02Z"
     },
     {
       "handle": "popular-searches",
@@ -114,7 +114,7 @@
       "title": "About Mattress Recycling Fee",
       "isPublished": true,
       "publishedAt": "2016-05-06T02:25:00Z",
-      "updatedAt": "2018-02-02T22:51:50Z"
+      "updatedAt": "2026-05-22T13:37:12Z"
     },
     {
       "handle": "terms-conditions",
@@ -122,7 +122,7 @@
       "title": "Terms & Conditions",
       "isPublished": true,
       "publishedAt": "2016-07-19T04:49:00Z",
-      "updatedAt": "2016-07-19T04:58:49Z"
+      "updatedAt": "2026-05-22T13:37:21Z"
     },
     {
       "handle": "free-120-night-comfort-guarantee",
@@ -138,7 +138,7 @@
       "title": "Privacy Policy",
       "isPublished": true,
       "publishedAt": "2016-07-19T05:01:00Z",
-      "updatedAt": "2026-04-16T08:46:02Z"
+      "updatedAt": "2026-05-22T13:37:29Z"
     },
     {
       "handle": "low-price-guarantee",
@@ -154,7 +154,7 @@
       "title": "Returns",
       "isPublished": true,
       "publishedAt": "2016-07-19T05:20:00Z",
-      "updatedAt": "2026-05-14T07:00:53Z"
+      "updatedAt": "2026-05-22T13:37:38Z"
     },
     {
       "handle": "policies",
@@ -178,7 +178,7 @@
       "title": "Lowest Price Guarantee",
       "isPublished": true,
       "publishedAt": "2016-10-29T21:04:00Z",
-      "updatedAt": "2023-01-09T20:11:55Z"
+      "updatedAt": "2026-05-22T13:37:47Z"
     },
     {
       "handle": "year-end-mattress-sales-big-mattress-deals",
@@ -223,10 +223,10 @@
     {
       "handle": "mattress-store-in-glendale",
       "id": "gid://shopify/Page/212328131",
-      "title": "Mattress Store in Glendale Best Prices-Same Day Delivery",
+      "title": "Best Mattress Store in Glendale on Central Ave",
       "isPublished": true,
       "publishedAt": "2017-05-26T04:10:00Z",
-      "updatedAt": "2026-05-12T06:49:18Z"
+      "updatedAt": "2026-05-17T13:43:02Z"
     },
     {
       "handle": "welcome-to-the-community",
@@ -250,7 +250,7 @@
       "title": "Find a Mattress Store Near You | LA Mattress Stores Locations",
       "isPublished": true,
       "publishedAt": "2023-06-19T22:35:11Z",
-      "updatedAt": "2026-05-05T10:29:54Z"
+      "updatedAt": "2026-05-22T20:10:45Z"
     },
     {
       "handle": "spring-air-limited-warranty-and-mattress-care-guidelines-ensuring-your-sleep-experience",
@@ -290,7 +290,7 @@
       "title": "20-Year Diamond Mattress and Foundation Limited Warranty",
       "isPublished": true,
       "publishedAt": "2023-07-02T22:33:28Z",
-      "updatedAt": "2023-07-02T22:33:28Z"
+      "updatedAt": "2026-05-22T13:37:56Z"
     },
     {
       "handle": "mattress-stores-near-me-west-los-angeles",
@@ -319,10 +319,10 @@
     {
       "handle": "mattress-sizes",
       "id": "gid://shopify/Page/104202010877",
-      "title": "Mattress Size Guide | Choose the Right Size",
+      "title": "Mattress Sizes & Bed Size Chart: Twin to Cal King Dimensions",
       "isPublished": true,
       "publishedAt": "2023-08-06T03:21:33Z",
-      "updatedAt": "2026-05-11T21:17:15Z"
+      "updatedAt": "2026-05-23T12:24:10.159Z"
     },
     {
       "handle": "love-your-bed-guarantee",
@@ -330,7 +330,7 @@
       "title": "Love Your Bed Guarantee",
       "isPublished": true,
       "publishedAt": "2023-08-07T21:31:41Z",
-      "updatedAt": "2026-05-11T21:16:45Z"
+      "updatedAt": "2026-05-20T15:31:38Z"
     },
     {
       "handle": "about",
@@ -354,7 +354,7 @@
       "title": "Best Mattress Brands | Quality & Comfort",
       "isPublished": true,
       "publishedAt": "2023-08-09T21:23:53Z",
-      "updatedAt": "2026-05-11T21:18:22Z"
+      "updatedAt": "2026-05-16T19:17:44Z"
     },
     {
       "handle": "mattress-guides",
@@ -410,7 +410,7 @@
       "title": "Mattress Financing Options | Affordable Sleep",
       "isPublished": true,
       "publishedAt": "2023-08-09T22:56:21Z",
-      "updatedAt": "2026-05-12T06:49:12Z"
+      "updatedAt": "2026-05-20T15:34:32Z"
     },
     {
       "handle": "mattress-reviews",
@@ -514,7 +514,7 @@
       "title": "Warranty Information and Coverage For All Brands",
       "isPublished": true,
       "publishedAt": "2023-08-11T23:05:43Z",
-      "updatedAt": "2023-08-14T05:53:07Z"
+      "updatedAt": "2026-05-20T15:55:08Z"
     },
     {
       "handle": "harvest-mattress-warranty",
@@ -522,7 +522,7 @@
       "title": "25-YEAR Harvest Mattress Limited Warranty",
       "isPublished": true,
       "publishedAt": "2023-08-11T23:47:59Z",
-      "updatedAt": "2023-08-11T23:48:00Z"
+      "updatedAt": "2026-05-22T16:12:22Z"
     },
     {
       "handle": "faq",
@@ -671,10 +671,10 @@
     {
       "handle": "mattress-store-beverly-hills",
       "id": "gid://shopify/Page/114679021821",
-      "title": "Mattress Store Beverly Hills | Quality Mattresses & Expert Guidance",
+      "title": "Mattress Store in Beverly Hills — LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:11:04Z",
-      "updatedAt": "2026-05-14T22:55:13Z"
+      "updatedAt": "2026-05-20T06:15:07Z"
     },
     {
       "handle": "mattresses",
@@ -722,7 +722,7 @@
       "title": "LA Mattress Store vs Mattress Firm",
       "isPublished": true,
       "publishedAt": "2024-12-11T17:15:48Z",
-      "updatedAt": "2024-12-11T18:03:35Z"
+      "updatedAt": "2026-05-20T16:02:44Z"
     },
     {
       "handle": "quiz",
@@ -746,7 +746,7 @@
       "title": "Purple Mattress vs. Tempur-Pedic – Which One is Better?",
       "isPublished": true,
       "publishedAt": "2025-03-15T02:24:39Z",
-      "updatedAt": "2025-03-15T03:28:20Z"
+      "updatedAt": "2026-05-22T16:12:29Z"
     },
     {
       "handle": "collection-bundle",
