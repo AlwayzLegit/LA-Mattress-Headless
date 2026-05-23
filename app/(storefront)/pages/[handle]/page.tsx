@@ -132,7 +132,12 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     description,
     alternates: { canonical: url },
     openGraph: {
-      type: 'article',
+      // CMS pages here are marketing surfaces (locations, showrooms,
+      // financing, returns, warranty, FAQ) — not blog posts. Use the
+      // 'website' OG type so Facebook + LinkedIn don't render them with
+      // the article-attribution treatment (byline + publish date + section
+      // tag) that's reserved for editorial blog content.
+      type: 'website',
       url,
       title,
       description,
@@ -348,11 +353,37 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
           </div>
         </section>
 
+        {/*
+          Multi-showroom map. Uses Google Maps' legacy `output=embed`
+          URL — works without a Maps Embed API key, which we don't have
+          configured in env. Brand-query mode surfaces all 5 GBP-verified
+          listings as numbered pins centered on Los Angeles. loading="lazy"
+          + explicit dimensions reserves layout space so the iframe
+          doesn't contribute to CLS, and importance="low" tells the
+          browser this is non-critical (mobile users may never scroll to
+          it). title is required for a11y on iframes.
+        */}
+        <section className="locations-map-wrap" aria-label="All five showroom locations on a map" style={{ marginTop: 'var(--s-7)' }}>
+          <iframe
+            title="LA Mattress Store — all five showroom locations on Google Maps"
+            src="https://www.google.com/maps?q=LA+Mattress+Store+Los+Angeles&z=10&output=embed"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{ width: '100%', height: 360, border: 0, borderRadius: 'var(--radius-lg, 12px)' }}
+          />
+        </section>
+
         <section className="locations-grid" aria-label="Showroom directory">
           {SHOWROOMS.map((s) => (
-            <Link key={s.handle} href={`/pages/${s.handle}`} className="location-card location-card-rich">
+            // Card is a <article>, not a <Link>, so we can nest the tel:
+            // anchor for the phone number — nested <a> inside another <a>
+            // is invalid HTML and breaks tap-to-call on iOS Safari. Two
+            // links per card now: the photo + the "Store details" arrow
+            // both go to the showroom page; the phone is its own tel:
+            // anchor that initiates a call instead of navigating.
+            <article key={s.handle} className="location-card location-card-rich">
               {s.imageUrl ? (
-                <div className="location-card-photo">
+                <Link href={`/pages/${s.handle}`} className="location-card-photo" aria-label={`${s.name} — view details`}>
                   <Image
                     src={s.imageUrl}
                     alt={`${s.name} storefront`}
@@ -361,11 +392,13 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
                     sizes="(max-width: 760px) 100vw, 540px"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
-                </div>
+                </Link>
               ) : null}
               <div className="location-card-meta">
                 <div className="eyebrow">{s.area}</div>
-                <h2 className="location-card-name">{s.name}</h2>
+                <h2 className="location-card-name">
+                  <Link href={`/pages/${s.handle}`}>{s.name}</Link>
+                </h2>
                 <ShowroomOpenStatus showroom={s} />
                 <address className="location-card-addr">
                   <div>{s.street}</div>
@@ -382,11 +415,19 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
                   </div>
                 ) : null}
                 <div className="location-card-actions">
-                  <span className="location-card-phone tnum">{formatPhone(s.phone)}</span>
-                  <span className="link-arrow">Store details <Icon name="arrow-right" size={14} /></span>
+                  <a
+                    href={`tel:${s.phone}`}
+                    className="location-card-phone tnum"
+                    aria-label={`Call ${s.name} at ${formatPhone(s.phone)}`}
+                  >
+                    <Icon name="phone" size={14} /> {formatPhone(s.phone)}
+                  </a>
+                  <Link href={`/pages/${s.handle}`} className="link-arrow">
+                    Store details <Icon name="arrow-right" size={14} />
+                  </Link>
                 </div>
               </div>
-            </Link>
+            </article>
           ))}
         </section>
 

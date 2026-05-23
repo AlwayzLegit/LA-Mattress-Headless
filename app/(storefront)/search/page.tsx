@@ -372,7 +372,7 @@ export default async function SearchPage(props: Params) {
                 <div className="search-empty">
                   <p className="muted" style={{ fontSize: 16, lineHeight: 1.55, maxWidth: '60ch' }}>
                     No showrooms match &ldquo;{q}&rdquo;. Try a neighborhood (Koreatown, West LA,
-                    Hancock Park, Studio City, Glendale) or a zip code.
+                    La Brea, Studio City, Glendale) or a zip code.
                     {otherProductCount > 0 ? (
                       <> See <Link className="link-arrow" href={buildTabHref('mattresses')}>{otherProductCount} mattress result{otherProductCount === 1 ? '' : 's'}</Link> instead.</>
                     ) : null}

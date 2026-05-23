@@ -27,7 +27,7 @@ const LOCAL_BUSINESS_ID = 'https://www.mattressstoreslosangeles.com/#localbusine
 // fallbacks for unconfigured stores or empty Brand fields.
 const FALLBACK_TITLE = 'Mattress Store in Los Angeles | LA Mattress — 5 Showrooms';
 const FALLBACK_DESCRIPTION =
-  'Family-owned Los Angeles mattress store with 5 showrooms — Koreatown, West LA, Hancock Park, Studio City & Glendale. Shop Tempur-Pedic, Stearns & Foster, Helix & Diamond with free white-glove delivery and 0% APR financing.';
+  'Family-owned Los Angeles mattress store with 5 showrooms — Koreatown, West LA, La Brea, Studio City & Glendale. Shop Tempur-Pedic, Stearns & Foster, Helix & Diamond with free white-glove delivery and 0% APR financing.';
 
 export async function generateMetadata(): Promise<Metadata> {
   const shop = await getShopBrand();

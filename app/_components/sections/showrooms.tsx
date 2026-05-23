@@ -32,7 +32,7 @@ type ShowroomCard = {
 const SHOWROOMS: ShowroomCard[] = [
   { idx: '01', name: 'Koreatown',    area: 'Western & 2nd', address: '201 S Western Ave',  hours: 'Mon–Fri 10–9 · Sat–Sun 10–8', href: '/pages/koreatown-best-mattress-store',  canonicalHandle: 'koreatown-best-mattress-store' },
   { idx: '02', name: 'West LA',      area: 'Pico Blvd',     address: '10861 W Pico Blvd',  hours: 'Mon–Fri 10–9 · Sat–Sun 10–8', href: '/pages/best-mattress-store-west-la',    canonicalHandle: 'best-mattress-store-west-la' },
-  { idx: '03', name: 'Hancock Park', area: 'La Brea & 3rd', address: '300 S La Brea Ave',  hours: 'Mon–Fri 10–9 · Sat–Sun 10–8', href: '/pages/best-mattress-store-la-brea',    canonicalHandle: 'best-mattress-store-la-brea' },
+  { idx: '03', name: 'La Brea',      area: 'La Brea & 3rd', address: '300 S La Brea Ave',  hours: 'Mon–Fri 10–9 · Sat–Sun 10–8', href: '/pages/best-mattress-store-la-brea',    canonicalHandle: 'best-mattress-store-la-brea' },
   { idx: '04', name: 'Studio City',  area: 'Ventura Blvd',  address: '12306 Ventura Blvd', hours: 'Mon–Fri 10–9 · Sat–Sun 10–8', href: '/pages/mattress-store-studio-city',     canonicalHandle: 'mattress-store-studio-city' },
   { idx: '05', name: 'Glendale',     area: 'Central Ave',   address: '201 N Central Ave',  hours: 'Mon–Fri 10–9 · Sat–Sun 10–8', href: '/pages/mattress-store-in-glendale',     canonicalHandle: 'mattress-store-in-glendale' },
 ];
