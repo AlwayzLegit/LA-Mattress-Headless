@@ -1,6 +1,7 @@
 import { getPageByHandle } from '@/lib/shopify';
 import { getPageJsonLd } from '@/lib/page-jsonld';
 import { isCodedPage, getCodedPageJsonLd } from '@/lib/coded-pages';
+import { getShopAggregate } from '@/lib/judgeme';
 
 /**
  * Segment layout for /pages/[handle]. Its only job is to emit the
@@ -32,8 +33,16 @@ export default async function PageHandleLayout({
     // No Shopify page behind these — JSON-LD comes from lib/coded-pages.
     ld = getCodedPageJsonLd(handle);
   } else {
-    const page = await getPageByHandle(handle).catch(() => null);
-    ld = page ? getPageJsonLd(page) : [];
+    // Fetch the shop aggregate alongside the page so showroom /
+    // locations-index / neighborhood LocalBusiness LD can carry an
+    // aggregateRating. Sitewide reviews come from Judge.me; same hourly-
+    // ISR-cached fetch the storefront layout already uses for the
+    // Organization LD, so this is effectively a free read.
+    const [page, aggregate] = await Promise.all([
+      getPageByHandle(handle).catch(() => null),
+      getShopAggregate().catch(() => null),
+    ]);
+    ld = page ? getPageJsonLd(page, aggregate) : [];
   }
 
   return (
