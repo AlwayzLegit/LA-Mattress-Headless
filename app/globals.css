@@ -709,14 +709,33 @@ summary:focus-visible,
 }
 .skip-link:focus { transform: translateY(0); outline: 2px solid var(--accent-fg); outline-offset: -4px; }
 
-/* Recently-viewed clear-history button */
+/* Recently-viewed clear-history button.
+   QA audit 2026-05-23 P2-9: was styled identically to .link-arrow
+   (the pagination "scroll" arrows) so it didn't read as a destructive
+   action. Now: pill-shaped tertiary button with subtle border so it
+   reads as "action" without screaming "danger" (this isn't a delete
+   account button — it's clearing browse history). Bumped tap-target
+   to 32px tall + 12px horizontal padding so it meets the in-section
+   touch-target floor on touch viewports. */
 .recently-viewed-clear {
-  appearance: none; border: 0; background: transparent;
-  font: inherit; font-size: 13px;
-  color: var(--text-3); cursor: pointer;
-  padding: 4px 8px;
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill, 999px);
+  font: inherit; font-size: 13px; font-weight: 500;
+  color: var(--text-2); cursor: pointer;
+  padding: 6px 12px;
+  display: inline-flex; align-items: center; gap: 4px;
+  transition: color var(--d-fast), border-color var(--d-fast), background var(--d-fast);
 }
-.recently-viewed-clear:hover { color: var(--accent); }
+.recently-viewed-clear:hover {
+  color: var(--text);
+  border-color: var(--line-strong, var(--line));
+  background: var(--surface-2, rgba(0,0,0,0.02));
+}
+.recently-viewed-clear:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
 
 /* Article — "Keep reading" related list */
 .article-related-list { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }

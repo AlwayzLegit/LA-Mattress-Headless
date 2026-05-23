@@ -3,15 +3,28 @@ import { Icon, type IconName } from '../icon';
 import { phImg } from '../images';
 import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
 import { getBrands } from '@/lib/shopify';
+import { nonEmptyCollections } from '@/lib/inventory';
 
 /* ───── Shop by category ──────────────────────────────── */
+// Live counts from data/url-inventory/collections.json — refreshed on
+// every inventory pull, so the homepage tiles never drift from the
+// real catalog size. QA audit 2026-05-23 P2-2 caught this: hardcoded
+// counts (24/38/19/12/21/14) were all wrong (actual: 61/37/17/38/30/18)
+// and the unit mismatch ("bases" vs "styles") was inconsistent. Unified
+// to "models" — works for both mattresses and adjustable bases without
+// either feeling category-incorrect.
+function countLabel(handle: string): string {
+  const c = nonEmptyCollections.find((x) => x.handle === handle);
+  return c && c.productsCount > 0 ? `${c.productsCount} models` : 'Shop now';
+}
+
 const CATEGORIES: { name: string; meta: string; img: string; label: string; href: string }[] = [
-  { name: 'Memory Foam', meta: '24 styles', img: 'cat-memory-foam', label: '[Memory foam]',   href: '/collections/memory-foam-mattresses' },
-  { name: 'Hybrid',      meta: '38 styles', img: 'cat-hybrid',      label: '[Hybrid]',         href: '/collections/hybrid-mattresses' },
-  { name: 'Innerspring', meta: '19 styles', img: 'cat-innerspring', label: '[Innerspring]',    href: '/collections/innerspring-mattresses' },
-  { name: 'Latex',       meta: '12 styles', img: 'cat-latex',       label: '[Latex]',          href: '/collections/latex-mattresses' },
-  { name: 'Cooling',     meta: '21 styles', img: 'cat-cooling',     label: '[Cooling]',        href: '/collections/cooling-mattresses' },
-  { name: 'Adjustable',  meta: '14 bases',  img: 'cat-adjustable',  label: '[Adjustable base]',href: '/collections/adjustable-beds' },
+  { name: 'Memory Foam', meta: countLabel('memory-foam-mattresses'), img: 'cat-memory-foam', label: '[Memory foam]',   href: '/collections/memory-foam-mattresses' },
+  { name: 'Hybrid',      meta: countLabel('hybrid-mattresses'),      img: 'cat-hybrid',      label: '[Hybrid]',         href: '/collections/hybrid-mattresses' },
+  { name: 'Innerspring', meta: countLabel('innerspring-mattresses'), img: 'cat-innerspring', label: '[Innerspring]',    href: '/collections/innerspring-mattresses' },
+  { name: 'Latex',       meta: countLabel('latex-mattresses'),       img: 'cat-latex',       label: '[Latex]',          href: '/collections/latex-mattresses' },
+  { name: 'Cooling',     meta: countLabel('cooling-mattresses'),     img: 'cat-cooling',     label: '[Cooling]',        href: '/collections/cooling-mattresses' },
+  { name: 'Adjustable',  meta: countLabel('adjustable-beds'),        img: 'cat-adjustable',  label: '[Adjustable base]',href: '/collections/adjustable-beds' },
 ];
 
 export function ShopByCategory() {
