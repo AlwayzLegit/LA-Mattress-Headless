@@ -239,16 +239,35 @@ export function track<E extends AnalyticsEvent>(name: E['name'], props: E['props
   // — event names + payload shape match what Google's reports expect,
   // so the user doesn't need custom dimensions.
   //
-  // Gated on gtag being loaded (the AnalyticsGa4 component injects it
-  // only when NEXT_PUBLIC_GA_MEASUREMENT_ID is set). When GA4 isn't
-  // configured this is a silent no-op — identical pattern to PostHog.
-  try {
-    if (typeof window.gtag === 'function') {
+  // The AnalyticsGa4 component initializes window.gtag with
+  // strategy="afterInteractive", but TrackPdpView's useEffect can run
+  // BEFORE that init script — so window.gtag is sometimes undefined
+  // when track() fires for the first page view. The fix is to push
+  // events directly into window.dataLayer (Google's documented queueing
+  // pattern); gtag.js processes any queued entries when it finally
+  // loads. This is the same trick the official snippet uses.
+  if (process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID) {
+    try {
+      const w = window as unknown as {
+        dataLayer?: unknown[];
+        gtag?: (...args: unknown[]) => void;
+      };
+      // Ensure dataLayer exists — gtag.js will pick this same array up
+      // when it loads and replay any entries we queued before it ran.
+      w.dataLayer = w.dataLayer || [];
+      // Stub gtag if the init script hasn't replaced it yet. Matches
+      // the shape of the official snippet:
+      //   function gtag(){ dataLayer.push(arguments); }
+      if (typeof w.gtag !== 'function') {
+        w.gtag = function (...args: unknown[]) {
+          (w.dataLayer as unknown[]).push(args);
+        };
+      }
       const ga = toGa4Event(name, props);
-      if (ga) window.gtag('event', ga.event, ga.params);
+      if (ga) w.gtag('event', ga.event, ga.params);
+    } catch {
+      /* silent */
     }
-  } catch {
-    /* silent */
   }
 
   // Sentry breadcrumbs for funnel-critical events (drop-off triage)
