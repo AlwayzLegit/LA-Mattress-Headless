@@ -27,8 +27,58 @@ import { SITE_PHONE_SCHEMA } from '@/lib/site-config';
 type Page = NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
 export type PageLd = { key: string; data: unknown };
 
+export type ShopAggregate = { rating: number; count: number };
+
 // Same canonical host string the inline LD used in page.tsx.
 const SITE = 'https://www.mattressstoreslosangeles.com';
+
+/**
+ * Build the aggregateRating fragment for a LocalBusiness JSON-LD block.
+ *
+ * The reviews are Judge.me's sitewide aggregate — i.e. the brand-chain
+ * total — so we attach the SAME aggregate to every LocalBusiness emit
+ * (homepage, locations index, individual showrooms, neighborhood pages).
+ * This is the same pattern multi-location chains (Starbucks, McDonald's,
+ * etc.) use: each branch participates in the brand-level rating, which
+ * unlocks the "X stars (N reviews)" snippet on local SERP / Maps for
+ * every URL that emits LocalBusiness markup — not just the homepage.
+ *
+ * itemReviewed back-link is required: without it Google reads the
+ * AggregateRating as a self-attached property with ambiguous provenance
+ * (the 2019 review-snippet update demoted self-serving LocalBusiness
+ * ratings). The back-link declares that customer reviews aggregate to
+ * the LocalBusiness entity by its @id.
+ *
+ * Validation mirrors lib/structured-data.ts buildOrganizationLd —
+ * NaN/Infinity rejected (typeof NaN === 'number' would otherwise emit
+ * "ratingValue": "NaN", invalid JSON-LD), count > 0 required, rating
+ * clamped to the 1-5 range we declare via best/worstRating.
+ */
+function aggregateRatingFor(
+  localBusinessId: string,
+  aggregate: ShopAggregate | null | undefined,
+): { aggregateRating: Record<string, unknown> } | Record<string, never> {
+  if (
+    !aggregate ||
+    !Number.isFinite(aggregate.rating) ||
+    !Number.isFinite(aggregate.count) ||
+    aggregate.count <= 0 ||
+    aggregate.rating < 1 ||
+    aggregate.rating > 5
+  ) {
+    return {};
+  }
+  return {
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      itemReviewed: { '@type': 'FurnitureStore', '@id': localBusinessId },
+      ratingValue: aggregate.rating.toFixed(1),
+      reviewCount: aggregate.count,
+      bestRating: '5',
+      worstRating: '1',
+    },
+  };
+}
 
 // Moved here so the page-template dispatch has a single source of
 // truth shared by page.tsx and this builder.
@@ -96,7 +146,7 @@ function genericPageLd(page: Page): PageLd[] {
   return out;
 }
 
-export function getPageJsonLd(page: Page): PageLd[] {
+export function getPageJsonLd(page: Page, aggregate?: ShopAggregate | null): PageLd[] {
   const url = `${SITE}/pages/${page.handle}`;
 
   // 1. Showroom
@@ -123,6 +173,7 @@ export function getPageJsonLd(page: Page): PageLd[] {
         ? { geo: { '@type': 'GeoCoordinates', latitude: showroom.geo.latitude, longitude: showroom.geo.longitude } }
         : {}),
       ...(showroom.gbpUrl ? { sameAs: [showroom.gbpUrl] } : {}),
+      ...aggregateRatingFor(url, aggregate),
       openingHoursSpecification: showroom.hours.map((h) => ({
         '@type': 'OpeningHoursSpecification',
         dayOfWeek:
@@ -209,6 +260,7 @@ export function getPageJsonLd(page: Page): PageLd[] {
         addressCountry: 'US',
       },
       areaServed: { '@type': 'City', name: 'Los Angeles' },
+      ...aggregateRatingFor(url, aggregate),
       department: SHOWROOMS.map((s) => ({
         '@type': 'FurnitureStore',
         name: s.name,
@@ -322,6 +374,7 @@ export function getPageJsonLd(page: Page): PageLd[] {
             }
           : {}),
       },
+      ...aggregateRatingFor(url, aggregate),
       department: nearest.map((s) => ({
         '@type': 'FurnitureStore',
         name: s.name,
