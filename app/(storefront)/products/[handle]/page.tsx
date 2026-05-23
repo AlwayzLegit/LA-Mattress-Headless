@@ -9,6 +9,7 @@ import type { Product, ProductSummary } from '@/lib/shopify';
 import { products as inventoryProducts, findProduct } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { pickPrimaryCollection } from '@/lib/product-jsonld';
 import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
@@ -309,7 +310,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
             <section className="pdp-description">
               <div className="eyebrow">Details</div>
               <h2 className="h2">About this mattress</h2>
-              <div className="rte" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(product.descriptionHtml) }} />
+              <div className="rte" dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(product.descriptionHtml)) }} />
             </section>
           ) : null}
         </div>

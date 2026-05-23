@@ -3,6 +3,7 @@ import { Icon } from './icon';
 import { categoryFaqFor, categoryGuidesFor } from '@/lib/plp-content';
 import { renderFaqAnswer } from '@/lib/faq-render';
 import { resolveRedirectPath, sanitizeShopifyHtml } from '@/lib/sanitize';
+import { autoLinkArticleBody } from '@/lib/article-autolink';
 
 /**
  * Below-the-product-grid content block on every /collections/[handle].
@@ -51,7 +52,7 @@ export function PlpContentBlock({
   // <h1>/<h2> inside become <h3>, sitting one level below the section
   // <h2> that wraps them.
   const longHtml = descriptionHtml
-    ? sanitizeShopifyHtml(descriptionHtml, { demoteHeadings: true })
+    ? autoLinkArticleBody(sanitizeShopifyHtml(descriptionHtml, { demoteHeadings: true }))
     : '';
   return (
     <section className="plp-content" aria-labelledby={`plp-content-h-${handle}`}>

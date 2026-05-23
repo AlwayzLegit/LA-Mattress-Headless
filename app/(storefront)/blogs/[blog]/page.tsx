@@ -106,7 +106,7 @@ export default async function BlogIndexPage(props: Params) {
   };
 
   return (
-    <>
+    <main>
       <section className="lp-hero">
         <div className="container">
           <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
@@ -210,6 +210,6 @@ export default async function BlogIndexPage(props: Params) {
 
       <script id="ld-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogLd) }} />
       <script id="ld-breadcrumb-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-    </>
+    </main>
   );
 }

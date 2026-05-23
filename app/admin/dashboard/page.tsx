@@ -294,6 +294,44 @@ export default async function DashboardPage({
         </div>
       </header>
 
+      {/* QA 2026-05-22: count Shopify-Admin-backed cards whose fetch
+          returned null. When the count crosses the threshold (3+) it's
+          almost always a token / scope incident, not 9 unrelated
+          failures — surface a single actionable banner instead of
+          letting the merchant infer it from 9 "data unavailable"
+          fallbacks scattered across the page. The threshold of 3 is
+          generous on purpose (1-2 nulls can be transient; 3+ is a
+          pattern). */}
+      {(() => {
+        const adminQueries = [
+          orderSummary, catalog, topProducts, seoGaps, blogSeoGaps, lowStock,
+          customerInsights, customerLifetime, orderClassification, repeatBuyerGap,
+          refundHealth,
+        ];
+        const failedCount = adminQueries.filter((q) => q === null).length;
+        if (failedCount < 3) return null;
+        return (
+          <div role="alert" className="dash-incident-banner">
+            <div>
+              <strong>Shopify Admin connection degraded.</strong>
+              {' '}
+              {failedCount} of {adminQueries.length} admin queries returned no data.
+              Most likely a token rotation or scope change.
+            </div>
+            <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
+              Check <code>SHOPIFY_ADMIN_TOKEN</code> in Vercel env vars; confirm
+              <code>read_orders / read_customers / read_products / read_collections / read_inventory</code>
+              {' '}scopes are granted in Shopify Partners → app → API access.
+              {' '}<a
+                href="https://jetnine.sentry.io/issues/?project=la-mattress-headless&query=is%3Aunresolved+admin.ts"
+                target="_blank"
+                rel="noopener noreferrer"
+              >Recent admin errors in Sentry →</a>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Anomaly callouts — only render the strip when something fires.
           Otherwise the dashboard reads "all clear" by absence, which is
           the right default (the section nav becomes the first thing

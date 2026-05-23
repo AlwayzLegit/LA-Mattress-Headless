@@ -54,24 +54,38 @@ export function isSalePage(handle: string): boolean {
 function genericPageLd(page: Page): PageLd[] {
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
   const url = `${SITE}/pages/${page.handle}`;
+  // Schema audit (2026-05): generic CMS pages now link to the sitewide
+  // WebSite + Organization nodes via @id (matches the same pattern used
+  // by collection-jsonld.ts and the showroom sub-paths). WebPage and
+  // BreadcrumbList cross-reference each other via @id so crawlers can
+  // tie them together as one graph instead of orphan nodes.
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    '@id': `${url}#breadcrumb`,
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
       { '@type': 'ListItem', position: 2, name: cleanTitle, item: url },
     ],
   };
+  const description = firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined;
   const webPageLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
+    '@id': `${url}#webpage`,
     name: cleanTitle,
     url,
-    description: firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined,
-    isPartOf: { '@type': 'WebSite', url: SITE },
+    ...(description ? { description } : {}),
     inLanguage: 'en-US',
-    datePublished: page.createdAt || undefined,
-    dateModified: page.updatedAt || undefined,
+    // Cross-link to the BreadcrumbList emitted alongside.
+    breadcrumb: { '@id': `${url}#breadcrumb` },
+    // Sitewide refs by @id — matches collection-jsonld.ts conventions.
+    // The WebSite + Organization nodes are emitted by the storefront
+    // layout (lib/structured-data.ts).
+    isPartOf: { '@type': 'WebSite', '@id': `${SITE}/#website` },
+    publisher: { '@id': `${SITE}/#organization` },
+    ...(page.createdAt ? { datePublished: page.createdAt } : {}),
+    ...(page.updatedAt ? { dateModified: page.updatedAt } : {}),
   };
   const out: PageLd[] = [
     { key: 'ld-page', data: webPageLd },
@@ -236,20 +250,29 @@ export function getPageJsonLd(page: Page): PageLd[] {
         { '@type': 'ListItem', position: 2, name: cleanTitle, item: url },
       ],
     };
+    const description = firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined;
     const webPageLd = {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
+      '@id': `${url}#webpage`,
       name: cleanTitle,
       url,
-      description: firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined,
-      isPartOf: { '@type': 'WebSite', url: SITE },
+      ...(description ? { description } : {}),
       inLanguage: 'en-US',
-      datePublished: page.createdAt || undefined,
-      dateModified: page.updatedAt || undefined,
+      // @id linkage matches the genericPageLd + collection-jsonld
+      // conventions so the sale page joins the same entity graph as
+      // the rest of /pages/*.
+      breadcrumb: { '@id': `${url}#breadcrumb` },
+      isPartOf: { '@type': 'WebSite', '@id': `${SITE}/#website` },
+      publisher: { '@id': `${SITE}/#organization` },
+      ...(page.createdAt ? { datePublished: page.createdAt } : {}),
+      ...(page.updatedAt ? { dateModified: page.updatedAt } : {}),
     };
+    // BreadcrumbList @id added to match the WebPage's breadcrumb ref.
+    const breadcrumbLdWithId = { ...breadcrumbLd, '@id': `${url}#breadcrumb` };
     return [
       { key: 'ld-page', data: webPageLd },
-      { key: 'ld-breadcrumb-page', data: breadcrumbLd },
+      { key: 'ld-breadcrumb-page', data: breadcrumbLdWithId },
     ];
   }
 

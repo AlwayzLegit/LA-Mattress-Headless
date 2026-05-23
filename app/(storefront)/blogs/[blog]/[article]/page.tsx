@@ -11,6 +11,7 @@ import { truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase, ensu
 import { isNoindexArticle } from '@/lib/noindex-articles';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { injectHeadingIds } from '@/lib/article-toc';
+import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
 import { ArticleToc } from './article-toc';
@@ -152,7 +153,9 @@ async function ArticleBody({ blog, article }: { blog: string; article: string })
  */
 function ArticleView({ article }: { article: Article }) {
   const sanitized = sanitizeShopifyHtml(article.contentHtml);
-  const { html: bodyHtml, headings } = injectHeadingIds(sanitized);
+  const withHeadings = injectHeadingIds(sanitized);
+  const bodyHtml = autoLinkArticleBody(withHeadings.html);
+  const { headings } = withHeadings;
   const wordCount = countWordsFromHtml(article.contentHtml);
   const readMinutes = wordCount ? Math.max(1, Math.round(wordCount / 220)) : 0;
   const related = findRelatedArticles(article);
@@ -162,7 +165,7 @@ function ArticleView({ article }: { article: Article }) {
   const updatedLabel = new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
   return (
-    <>
+    <main>
       <section className="gd-head">
         <div className="container">
           <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
@@ -289,7 +292,7 @@ function ArticleView({ article }: { article: Article }) {
         </div>
       </section>
 
-    </>
+    </main>
   );
 }
 

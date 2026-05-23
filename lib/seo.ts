@@ -128,6 +128,13 @@ export function ensureTitleDistinctFromH1(title: string, h1: string): string {
 // Order matters when one entry is a substring of another.
 const SENTENCE_CASE_KEEPERS = [
   'LA', 'CA', 'USA', 'US', 'NYC',
+  // brand names — QA 2026-05-22 caught "Welcome to LA mattress store" on
+  // /pages/about. Cause: "LA" was a keeper but "LA Mattress" / "LA
+  // Mattress Store" were not, so the trailing brand words got
+  // sentence-cased. Order matters — list the more-specific multi-word
+  // form FIRST so the regex matches it before the shorter "LA" rule
+  // would have a chance to grab the standalone token.
+  'LA Mattress Store', 'LA Mattress',
   // multi-word place / brand / street tokens — written in canonical case
   'West LA', 'Hancock Park', 'Koreatown', 'West Hollywood', 'Beverly Hills', 'Studio City',
   'Pico Blvd', 'La Brea Ave', 'Western Ave', 'Ventura Blvd', 'Central Ave', 'Brand Blvd', 'Wilshire',
@@ -135,6 +142,12 @@ const SENTENCE_CASE_KEEPERS = [
   'Spring Air', 'Eastman House', 'Englander', 'Eclipse', 'Southerland', 'Rize Home',
   'Sealy', 'Serta', 'Simmons', 'Beautyrest', 'Sleep Number',
   'Los Angeles', 'Glendale', 'Sawtelle',
+  // Holidays / sale events — Memorial Day H1 was rendering as "Memorial
+  // day mattress sale 2026" because only "Memorial" got capitalized
+  // (as the first letter of the string); "Day" got lowercased. Same
+  // fix pattern as the brand keepers.
+  'Memorial Day', 'Labor Day', 'Presidents Day', 'Independence Day',
+  'Black Friday', 'Cyber Monday', 'New Year', "New Year's",
 ];
 
 /**
