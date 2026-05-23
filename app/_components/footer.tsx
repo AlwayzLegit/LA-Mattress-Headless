@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { SITE_PHONE_DISPLAY, SITE_EMAIL } from '@/lib/site-config';
+import { SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_EMAIL, SOCIAL_PROFILES } from '@/lib/site-config';
 import { NewsletterForm } from './newsletter-form';
 
 type Col = { title: string; links: { label: string; href: string }[] };
@@ -32,7 +32,7 @@ const COLS: Col[] = [
   { title: 'Stores', links: [
     { label: 'Koreatown',     href: '/pages/koreatown-best-mattress-store' },
     { label: 'West LA',       href: '/pages/best-mattress-store-west-la' },
-    { label: 'Hancock Park',  href: '/pages/best-mattress-store-la-brea' },
+    { label: 'La Brea',       href: '/pages/best-mattress-store-la-brea' },
     { label: 'Studio City',   href: '/pages/mattress-store-studio-city' },
     { label: 'Glendale',      href: '/pages/mattress-store-in-glendale' },
     { label: 'Find a store',  href: '/pages/mattress-store-locations' },
@@ -101,8 +101,44 @@ export function Footer() {
           />
           <div className="footer-sig-tagline">
             <div className="footer-sig-tag-line">Family-owned in Los Angeles since 2012</div>
-            <div className="footer-sig-tag-line muted">5 showrooms · {SITE_PHONE_DISPLAY} · {SITE_EMAIL}</div>
+            <div className="footer-sig-tag-line muted">
+              5 showrooms · <a href={`tel:${SITE_PHONE_TEL}`} className="footer-sig-link">{SITE_PHONE_DISPLAY}</a> · <a href={`mailto:${SITE_EMAIL}`} className="footer-sig-link">{SITE_EMAIL}</a>
+            </div>
           </div>
+          {SOCIAL_PROFILES.length > 0 ? (
+            // Inline SVGs (not Icon component) so social glyphs stay
+            // self-contained to the footer — they're the only place
+            // these icons appear, and adding them to Icon would mean
+            // updating its discriminated-union type for one consumer.
+            // rel="me noopener" advertises ownership to crawlers (some
+            // engines use rel=me as an Organization sameAs signal) and
+            // blocks tabnabbing on the external anchor.
+            <ul className="footer-social" aria-label="Follow LA Mattress on social media">
+              {SOCIAL_PROFILES.map((url) => {
+                const label = /facebook\.com/.test(url) ? 'Facebook'
+                  : /instagram\.com/.test(url) ? 'Instagram'
+                  : /yelp\.com/.test(url) ? 'Yelp'
+                  : /youtube\.com/.test(url) ? 'YouTube'
+                  : /tiktok\.com/.test(url) ? 'TikTok'
+                  : 'Social profile';
+                return (
+                  <li key={url}>
+                    <a href={url} rel="me noopener" target="_blank" aria-label={`LA Mattress on ${label}`}>
+                      {label === 'Facebook' ? (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.2 22v-8H6v-4h3.2V7.5C9.2 4.6 11 3 13.6 3c1.3 0 2.4.1 2.7.1v3.2h-1.8c-1.4 0-1.7.7-1.7 1.7V10h3.4l-.4 4h-3v8H9.2z"/></svg>
+                      ) : label === 'Instagram' ? (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                      ) : label === 'Yelp' ? (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 2c.6 0 1 .4 1 1l-.5 7.3c0 .9-1.1 1.3-1.7.6L9.2 6.4c-.5-.6-.2-1.4.5-1.6L13.7 2c.1 0 .2 0 .3 0zm6.5 6.7c.2.5-.1 1.1-.7 1.3L15.6 12c-.8.2-1.5-.6-1.1-1.4l2.3-4.4c.3-.6 1-.7 1.5-.4l1.7 1.5c.2.2.4.4.5.7v.7zm-.5 7c.5.3.5 1 .1 1.4l-1.5 1.7c-.4.5-1.1.5-1.5 0L14 14.5c-.5-.6 0-1.5.8-1.5l4.6.1c.2 0 .3 0 .4.1l.2.5zm-8 6.3c-.4.1-.9-.1-1-.5L9.3 17c-.3-.7.3-1.4 1-1.3l4.9.8c.6.1.9.7.6 1.2L13.4 21.5c-.2.3-.5.5-.9.5h-.5zM6 9c.2-.6.9-.9 1.5-.6l4.1 2.2c.7.4.6 1.5-.2 1.7L6.3 13.6c-.6.2-1.3-.2-1.3-.9V9.6c0-.2 0-.4.1-.6l.9-.0z"/></svg>
+                      ) : (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
+                      )}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null}
         </div>
       </div>
       <div className="container footer-bottom">
