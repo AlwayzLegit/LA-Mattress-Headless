@@ -101,7 +101,17 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     description,
     alternates: { canonical: url },
     openGraph: {
-      type: 'website',
+      // The Open Graph spec (https://ogp.me/#types) supports `product`
+      // as a top-level type, and FB / LinkedIn render product unfurls
+      // (price + brand + availability fields) when og:type=product.
+      // Next.js's Metadata API has a narrow discriminated union for
+      // openGraph.type that ships only the website / article / book /
+      // profile / music.* / video.* values — `product` is missing from
+      // their TS types but works fine at runtime because Next.js
+      // stringifies the value into the emitted <meta> tag without
+      // re-validating. Cast through `as never` to bypass the type
+      // check without disabling it project-wide. QA 2026-05-23 P2-3.
+      type: 'product' as never,
       url,
       title,
       description,
