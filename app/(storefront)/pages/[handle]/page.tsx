@@ -11,6 +11,7 @@ import { SHOWROOMS, findShowroom, formatPhone, type Showroom } from '@/lib/showr
 import { findNeighborhood, getNearestShowrooms, type Neighborhood } from '@/lib/neighborhoods';
 import { truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase, ensureTitleDistinctFromH1 } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { isSalePage } from '@/lib/page-jsonld';
 import { isCodedPage, codedPageMeta, CODED_PAGE_HANDLES } from '@/lib/coded-pages';
@@ -268,7 +269,7 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
             the tiered editorial guide as supporting depth below. */}
         {page.handle === 'mattress-brands' ? <BrandDirectory /> : null}
         {page.body ? (
-          <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
+          <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(page.body)) }} />
         ) : (
           // Fallback for pages that exist + are published but have no
           // body content yet. Reuses the 404 page's category-tile +
@@ -694,7 +695,7 @@ function SalePage({
           page body renders here. */}
       {page.body ? (
         <article className="container sale-page-body">
-          <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }} />
+          <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(page.body)) }} />
         </article>
       ) : null}
 
@@ -785,7 +786,7 @@ function NeighborhoodPage({
           <div
             className="rte cms-body"
             style={{ marginTop: 'var(--s-5)' }}
-            dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(page.body) }}
+            dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(page.body)) }}
           />
         ) : (
           <div className="rte cms-body" style={{ marginTop: 'var(--s-5)' }}>
