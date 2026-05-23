@@ -19,7 +19,19 @@ import { ArticleToc } from './article-toc';
 
 type Params = { params: Promise<{ blog: string; article: string }> };
 
-export const revalidate = 600;
+// 24h ISR window. Articles change rarely after publish (typo fixes,
+// occasional copy edits). Sentry data showed p75 TTFB at 5.25s with
+// the previous 10-min window — most requests were hitting on-demand
+// regeneration instead of static-cache. Bumping to 86400s lets the
+// CDN serve the prerendered HTML for a full day before triggering
+// a background revalidation, which moves p75 TTFB toward static-cache
+// numbers (<300ms). Trade-off: merchant edits are visible up to 24h
+// later — no Shopify webhook exists for `articles/update`, so this
+// is the only invalidation lever for article body changes. If real-
+// time freshness matters, set up a Shopify Flow that POSTs to
+// /api/revalidate with `topic=articles/update` (the route handler
+// already maps that topic to `article:<blog>/<handle>` tag bust).
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);

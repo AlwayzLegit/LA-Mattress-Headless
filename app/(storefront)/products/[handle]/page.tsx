@@ -27,7 +27,16 @@ import { ProductSkeleton } from './skeleton';
 
 type Params = { params: Promise<{ handle: string }> };
 
-export const revalidate = 600;
+// 24h ISR window — relies on the products/* Shopify webhooks
+// (configured in Admin → Notifications) to invalidate the
+// `product:<handle>` cache tag immediately when a product is
+// updated, so real-time freshness on edits is preserved. The long
+// expiry just controls the natural-decay safety net for the rare
+// case the webhook misses a payload. Previous 10-min window meant
+// every PDP regenerated every 10 minutes regardless of edit
+// activity; with hundreds of PDPs and active traffic this kept
+// the lambda warm but also paid the SSR cost constantly.
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
