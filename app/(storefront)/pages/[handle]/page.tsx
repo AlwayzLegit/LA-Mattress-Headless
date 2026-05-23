@@ -43,7 +43,15 @@ const EMPTY_FALLBACK_CATEGORIES: { label: string; href: string; sub: string }[] 
 
 type Params = { params: Promise<{ handle: string }> };
 
-export const revalidate = 600;
+// 6h ISR window for CMS pages (locations, showrooms, financing,
+// returns, FAQ, sale pages). Pages change less often than 10min
+// but more often than blog articles — showroom hours, sale-page
+// promos, FAQ updates. No `pages/update` webhook exists in
+// Shopify's Admin UI (REST-only or via Shopify Flow), so the
+// revalidate window is the only natural invalidation lever for
+// page-body edits. 6h is a defensible balance between freshness
+// and TTFB.
+export const revalidate = 21600;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
