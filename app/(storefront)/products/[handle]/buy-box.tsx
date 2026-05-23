@@ -273,18 +273,37 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
             ? formatMoney(matchingVariant.price)
             : formatMoney(priceRange.minVariantPrice)
         }
+        // Sticky CTA mirrors the inline ATC's STATE (not its action).
+        // QA 2026-05-23 P1-2: visitors land on the PDP with a default
+        // variant already selected — inline reads "Add to cart · $5,399"
+        // while the sticky used to read "Choose options" whenever
+        // hasChoices was true, regardless of whether the selection was
+        // already complete. That mismatch confused users about whether
+        // they'd selected anything.
+        //
+        // New priority: if we have a purchasable matching variant the
+        // sticky says "Add to cart" (matches inline). Only fall back to
+        // "Choose options" when the visitor has actively cleared the
+        // selection so no variant matches — the genuine incomplete state.
         ctaLabel={
           pending
             ? 'Adding…'
-            : hasChoices
-              ? 'Choose options'
-              : matchingVariant?.availableForSale
-                ? 'Add'
-                : 'Out of stock'
+            : matchingVariant?.availableForSale
+              ? 'Add to cart'
+              : matchingVariant
+                ? 'Out of stock'
+                : 'Choose options'
         }
         disabled={!canBuy}
         onAdd={() => matchingVariant && addLine(matchingVariant.id, 1)}
-        onCtaClick={hasChoices ? () => setSheetOpen(true) : undefined}
+        // Open the variant sheet only when the selection is genuinely
+        // incomplete (no matching variant). For the common
+        // default-auto-selected case, the sticky button adds directly
+        // to cart — same behaviour the inline ATC has, no surprise
+        // intermediate sheet. Visitors who want to change variant scroll
+        // up to the inline picker (matches Amazon / Wayfair / Etsy
+        // mobile conventions).
+        onCtaClick={!matchingVariant ? () => setSheetOpen(true) : undefined}
       />
 
       {hasChoices ? (
