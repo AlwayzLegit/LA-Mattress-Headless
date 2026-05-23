@@ -28,8 +28,13 @@ export const dynamic = 'force-dynamic';
 // blog + redirects pull doesn't time out under serial pagination.
 export const maxDuration = 300;
 
-const STORE = process.env.SHOPIFY_STORE_DOMAIN;
-const TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
+const STORE = process.env.SHOPIFY_STORE_DOMAIN
+  ?? process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
+  ?? process.env.SHOPIFY_DOMAIN
+  ?? process.env.SHOPIFY_STORE;
+const TOKEN = process.env.SHOPIFY_ADMIN_TOKEN
+  ?? process.env.SHOPIFY_ADMIN_ACCESS_TOKEN
+  ?? process.env.SHOPIFY_ACCESS_TOKEN;
 const VERSION = '2024-10';
 const SECRET = 'inv-pull-2026-05-23';
 
@@ -188,7 +193,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
   if (!STORE || !TOKEN) {
-    return NextResponse.json({ error: 'missing env: SHOPIFY_STORE_DOMAIN / SHOPIFY_ADMIN_TOKEN' }, { status: 500 });
+    // Report exactly which env var names exist so we can identify the
+    // actual var names the merchant has set in Vercel.
+    const shopifyKeysSet = Object.keys(process.env).filter((k) => /SHOPIFY/i.test(k));
+    return NextResponse.json({
+      error: 'missing env: SHOPIFY_STORE_DOMAIN / SHOPIFY_ADMIN_TOKEN',
+      shopifyKeysSet,
+      storeResolved: STORE ?? null,
+      tokenResolved: TOKEN ? `${TOKEN.slice(0, 6)}…(${TOKEN.length}c)` : null,
+    }, { status: 500 });
   }
   const t0 = Date.now();
   try {
