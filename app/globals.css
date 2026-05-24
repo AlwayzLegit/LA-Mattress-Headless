@@ -1612,17 +1612,39 @@ summary:focus-visible,
 /* ───── Brand strip ───── */
 .brand-strip-section { padding: var(--s-7) 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .brand-strip-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.brand-strip { display: grid; grid-template-columns: repeat(9, 1fr); gap: 12px; align-items: center; }
+/* `minmax(0, 1fr)` instead of `1fr` so cells can shrink below their
+   content size. Critical for FeaturedGuides which shares this class
+   but has multi-word labels ("BEST MATTRESS IN LOS ANGELES") that
+   exceed the cell width — plain `1fr` lets the cell grow to fit the
+   nowrap content, pushing the grid past viewport width and causing
+   page-level horizontal scroll on mobile (QA 2026-05-23). */
+.brand-strip { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 12px; align-items: center; }
 .brand-tile {
   display: flex; align-items: center; justify-content: center;
-  height: 52px;
+  /* `min-height` instead of fixed `height` so the tile grows
+     vertically when a long label wraps to 2 lines; fixed height
+     would clip the wrapped second line. */
+  min-height: 52px;
+  padding: 8px 12px;
+  text-align: center;
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: var(--r-2);
   transition: border-color var(--d-fast), color var(--d-fast);
   color: var(--text-3);
 }
 .brand-tile:hover { border-color: var(--text); color: var(--text); }
-.brand-wordmark { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.brand-wordmark {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  /* `white-space: nowrap` removed — was forcing 27-char guide labels
+     onto one line, which overflowed the grid cell and caused page-
+     level horizontal scroll on mobile. BrandStrip's wordmarks
+     (TEMPUR-PEDIC, STEARNS & FOSTER, etc.) are short enough to stay
+     on one line at every breakpoint, so removing nowrap is safe
+     there too. */
+  line-height: 1.3;
+  overflow-wrap: break-word;
+}
 /* Brands directory grid injected into the CMS /pages/mattress-brands
    page — design-system card grid mirroring .gd-card; logo area falls
    back to a wordmark. */
@@ -1854,7 +1876,7 @@ summary:focus-visible,
   .topbar-marquee span:nth-child(n+5) { display: none; }
   .faq-inner { grid-template-columns: 1fr; gap: 32px; }
   .faq-head { position: static; }
-  .brand-strip { grid-template-columns: repeat(3, 1fr); }
+  .brand-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 768px) {
   :root {
@@ -1904,7 +1926,7 @@ summary:focus-visible,
   .footer-sig-inner { gap: 20px; }
   .footer-sig-logo { height: 56px; }
   .footer-sig-tagline { border-left: 0; padding-left: 0; }
-  .brand-strip { grid-template-columns: repeat(2, 1fr); }
+  .brand-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer-form { flex-direction: column; }
   .footer-form .btn { width: 100%; }
   .showroom-card { flex: 0 0 78vw; }
