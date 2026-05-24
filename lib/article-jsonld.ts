@@ -11,7 +11,13 @@
  * than sharing a util — the page keeps its own copy for read-time.
  */
 import type { getArticleByHandle } from '@/lib/shopify';
-import { displayAuthorName, isEditorialAuthor } from '@/lib/article-author';
+// Relative import (not the @/lib alias) so the lib-article-jsonld
+// SSR test can load this module via `await import('../../lib/...')`.
+// Raw `node --test` doesn't resolve TypeScript path aliases; only
+// Next.js does. The `@/lib/shopify` line above is `import type` so
+// it's erased at runtime and bypasses the issue. The runtime author
+// helper has to use a relative path.
+import { displayAuthorName, isEditorialAuthor } from './article-author.ts';
 
 type Article = NonNullable<Awaited<ReturnType<typeof getArticleByHandle>>>;
 export type ArticleLd = { key: string; data: unknown };
