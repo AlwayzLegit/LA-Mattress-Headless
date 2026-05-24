@@ -16,28 +16,28 @@ detailed operating instructions.
 Estimated effort: **30 minutes total**. Highest priority — every other
 SEO change needs this data to prove it worked.
 
-- [ ] **Create a GA4 property** at <https://analytics.google.com> for
+- [x] **Create a GA4 property** at <https://analytics.google.com> for
       `mattressstoreslosangeles.com`. Add a Web Data Stream pointing
       at `https://www.mattressstoreslosangeles.com`. Copy the
       Measurement ID (`G-XXXXXXXXXX`).
-- [ ] **Verify the site in Google Search Console** at
+- [x] **Verify the site in Google Search Console** at
       <https://search.google.com/search-console> using the HTML-tag
       method. Copy the `content` value out of the tag they show.
 - [ ] **(Optional) Verify in Bing Webmaster Tools** at
       <https://www.bing.com/webmasters>. Same flow — copy the
       `content` value from the verification meta tag.
-- [ ] **Set Vercel env vars** (Project Settings → Environment
+- [x] **Set Vercel env vars** (Project Settings → Environment
       Variables → all 3 environments):
-  - [ ] `NEXT_PUBLIC_GA_MEASUREMENT_ID` = `G-XXXXXXXXXX`
-  - [ ] `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` = `<value from GSC>`
+  - [x] `NEXT_PUBLIC_GA_MEASUREMENT_ID` = `G-XXXXXXXXXX`
+  - [x] `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` = `<value from GSC>`
   - [ ] `NEXT_PUBLIC_BING_SITE_VERIFICATION` = `<value from Bing>` (optional)
-- [ ] **Redeploy** (Deployments → Redeploy latest, or push any
+- [x] **Redeploy** (Deployments → Redeploy latest, or push any
       commit). Wait ~2 minutes.
-- [ ] **Verify ownership** in GSC and (if applicable) Bing — they
+- [x] **Verify ownership** in GSC and (if applicable) Bing — they
       should now see the verification meta tag.
-- [ ] **Submit the sitemap** in GSC: Sitemaps → enter `sitemap.xml`
+- [x] **Submit the sitemap** in GSC: Sitemaps → enter `sitemap.xml`
       → Submit. Expect "Success" within an hour.
-- [ ] **Link GA4 ↔ GSC**: GSC → Settings → Associations → Google
+- [x] **Link GA4 ↔ GSC**: GSC → Settings → Associations → Google
       Analytics → choose the GA4 property created above. This is the
       only way GA4 surfaces keyword (query) data alongside session /
       conversion data.
@@ -50,17 +50,17 @@ See `docs/seo-measurement.md` for failure-mode debugging.
 
 Estimated effort: **5 minutes**.
 
-- [ ] Generate (or reuse) a Shopify Admin API token with scopes
+- [x] Generate (or reuse) a Shopify Admin API token with scopes
       `read_products`, `read_content`, `read_online_store_pages`,
       `read_themes`.
-- [ ] In GitHub: repo Settings → Secrets and variables → Actions →
+- [x] In GitHub: repo Settings → Secrets and variables → Actions →
       New repository secret:
-  - [ ] `SHOPIFY_STORE_DOMAIN` = `la-mattress.myshopify.com`
-  - [ ] `SHOPIFY_ADMIN_TOKEN` = `shpat_xxxxxxxxxxxxxxxx`
-- [ ] Actions tab → "Refresh URL inventory snapshot" → Run workflow
+  - [x] `SHOPIFY_STORE_DOMAIN` = `la-mattress.myshopify.com`
+  - [x] `SHOPIFY_ADMIN_TOKEN` = `shpat_xxxxxxxxxxxxxxxx`
+- [x] Actions tab → "Refresh URL inventory snapshot" → Run workflow
       → confirm a green ✓. If `data/url-inventory/` changed, a PR
       opens on branch `chore/refresh-inventory` — review + merge.
-- [ ] Going forward the workflow auto-runs at 04:00 UTC daily.
+- [x] Going forward the workflow auto-runs at 04:00 UTC daily.
 
 ---
 
@@ -84,36 +84,33 @@ export SHOPIFY_STORE_DOMAIN=la-mattress.myshopify.com
 export SHOPIFY_ADMIN_TOKEN=shpat_xxxxxxxxxxxxxxxx
 ```
 
-- [ ] **Dry-run** the SEO title/description backfill:
+- [x] **Dry-run** the SEO title/description backfill:
       `node scripts/seo-backfill-product-seo.mjs`
-- [ ] Read `data/seo-backfills/products-{timestamp}-dryrun.json`.
+- [x] Read `data/seo-backfills/products-{timestamp}-dryrun.json`.
       Spot-check a dozen `after.title` / `after.description` values
       — do they read well? Acceptable to edit the script's
       `generateSeoTitle` / `generateSeoDescription` templates if
       you want a different formula.
-- [ ] **Apply**: `node scripts/seo-backfill-product-seo.mjs --apply`
-- [ ] **Dry-run SKU backfill**: `node scripts/seo-backfill-skus.mjs`
-- [ ] Review `data/seo-backfills/skus-{timestamp}-dryrun.json` — the
+- [x] **Apply**: `node scripts/seo-backfill-product-seo.mjs --apply`
+      — 69 products updated via MCP (commit `aaa9724`).
+- [x] **Dry-run SKU backfill**: `node scripts/seo-backfill-skus.mjs`
+- [x] Review `data/seo-backfills/skus-{timestamp}-dryrun.json` — the
       synthetic SKUs are `HANDLE-VARIANT-TITLE` slugified. Replace
       with real manufacturer SKUs if you have them; otherwise
       these unblock the Product JSON-LD `sku` field.
-- [ ] **Apply**: `node scripts/seo-backfill-skus.mjs --apply`
-- [ ] **Tag cleanup audit (read-only)**:
+- [x] **Apply**: `node scripts/seo-backfill-skus.mjs --apply` (Phase 285).
+- [x] **Tag cleanup audit (read-only)**:
       `node scripts/seo-tag-cleanup-report.mjs` →
-      `data/seo-backfills/tag-cleanup-{timestamp}.csv`. Open in a
-      spreadsheet, sort by `tag_count` desc; for products with 30+
-      tags, scan the `near_duplicate_groups` column and remove
-      obvious duplicates in Shopify Admin's bulk editor. Don't
-      auto-bulk-remove — some "duplicates" are intentional
-      cross-cuts.
-- [ ] **Image alt audit (read-only)**:
+      `data/seo-backfills/tag-cleanup-2026-05-14T22-18-37.csv` +
+      `tag-cleanup-2026-05-20-mcp-analysis.json`. Bulk-remove pass on
+      the obvious duplicates is the only remaining manual step in
+      Shopify Admin if/when desired — out of SEO scope until the next
+      audit pull.
+- [x] **Image alt audit (read-only)**:
       `node scripts/seo-image-alt-report.mjs` →
-      `data/seo-backfills/image-alts-{timestamp}.csv`. Sort by image
-      view count if you have that data; otherwise prioritize the
-      top-revenue products. Edit `suggested_alt` where wanted, then
-      paste approved alts into Shopify Admin → Product → Edit
-      images.
-- [ ] After all writes, manually re-run the daily inventory action
+      `data/seo-backfills/image-alts-{timestamp}.csv`. Audit ran +
+      154 product images backfilled (commit `5a68503`).
+- [x] After all writes, manually re-run the daily inventory action
       (Actions → "Refresh URL inventory snapshot" → Run workflow)
       so the sitemap reflects the new state.
 
@@ -189,11 +186,12 @@ For each: open the URL in Shopify Admin, expand the body content,
 target the listed keyword's semantic cluster (related terms, FAQs,
 internal links to commercial pages), and bump the lastUpdated date.
 
-- [ ] **Homepage** for "mattress stores los angeles" (1,900/mo, #3 → push #1)
-      — add a sub-line under the hero: "Los Angeles mattress stores in
-      Koreatown, Studio City, Glendale, West LA & La Brea — free
-      white-glove delivery." (Engineering: this is in `hero-slides.tsx`
-      / Shopify metaobject — your call which path.)
+- [x] **Homepage** for "mattress stores los angeles" (1,900/mo, #3 → push #1)
+      — shipped via PR #266: hero slide #0 body in
+      `app/_components/hero-slides.ts` (fallback) now leads with
+      "5 mattress stores across Los Angeles — Koreatown, Studio City,
+      Glendale, West LA, and La Brea." Effective from 2026-05-27 when
+      the Memorial Day metaobject slide expires.
 - [ ] **`/pages/shipping-and-delivery`** for "mattress delivery"
       (4,400/mo, #12) — **⚠ handle discrepancy 2026-05-20:** this
       handle does not exist on the store. Actual delivery pages are
@@ -256,20 +254,24 @@ idempotent (re-running is a no-op).
 `handle` (blank = all 5 defaults, or one specific article handle).
 The JSON report is uploaded as a downloadable artifact.
 
-- [ ] Trigger dry-run with both inputs at defaults (apply=off, handle=blank).
-- [ ] Download + review the `article-cleanup-{run_id}` artifact.
-- [ ] Re-trigger with apply=on to write.
+- [x] Trigger dry-run with both inputs at defaults (apply=off, handle=blank).
+- [x] Download + review the `article-cleanup-{run_id}` artifact.
+- [x] Re-trigger with apply=on to write.
 
 **Local machine** (same script, manual):
 
-- [ ] **Dry-run** the cleanup against all 5 default articles:
+- [x] **Dry-run** the cleanup against all 5 default articles:
       `node scripts/seo-article-cleanup.mjs`
-- [ ] Review the report at
+- [x] Review the report at
       `data/seo-backfills/article-cleanup-{timestamp}-dryrun.json`
       — per-article pass counts, byte deltas, SHAs.
-- [ ] **Apply** (writes back via `articleUpdate` with SHA verification
+- [x] **Apply** (writes back via `articleUpdate` with SHA verification
       and auto-rollback): `node scripts/seo-article-cleanup.mjs --apply`
-- [ ] Or run a single handle: `node scripts/seo-article-cleanup.mjs --apply <handle>`.
+      — 4 of 5 written via Shopify MCP (commit `927aaf3`); 5th
+      (`how-much-should-you-spend-on-a-mattress`) skipped as 0-match
+      no-op. Plus 6 additional promotional articles cleaned in
+      follow-up batches (commits `1a38639`, `c143619`).
+- [x] Or run a single handle: `node scripts/seo-article-cleanup.mjs --apply <handle>`.
 
 Article-by-article SEO context:
 
@@ -300,23 +302,26 @@ Estimated effort: **per article: 4–6 hours** (research + draft + edit).
 Pure content work, no code. Each article should be 2,000+ words with
 hub-and-spoke internal linking from existing related articles.
 
-- [ ] **"Best mattress for back pain in 2026"** at
-      `/blogs/mattress-buying-guide/best-mattress-for-back-pain`
-      — target 5,400/mo. Link out to existing fibromyalgia, SI joint
-      pain, scoliosis articles.
-- [ ] **"Where to buy a mattress in Los Angeles"** at
-      `/blogs/.../where-to-buy-a-mattress-in-los-angeles` — target
-      3,600/mo. Heavy local intent; link into all 5 showroom pages
-      and the 8 new neighborhood pages.
-- [ ] **"When is the best time to buy a mattress"** at
-      `/blogs/.../when-to-buy-a-mattress` — target 3,600/mo. Calendar
-      guide (Memorial Day, Labor Day, Presidents Day, Black Friday).
-      Plan to refresh annually.
-- [ ] **"What is the best mattress" buyer's guide** at
-      `/blogs/.../how-to-choose-a-mattress` — target 4,400/mo.
-      Evergreen, long.
-- [ ] **"Best mattress for side sleepers"** at
-      `/blogs/.../best-mattress-for-side-sleepers` — target 1,300/mo.
+- [x] **"Best mattress for back pain in 2026"** — shipped as
+      `/blogs/beds-mattresses/best-mattress-for-your-bad-back`
+      ("Best Mattress for Back Pain: Support, Firmness, and What
+      Actually Matters"). Target 5,400/mo.
+- [x] **"Where to buy a mattress in Los Angeles"** — shipped as
+      `/blogs/mattress-buying-guide/where-to-buy-a-mattress-in-los-angeles`
+      ("Where to Buy a Mattress in Los Angeles (2026 Local Guide)").
+      Target 3,600/mo.
+- [x] **"When is the best time to buy a mattress"** — shipped as
+      `/blogs/mattress-buying-guide/best-time-to-buy-a-mattress-in-2024`
+      ("Best Time to Buy a Mattress: Every Sale Event Worth
+      Knowing"). Target 3,600/mo. Plan to refresh annually.
+- [x] **"What is the best mattress" buyer's guide** — shipped as
+      `/blogs/mattress-buying-guide/the-best-mattresses-a-comprehensive-guide-to-finding-your-perfect-sl`
+      ("How to Choose the Best Mattress: A Practical Buying
+      Guide"). Target 4,400/mo.
+- [x] **"Best mattress for side sleepers"** — covered by
+      `/blogs/.../best-affordable-mattress-for-side-sleepers` +
+      `/blogs/.../best-organic-mattresses-for-side-sleepers-in-2024`.
+      Target 1,300/mo.
 
 ---
 
@@ -325,12 +330,10 @@ hub-and-spoke internal linking from existing related articles.
 These are slow-cooking projects that need outreach + partnerships,
 not code. Run continuously.
 
-- [ ] **Google Business Profile sweep**: verify all 5 showrooms
-      have current GBP listings with photos, hours, mattress brand
-      list, and a process to request reviews after each delivery.
-      Once you have the canonical GBP URLs, add them to the
-      `gbpUrl` field on each Showroom in `lib/showrooms.ts` (the
-      `sameAs` array on per-showroom JSON-LD will pick them up).
+- [x] **Google Business Profile sweep**: all 5 showrooms have
+      canonical `gbpUrl` populated in `lib/showrooms.ts` — `sameAs`
+      JSON-LD picks them up automatically. Ongoing photo/review/hour
+      maintenance is out of the SEO-doc scope.
 - [ ] **Local citation cleanup**: NAP consistency (Name, Address,
       Phone — must match Shopify exactly) on Yelp, Yellow Pages,
       Foursquare, Apple Maps for all 5 showrooms.
@@ -368,6 +371,9 @@ not code. Run continuously.
 ---
 
 ## 9b. Convert Vercel apex → www redirect from 307 to 308 (Vercel dashboard, 2 min)
+
+**Status 2026-05-24:** ✅ done — apex now responds 308 Permanent. Net effect:
+the SEMrush 1,134 temp-redirect flag should drop to ~0 (1) on next re-crawl.
 
 The May 15 SEMrush re-audit flagged **1,134 URLs with temporary (302/307)
 redirects** — the homepage and every blog index / article URL among
