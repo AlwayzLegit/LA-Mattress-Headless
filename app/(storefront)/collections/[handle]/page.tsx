@@ -64,21 +64,17 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     ),
   );
   const url = `/collections/${collection.handle}`;
-  // SEMrush 20260521_1 follow-up — paginated cursor URLs (`?after=...`)
-  // and applied filters (`filter.v.option.size=Queen`, etc.) duplicate
-  // the bare PLP with a different slice. The canonical link already
-  // points back to the bare URL, but flagged URLs still showed up
-  // (low word count / thin variants). robots: noindex (follow) blocks
-  // indexing of cursor + filtered URLs while letting Googlebot follow
-  // links to products — standard PLP pagination/faceted-nav SEO.
-  const hasCursor = Boolean(searchParams?.after);
-  const hasFilters = Object.keys(searchParams ?? {}).some((k) => k.startsWith('filter.'));
-  const isPaginatedOrFiltered = hasCursor || hasFilters;
+  // Canonical is always the bare PLP URL. Any query-string variant
+  // (`?after=`, `?filter.*`, `?sort_by=`, `?variant=`, etc.) renders a
+  // different slice of the same set and was flagged by SEMrush as thin /
+  // near-duplicate. noindex (follow) blocks indexing while still letting
+  // Googlebot crawl through to products — standard PLP / faceted-nav SEO.
+  const hasAnyParams = Object.values(searchParams ?? {}).some((v) => v != null && v !== '');
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    ...(isPaginatedOrFiltered ? { robots: { index: false, follow: true } } : {}),
+    ...(hasAnyParams ? { robots: { index: false, follow: true } } : {}),
     // Per Next.js metadata rules: a route declaring its own `openGraph`
     // object replaces the parent layout's wholesale, and the file-system
     // OG image convention (`app/opengraph-image.tsx`) is NOT auto-merged
