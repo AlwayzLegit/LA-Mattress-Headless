@@ -318,25 +318,38 @@ export function getProductJsonLd(product: Product): ProductLd[] {
     ...(product.productType ? { category: product.productType } : {}),
     ...(product.specs.materialType ? { material: product.specs.materialType } : {}),
     ...(imageUrls.length > 0 ? { image: imageUrls } : {}),
-    // dateModified signals content freshness to Google. Shopify's
-    // Storefront API exposes updatedAt on every Product (it bumps on
-    // any merchant edit — price, copy, image, variant change). Helps
-    // Rich Results show "Updated 2 days ago" on competitive queries.
-    ...(product.updatedAt ? { dateModified: product.updatedAt } : {}),
+    // `dateModified` removed: Product is NOT in CreativeWork's lineage
+    // (Product → Thing, CreativeWork → Thing — sibling branches), so
+    // `dateModified` is not a valid Product property per schema.org.
+    // Strict validators (incl. SEMrush, which flagged this on every
+    // PDP in the 2026-05-24 sitewide audit) report it as
+    // "non-existent property". Removed entirely; Google's freshness
+    // signals come from the Last-Modified HTTP header + sitemap
+    // lastmod + the page's BlogPosting if any, not from this field.
     ...(additionalProperty.length > 0 ? { additionalProperty } : {}),
-    offers: {
-      '@type': 'AggregateOffer',
-      priceCurrency: min.currencyCode,
-      lowPrice: min.amount,
-      highPrice: max.amount,
-      offerCount: product.variants.length,
-      availability: product.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-      // Individual per-variant Offers — Google reads these for variant-
-      // level pricing in Shopping rich results. Each carries its own
-      // SKU/MPN, size label, return policy, and shipping details.
-      offers: variantOffers,
-    },
+    // `Product.offers` accepts Offer, AggregateOffer, or an array of
+    // either. Schema.org `AggregateOffer` does NOT have an `offers`
+    // property — nesting per-variant `Offer[]` inside it (the old
+    // shape) was non-standard and SEMrush flagged it as "unknown
+    // property" on every PDP. Flat array of AggregateOffer +
+    // per-variant Offers at the same level is the spec-correct
+    // pattern: AggregateOffer carries the price range for the
+    // top-level Shopping rich result; the per-variant Offers carry
+    // SKU / GTIN / per-variant pricing for variant-level rich
+    // results. Google explicitly supports this mixed-array shape
+    // (https://developers.google.com/search/docs/appearance/structured-data/product).
+    offers: [
+      {
+        '@type': 'AggregateOffer',
+        priceCurrency: min.currencyCode,
+        lowPrice: min.amount,
+        highPrice: max.amount,
+        offerCount: product.variants.length,
+        availability: product.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        itemCondition: 'https://schema.org/NewCondition',
+      },
+      ...variantOffers,
+    ],
     ...(product.reviews &&
     Number.isFinite(product.reviews.rating) &&
     Number.isFinite(product.reviews.count) &&

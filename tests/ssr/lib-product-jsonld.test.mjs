@@ -76,6 +76,24 @@ function getBreadcrumb(lds) {
   return found ? found.data : null;
 }
 
+// 2026-05-24 schema fix: `Product.offers` is now a flat array of
+// [AggregateOffer, ...variant Offers]. Used to be `AggregateOffer
+// { offers: [variants] }` which violated the schema.org spec
+// (AggregateOffer has no `offers` property — SEMrush flagged it on
+// every PDP). These helpers abstract the access pattern so the
+// individual test cases don't have to re-encode "skip index 0" or
+// "find by @type" everywhere.
+function getAggregateOffer(lds) {
+  const offers = getProduct(lds)?.offers;
+  if (!Array.isArray(offers)) return null;
+  return offers.find((o) => o['@type'] === 'AggregateOffer') ?? null;
+}
+function getVariantOffers(lds) {
+  const offers = getProduct(lds)?.offers;
+  if (!Array.isArray(offers)) return [];
+  return offers.filter((o) => o['@type'] === 'Offer');
+}
+
 /* --- Sale-price schema (the big one) ----------------------------------- */
 
 test('sale variant emits priceSpecification with ListPrice (not referencePrice)', () => {
@@ -89,7 +107,7 @@ test('sale variant emits priceSpecification with ListPrice (not referencePrice)'
       selectedOptions: [{ name: 'Size', value: 'Queen' }],
     }],
   }));
-  const offer = getProduct(lds).offers.offers[0];
+  const offer = getVariantOffers(lds)[0];
   // Offer.price is the SALE price.
   assert.equal(offer.price, '799.00');
   // priceSpecification carries the original (higher) price tagged
@@ -106,7 +124,7 @@ test('sale variant emits priceSpecification with ListPrice (not referencePrice)'
 test('non-sale variant has no priceSpecification', () => {
   // compareAtPrice <= price (or null) means no discount; no priceSpecification.
   const lds = getProductJsonLd(makeProduct());
-  const offer = getProduct(lds).offers.offers[0];
+  const offer = getVariantOffers(lds)[0];
   assert.equal(offer.priceSpecification, undefined);
 });
 
@@ -123,7 +141,7 @@ test('compareAtPrice <= price (defensive) does not emit priceSpecification', () 
       selectedOptions: [],
     }],
   }));
-  const offer = getProduct(lds).offers.offers[0];
+  const offer = getVariantOffers(lds)[0];
   assert.equal(offer.priceSpecification, undefined);
 });
 
@@ -136,7 +154,7 @@ test('per-variant Offer does NOT emit itemOffered (was schema-incomplete)', () =
       { sku: 'B', barcode: null, price: { amount: '1199.00', currencyCode: 'USD' }, compareAtPrice: null, availableForSale: true, selectedOptions: [{ name: 'Size', value: 'King' }] },
     ],
   }));
-  const offers = getProduct(lds).offers.offers;
+  const offers = getVariantOffers(lds);
   for (const o of offers) {
     assert.equal(o.itemOffered, undefined, 'variant Offer.itemOffered should be omitted');
   }
@@ -273,10 +291,47 @@ test('Product LD has the required Google rich-results fields', () => {
   const ld = getProduct(getProductJsonLd(makeProduct()));
   assert.equal(ld['@type'], 'Product');
   assert.ok(ld.name, 'Product.name is required');
-  assert.ok(ld.offers, 'Product.offers is required');
-  assert.ok(ld.offers['@type'], 'AggregateOffer or Offer');
+  assert.ok(Array.isArray(ld.offers), 'Product.offers is now a flat array of [AggregateOffer, ...Offer]');
+  assert.ok(ld.offers.length >= 1, 'should have at least the AggregateOffer');
+  assert.equal(ld.offers[0]['@type'], 'AggregateOffer', 'AggregateOffer first');
   // image, brand, sku are recommended; verify when fixture has them.
   assert.ok(ld.image);
   assert.ok(ld.brand);
   assert.ok(ld.sku);
+});
+
+/* --- Schema-spec compliance (SEMrush 20260524) ----------------------- */
+
+test('Product does NOT emit dateModified (not a valid Product property per schema.org)', () => {
+  // Product extends Thing, not CreativeWork — dateModified is a
+  // CreativeWork property. Strict validators (incl. SEMrush) flag
+  // its presence as "non-existent property" on every PDP.
+  const ld = getProduct(getProductJsonLd(makeProduct({ updatedAt: '2026-05-21T00:00:00Z' })));
+  assert.equal(ld.dateModified, undefined);
+});
+
+test('Product.offers is a flat array, no nested offers inside AggregateOffer', () => {
+  // AggregateOffer has no `offers` property in the schema.org spec —
+  // the previous shape (`offers: AggregateOffer { offers: [Offer] }`)
+  // was invalid. New shape: `offers: [AggregateOffer, ...Offer[]]`,
+  // which Google explicitly supports for multi-variant products.
+  const lds = getProductJsonLd(makeProduct({
+    variants: [
+      { sku: 'V1', barcode: null, price: { amount: '999.00', currencyCode: 'USD' }, compareAtPrice: null, availableForSale: true, selectedOptions: [{ name: 'Size', value: 'Queen' }] },
+      { sku: 'V2', barcode: null, price: { amount: '1199.00', currencyCode: 'USD' }, compareAtPrice: null, availableForSale: true, selectedOptions: [{ name: 'Size', value: 'King' }] },
+    ],
+  }));
+  const ld = getProduct(lds);
+  assert.ok(Array.isArray(ld.offers), 'offers is now an array');
+  // First element: AggregateOffer (price range)
+  const agg = getAggregateOffer(lds);
+  assert.ok(agg, 'AggregateOffer present in offers array');
+  assert.equal(agg['@type'], 'AggregateOffer');
+  assert.equal(agg.offerCount, 2);
+  assert.equal(agg.offers, undefined, 'AggregateOffer.offers (nested) must not be emitted');
+  // Remaining elements: individual variant Offers
+  const variants = getVariantOffers(lds);
+  assert.equal(variants.length, 2, 'one Offer per variant, alongside the AggregateOffer');
+  assert.equal(variants[0].sku, 'V1');
+  assert.equal(variants[1].sku, 'V2');
 });
