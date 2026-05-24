@@ -22,7 +22,7 @@ export const FALLBACK_HERO_SLIDES: HeroSlide[] = [
   {
     eyebrow: 'Try before you buy · 5 LA showrooms',
     title: 'The Los Angeles\nmattress store.',
-    body: 'Lie down on every mattress we sell — at any of our 5 LA showrooms.',
+    body: '5 mattress stores across Los Angeles — Koreatown, Studio City, Glendale, West LA, and La Brea. Lie down on every mattress we sell, then book free white-glove delivery.',
     primary:   { label: 'Find a store',         icon: 'pin',         href: '/pages/mattress-store-locations' },
     secondary: { label: 'Book an appointment',                       href: '/pages/mattress-store-contact' },
     bgImage: { url: imgUrl('hero-showroom'), altText: 'Koreatown showroom interior' },
