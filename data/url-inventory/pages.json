@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify pages inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via Shopify MCP",
-  "$pulledAt": "2026-05-23T09:14:55.289Z",
+  "$pulledAt": "2026-05-24T08:07:19.413Z",
   "$count": 118,
   "pages": [
     {
@@ -250,7 +250,7 @@
       "title": "Find a Mattress Store Near You | LA Mattress Stores Locations",
       "isPublished": true,
       "publishedAt": "2023-06-19T22:35:11Z",
-      "updatedAt": "2026-05-22T20:10:45Z"
+      "updatedAt": "2026-05-23T13:10:16Z"
     },
     {
       "handle": "spring-air-limited-warranty-and-mattress-care-guidelines-ensuring-your-sleep-experience",
@@ -322,7 +322,7 @@
       "title": "Mattress Sizes & Bed Size Chart: Twin to Cal King Dimensions",
       "isPublished": true,
       "publishedAt": "2023-08-06T03:21:33Z",
-      "updatedAt": "2026-05-23T12:24:10.159Z"
+      "updatedAt": "2026-05-23T14:00:27Z"
     },
     {
       "handle": "love-your-bed-guarantee",
@@ -335,7 +335,7 @@
     {
       "handle": "about",
       "id": "gid://shopify/Page/104209121533",
-      "title": "Welcome to LA Mattress Store – Your Trusted Los Angeles Mattress Destination",
+      "title": "Welcome to LA Mattress Store \u2013 Your Trusted Los Angeles Mattress Destination",
       "isPublished": true,
       "publishedAt": "2023-08-08T19:35:23Z",
       "updatedAt": "2026-05-12T06:48:48Z"
@@ -671,7 +671,7 @@
     {
       "handle": "mattress-store-beverly-hills",
       "id": "gid://shopify/Page/114679021821",
-      "title": "Mattress Store in Beverly Hills — LA Mattress",
+      "title": "Mattress Store in Beverly Hills \u2014 LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:11:04Z",
       "updatedAt": "2026-05-20T06:15:07Z"
@@ -703,7 +703,7 @@
     {
       "handle": "cheap-mattress-store-near-me",
       "id": "gid://shopify/Page/115696009469",
-      "title": "Cheap Mattress Store Near Me | Affordable Quality Mattresses – LA Mattress Stores",
+      "title": "Cheap Mattress Store Near Me | Affordable Quality Mattresses \u2013 LA Mattress Stores",
       "isPublished": false,
       "publishedAt": null,
       "updatedAt": "2026-03-26T08:12:06Z"
@@ -711,7 +711,7 @@
     {
       "handle": "best-mattress-store-near-me",
       "id": "gid://shopify/Page/115697385725",
-      "title": "Best Mattress Store Near Me | Top-Rated Mattresses & Service – LA Mattress Stores",
+      "title": "Best Mattress Store Near Me | Top-Rated Mattresses & Service \u2013 LA Mattress Stores",
       "isPublished": false,
       "publishedAt": null,
       "updatedAt": "2026-03-26T08:12:05Z"
@@ -735,7 +735,7 @@
     {
       "handle": "glendale-eagle-rock",
       "id": "gid://shopify/Page/118398910717",
-      "title": "Mattress Store Near Eagle Rock – Premium Comfort Just Minutes Away!",
+      "title": "Mattress Store Near Eagle Rock \u2013 Premium Comfort Just Minutes Away!",
       "isPublished": false,
       "publishedAt": null,
       "updatedAt": "2026-03-25T19:01:07Z"
@@ -743,7 +743,7 @@
     {
       "handle": "purple-mattress-vs-tempur-pedic",
       "id": "gid://shopify/Page/119045226749",
-      "title": "Purple Mattress vs. Tempur-Pedic – Which One is Better?",
+      "title": "Purple Mattress vs. Tempur-Pedic \u2013 Which One is Better?",
       "isPublished": true,
       "publishedAt": "2025-03-15T02:24:39Z",
       "updatedAt": "2026-05-22T16:12:29Z"
@@ -855,7 +855,7 @@
     {
       "handle": "queen-mattress-near-sylmar-la-mattress-store",
       "id": "gid://shopify/Page/128980812029",
-      "title": "Queen Mattress Near Sylmar – LA Mattress Store",
+      "title": "Queen Mattress Near Sylmar \u2013 LA Mattress Store",
       "isPublished": true,
       "publishedAt": "2025-10-31T01:44:09Z",
       "updatedAt": "2025-10-31T02:32:36Z"
@@ -887,7 +887,7 @@
     {
       "handle": "memorial-day-sale-2026",
       "id": "gid://shopify/Page/136834089213",
-      "title": "Memorial Day Mattress Sale 2026 — Up to 60% Off at LA Mattress Store",
+      "title": "Memorial Day Mattress Sale 2026 \u2014 Up to 60% Off at LA Mattress Store",
       "isPublished": true,
       "publishedAt": "2026-05-14T08:52:30Z",
       "updatedAt": "2026-05-14T08:52:30Z"
@@ -895,7 +895,7 @@
     {
       "handle": "mattress-store-santa-monica",
       "id": "gid://shopify/Page/136857878781",
-      "title": "Mattress Store in Santa Monica — LA Mattress",
+      "title": "Mattress Store in Santa Monica \u2014 LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:42Z",
       "updatedAt": "2026-05-14T22:55:17Z"
@@ -903,7 +903,7 @@
     {
       "handle": "mattress-store-downtown-la",
       "id": "gid://shopify/Page/136857911549",
-      "title": "Mattress Store in Downtown LA — LA Mattress",
+      "title": "Mattress Store in Downtown LA \u2014 LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
       "updatedAt": "2026-05-14T22:55:21Z"
@@ -911,7 +911,7 @@
     {
       "handle": "mattress-store-pasadena",
       "id": "gid://shopify/Page/136857944317",
-      "title": "Mattress Store in Pasadena — LA Mattress",
+      "title": "Mattress Store in Pasadena \u2014 LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
       "updatedAt": "2026-05-14T22:55:25Z"
@@ -919,7 +919,7 @@
     {
       "handle": "mattress-store-burbank",
       "id": "gid://shopify/Page/136857977085",
-      "title": "Mattress Store in Burbank — LA Mattress",
+      "title": "Mattress Store in Burbank \u2014 LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
       "updatedAt": "2026-05-14T22:55:29Z"
@@ -927,7 +927,7 @@
     {
       "handle": "mattress-store-sherman-oaks",
       "id": "gid://shopify/Page/136858009853",
-      "title": "Mattress Store in Sherman Oaks — LA Mattress",
+      "title": "Mattress Store in Sherman Oaks \u2014 LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
       "updatedAt": "2026-05-14T22:55:33Z"
@@ -935,7 +935,7 @@
     {
       "handle": "mattress-store-hollywood",
       "id": "gid://shopify/Page/136858042621",
-      "title": "Mattress Store in Hollywood — LA Mattress",
+      "title": "Mattress Store in Hollywood \u2014 LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
       "updatedAt": "2026-05-14T22:55:37Z"
@@ -943,7 +943,7 @@
     {
       "handle": "mattress-store-long-beach",
       "id": "gid://shopify/Page/136858075389",
-      "title": "Mattress Store in Long Beach — LA Mattress",
+      "title": "Mattress Store in Long Beach \u2014 LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
       "updatedAt": "2026-05-14T22:55:40Z"
