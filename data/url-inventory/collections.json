@@ -1,8 +1,8 @@
 {
   "$schema": "Shopify collections inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via Shopify MCP",
-  "$pulledAt": "2026-05-23T09:14:55.289Z",
-  "$count": 64,
+  "$pulledAt": "2026-05-24T07:42:13.490Z",
+  "$count": 65,
   "collections": [
     {
       "handle": "popular",
@@ -36,7 +36,7 @@
       "id": "gid://shopify/Collection/267486147",
       "title": "King Mattresses",
       "productsCount": 122,
-      "updatedAt": "2026-05-23T05:34:30Z",
+      "updatedAt": "2026-05-23T13:09:20Z",
       "seoTitle": "King Mattress Collection - Top Brands from $499 | LA Mattress",
       "seoDescription": "Shop king mattress options from Tempur-Pedic, Stearns and Foster, Diamond, and more. Every firmness, every brand, starting at $499. Free white-glove delivery and 120-night trial."
     },
@@ -45,7 +45,7 @@
       "id": "gid://shopify/Collection/267509571",
       "title": "California King Mattresses",
       "productsCount": 127,
-      "updatedAt": "2026-05-22T11:00:28Z",
+      "updatedAt": "2026-05-23T13:09:31Z",
       "seoTitle": "California King Mattresses | Cal King Beds | LA Mattress Store",
       "seoDescription": "Shop California king mattresses (72 x 84 inches) - longer than a standard king, perfect for tall sleepers. All types and comfort levels available. Free white glove delivery and 120-night trial."
     },
@@ -81,7 +81,7 @@
       "id": "gid://shopify/Collection/296458755",
       "title": "Latex Mattresses",
       "productsCount": 38,
-      "updatedAt": "2026-05-20T09:06:48Z",
+      "updatedAt": "2026-05-23T13:09:55Z",
       "seoTitle": "Latex Mattresses | Natural, Organic & Responsive | LA Mattress Store",
       "seoDescription": "Shop natural and organic latex mattresses - responsive support, excellent cooling, and long-lasting durability without chemicals. GOLS and GOTS certified options available. Free white glove delivery."
     },
@@ -99,7 +99,7 @@
       "id": "gid://shopify/Collection/300952131",
       "title": "Mattress Sale",
       "productsCount": 123,
-      "updatedAt": "2026-05-23T05:34:37Z",
+      "updatedAt": "2026-05-23T13:10:08Z",
       "seoTitle": "Mattress Sales: Up to 60% Off Top Brands | LA Mattress Store",
       "seoDescription": "Shop mattress sales from top brands like Tempur-Pedic, Stearns and Foster, and Diamond. Floor models, clearance, and seasonal mattress sales. Free LA delivery and 0% APR financing."
     },
@@ -153,7 +153,7 @@
       "id": "gid://shopify/Collection/400254435581",
       "title": "Mattress Covers & Protectors",
       "productsCount": 2,
-      "updatedAt": "2026-05-23T12:24:10.188Z",
+      "updatedAt": "2026-05-23T12:13:37Z",
       "seoTitle": "Mattress Covers & Protectors | Waterproof, Allergen-Safe | LA Mattress",
       "seoDescription": "Shop mattress covers and protectors to guard against spills, allergens, dust mites, and wear. Waterproof, breathable mattress covers that preserve your warranty. All sizes available."
     },
@@ -162,9 +162,9 @@
       "id": "gid://shopify/Collection/401028972797",
       "title": "Mattress Toppers",
       "productsCount": 1,
-      "updatedAt": "2026-05-20T09:06:48Z",
-      "seoTitle": "Mattress Toppers - Memory Foam, Latex and Cooling | LA",
-      "seoDescription": "Upgrade your sleep with mattress toppers from top brands. Memory foam, latex, gel and organic options. Free delivery in LA with mattress purchase. Try in-store at 5 showrooms."
+      "updatedAt": "2026-05-23T13:08:55Z",
+      "seoTitle": "Mattress Toppers \u2014 Memory Foam, Latex & Cooling | LA Mattress Store",
+      "seoDescription": "Shop mattress toppers in memory foam, latex, cooling gel, and plush fiberfill. 2\" to 4\" thickness for pressure relief, cooling, or softening a too-firm bed. All sizes, free delivery."
     },
     {
       "handle": "all-foam-mattresses",
@@ -280,8 +280,8 @@
       "title": "Spring Air Mattresses",
       "productsCount": 15,
       "updatedAt": "2026-05-20T09:07:49Z",
-      "seoTitle": "Spring Air Mattresses in Los Angeles · LA Mattress Store",
-      "seoDescription": "Shop Spring Air mattresses in Los Angeles — Back Supporter hybrids, Tradition pillow tops, Value Collection innersprings. American brand since 1926. Free white-glove delivery, same-day in LA."
+      "seoTitle": "Spring Air Mattresses in Los Angeles \u00b7 LA Mattress Store",
+      "seoDescription": "Shop Spring Air mattresses in Los Angeles \u2014 Back Supporter hybrids, Tradition pillow tops, Value Collection innersprings. American brand since 1926. Free white-glove delivery, same-day in LA."
     },
     {
       "handle": "tempur-pedic-mattresses",
@@ -333,7 +333,7 @@
       "id": "gid://shopify/Collection/411730510077",
       "title": "Bed-in-a-Box Mattresses",
       "productsCount": 11,
-      "updatedAt": "2026-05-20T09:07:50Z",
+      "updatedAt": "2026-05-23T13:09:08Z",
       "seoTitle": "Bed-in-a-Box Mattresses | Compressed Roll-Pack Delivery | LA Mattress Store",
       "seoDescription": "Shop bed-in-a-box mattresses delivered compressed and rolled for easy setup. Memory foam and hybrid options. Unbox, unroll, and sleep. Free white glove delivery available."
     },
@@ -377,8 +377,8 @@
       "handle": "best-sellers",
       "id": "gid://shopify/Collection/444386836733",
       "title": "Best Sellers",
-      "productsCount": 3,
-      "updatedAt": "2026-05-20T09:07:50Z",
+      "productsCount": 13,
+      "updatedAt": "2026-05-23T14:32:07Z",
       "seoTitle": "Best-Selling Mattresses | Top Rated Beds for Comfort & Support",
       "seoDescription": "Discover the best-selling mattresses at LA Mattress Store. Shop our top-rated memory foam, hybrid, and luxury beds trusted by real customers."
     },
@@ -387,7 +387,7 @@
       "id": "gid://shopify/Collection/463327002877",
       "title": "Helix Mattresses",
       "productsCount": 27,
-      "updatedAt": "2026-05-21T11:00:30Z",
+      "updatedAt": "2026-05-23T13:09:44Z",
       "seoTitle": "Helix Mattresses | Engineered for Your Sleep Style | LA Mattress Store",
       "seoDescription": "Shop Helix mattresses - each model engineered for a specific sleep position and body type. Side, back, stomach, and combo sleeper options in standard and Luxe versions. Free white glove delivery."
     },
@@ -523,8 +523,8 @@
       "title": "Bed Frames - Bedding Support",
       "productsCount": 8,
       "updatedAt": "2026-05-20T09:08:28Z",
-      "seoTitle": "Bed Frames — Platform, Metal & Adjustable | LA Mattress",
-      "seoDescription": "Shop platform, metal, upholstered, and adjustable-base-compatible bed frames in twin–Cal King. Free white-glove delivery + assembly across Los Angeles."
+      "seoTitle": "Bed Frames \u2014 Platform, Metal & Adjustable | LA Mattress",
+      "seoDescription": "Shop platform, metal, upholstered, and adjustable-base-compatible bed frames in twin\u2013Cal King. Free white-glove delivery + assembly across Los Angeles."
     },
     {
       "handle": "rize-pillows",
@@ -559,7 +559,7 @@
       "title": "Memorial Day Mattress Sale",
       "productsCount": 16,
       "updatedAt": "2026-05-20T09:08:28Z",
-      "seoTitle": "Memorial Day Mattress Sale 2026 — LA Mattress Store",
+      "seoTitle": "Memorial Day Mattress Sale 2026 \u2014 LA Mattress Store",
       "seoDescription": "Memorial Day sale on Tempur-Pedic, Helix, Stearns & Foster, Diamond, Spring Air, and more. Free white-glove delivery and 120-night exchange on every mattress."
     },
     {
@@ -579,6 +579,15 @@
       "updatedAt": "2026-05-20T09:08:28Z",
       "seoTitle": "Sleep & Beyond | Organic Wool & Cotton Bedding | LA Mattress Store",
       "seoDescription": "Shop Sleep & Beyond organic wool and cotton bedding - washable wool pillows, mattress toppers, comforters, organic cotton sheets, and waterproof protectors. Free LA delivery."
+    },
+    {
+      "handle": "bedding",
+      "id": "gid://shopify/Collection/467645104381",
+      "title": "Bedding",
+      "productsCount": 40,
+      "updatedAt": "2026-05-23T15:46:12Z",
+      "seoTitle": "Bedding \u2014 Sheets, Pillows, Comforters & Protectors | LA Mattress",
+      "seoDescription": "Shop sheets, pillows, comforters, and mattress protectors that pair with our mattresses. Soft microfiber, cooling Tencel, allergen-safe protectors. Free LA delivery."
     }
   ]
 }
