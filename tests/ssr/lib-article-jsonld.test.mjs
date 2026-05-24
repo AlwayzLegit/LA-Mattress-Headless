@@ -121,10 +121,15 @@ test('falls back to Organization author when article.author is null', () => {
   // the author metafield — which JSON.stringify drops, leaving the field
   // missing entirely. Organization-author fallback (linked by @id to
   // the sitewide Organization) keeps the field present + lossless.
+  // PR #254 renamed the editorial-team fallback "LA Mattress Store" →
+  // "LA Mattress Editorial" — see lib/article-author.ts (EDITORIAL_
+  // AUTHOR_NAME). The @id back-link still points at the sitewide
+  // Organization so Google's entity graph reads the article and the
+  // brand as one connected entity.
   const ld = getArticle(getArticleJsonLd(makeArticle({ author: null })));
   assert.ok(ld.author, 'author must always be present (Google BlogPosting requirement)');
   assert.equal(ld.author['@type'], 'Organization');
-  assert.equal(ld.author.name, 'LA Mattress Store');
+  assert.equal(ld.author.name, 'LA Mattress Editorial');
   assert.equal(ld.author['@id'], 'https://www.mattressstoreslosangeles.com/#organization');
 });
 
