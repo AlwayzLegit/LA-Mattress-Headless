@@ -261,12 +261,34 @@ async function pullRedirects() {
     // the sitemap stops filtering redirected URLs out of its emit set).
     // All Shopify URL redirects are 301-permanent by spec — there's no
     // temporary-redirect type in the urlRedirects API.
-    return nodes.map((n) => ({
-      id: n.id,
-      source: n.path,
-      destination: n.target,
-      permanent: true,
-    }));
+    //
+    // Additionally drop sources that Next.js's `redirects()` validator
+    // would reject at build time (`?`, `#`, or no-leading-`/`). Shopify
+    // exposes 250+ legacy `?_pos=`/`?variant=`/etc. session-param
+    // redirects that violate Next's path rules — letting them through
+    // crashes the prod build after Sentry source-map upload finishes.
+    // The middleware param-stripping (middleware.ts + route-canonical
+    // -ization.ts) already handles these via 301 at the edge, so
+    // skipping them at config time is functionally a no-op.
+    let dropped = 0;
+    const valid = [];
+    for (const n of nodes) {
+      const src = n.path;
+      if (typeof src !== 'string' || !src.startsWith('/') || src.includes('?') || src.includes('#')) {
+        dropped += 1;
+        continue;
+      }
+      valid.push({
+        id: n.id,
+        source: src,
+        destination: n.target,
+        permanent: true,
+      });
+    }
+    if (dropped > 0) {
+      console.warn(`[pullRedirects] Skipped ${dropped} of ${nodes.length} Shopify redirects (source must start with "/" and not contain "?" or "#" per Next.js redirects() spec).`);
+    }
+    return valid;
   } catch (err) {
     // urlRedirects requires the read_online_store_navigation scope
     // (Shopify renamed this in 2024-10 — moved out of read_themes into
