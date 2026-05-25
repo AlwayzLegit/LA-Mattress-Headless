@@ -274,6 +274,78 @@ test('FAQ extraction ignores h3 sections that are not questions', () => {
   assert.equal(getFaq(lds), undefined);
 });
 
+test('FAQ regex does NOT swallow intermediate non-question h3s into the captured question', () => {
+  // Real article shape from /blogs/extra-info/what-is-polyurethane-foam
+  // (SEMrush 2026-05-25 audit, 666 article pages flagged): the article
+  // has a "Good fit if you:" section h3 (no `?`), then a "How to Care
+  // for ..." section h3 (no `?`), and finally a real FAQ section with
+  // 3 `<h3>question?</h3><p>answer</p>` pairs.
+  //
+  // The OLD regex used `[\s\S]*?` inside the h3-inner capture, which
+  // backtracks across multiple `</h3>` boundaries to find one that is
+  // immediately followed by `<p>`. Because the intermediate non-
+  // question h3s are followed by `<ul>` / `<h2>` instead, the engine
+  // skipped past them and collapsed the first real question + all the
+  // preceding sections into one massive "question" name (1500+ chars
+  // ending in `?` because the LAST swallowed h3 was the actual real
+  // question). That malformed FAQPage was the schema error SEMrush
+  // flagged. Fix is a tempered token `(?:(?!<h3\b)[\s\S])*?` that
+  // forbids another `<h3` opening inside the capture.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h3>Good fit if you:</h3>
+      <ul><li>Want an affordable mattress.</li><li>Move around a lot.</li></ul>
+      <h3>How to Care for a Polyurethane Foam Mattress</h3>
+      <p>Rotate every 3–6 months.</p>
+      <h3>Is polyurethane foam safe to sleep on?</h3><p>Yes, particularly if CertiPUR-US certified.</p>
+      <h3>Is memory foam the same as polyurethane foam?</h3><p>Memory foam is a type of polyurethane foam.</p>
+      <h3>Does polyurethane foam off-gas?</h3><p>New mattresses release VOCs for the first few days.</p>
+    `,
+  }));
+  const faq = getFaq(lds);
+  assert.ok(faq, 'FAQPage should still emit for the 3 well-formed Q&A pairs');
+  // Each question name should be SHORT (just the question text), not a
+  // multi-section blob. Lock it to <200 chars to catch the regression.
+  for (const entity of faq.mainEntity) {
+    assert.ok(entity.name.length < 200,
+      `Question name too long (${entity.name.length} chars) — regex likely swallowed intermediate h3s: ${entity.name.slice(0, 100)}`);
+  }
+  // And the FIRST captured question must be the REAL first FAQ ("Is
+  // polyurethane foam safe to sleep on?"), not a blob starting with
+  // "Good fit if you:".
+  assert.equal(faq.mainEntity[0].name, 'Is polyurethane foam safe to sleep on?');
+  assert.equal(faq.mainEntity[0].acceptedAnswer.text, 'Yes, particularly if CertiPUR-US certified.');
+});
+
+test('HowTo regex does NOT swallow intermediate non-step headings into the step name', () => {
+  // Same tempering rationale as the FAQ regex above, applied to the
+  // h[23] heading-inner capture in extractHowToStepsFromHtml. If an
+  // editorial pull-quote h3 or section h2 lives between Step 1 and
+  // Step 2, the OLD regex backtracked past it and collapsed Step 2's
+  // opening into Step 1's "name", producing a malformed HowToStep.
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: `
+      <h2>Step 1: Measure your room</h2><p>Use a tape measure end to end.</p>
+      <h3>Pro tip</h3><p>Standard frames add 4–6 inches around the mattress.</p>
+      <h2>Step 2: Pick a size</h2><p>Queen, king, or California king.</p>
+      <h3>Couples vs single sleepers</h3><p>Couples need queen minimum.</p>
+      <h2>Step 3: Order online or in-store</h2><p>Both delivery options work.</p>
+    `,
+  }));
+  const howTo = getHowTo(lds);
+  assert.ok(howTo, 'HowTo should emit at 3 Step headings even with intermediate non-step h3s');
+  assert.equal(howTo.step.length, 3);
+  // Each step name must be SHORT — no swallowing of later step
+  // headings into the prior step's name.
+  for (const s of howTo.step) {
+    assert.ok(s.name.length < 100,
+      `Step name too long (${s.name.length} chars) — regex likely swallowed an intermediate heading: ${s.name.slice(0, 80)}`);
+  }
+  assert.equal(howTo.step[0].name, 'Measure your room');
+  assert.equal(howTo.step[1].name, 'Pick a size');
+  assert.equal(howTo.step[2].name, 'Order online or in-store');
+});
+
 /* --- HowTo extraction (Google rich-result for step-by-step guides) --- */
 
 test('emits HowTo schema when article body has 3+ "Step N:" h2 headings', () => {
