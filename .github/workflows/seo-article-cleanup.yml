@@ -30,9 +30,16 @@ on:
         type: boolean
         default: false
       handle:
-        description: 'Optional single article handle. Leave blank to run against all 5 defaults.'
+        description: 'Optional single article handle. Leave blank to run against all 5 defaults (or the chosen batch).'
         type: string
         default: ''
+      batch:
+        description: 'Named batch (overrides defaults when set; `handle` still wins if also provided).'
+        type: choice
+        default: ''
+        options:
+          - ''
+          - semrush-2026-05-25-broken-ext
 
 permissions:
   contents: read
@@ -52,6 +59,7 @@ jobs:
         run: |
           ARGS=""
           if [ -n "${{ inputs.handle }}" ]; then ARGS="$ARGS ${{ inputs.handle }}"; fi
+          if [ -n "${{ inputs.batch }}" ]; then ARGS="$ARGS --batch=${{ inputs.batch }}"; fi
           if [ "${{ inputs.apply }}" = "true" ]; then ARGS="$ARGS --apply"; fi
           echo "::group::Invocation"
           echo "node scripts/seo-article-cleanup.mjs$ARGS"
