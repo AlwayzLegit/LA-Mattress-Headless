@@ -270,11 +270,24 @@ async function pullRedirects() {
     // The middleware param-stripping (middleware.ts + route-canonical
     // -ization.ts) already handles these via 301 at the edge, so
     // skipping them at config time is functionally a no-op.
+    // Next.js's path-to-regexp parser also rejects sources with
+    // `:` `*` `+` `(` `)` `[` `]` `{` `}` — these are pattern meta
+    // chars (named params, wildcards, groups). Shopify has a handful
+    // of legacy redirects with embedded `:` from protocol-style paths
+    // (`/https:/sleepfoundation.org/...`, `/tel:1-800-...`) that crash
+    // the build with "Missing parameter name at N" if not filtered.
+    const META = /[:*+()\[\]{}]/;
     let dropped = 0;
     const valid = [];
     for (const n of nodes) {
       const src = n.path;
-      if (typeof src !== 'string' || !src.startsWith('/') || src.includes('?') || src.includes('#')) {
+      if (
+        typeof src !== 'string' ||
+        !src.startsWith('/') ||
+        src.includes('?') ||
+        src.includes('#') ||
+        META.test(src)
+      ) {
         dropped += 1;
         continue;
       }

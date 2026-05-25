@@ -6,23 +6,34 @@ import { withSentryConfig } from '@sentry/nextjs';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
- * Next.js's `redirects()` validator requires every `source` to start with
- * `/` and to NOT contain a query string in the path itself (query matching
- * needs a separate `has` array per the redirect spec). Shopify's
- * urlRedirects table includes legacy entries that violate both rules —
- * 250+ have `?_pos=`/`?variant=`/etc. embedded in the path, and 11 are
- * bare query-string fragments (`?id=...`, `?page=2`). If any unfiltered
- * malformed entry reaches Next, the build crashes after Sentry source-map
- * upload finishes (which is what broke prod builds after PR #273).
+ * Next.js's `redirects()` validator requires every `source` to:
+ *
+ *   - start with `/`
+ *   - NOT contain `?` / `#` in the path (query matching needs `has`)
+ *   - NOT contain `path-to-regexp` meta-characters unless intended as
+ *     a route pattern: `:` (named param), `*` (wildcard), `+` (one-or-more),
+ *     `(` `)` (groups), `[` `]` / `{` `}` (escape constructs)
+ *
+ * Shopify's urlRedirects table includes legacy entries that violate all
+ * of these (250+ with `?_pos=`/`?variant=`, plus paths like
+ * `/https:/...` and `/tel:1-800-...` whose embedded `:` makes Next's
+ * path-to-regexp parser raise "Missing parameter name at N" and crash
+ * the entire build — that's the post-PR-#273 build break + the
+ * post-#276 build re-break).
  *
  * Filter both shape (source/destination strings present) AND Next.js's
- * source-format rules. The dropped entries are noisy query-param redirects
- * that the middleware's storefront param-stripping (middleware.ts +
- * lib/route-canonicalization.ts) already handles via 301 anyway — so no
- * functional regression from skipping them at the edge.
+ * source-format rules. The dropped entries are noisy URL-encoded /
+ * protocol-prefixed redirects that the middleware's param-stripping
+ * (middleware.ts + lib/route-canonicalization.ts) already handles via
+ * 301 — no functional regression from skipping them at the edge.
  */
+const PATH_TO_REGEXP_META = /[:*+()\[\]{}]/;
 const NEXT_REDIRECT_SOURCE_VALID = (s) =>
-  typeof s === 'string' && s.startsWith('/') && !s.includes('?') && !s.includes('#');
+  typeof s === 'string'
+  && s.startsWith('/')
+  && !s.includes('?')
+  && !s.includes('#')
+  && !PATH_TO_REGEXP_META.test(s);
 
 function loadInventoryRedirects() {
   try {
