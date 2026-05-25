@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify pages inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-05-25T09:14:35.786Z",
+  "$pulledAt": "2026-05-25T10:17:08.177Z",
   "$count": 118,
   "pages": [
     {
