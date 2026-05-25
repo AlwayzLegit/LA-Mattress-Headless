@@ -83,7 +83,8 @@ if (!STORE || !TOKEN) {
 /**
  * Default target list: the 5 near-miss blog articles flagged in
  * `docs/seo-followup-tasks.md` §6 that share the Word-export cruft
- * pattern. Pass a handle as a positional CLI arg to override.
+ * pattern. Pass a handle as a positional CLI arg to override, or use
+ * `--batch=<name>` to run a different named batch (see BATCHES below).
  */
 const DEFAULT_HANDLES = [
   'what-s-the-difference-between-eastern-king-and-california-king',
@@ -92,6 +93,78 @@ const DEFAULT_HANDLES = [
   'sealy-vs-serta-mattress-which-brand-delivers-the-best-sleep',
   'how-much-should-you-spend-on-a-mattress',
 ];
+
+/**
+ * Named batches. Pass `--batch=<name>` to run one of these instead of
+ * the positional / DEFAULT_HANDLES list. Adding a batch here is the
+ * canonical way to capture an audit cohort — keeps the per-audit
+ * cleanup history visible in `git log`.
+ *
+ *   semrush-2026-05-25-broken-ext:
+ *     SEMrush 2026-05-25 "External broken links" drill-down (72 broken
+ *     external anchors across 52 articles). Pass 4 of clean() unwraps
+ *     every external anchor — fixing the broken-link flag and also
+ *     stopping authority bleed to all OTHER external domains in the
+ *     same articles as a side effect. Articles are listed in the order
+ *     the audit returned them so the cleanup report aligns with the
+ *     SEMrush issue queue.
+ */
+const BATCHES = {
+  'semrush-2026-05-25-broken-ext': [
+    'are-innerspring-mattresses-still-a-good-choice-in-2025',
+    'best-affordable-non-toxic-mattresses',
+    'best-affordable-non-toxic-pillows',
+    'best-all-wooden-bedroom-sets',
+    'best-bed-sheets-for-eczema',
+    'best-bed-sheets-for-oily-skin',
+    'best-hypoallergenic-pillows-and-bedsheets',
+    'best-mattress-for-300-pound-person',
+    'best-mattress-for-bad-back',
+    'best-mattress-for-chronic-pain',
+    'best-mattress-for-disabled-person',
+    'best-mattress-for-fat-side-sleepers',
+    'best-mattress-for-floor-bed',
+    'best-mattress-for-incontinence',
+    'best-mattress-for-older-adults',
+    'best-mattress-for-peripheral-neuropathy',
+    'best-mattress-for-shoulder-and-neck-pain',
+    'best-mattress-for-side-and-stomach-sleepers',
+    'best-mattress-topper-for-heavy-people',
+    'best-mattress-topper-for-kids',
+    'best-mattress-topper-for-neck-pain',
+    'best-mattress-topper-to-make-bed-softer',
+    'best-mattresses-for-3-quarter-size-beds',
+    'best-mattresses-for-the-morbidly-obese-in-2024',
+    'best-pillows-for-vertigo',
+    'best-pillows-to-use-after-neck-surgery',
+    'best-practices-for-preventing-mold-and-mildew-in-foam-mattresses',
+    'best-sheets-for-adjustable-beds',
+    'best-stearns-and-foster-mattress-for-side-sleepers',
+    'can-i-throw-my-mattress-in-the-dumpster',
+    'do-all-englander-mattresses-contain-latex',
+    'do-firm-mattresses-really-last-longer-durability-explained',
+    'englander-mattress-prices-2024',
+    'exploring-mattress-thickness-why-less-isn-t-always-more-for-comfort',
+    'how-long-will-a-chattam-and-wells-mattress-last',
+    'how-mattress-firmness-affects-sleep-quality-and-pain-relief',
+    'how-to-clean-urine-from-tempurpedic-mattress',
+    'how-to-price-a-used-englander-mattress',
+    'how-to-price-a-used-latex-mattress',
+    'how-to-price-a-used-tempurpedic-mattress',
+    'is-a-magnetic-mattress-good-for-health',
+    'mattress-trial-periods-what-to-know-before-you-buy',
+    'pros-and-cons-of-using-an-air-mattress-long-term',
+    'sealy-vs-beautyrest-mattresses',
+    'serta-pedic-vs-tempurpedic-why-tempurpedic-is-the-better-option',
+    'top-talalay-latex-mattresses-2024',
+    'what-type-of-mattress-is-best-for-child',
+    'where-to-buy-englander-mattresses-in-los-angeles',
+    'why-temperature-control-in-mattresses-is-key-to-nightly-recovery',
+    'how-to-deflate-an-intex-air-mattress',
+    'can-you-wash-tempurpedic-pillows',
+    'can-cockroaches-live-in-a-mattress',
+  ],
+};
 
 const ENDPOINT = `https://${STORE}/admin/api/${VERSION}/graphql.json`;
 const OUT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'data', 'seo-backfills');
@@ -215,12 +288,26 @@ function balanceCheck(s) {
 
 // ====== main ======
 const positional = process.argv.slice(2).filter((a) => !a.startsWith('--'));
-const handles = positional.length ? positional : DEFAULT_HANDLES;
+// Precedence: positional handles > --batch=<name> > DEFAULT_HANDLES.
+// Positional always wins for one-off runs ("clean ONE article right now");
+// the batch flag is for cohort-scale audit rollups.
+const batchFlag = process.argv.find((a) => a.startsWith('--batch='));
+const batchName = batchFlag ? batchFlag.slice('--batch='.length) : null;
+if (batchName && !BATCHES[batchName]) {
+  console.error(`Unknown --batch="${batchName}". Known batches: ${Object.keys(BATCHES).join(', ') || '(none)'}`);
+  process.exit(1);
+}
+const handles = positional.length
+  ? positional
+  : batchName
+    ? BATCHES[batchName]
+    : DEFAULT_HANDLES;
 const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19) + 'Z';
 const mode = APPLY ? 'apply' : 'dryrun';
-const reportPath = resolve(OUT_DIR, `article-cleanup-${ts}-${mode}.json`);
+const batchTag = batchName ? `-${batchName}` : '';
+const reportPath = resolve(OUT_DIR, `article-cleanup-${ts}${batchTag}-${mode}.json`);
 
-const report = { ts, mode, handles, results: [] };
+const report = { ts, mode, batch: batchName, handles, results: [] };
 
 for (const handle of handles) {
   const r = { handle, status: 'unknown' };
