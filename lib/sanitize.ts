@@ -122,8 +122,16 @@ export function buildRedirectTarget(rules: ReadonlyArray<RedirectRule>): Map<str
   return out;
 }
 
+// Cast via `unknown` because data/url-inventory/redirects.json can
+// transiently carry Shopify's raw GraphQL shape (`{ id, path, target }`)
+// between an inventory-action run and the next deploy that fixes the
+// shape via scripts/pull-inventory.mjs. Direct cast fails TS-build at
+// /lib/sanitize.ts when the shapes don't overlap (which is why prod
+// builds went red after PR #273). buildRedirectTarget already filters
+// out malformed rules (non-string source / destination) so wrong-shape
+// data yields an empty map without crashing.
 const REDIRECT_TARGET: Map<string, string> = buildRedirectTarget(
-  (redirectsJson as { redirects?: RedirectRule[] }).redirects ?? [],
+  ((redirectsJson as unknown) as { redirects?: RedirectRule[] }).redirects ?? [],
 );
 
 // Root-relative hrefs only (leading "/"; never protocol-relative "//"
