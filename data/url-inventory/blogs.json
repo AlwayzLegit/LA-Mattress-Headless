@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify blogs inventory snapshot",
-  "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via Shopify MCP",
-  "$pulledAt": "2026-05-24T08:33:07.966Z",
+  "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
+  "$pulledAt": "2026-05-25T09:14:35.787Z",
   "$count": 7,
   "blogs": [
     {
@@ -2768,7 +2768,7 @@
       "handle": "mattress-buying-guide",
       "id": "gid://shopify/Blog/89331695869",
       "title": "Mattress Buying Guide | Find Your Perfect Mattress",
-      "updatedAt": "2026-05-23T14:23:01Z",
+      "updatedAt": "2026-05-25T08:54:54Z",
       "articles": [
         {
           "handle": "12-steps-buying-new-mattress-5647",
@@ -3800,7 +3800,7 @@
           "title": "Sealy vs Beautyrest Mattresses Comparison 2024",
           "isPublished": true,
           "publishedAt": "2024-03-28T20:38:02Z",
-          "updatedAt": "2026-05-23T06:14:53Z"
+          "updatedAt": "2026-05-25T08:54:51Z"
         },
         {
           "handle": "best-mattress-for-bunk-bed-in-2024",
@@ -3832,7 +3832,7 @@
           "title": "Best Mattresses for the Morbidly Obese in 2024",
           "isPublished": true,
           "publishedAt": "2024-04-12T19:01:14Z",
-          "updatedAt": "2026-05-23T06:17:33Z"
+          "updatedAt": "2026-05-25T08:54:41Z"
         },
         {
           "handle": "best-10-mattresses-for-murphy-beds-in-2024",
@@ -3880,7 +3880,7 @@
           "title": "Englander Mattress Prices 2024",
           "isPublished": true,
           "publishedAt": "2024-04-28T12:25:04Z",
-          "updatedAt": "2026-05-23T06:22:09Z"
+          "updatedAt": "2026-05-25T08:54:46Z"
         },
         {
           "handle": "where-to-buy-englander-mattress-in-la",
@@ -3912,7 +3912,7 @@
           "title": "Best Mattress for Disabled Person",
           "isPublished": true,
           "publishedAt": "2024-05-03T21:08:59Z",
-          "updatedAt": "2026-05-23T06:22:25Z"
+          "updatedAt": "2026-05-25T08:54:35Z"
         },
         {
           "handle": "best-10-inch-memory-foam-queen-mattress-in-la-in-2024",
@@ -4080,7 +4080,7 @@
           "title": "Best Mattress for Incontinence",
           "isPublished": true,
           "publishedAt": "2024-05-30T16:42:03Z",
-          "updatedAt": "2026-05-23T06:24:45Z"
+          "updatedAt": "2026-05-25T08:54:37Z"
         },
         {
           "handle": "best-mattress-for-floor-bed",
@@ -4088,7 +4088,7 @@
           "title": "Best Mattress for Floor Bed",
           "isPublished": true,
           "publishedAt": "2024-06-01T07:28:05Z",
-          "updatedAt": "2026-05-23T06:24:51Z"
+          "updatedAt": "2026-05-25T08:54:36Z"
         },
         {
           "handle": "best-mattress-for-rental-property",
@@ -4128,7 +4128,7 @@
           "title": "Best Mattress for Side and Stomach Sleepers",
           "isPublished": true,
           "publishedAt": "2024-06-08T20:54:15Z",
-          "updatedAt": "2026-05-23T06:25:11Z"
+          "updatedAt": "2026-05-25T08:54:39Z"
         },
         {
           "handle": "best-mattress-for-shoulder-and-neck-pain",
@@ -4136,7 +4136,7 @@
           "title": "Best Mattress for Shoulder and Neck Pain",
           "isPublished": true,
           "publishedAt": "2024-06-08T08:59:47Z",
-          "updatedAt": "2026-05-23T06:25:18Z"
+          "updatedAt": "2026-05-25T08:54:38Z"
         },
         {
           "handle": "best-mattress-for-osteoporosis",
@@ -4168,7 +4168,7 @@
           "title": "Best Mattress for Older Adults",
           "isPublished": true,
           "publishedAt": "2024-06-14T04:21:27Z",
-          "updatedAt": "2026-05-23T06:25:46Z"
+          "updatedAt": "2026-05-25T08:54:37Z"
         },
         {
           "handle": "best-mattress-for-large-people",
@@ -4248,7 +4248,7 @@
           "title": "Best Mattress for Chronic Pain",
           "isPublished": true,
           "publishedAt": "2024-06-28T09:53:57Z",
-          "updatedAt": "2026-05-23T06:26:25Z"
+          "updatedAt": "2026-05-25T08:54:34Z"
         },
         {
           "handle": "best-mattress-for-sciatica",
@@ -4272,7 +4272,7 @@
           "title": "What Type of Mattress is Best for Child",
           "isPublished": true,
           "publishedAt": "2024-07-01T18:59:49Z",
-          "updatedAt": "2026-05-23T06:26:40Z"
+          "updatedAt": "2026-05-25T08:54:52Z"
         },
         {
           "handle": "how-to-price-a-used-tempurpedic-mattress",
@@ -4280,7 +4280,7 @@
           "title": "How to Price a Used Tempurpedic Mattress",
           "isPublished": true,
           "publishedAt": "2024-07-02T18:09:37Z",
-          "updatedAt": "2026-05-23T06:26:46Z"
+          "updatedAt": "2026-05-25T08:54:49Z"
         },
         {
           "handle": "how-to-price-a-used-stearns-foster-mattress",
@@ -4312,7 +4312,7 @@
           "title": "How to Price a Used Englander Mattress",
           "isPublished": true,
           "publishedAt": "2024-07-06T08:36:26Z",
-          "updatedAt": "2026-05-23T06:27:00Z"
+          "updatedAt": "2026-05-25T08:54:49Z"
         },
         {
           "handle": "how-to-price-a-used-beautyrest-mattress",
@@ -4416,7 +4416,7 @@
           "title": "Best Mattresses for 3 Quarter Size Beds",
           "isPublished": true,
           "publishedAt": "2024-07-19T18:54:29Z",
-          "updatedAt": "2026-05-23T06:27:35Z"
+          "updatedAt": "2026-05-25T08:54:41Z"
         },
         {
           "handle": "largest-mattresses-you-can-buy-in-2024",
@@ -4448,7 +4448,7 @@
           "title": "Top Talalay Latex Mattresses 2024",
           "isPublished": true,
           "publishedAt": "2024-07-23T20:01:37Z",
-          "updatedAt": "2026-05-23T06:27:50Z"
+          "updatedAt": "2026-05-25T08:54:52Z"
         },
         {
           "handle": "best-place-to-buy-a-king-sized-mattress-in-la",
@@ -4552,7 +4552,7 @@
           "title": "Serta Pedic vs Tempurpedic: Why Tempurpedic is the Better Option",
           "isPublished": true,
           "publishedAt": "2024-08-07T18:42:08Z",
-          "updatedAt": "2026-05-23T06:28:39Z"
+          "updatedAt": "2026-05-25T08:54:51Z"
         },
         {
           "handle": "sleep-science-vs-tempurpedic",
@@ -4600,7 +4600,7 @@
           "title": "Best Stearns and Foster Mattress for Side Sleepers",
           "isPublished": true,
           "publishedAt": "2024-08-16T04:26:15Z",
-          "updatedAt": "2026-05-23T06:29:04Z"
+          "updatedAt": "2026-05-25T08:54:44Z"
         },
         {
           "handle": "best-mattress-for-pressure-points",
@@ -4616,7 +4616,7 @@
           "title": "Best mattress for Fat Side Sleepers",
           "isPublished": true,
           "publishedAt": "2024-08-16T04:21:07Z",
-          "updatedAt": "2026-05-23T06:29:18Z"
+          "updatedAt": "2026-05-25T08:54:36Z"
         },
         {
           "handle": "what-to-do-about-a-beautyrest-black-mattress-sagging",
@@ -4680,7 +4680,7 @@
           "title": "Best Mattress For Peripheral Neuropathy",
           "isPublished": true,
           "publishedAt": "2024-08-25T11:17:53Z",
-          "updatedAt": "2026-05-23T06:29:58Z"
+          "updatedAt": "2026-05-25T08:54:38Z"
         },
         {
           "handle": "best-mattress-for-300-pound-person",
@@ -4688,7 +4688,7 @@
           "title": "Best Mattress For 300 Pound Person",
           "isPublished": true,
           "publishedAt": "2024-08-27T10:47:26Z",
-          "updatedAt": "2026-05-23T06:30:07Z"
+          "updatedAt": "2026-05-25T08:54:33Z"
         },
         {
           "handle": "best-mattress-topper-for-pressure-points",
@@ -4752,7 +4752,7 @@
           "title": "Best Mattress For Bad Back",
           "isPublished": true,
           "publishedAt": "2024-09-05T11:45:03Z",
-          "updatedAt": "2026-05-23T06:30:50Z"
+          "updatedAt": "2026-05-25T08:54:34Z"
         },
         {
           "handle": "high-rise-bed-frames",
@@ -4776,7 +4776,7 @@
           "title": "Best Bed Sheets for Eczema",
           "isPublished": true,
           "publishedAt": "2024-09-07T13:42:33Z",
-          "updatedAt": "2026-05-23T06:31:03Z"
+          "updatedAt": "2026-05-25T08:54:31Z"
         },
         {
           "handle": "best-sheets-for-adjustable-beds",
@@ -4784,7 +4784,7 @@
           "title": "Best Sheets for Adjustable Beds",
           "isPublished": true,
           "publishedAt": "2024-09-09T12:35:39Z",
-          "updatedAt": "2026-05-23T06:31:10Z"
+          "updatedAt": "2026-05-25T08:54:44Z"
         },
         {
           "handle": "best-bed-sheets-for-oily-skin",
@@ -4792,7 +4792,7 @@
           "title": "Best Bed Sheets for Oily Skin",
           "isPublished": true,
           "publishedAt": "2024-09-10T14:20:57Z",
-          "updatedAt": "2026-05-23T06:31:17Z"
+          "updatedAt": "2026-05-25T08:54:32Z"
         },
         {
           "handle": "best-bed-sheets-for-allergies",
@@ -4832,7 +4832,7 @@
           "title": "Best Pillows for Vertigo",
           "isPublished": true,
           "publishedAt": "2024-09-16T20:31:14Z",
-          "updatedAt": "2026-05-23T06:31:37Z"
+          "updatedAt": "2026-05-25T08:54:42Z"
         },
         {
           "handle": "best-pillows-to-use-after-neck-surgery",
@@ -4840,7 +4840,7 @@
           "title": "Best Pillows to Use After Neck Surgery",
           "isPublished": true,
           "publishedAt": "2024-09-19T08:08:47Z",
-          "updatedAt": "2026-05-23T06:31:45Z"
+          "updatedAt": "2026-05-25T08:54:42Z"
         },
         {
           "handle": "buy-100-down-pillows-in-la",
@@ -4856,7 +4856,7 @@
           "title": "Best Hypoallergenic Pillows and Bedsheets",
           "isPublished": true,
           "publishedAt": "2024-09-20T08:04:40Z",
-          "updatedAt": "2026-05-23T06:31:51Z"
+          "updatedAt": "2026-05-25T08:54:33Z"
         },
         {
           "handle": "best-mattress-for-degenerative-disc-disease",
@@ -4880,7 +4880,7 @@
           "title": "Best Affordable Non-Toxic Mattresses",
           "isPublished": true,
           "publishedAt": "2024-09-23T17:00:46Z",
-          "updatedAt": "2026-05-23T06:32:12Z"
+          "updatedAt": "2026-05-25T08:54:30Z"
         },
         {
           "handle": "best-affordable-non-toxic-pillows",
@@ -4888,7 +4888,7 @@
           "title": "Best Affordable Non-Toxic Pillows",
           "isPublished": true,
           "publishedAt": "2024-09-24T16:03:08Z",
-          "updatedAt": "2026-05-23T06:32:20Z"
+          "updatedAt": "2026-05-25T08:54:30Z"
         },
         {
           "handle": "best-affordable-non-toxic-bedsheets",
@@ -4920,7 +4920,7 @@
           "title": "Best Mattress Topper for Heavy People",
           "isPublished": true,
           "publishedAt": "2024-09-29T09:02:50Z",
-          "updatedAt": "2026-05-23T06:32:34Z"
+          "updatedAt": "2026-05-25T08:54:39Z"
         },
         {
           "handle": "best-mattress-topper-for-rheumatoid-arthritis",
@@ -4936,7 +4936,7 @@
           "title": "Best Mattress Topper To Make Bed Softer",
           "isPublished": true,
           "publishedAt": "2024-10-01T15:11:48Z",
-          "updatedAt": "2026-05-23T06:32:48Z"
+          "updatedAt": "2026-05-25T08:54:41Z"
         },
         {
           "handle": "best-mattress-topper-for-neck-pain",
@@ -4944,7 +4944,7 @@
           "title": "Best Mattress Topper for Neck Pain",
           "isPublished": true,
           "publishedAt": "2024-10-02T16:46:38Z",
-          "updatedAt": "2026-05-23T06:32:57Z"
+          "updatedAt": "2026-05-25T08:54:40Z"
         },
         {
           "handle": "best-twin-mattresses-for-toddlers",
@@ -4976,7 +4976,7 @@
           "title": "Best Mattress Topper for Kids",
           "isPublished": true,
           "publishedAt": "2024-10-07T19:45:41Z",
-          "updatedAt": "2026-05-23T06:33:26Z"
+          "updatedAt": "2026-05-25T08:54:40Z"
         },
         {
           "handle": "best-mattress-topper-for-shoulder-pain",
@@ -5008,7 +5008,7 @@
           "title": "How To Clean Urine From Tempurpedic Mattress",
           "isPublished": true,
           "publishedAt": "2024-10-11T19:01:12Z",
-          "updatedAt": "2026-05-23T06:34:08Z"
+          "updatedAt": "2026-05-25T08:54:48Z"
         },
         {
           "handle": "how-to-flip-a-tempurpedic-mattress",
@@ -5072,7 +5072,7 @@
           "title": "Best All Wooden Bedroom Sets",
           "isPublished": true,
           "publishedAt": "2024-10-21T19:54:22Z",
-          "updatedAt": "2026-05-23T06:34:43Z"
+          "updatedAt": "2026-05-25T08:54:31Z"
         },
         {
           "handle": "best-2-tone-bedroom-sets-to-buy-online-in-la",
@@ -5128,7 +5128,7 @@
           "title": "How Mattress Firmness Affects Sleep Quality And Pain Relief",
           "isPublished": true,
           "publishedAt": "2024-10-30T11:10:20Z",
-          "updatedAt": "2026-05-23T06:35:11Z"
+          "updatedAt": "2026-05-25T08:54:48Z"
         },
         {
           "handle": "the-art-of-mattress-care-how-to-make-your-mattress-last-a-lifetime",
@@ -5144,7 +5144,7 @@
           "title": "Why Temperature Control in Mattresses is Key to Nightly Recovery",
           "isPublished": true,
           "publishedAt": "2024-11-01T12:21:54Z",
-          "updatedAt": "2026-05-23T06:35:18Z"
+          "updatedAt": "2026-05-25T08:54:54Z"
         },
         {
           "handle": "how-hybrid-mattresses-transform-couple-s-sleep-and-relationship-health",
@@ -5280,7 +5280,7 @@
           "title": "Exploring Mattress Thickness: Why Less Isn’t Always More for Comfort",
           "isPublished": true,
           "publishedAt": "2024-11-21T18:03:39Z",
-          "updatedAt": "2026-05-23T06:36:23Z"
+          "updatedAt": "2026-05-25T08:54:47Z"
         },
         {
           "handle": "cooling-mattresses-for-couples-who-overheat-the-unseen-benefits-beyond-comfort-1",
@@ -5424,7 +5424,7 @@
           "title": "Can I Throw My Mattress in the Dumpster?",
           "isPublished": true,
           "publishedAt": "2024-12-11T18:36:18Z",
-          "updatedAt": "2026-05-23T06:37:30Z"
+          "updatedAt": "2026-05-25T08:54:45Z"
         },
         {
           "handle": "does-a-mattress-pad-go-under-the-sheet",
@@ -5440,7 +5440,7 @@
           "title": "How long will a Chattam and Wells Mattress last?",
           "isPublished": true,
           "publishedAt": "2024-12-13T17:19:19Z",
-          "updatedAt": "2026-05-23T06:37:44Z"
+          "updatedAt": "2026-05-25T08:54:47Z"
         },
         {
           "handle": "how-to-sanitize-a-mattress-after-covid",
@@ -6824,7 +6824,7 @@
           "title": "Do Firm Mattresses Really Last Longer? Durability Explained",
           "isPublished": true,
           "publishedAt": "2025-07-20T22:49:51Z",
-          "updatedAt": "2026-05-23T06:44:23Z"
+          "updatedAt": "2026-05-25T08:54:46Z"
         },
         {
           "handle": "where-to-buy-englander-mattresses-in-los-angeles",
@@ -6832,7 +6832,7 @@
           "title": "Where to Buy Englander Mattresses in Los Angeles?",
           "isPublished": true,
           "publishedAt": "2025-07-21T20:38:55Z",
-          "updatedAt": "2026-05-23T06:44:30Z"
+          "updatedAt": "2026-05-25T08:54:53Z"
         },
         {
           "handle": "can-an-englander-visco-mattress-be-used-on-adjustable-beds",
@@ -6984,7 +6984,7 @@
           "title": "Best Practices for Preventing Mold and Mildew in Foam Mattresses",
           "isPublished": true,
           "publishedAt": "2025-08-16T17:34:52Z",
-          "updatedAt": "2026-05-23T06:46:08Z"
+          "updatedAt": "2026-05-25T08:54:43Z"
         },
         {
           "handle": "signs-of-bed-bugs-on-foam-mattresses-and-what-to-do",
@@ -7000,7 +7000,7 @@
           "title": "Pros and Cons of Using an Air Mattress Long-Term",
           "isPublished": true,
           "publishedAt": "2025-08-18T14:48:24Z",
-          "updatedAt": "2026-05-01T23:11:50Z"
+          "updatedAt": "2026-05-25T08:54:51Z"
         },
         {
           "handle": "full-size-mattress-measurements-room-layout-tips",
@@ -7016,7 +7016,7 @@
           "title": "Do All Englander Mattresses Contain Latex?",
           "isPublished": true,
           "publishedAt": "2025-08-20T16:17:18Z",
-          "updatedAt": "2026-05-23T06:46:28Z"
+          "updatedAt": "2026-05-25T08:54:45Z"
         },
         {
           "handle": "california-king-vs-king-what-s-the-real-difference",
@@ -7040,7 +7040,7 @@
           "title": "Are Innerspring Mattresses Still a Good Choice in 2025?",
           "isPublished": true,
           "publishedAt": "2025-08-22T16:09:59Z",
-          "updatedAt": "2026-05-23T06:46:41Z"
+          "updatedAt": "2026-05-25T08:54:29Z"
         },
         {
           "handle": "do-mattress-covers-actually-help-with-allergies",
@@ -7072,7 +7072,7 @@
           "title": "Mattress Trial Periods: What to Know Before You Buy",
           "isPublished": true,
           "publishedAt": "2025-08-25T17:11:01Z",
-          "updatedAt": "2026-03-25T14:05:54Z"
+          "updatedAt": "2026-05-25T08:54:50Z"
         },
         {
           "handle": "do-you-need-a-mattress-cover-for-the-box-spring-too",
@@ -7648,7 +7648,7 @@
       "handle": "sleep-blog",
       "id": "gid://shopify/Blog/89331728637",
       "title": "Sleep Blog | Tips, Research & Wellness",
-      "updatedAt": "2026-05-23T06:15:19Z",
+      "updatedAt": "2026-05-25T08:54:54Z",
       "articles": [
         {
           "handle": "clothing-sleep-6073",
@@ -8104,7 +8104,7 @@
           "title": "Can You Wash Tempurpedic Pillows?",
           "isPublished": true,
           "publishedAt": "2024-03-12T05:19:07Z",
-          "updatedAt": "2026-05-23T06:12:51Z"
+          "updatedAt": "2026-05-25T08:54:54Z"
         },
         {
           "handle": "best-mattress-after-back-surgery-complete-guide",
@@ -8656,7 +8656,7 @@
       "handle": "sleep-health",
       "id": "gid://shopify/Blog/89331794173",
       "title": "Sleep Health | Science, Benefits & Tips",
-      "updatedAt": "2026-05-23T06:22:17Z",
+      "updatedAt": "2026-05-25T08:54:55Z",
       "articles": [
         {
           "handle": "cant-sleep-caffeine-297634",
@@ -9016,7 +9016,7 @@
           "title": "Can Cockroaches Live in a Mattress?",
           "isPublished": true,
           "publishedAt": "2024-03-15T07:45:05Z",
-          "updatedAt": "2026-05-23T06:13:18Z"
+          "updatedAt": "2026-05-25T08:54:55Z"
         },
         {
           "handle": "how-to-sleep-after-back-surgery",

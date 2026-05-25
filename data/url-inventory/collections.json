@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify collections inventory snapshot",
-  "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via Shopify MCP",
-  "$pulledAt": "2026-05-24T07:42:13.490Z",
+  "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
+  "$pulledAt": "2026-05-25T09:14:35.783Z",
   "$count": 65,
   "collections": [
     {
@@ -163,7 +163,7 @@
       "title": "Mattress Toppers",
       "productsCount": 1,
       "updatedAt": "2026-05-23T13:08:55Z",
-      "seoTitle": "Mattress Toppers \u2014 Memory Foam, Latex & Cooling | LA Mattress Store",
+      "seoTitle": "Mattress Toppers — Memory Foam, Latex & Cooling | LA Mattress Store",
       "seoDescription": "Shop mattress toppers in memory foam, latex, cooling gel, and plush fiberfill. 2\" to 4\" thickness for pressure relief, cooling, or softening a too-firm bed. All sizes, free delivery."
     },
     {
@@ -280,8 +280,8 @@
       "title": "Spring Air Mattresses",
       "productsCount": 15,
       "updatedAt": "2026-05-20T09:07:49Z",
-      "seoTitle": "Spring Air Mattresses in Los Angeles \u00b7 LA Mattress Store",
-      "seoDescription": "Shop Spring Air mattresses in Los Angeles \u2014 Back Supporter hybrids, Tradition pillow tops, Value Collection innersprings. American brand since 1926. Free white-glove delivery, same-day in LA."
+      "seoTitle": "Spring Air Mattresses in Los Angeles · LA Mattress Store",
+      "seoDescription": "Shop Spring Air mattresses in Los Angeles — Back Supporter hybrids, Tradition pillow tops, Value Collection innersprings. American brand since 1926. Free white-glove delivery, same-day in LA."
     },
     {
       "handle": "tempur-pedic-mattresses",
@@ -523,8 +523,8 @@
       "title": "Bed Frames - Bedding Support",
       "productsCount": 8,
       "updatedAt": "2026-05-20T09:08:28Z",
-      "seoTitle": "Bed Frames \u2014 Platform, Metal & Adjustable | LA Mattress",
-      "seoDescription": "Shop platform, metal, upholstered, and adjustable-base-compatible bed frames in twin\u2013Cal King. Free white-glove delivery + assembly across Los Angeles."
+      "seoTitle": "Bed Frames — Platform, Metal & Adjustable | LA Mattress",
+      "seoDescription": "Shop platform, metal, upholstered, and adjustable-base-compatible bed frames in twin–Cal King. Free white-glove delivery + assembly across Los Angeles."
     },
     {
       "handle": "rize-pillows",
@@ -559,7 +559,7 @@
       "title": "Memorial Day Mattress Sale",
       "productsCount": 16,
       "updatedAt": "2026-05-20T09:08:28Z",
-      "seoTitle": "Memorial Day Mattress Sale 2026 \u2014 LA Mattress Store",
+      "seoTitle": "Memorial Day Mattress Sale 2026 — LA Mattress Store",
       "seoDescription": "Memorial Day sale on Tempur-Pedic, Helix, Stearns & Foster, Diamond, Spring Air, and more. Free white-glove delivery and 120-night exchange on every mattress."
     },
     {
@@ -586,7 +586,7 @@
       "title": "Bedding",
       "productsCount": 40,
       "updatedAt": "2026-05-23T15:46:12Z",
-      "seoTitle": "Bedding \u2014 Sheets, Pillows, Comforters & Protectors | LA Mattress",
+      "seoTitle": "Bedding — Sheets, Pillows, Comforters & Protectors | LA Mattress",
       "seoDescription": "Shop sheets, pillows, comforters, and mattress protectors that pair with our mattresses. Soft microfiber, cooling Tencel, allergen-safe protectors. Free LA delivery."
     }
   ]
