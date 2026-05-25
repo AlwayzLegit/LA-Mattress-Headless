@@ -247,7 +247,20 @@ async function pullRedirects() {
       const d = await gql(Q, { first: 50, after });
       return d.urlRedirects;
     });
-    return nodes.map((n) => ({ id: n.id, path: n.path, target: n.target }));
+    // Map Shopify's GraphQL field names (path, target) to the schema
+    // the rest of the codebase reads (source, destination, permanent).
+    // This is the schema `app/sitemap.ts` and `next.config.mjs#redirects()`
+    // both consume — emitting `path`/`target` here makes both consumers
+    // filter every entry as malformed and silently drop ALL redirects
+    // (including the ~1,100 critical legacy Hydrogen-era URL rules).
+    // All Shopify URL redirects are 301-permanent by spec — there's no
+    // temporary-redirect type in the urlRedirects API.
+    return nodes.map((n) => ({
+      id: n.id,
+      source: n.path,
+      destination: n.target,
+      permanent: true,
+    }));
   } catch (err) {
     // urlRedirects requires the read_url_redirects scope (separate from
     // read_themes in Admin API 2024-10+). Rather than failing the entire
@@ -278,7 +291,7 @@ function csvEscape(s) {
 function redirectsToCsv(redirects) {
   // Shopify Admin URL Redirects import format: Redirect from,Redirect to
   const header = 'Redirect from,Redirect to';
-  const rows = redirects.map((r) => `${csvEscape(r.path)},${csvEscape(r.target)}`);
+  const rows = redirects.map((r) => `${csvEscape(r.source)},${csvEscape(r.destination)}`);
   return [header, ...rows].join('\n') + '\n';
 }
 
