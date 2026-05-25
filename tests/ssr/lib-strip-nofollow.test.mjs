@@ -38,9 +38,40 @@ test('isInternalHref: protocol-relative // is external (not same-origin guarante
   assert.equal(isInternalHref('//www.mattressstoreslosangeles.com/foo'), false);
 });
 
-test('isInternalHref: absolute http(s) URL is external', () => {
+test('isInternalHref: absolute http(s) URL is external WITHOUT siteOrigin', () => {
   assert.equal(isInternalHref('https://judge.me/u/reviewer'), false);
   assert.equal(isInternalHref('http://example.com/'), false);
+});
+
+test('isInternalHref: absolute self-origin URL is internal WITH siteOrigin', () => {
+  // The Judge.me widget injects same-site links in absolute form (e.g.
+  // `https://mattressstoreslosangeles.com/products/X`). With
+  // siteOrigin supplied, those are treated as internal.
+  // 2026-05-25 SEMrush drill-down: all 299 nofollowed-internal-link
+  // flags were absolute self-URLs on PDPs slipping past the old check.
+  const SITE = 'https://mattressstoreslosangeles.com';
+  assert.equal(isInternalHref(`${SITE}/products/foo`, SITE), true);
+  assert.equal(isInternalHref(`${SITE}/`, SITE), true);
+  assert.equal(isInternalHref(SITE, SITE), true);
+  assert.equal(isInternalHref(`${SITE}?utm=x`, SITE), true);
+  assert.equal(isInternalHref(`${SITE}#section`, SITE), true);
+});
+
+test('isInternalHref: cross-origin URL stays external even with siteOrigin', () => {
+  // External URLs that don't match the current site origin keep
+  // nofollow semantics.
+  const SITE = 'https://mattressstoreslosangeles.com';
+  assert.equal(isInternalHref('https://judge.me/u/reviewer', SITE), false);
+  assert.equal(isInternalHref('https://www.facebook.com/lamattress', SITE), false);
+});
+
+test('isInternalHref: prefix-injection attempt is NOT internal (boundary check)', () => {
+  // Defensive: `https://mattressstoreslosangeles.com.evil.com/x` must
+  // NOT match `https://mattressstoreslosangeles.com` as a bare prefix.
+  // The boundary chars (`/` `?` `#`) after the origin block this.
+  const SITE = 'https://mattressstoreslosangeles.com';
+  assert.equal(isInternalHref('https://mattressstoreslosangeles.com.evil.com/x', SITE), false);
+  assert.equal(isInternalHref('https://mattressstoreslosangeles.comevil.com', SITE), false);
 });
 
 test('isInternalHref: empty / null / undefined are external (safe default)', () => {
@@ -81,6 +112,33 @@ test('strip: external href keeps nofollow (legitimate external use)', () => {
   // External nofollow is the canonical use case — left intact.
   assert.equal(
     stripInternalNofollowFromRel('https://judge.me/u/whatever', 'nofollow'),
+    'nofollow',
+  );
+});
+
+test('strip: absolute self-host href + nofollow → empty rel (WITH siteOrigin)', () => {
+  // Closes the 2026-05-25 SEMrush flag: PDPs had absolute self-URL
+  // links with rel="nofollow" injected by Judge.me's widget post-
+  // hydration. The previous strip pass treated those as external
+  // because they didn't start with `/` or `#`. With siteOrigin
+  // supplied, same-host absolute URLs are recognized as internal.
+  const SITE = 'https://mattressstoreslosangeles.com';
+  assert.equal(
+    stripInternalNofollowFromRel(`${SITE}/products/diamond-mattress`, 'nofollow', SITE),
+    '',
+  );
+  assert.equal(
+    stripInternalNofollowFromRel(`${SITE}/products/diamond-mattress`, 'nofollow noopener', SITE),
+    'noopener',
+  );
+});
+
+test('strip: cross-origin href + nofollow keeps nofollow even WITH siteOrigin', () => {
+  // Sanity-check the boundary: external links still get nofollow even
+  // when a siteOrigin is provided.
+  const SITE = 'https://mattressstoreslosangeles.com';
+  assert.equal(
+    stripInternalNofollowFromRel('https://judge.me/u/reviewer', 'nofollow', SITE),
     'nofollow',
   );
 });
