@@ -223,12 +223,24 @@ test('breadcrumb has 3 levels: Home > Blog > Article', () => {
   assert.equal(bc.itemListElement[2].name, 'Best Mattress in Los Angeles');
 });
 
-test('breadcrumb @id matches BlogPosting.breadcrumb reference', () => {
+test('BlogPosting does NOT emit a `breadcrumb` property (invalid per schema.org)', () => {
+  // Schema.org's `breadcrumb` property is defined on `WebPage`, NOT on
+  // `Article` / `CreativeWork` / `BlogPosting`. SEMrush flagged this as
+  // the SOLE schema-validation error on all 666 affected article pages
+  // in the 2026-05-25 drill-down: "The property breadcrumb is not
+  // recognized by Schema.org vocabulary." The BreadcrumbList is still
+  // emitted as a sibling JSON-LD block — Google's entity graph
+  // connects the two for the same page via the URL / @id, no inline
+  // back-reference required.
   const lds = getArticleJsonLd(makeArticle());
   const article = getArticle(lds);
+  assert.equal(article.breadcrumb, undefined,
+    'BlogPosting must not declare `breadcrumb` — it is a WebPage-only property');
+  // The BreadcrumbList sibling block still emits and still has its
+  // canonical #breadcrumb @id (no change to that block — only the
+  // back-reference on the BlogPosting was removed).
   const bc = getBreadcrumb(lds);
-  // The two are connected by @id — same URL fragment with #breadcrumb.
-  assert.equal(article.breadcrumb['@id'], bc['@id']);
+  assert.ok(bc, 'BreadcrumbList sibling block must still emit');
   assert.match(bc['@id'], /#breadcrumb$/);
 });
 

@@ -210,10 +210,15 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     inLanguage: 'en-US',
     headline: article.title,
-    // breadcrumb @id ties this BlogPosting to the BreadcrumbList
-    // emitted alongside it. Same connection pattern as Product +
-    // BreadcrumbList on PDP / CollectionPage + BreadcrumbList on PLP.
-    breadcrumb: { '@id': `${url}#breadcrumb` },
+    // No `breadcrumb` property on BlogPosting — schema.org defines
+    // `breadcrumb` only on `WebPage` (not Article / CreativeWork /
+    // BlogPosting). The 2026-05-25 SEMrush drill-down identified this
+    // as the SOLE schema-validation error on all 666 flagged article
+    // pages: "The property breadcrumb is not recognized by Schema.org
+    // vocabulary." The BreadcrumbList is still emitted as a sibling
+    // JSON-LD block (with `@id: ${url}#breadcrumb`) — Google's entity
+    // graph reads the two as connected for the same page via the URL
+    // / @id even without an inline back-reference on the BlogPosting.
     ...(ldDescription ? { description: ldDescription } : {}),
     datePublished: article.publishedAt,
     // Google's BlogPosting recommends `dateModified` alongside

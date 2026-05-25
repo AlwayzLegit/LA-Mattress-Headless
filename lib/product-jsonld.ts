@@ -7,10 +7,10 @@
  * (cowork QA). Same fix class as lib/page-jsonld.ts (#166).
  *
  * Schema emitted:
- *   - Product (with @id, breadcrumb @id link, AggregateOffer + per-variant
- *     Offers, AggregateRating, MerchantReturnPolicy, OfferShippingDetails,
- *     additionalProperty[] for mattress specs, material, dateModified)
- *   - BreadcrumbList (with matching @id)
+ *   - Product (with @id, AggregateOffer + per-variant Offers,
+ *     AggregateRating, MerchantReturnPolicy, OfferShippingDetails,
+ *     additionalProperty[] for mattress specs, material)
+ *   - BreadcrumbList (sibling block, sharing the page URL via @id)
  *
  * Both link to the sitewide #organization / #website nodes emitted in
  * app/layout.tsx so the structured-data graph reads as one connected
@@ -306,11 +306,15 @@ export function getProductJsonLd(product: Product): ProductLd[] {
     '@type': 'Product',
     '@id': `${productUrl}#product`,
     url: productUrl,
-    // breadcrumb @id ties this Product to the BreadcrumbList emitted
-    // alongside it (same layout.tsx render). Google's structured-data
-    // graph parses the two as connected entities for a single page
-    // instead of two disjoint nodes.
-    breadcrumb: { '@id': `${productUrl}#breadcrumb` },
+    // No `breadcrumb` property on Product — schema.org defines
+    // `breadcrumb` only on `WebPage`. Product → Thing (sibling branch
+    // to CreativeWork → WebPage), so this property is invalid here.
+    // The 2026-05-25 SEMrush drill-down flagged this on all 299
+    // affected PDPs: "The property breadcrumb is not recognized by
+    // Schema.org vocabulary." Sibling BreadcrumbList JSON-LD block
+    // with `@id: ${productUrl}#breadcrumb` still emits; Google's
+    // entity graph picks up the page-level connection via the URL
+    // / @id without needing the back-reference on Product itself.
     name: product.title,
     ...(descriptionTrimmed ? { description: descriptionTrimmed } : {}),
     ...(firstSku ? { sku: firstSku, mpn: firstSku } : {}),

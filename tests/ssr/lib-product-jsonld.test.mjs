@@ -285,6 +285,23 @@ test('breadcrumb has 3 levels when product has only meta collections', () => {
   assert.equal(breadcrumb.itemListElement.length, 3);
 });
 
+test('Product does NOT emit a `breadcrumb` property (invalid per schema.org)', () => {
+  // Schema.org's `breadcrumb` property is defined on `WebPage`, NOT on
+  // `Product` (Product → Thing; sibling branch to CreativeWork →
+  // WebPage). SEMrush 2026-05-25 drill-down flagged this as the SOLE
+  // schema-validation error on all 299 affected PDPs: "The property
+  // breadcrumb is not recognized by Schema.org vocabulary." The
+  // BreadcrumbList sibling block still emits — Google's entity graph
+  // picks up the page-level connection via the URL / @id.
+  const ld = getProduct(getProductJsonLd(makeProduct()));
+  assert.equal(ld.breadcrumb, undefined,
+    'Product must not declare `breadcrumb` — it is a WebPage-only property');
+  // BreadcrumbList sibling still emits.
+  const breadcrumb = getBreadcrumb(getProductJsonLd(makeProduct()));
+  assert.ok(breadcrumb, 'BreadcrumbList sibling block must still emit');
+  assert.match(breadcrumb['@id'], /#breadcrumb$/);
+});
+
 /* --- Schema integrity smoke check -------------------------------------- */
 
 test('Product LD has the required Google rich-results fields', () => {
