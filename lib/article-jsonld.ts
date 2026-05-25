@@ -66,9 +66,18 @@ function firstNonEmpty(...candidates: (string | null | undefined)[]): string {
 function extractFaqFromHtml(html: string): Array<{ question: string; answer: string }> {
   if (!html) return [];
   const faqs: Array<{ question: string; answer: string }> = [];
-  // <h3 [attrs]?>...?</h3> followed by zero/more whitespace and <p ...>...</p>.
-  // The non-greedy [\s\S]*? matches across newlines (HTML body has lots of those).
-  const re = /<h3\b[^>]*>([\s\S]*?)<\/h3>\s*<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  // Match `<h3>question?</h3>` immediately followed (whitespace only) by
+  // `<p>answer</p>`. The `(?:(?!<h3\b)[\s\S])*?` "tempered" non-greedy
+  // body forbids another `<h3` open inside the captured question text —
+  // without this, the engine backtracks across multiple non-question
+  // h3 sections (e.g. "Good fit if you:" + "How to Care for...") to
+  // find a `</h3>\s*<p>` boundary further down, collapsing many
+  // sections into one giant garbage "question" that ends in `?`
+  // (because the LAST intermediate h3 happens to be a real question).
+  // That malformed FAQPage is what SEMrush flagged on ~666 article
+  // pages in the 2026-05-25 audit. Tempered token = at each position
+  // inside the capture, the engine cannot be at a `<h3` opening.
+  const re = /<h3\b[^>]*>((?:(?!<h3\b)[\s\S])*?)<\/h3>\s*<p\b[^>]*>([\s\S]*?)<\/p>/gi;
   const stripTags = (s: string) => s.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
   // Cheap entity decode for the common ones — `&amp; &lt; &gt; &quot; &#39; &nbsp;`.
   // Google's validator runs HTML-aware comparison so light decoding is fine.
@@ -150,7 +159,16 @@ function extractHowToStepsFromHtml(html: string): Array<{ name: string; text: st
   // HTML (rather than text directly) so the body capture isn't
   // confused by inline tags; the step-prefix check then runs against
   // the strip-tags'd text.
-  const re = /<h[23]\b[^>]*>([\s\S]*?)<\/h[23]>([\s\S]*?)(?=<h[23]\b|$)/gi;
+  //
+  // The heading-inner uses a tempered non-greedy token
+  // `(?:(?!<h[23]\b)[\s\S])*?` so it cannot backtrack across another
+  // `<h2>` or `<h3>` opening — without this, a non-step heading
+  // sandwiched between two step headings (e.g. an editorial pull-
+  // quote h3 between Step 1 and Step 2) caused the heading capture
+  // to swallow Step 2's opening into Step 1's "name", producing a
+  // malformed HowToStep. Companion fix to the FAQ-extractor
+  // tempering above (2026-05-25 SEMrush audit, 666 article pages).
+  const re = /<h[23]\b[^>]*>((?:(?!<h[23]\b)[\s\S])*?)<\/h[23]>([\s\S]*?)(?=<h[23]\b|$)/gi;
   // Strict separator class — `[:—–-]` only. `.` is intentionally
   // excluded so `<h2>Step 1.5 ...</h2>` doesn't false-match as "Step 1".
   const STEP_PREFIX = /^Step\s+(\d+)\s*[:—–-]\s*(.+)$/i;
