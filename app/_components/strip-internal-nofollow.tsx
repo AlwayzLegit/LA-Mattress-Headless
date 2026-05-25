@@ -38,11 +38,21 @@ export function StripInternalNofollow() {
     const root = document.querySelector('.judgeme-widget-mount');
     if (!root) return;
 
+    // Pass `window.location.origin` so absolute self-host URLs (e.g.
+    // `https://mattressstoreslosangeles.com/products/X`) count as
+    // internal too. Judge.me's widget injects same-site permalinks in
+    // absolute form; the 2026-05-25 SEMrush drill-down identified these
+    // as the source of all 299 nofollowed-internal-link flags (one
+    // self-loop per PDP). Without `siteOrigin`, isInternalHref only
+    // matches `/path` / `#frag` and the absolute self-links slipped
+    // past.
+    const siteOrigin = window.location.origin;
+
     const applyTo = (anchor: HTMLAnchorElement) => {
       const href = anchor.getAttribute('href');
       const rel = anchor.getAttribute('rel');
       if (!rel) return;
-      const cleaned = stripInternalNofollowFromRel(href, rel);
+      const cleaned = stripInternalNofollowFromRel(href, rel, siteOrigin);
       if (cleaned === rel) return;
       if (cleaned === '') {
         anchor.removeAttribute('rel');
