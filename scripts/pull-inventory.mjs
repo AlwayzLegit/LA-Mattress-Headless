@@ -34,14 +34,19 @@
  *   read_products              — products + variants
  *   read_content               — articles, blogs, comments
  *   read_online_store_pages    — Shopify Pages (the /pages/X routes)
- *   read_url_redirects         — URL redirects (separate scope from themes
- *                                in API version 2024-10+; the script
- *                                gracefully skips redirects + preserves the
- *                                existing redirects.json if this scope is
- *                                missing, so the pull still succeeds).
+ *   read_online_store_navigation
+ *                              — URL redirects (renamed scope; in 2024-10
+ *                                Shopify moved urlRedirects out of
+ *                                read_themes into the dedicated
+ *                                read_online_store_navigation scope per
+ *                                the GraphQL Admin API reference). The
+ *                                script gracefully skips redirects +
+ *                                preserves the existing redirects.json
+ *                                if this scope is missing, so the pull
+ *                                still succeeds.
  *
  * read_themes is NOT required despite older guidance saying so — redirects
- * moved to their own dedicated scope in 2024-10.
+ * moved to read_online_store_navigation in 2024-10.
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -249,19 +254,21 @@ async function pullRedirects() {
     });
     return nodes.map((n) => ({ id: n.id, path: n.path, target: n.target }));
   } catch (err) {
-    // urlRedirects requires the read_url_redirects scope (separate from
-    // read_themes in Admin API 2024-10+). Rather than failing the entire
-    // pull when the scope is missing, return null so main() preserves the
-    // existing redirects.json on disk — the alternative is overwriting
-    // 1000+ entries with [] and silently breaking every legacy redirect.
+    // urlRedirects requires the read_online_store_navigation scope
+    // (Shopify renamed this in 2024-10 — moved out of read_themes into
+    // a dedicated scope per the GraphQL Admin API reference). Rather
+    // than failing the entire pull when the scope is missing, return
+    // null so main() preserves the existing redirects.json on disk —
+    // the alternative is overwriting 1000+ entries with [] and silently
+    // breaking every legacy redirect.
     if (/access\s*denied|ACCESS_DENIED/i.test(err?.message ?? '')) {
       console.warn(
         '\n[warning] urlRedirects access denied — token is missing the\n' +
-        '          `read_url_redirects` scope. Skipping redirects pull;\n' +
-        '          existing data/url-inventory/redirects.json is preserved.\n' +
-        '          Add the scope in Shopify Admin → Develop apps →\n' +
-        '          [app] → Configuration → API access scopes and reinstall\n' +
-        '          to re-issue the token.\n',
+        '          `read_online_store_navigation` scope. Skipping\n' +
+        '          redirects pull; existing data/url-inventory/redirects.json\n' +
+        '          is preserved. Add the scope in Shopify Admin → Develop\n' +
+        '          apps → [app] → Configuration → API access scopes and\n' +
+        '          reinstall to re-issue the token.\n',
       );
       return null;
     }
@@ -313,9 +320,9 @@ async function main() {
   const pgFile  = await writeJson('pages', pages);
   const blFile  = await writeJson('blogs', blogs);
   // redirects === null means pullRedirects() bailed out (missing
-  // read_url_redirects scope). Preserve the existing redirects.json +
-  // redirects.csv on disk in that case — overwriting with [] would
-  // silently break every legacy redirect.
+  // read_online_store_navigation scope). Preserve the existing
+  // redirects.json + redirects.csv on disk in that case — overwriting
+  // with [] would silently break every legacy redirect.
   const rdFile  = redirects === null ? null : await writeJson('redirects', redirects);
 
   if (redirects !== null) {
@@ -334,7 +341,7 @@ async function main() {
     console.log(`  ${rdFile} — ${redirects.length} redirects`);
     console.log(`  ${resolve(OUT_DIR, 'redirects.csv')} — same redirects, Shopify Admin import format`);
   } else {
-    console.log(`  data/url-inventory/redirects.json — preserved (read_url_redirects scope missing)`);
+    console.log(`  data/url-inventory/redirects.json — preserved (read_online_store_navigation scope missing)`);
   }
 }
 
