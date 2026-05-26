@@ -35,7 +35,22 @@ export type Showroom = {
   nearbyAreas: string[];
 };
 
-export const SHOWROOMS: Showroom[] = [
+/**
+ * Static fallback used when the Shopify metaobject fetch fails or is
+ * unconfigured. The live source of truth is `getShowrooms()` from
+ * lib/shopify/queries/showrooms.ts — merchants edit hours / phones /
+ * addresses / images via Shopify Admin → Content → Metaobjects →
+ * Showroom, and ISR picks the change up within an hour.
+ *
+ * Kept in code so the storefront never renders an empty showroom row
+ * if Shopify is unreachable; also serves as the seed for the initial
+ * Shopify metaobject entries.
+ *
+ * Old `SHOWROOMS` callers continue to work via the re-export below
+ * (back-compat). New code should prefer `await getShowrooms()` for
+ * the live list.
+ */
+export const FALLBACK_SHOWROOMS: Showroom[] = [
   {
     handle: 'koreatown-best-mattress-store',
     name: 'LA Mattress — Koreatown',
@@ -151,9 +166,27 @@ export function formatPhone(phone: string): string {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
+/**
+ * Synchronous lookup against the static fallback. Use when an async
+ * fetch isn't available (client components without context, build-time
+ * code paths). Prefer `findShowroomIn(showrooms, handle)` for code that
+ * already has the live array in hand.
+ */
 export function findShowroom(handle: string): Showroom | undefined {
-  return SHOWROOMS.find((s) => s.handle === handle);
+  return FALLBACK_SHOWROOMS.find((s) => s.handle === handle);
 }
+
+/**
+ * Pure lookup against an arbitrary showroom list — server callers that
+ * have already awaited `getShowrooms()` pass it here.
+ */
+export function findShowroomIn(showrooms: Showroom[], handle: string): Showroom | undefined {
+  return showrooms.find((s) => s.handle === handle);
+}
+
+// Back-compat alias — existing callers `import { SHOWROOMS }` continue
+// to work. New code should call `await getShowrooms()` for live data.
+export const SHOWROOMS = FALLBACK_SHOWROOMS;
 
 /**
  * Showroom search — case-insensitive substring match across the fields
@@ -163,9 +196,17 @@ export function findShowroom(handle: string): Showroom | undefined {
  * Showrooms tab; no API call.
  */
 export function searchShowrooms(query: string): Showroom[] {
+  return searchShowroomsIn(FALLBACK_SHOWROOMS, query);
+}
+
+/**
+ * Pure substring search across an arbitrary showroom list. Server
+ * callers with a live `await getShowrooms()` pass it directly.
+ */
+export function searchShowroomsIn(showrooms: Showroom[], query: string): Showroom[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  return SHOWROOMS.filter((s) => {
+  return showrooms.filter((s) => {
     const hay = [s.name, s.area, s.street, s.city, s.region, s.postalCode]
       .join(' ')
       .toLowerCase();
