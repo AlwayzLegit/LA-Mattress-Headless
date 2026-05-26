@@ -6,7 +6,7 @@ export type IconName =
   | 'chevron-down' | 'chevron-right'
   | 'menu' | 'close' | 'star' | 'truck' | 'shield' | 'sparkle' | 'card'
   | 'home' | 'check' | 'plus' | 'minus' | 'pause' | 'play' | 'heart'
-  | 'mail' | 'bed' | 'alert' | 'lock';
+  | 'mail' | 'bed' | 'alert' | 'lock' | 'chat';
 
 type Props = {
   name: IconName;
@@ -64,6 +64,7 @@ export function Icon({ name, size = 20, stroke = 1.5, ...rest }: Props) {
     case 'bed':            return (<svg {...props}><path d="M3 18V8"/><path d="M3 13h18v5"/><path d="M21 18V11a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/></svg>);
     case 'alert':          return (<svg {...props}><path d="M12 4 2 20h20z"/><path d="M12 10v5"/><circle cx="12" cy="18" r="0.5" fill="currentColor"/></svg>);
     case 'lock':           return (<svg {...props}><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>);
+    case 'chat':           return (<svg {...props}><path d="M21 12a8 8 0 0 1-11.3 7.3L4 21l1.7-5.7A8 8 0 1 1 21 12z"/><path d="M8 11h.01"/><path d="M12 11h.01"/><path d="M16 11h.01"/></svg>);
     default:               return null;
   }
 }

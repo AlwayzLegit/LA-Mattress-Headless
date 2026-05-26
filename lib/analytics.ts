@@ -180,6 +180,28 @@ export type AnalyticsEvent =
       };
     }
   | {
+      // MCP chat widget opened. Fires when the shopper taps the
+      // chat bubble. Pathname tells us which surface drove the open
+      // so we can correlate chat engagement with the funnel stage
+      // the shopper was in (PLP intent vs. PDP comparison vs. cart
+      // doubt).
+      name: 'chat_opened';
+      props: {
+        pathname: string;
+      };
+    }
+  | {
+      // MCP chat widget dismissed. `source` distinguishes deliberate
+      // closure (close button) from incidental (backdrop tap, Escape
+      // key, route change) so we can read whether the panel was
+      // engaging enough vs. dismissed in error.
+      name: 'chat_dismissed';
+      props: {
+        source: 'button' | 'backdrop' | 'escape' | 'route_change';
+        pathname: string;
+      };
+    }
+  | {
       // Newsletter (Klaviyo / Shopify customers list) signup success.
       // Fires from the inline newsletter-form post-/api/newsletter
       // 200 response. `source` distinguishes the placement so we can
