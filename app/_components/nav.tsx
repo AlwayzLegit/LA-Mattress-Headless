@@ -28,17 +28,22 @@ type MegaKey = 'mattresses' | 'brands' | 'learn';
 // alternative path, not a tucked-away tool. Matches the primary-nav
 // promotion every top mattress retailer ships (Casper's "Mattress
 // Finder", Saatva's "Find your mattress", DreamCloud's "Sleep Quiz").
-// Phase A discoverability pair with app/_components/quiz-fab.tsx.
+//
+// Polish 2026-05-26: dropped "Bedding" from the primary slot — it's
+// already in the Mattresses mega-menu's "Complete the bed" column,
+// and 9 items was a touch crowded on narrower laptops. 7 primary
+// items keeps the bar breathable and matches the Helix / Casper /
+// Saatva density. "Financing" stays because it's a real
+// differentiator with conversion lift, not a category nav.
 const NAV_ITEMS: { label: string; mega: MegaKey | null; href: string; accent?: boolean }[] = [
-  { label: 'Mattresses',     mega: 'mattresses', href: '/collections/mattresses' },
-  { label: 'Sleep Quiz',     mega: null,        href: '/sleep-quiz' },
-  { label: 'Adjustable Beds', mega: null,        href: '/collections/adjustable-beds' },
-  { label: 'Brands',          mega: 'brands',    href: '/pages/mattress-brands' },
-  { label: 'Bedding',         mega: null,        href: '/collections/bedding' },
-  { label: 'Stores',          mega: null,        href: '/pages/mattress-store-locations' },
-  { label: 'Financing',       mega: null,        href: '/pages/mattress-store-financing' },
-  { label: 'Deals',           mega: null,        href: '/collections/on-sale', accent: true },
-  { label: 'Guides',          mega: 'learn',     href: '/blogs' },
+  { label: 'Mattresses',      mega: 'mattresses', href: '/collections/mattresses' },
+  { label: 'Sleep Quiz',      mega: null,         href: '/sleep-quiz' },
+  { label: 'Adjustable Beds', mega: null,         href: '/collections/adjustable-beds' },
+  { label: 'Brands',          mega: 'brands',     href: '/pages/mattress-brands' },
+  { label: 'Stores',          mega: null,         href: '/pages/mattress-store-locations' },
+  { label: 'Financing',       mega: null,         href: '/pages/mattress-store-financing' },
+  { label: 'Deals',           mega: null,         href: '/collections/on-sale', accent: true },
+  { label: 'Guides',          mega: 'learn',      href: '/blogs' },
 ];
 
 const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
@@ -122,6 +127,17 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
     ],
   },
   brands: {
+    // Hardcoded fallback used when the live getBrands() fetch fails or
+    // is unconfigured. The live version replaces these columns
+    // wholesale (alphabetical, no tier grouping). Tier labels reflect
+    // shopper intent more clearly than an A-D label range, so we keep
+    // the curated structure for the no-data path.
+    //
+    // Audit 2026-05-26 against the live Shopify vendor list: Southerland
+    // ships 6 mattresses in /collections/southerland-mattresses and was
+    // missing from this fallback. Added under Naturals — it's their
+    // Scandinavian-collection latex line, doesn't fit the cleanly
+    // foam/innerspring tiers.
     cols: [
       { title: 'Premium', links: [
         { label: 'Tempur-Pedic',     href: '/collections/tempur-pedic-mattresses' },
@@ -133,10 +149,11 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         { label: 'Diamond',    href: '/collections/diamond-mattresses' },
         { label: 'Spring Air', href: '/collections/spring-air-mattresses' },
       ]},
-      { title: 'Value', links: [
+      { title: 'Value & Naturals', links: [
         { label: 'Eastman House',  href: '/collections/eastman-house-mattresses' },
-        { label: 'Harvest Green',  href: '/collections/harvest-mattresses' },
         { label: 'Englander',      href: '/collections/englander-mattresses' },
+        { label: 'Harvest Green',  href: '/collections/harvest-mattresses' },
+        { label: 'Southerland',    href: '/collections/southerland-mattresses' },
       ]},
     ],
     tiles: [
@@ -187,12 +204,17 @@ type NavBrand = { name: string; href: string };
 function chunkBrandCols(brands: NavBrand[]): MegaCol[] {
   const perCol = Math.ceil(brands.length / 3);
   const cols: MegaCol[] = [];
+  // Polish 2026-05-26: dropped the per-chunk alphabetical labels
+  // ("A-D", "E-H") in favor of a single repeated "Brands" header.
+  // The alphabetical ranges read as arbitrary technical metadata to
+  // a shopper — letter-buckets don't help them navigate. A simple
+  // "Brands" / "Brands" / "Brands" reads cleaner. The mega-menu
+  // structure (3 columns + tiles) already implies "more brands →"
+  // without needing letter ranges to prove it.
   for (let i = 0; i < brands.length; i += perCol) {
     const chunk = brands.slice(i, i + perCol);
-    const first = chunk[0].name[0]?.toUpperCase() ?? '';
-    const last = chunk[chunk.length - 1].name[0]?.toUpperCase() ?? '';
     cols.push({
-      title: first === last ? first : `${first}–${last}`,
+      title: i === 0 ? 'Brands' : '',
       links: chunk.map((b) => ({ label: b.name, href: b.href })),
     });
   }
