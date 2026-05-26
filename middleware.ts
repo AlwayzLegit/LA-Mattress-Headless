@@ -1,38 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { canonicalizeRouteParams } from './lib/route-canonicalization';
-import redirectsJson from './data/url-inventory/redirects.json' with { type: 'json' };
 
 /**
- * Edge middleware — three responsibilities:
+ * Edge middleware — two responsibilities:
  *
  *   1. Protect /admin/* with HTTP Basic Auth + no-index headers.
  *   2. Canonicalize storefront URLs by stripping query-param noise
  *      (tracking IDs, malformed `?amp;...` from copy-pasted entity-
  *      encoded emails, empty filter values, etc.) via 301 redirect.
  *      See lib/route-canonicalization.ts for the allow-list.
- *   3. Apply legacy Hydrogen-era URL redirects from Shopify's
- *      urlRedirects table. Moved here from next.config.mjs#redirects()
- *      after the table grew past Vercel's 1024-redirect deploy limit
- *      (2026-05-26). Middleware has no such cap.
- */
-
-// Build a flat lookup at module-init so per-request cost is O(1).
-// Source paths are normalized (trailing slash stripped) so a request
-// for `/foo/` matches a stored `/foo`. Targets are kept verbatim;
-// they may be absolute URLs or root-relative paths.
-type RedirectRule = { source: string; destination: string };
-function normPath(p: string): string {
-  return p.length > 1 && p.endsWith('/') ? p.slice(0, -1) : p;
-}
-const REDIRECT_MAP: Map<string, string> = new Map();
-for (const r of ((redirectsJson as unknown) as { redirects?: RedirectRule[] }).redirects ?? []) {
-  if (typeof r?.source !== 'string' || typeof r?.destination !== 'string') continue;
-  if (!r.source.startsWith('/')) continue;
-  if (r.source === r.destination) continue; // skip self-redirects
-  REDIRECT_MAP.set(normPath(r.source), r.destination);
-}
-
-/**
+ *
  * Why Basic Auth at the edge (instead of a custom login page):
  *   - Native browser prompt; no UI to build/maintain.
  *   - Credentials transmitted Base64 over HTTPS (encrypted by TLS).
@@ -88,28 +65,6 @@ function unauthorized(reason: string): NextResponse {
 
 export function middleware(req: NextRequest): NextResponse {
   const pathname = req.nextUrl.pathname;
-
-  // Legacy URL redirect map (from Shopify urlRedirects + manual additions).
-  // Runs first so a redirect short-circuits everything below — match by
-  // normalized path (trailing slash stripped). Preserves query string +
-  // hash from the incoming request when the destination is root-relative.
-  if (!pathname.startsWith('/admin') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
-    const dest = REDIRECT_MAP.get(normPath(pathname));
-    if (dest) {
-      // Absolute destination → preserve verbatim. Root-relative →
-      // merge with the incoming origin + carry forward query/hash.
-      let location: string;
-      if (/^https?:\/\//i.test(dest)) {
-        location = dest;
-      } else {
-        const target = new URL(dest, req.nextUrl);
-        if (req.nextUrl.search) target.search = req.nextUrl.search;
-        if (req.nextUrl.hash) target.hash = req.nextUrl.hash;
-        location = target.toString();
-      }
-      return NextResponse.redirect(location, 301);
-    }
-  }
 
   // Storefront param-stripping. Skip when there are no query params
   // (fast path — most requests). When something needs cleaning, 301

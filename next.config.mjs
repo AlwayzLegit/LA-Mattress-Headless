@@ -84,13 +84,9 @@ const nextConfig = {
       { protocol: 'https', hostname: 'mattressstoreslosangeles.com' },
     ],
   },
-  // Redirects moved to middleware.ts (2026-05-26): Vercel caps
-  // next.config.mjs#redirects() at 1024 entries per deployment, and
-  // the redirects.json file grew past 2,000 after adding the legacy
-  // broken-URL targeting. Middleware has no such cap and runs at the
-  // same edge layer, so behavior is equivalent.
-  // (loadInventoryRedirects + NEXT_REDIRECT_SOURCE_VALID kept above
-  // for reference / future re-enablement if redirect count drops.)
+  async redirects() {
+    return loadInventoryRedirects();
+  },
 };
 
 // withSentryConfig wraps the Next config to handle:
