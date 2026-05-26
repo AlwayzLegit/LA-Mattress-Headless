@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_EMAIL, SOCIAL_PROFILES } from '@/lib/site-config';
+import { resolveSiteConfig } from '@/lib/site-config';
+import { getSiteConfig } from '@/lib/shopify';
 import { NewsletterForm } from './newsletter-form';
 
 type Col = { title: string; links: { label: string; href: string }[] };
@@ -61,7 +62,14 @@ const COLS: Col[] = [
   ]},
 ];
 
-export function Footer() {
+export async function Footer() {
+  // Live phone / email / social — merchant edits the `site_config`
+  // metaobject in Shopify Admin and the footer reflects within an
+  // ISR cycle. `getSiteConfig()` is React.cache()-memoized so the
+  // storefront layout's call (for Organization JSON-LD) and this
+  // call share one Storefront request per render. Falls back to the
+  // static constants when Shopify is unreachable.
+  const config = resolveSiteConfig(await getSiteConfig());
   return (
     <footer className="footer">
       <div className="container footer-top">
@@ -117,10 +125,10 @@ export function Footer() {
           <div className="footer-sig-tagline">
             <div className="footer-sig-tag-line">Family-owned in Los Angeles since 2012</div>
             <div className="footer-sig-tag-line muted">
-              5 showrooms · <a href={`tel:${SITE_PHONE_TEL}`} className="footer-sig-link">{SITE_PHONE_DISPLAY}</a> · <a href={`mailto:${SITE_EMAIL}`} className="footer-sig-link">{SITE_EMAIL}</a>
+              5 showrooms · <a href={`tel:${config.phoneTel}`} className="footer-sig-link">{config.phoneDisplay}</a> · <a href={`mailto:${config.email}`} className="footer-sig-link">{config.email}</a>
             </div>
           </div>
-          {SOCIAL_PROFILES.length > 0 ? (
+          {config.socialProfiles.length > 0 ? (
             // Inline SVGs (not Icon component) so social glyphs stay
             // self-contained to the footer — they're the only place
             // these icons appear, and adding them to Icon would mean
@@ -129,7 +137,7 @@ export function Footer() {
             // engines use rel=me as an Organization sameAs signal) and
             // blocks tabnabbing on the external anchor.
             <ul className="footer-social" aria-label="Follow LA Mattress on social media">
-              {SOCIAL_PROFILES.map((url) => {
+              {config.socialProfiles.map((url) => {
                 const label = /facebook\.com/.test(url) ? 'Facebook'
                   : /instagram\.com/.test(url) ? 'Instagram'
                   : /yelp\.com/.test(url) ? 'Yelp'

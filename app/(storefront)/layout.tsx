@@ -13,7 +13,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
 import { composeBrandTitle } from '@/lib/seo';
-import { getShopBrand, getActiveAnnouncement, getBrands } from '@/lib/shopify';
+import { getShopBrand, getActiveAnnouncement, getBrands, getSiteConfig } from '@/lib/shopify';
 import { getShopAggregate } from '@/lib/judgeme';
 import { AnnouncementBar } from '../_components/announcement-bar';
 import { AnalyticsGa4 } from '../_components/analytics-ga4';
@@ -111,13 +111,19 @@ export default async function StorefrontLayout({ children }: { children: React.R
   // the homepage was previously fetching for its LocalBusiness card.
   // Surfacing it sitewide makes the brand-level review snippet eligible
   // on every URL (PLPs, PDPs, blogs, pages), not just homepage.
-  const [shop, announcement, brands, shopAggregate] = await Promise.all([
+  const [shop, announcement, brands, shopAggregate, siteConfig] = await Promise.all([
     getShopBrand(),
     getActiveAnnouncement(),
     getBrands(),
     getShopAggregate(),
+    // Live site-config (phone, email, social profiles, free-delivery
+    // threshold). Drives the Organization JSON-LD's telephone +
+    // sameAs and the formatted brand name; merchant edits in Shopify
+    // Admin → Metaobjects → Site configuration propagate within one
+    // ISR cycle.
+    getSiteConfig(),
   ]);
-  const organizationLd = buildOrganizationLd(shop, shopAggregate);
+  const organizationLd = buildOrganizationLd(shop, shopAggregate, siteConfig);
 
   return (
     <>
