@@ -4,45 +4,60 @@ import { SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_EMAIL, SOCIAL_PROFILES } from 
 import { NewsletterForm } from './newsletter-form';
 
 type Col = { title: string; links: { label: string; href: string }[] };
+
+// Footer columns — restructured 2026-05-26 to balance visual weight
+// and match the industry-standard buyer-journey IA (Helix, Saatva,
+// Casper, DreamCloud all follow a Shop / Customer Care / Visit Us /
+// About 4-column split).
+//
+// Removed from Shop: Best Sellers, Luxury Mattresses (both reachable
+// from the nav mega-menu), Accessories (mislabelled as sheets), and
+// the three pillow rows (Pillows, Cooling Pillows, Rize Pillows) +
+// Comforters + Mattress Protectors — all consolidated under the
+// "Bedding & Pillows" entry that points at /collections/bedding.
+// Added Sleep Quiz to Shop so footer mirrors the discovery surfaces
+// we've been promoting elsewhere (nav slot, homepage lead-in, FAB).
+//
+// Help renamed to Customer Care (clearer scope), Returns relabeled
+// to "120-Night Trial" (the brand's actual guarantee — better selling
+// vocab than the generic "Returns"), Mattress Recycling moved here
+// from Company (customer-facing fee, not a corp page).
+//
+// Stores renamed to Visit Us (more inviting), Mattress Guides moved
+// from Help to About (it's editorial content, not customer support).
 const COLS: Col[] = [
   { title: 'Shop', links: [
-    { label: 'Mattresses',      href: '/collections/mattresses' },
-    { label: 'Best sellers',    href: '/collections/best-sellers' },
-    { label: 'Luxury mattresses', href: '/collections/luxury-mattresses' },
-    { label: 'Adjustable Beds', href: '/collections/adjustable-beds' },
-    { label: 'Bed Frames',      href: '/collections/bed-frames' },
-    { label: 'Brands',          href: '/pages/mattress-brands' },
-    { label: 'Accessories',     href: '/collections/sheets-pillowcases' },
-    { label: 'Pillows',         href: '/collections/pillows' },
-    { label: 'Cooling pillows', href: '/collections/cooling-pillows' },
-    { label: 'Rize Pillows',    href: '/collections/rize-pillows' },
-    { label: 'Comforters',      href: '/collections/comforters' },
-    { label: 'Mattress Protectors', href: '/collections/mattress-protector' },
-    { label: 'Deals',           href: '/collections/on-sale' },
+    { label: 'Mattresses',          href: '/collections/mattresses' },
+    { label: 'Adjustable Beds',     href: '/collections/adjustable-beds' },
+    { label: 'Bedding & Pillows',   href: '/collections/bedding' },
+    { label: 'Bed Frames',          href: '/collections/bed-frames' },
+    { label: 'Brands',              href: '/pages/mattress-brands' },
+    { label: 'Sleep Quiz',          href: '/sleep-quiz' },
+    { label: 'Deals',               href: '/collections/on-sale' },
   ]},
-  { title: 'Help', links: [
-    { label: 'Mattress Guides', href: '/blogs' },
-    { label: 'Financing', href: '/pages/mattress-store-financing' },
-    { label: 'Delivery',  href: '/pages/mattress-store-delivery' },
-    { label: 'Returns',   href: '/pages/returns' },
-    { label: 'Warranty',  href: '/pages/warranty' },
-    { label: 'FAQ',       href: '/pages/faq' },
-    { label: 'Contact',   href: '/pages/mattress-store-contact' },
+  { title: 'Customer Care', links: [
+    { label: '0% APR Financing',    href: '/pages/mattress-store-financing' },
+    { label: 'Delivery & Setup',    href: '/pages/mattress-store-delivery' },
+    { label: '120-Night Trial',     href: '/pages/love-your-bed-guarantee' },
+    { label: 'Warranty',            href: '/pages/warranty' },
+    { label: 'Mattress Recycling',  href: '/pages/mattress-recycling-fee' },
+    { label: 'FAQ',                 href: '/pages/faq' },
+    { label: 'Contact',             href: '/pages/mattress-store-contact' },
   ]},
-  { title: 'Stores', links: [
-    { label: 'Koreatown',     href: '/pages/koreatown-best-mattress-store' },
-    { label: 'West LA',       href: '/pages/best-mattress-store-west-la' },
-    { label: 'La Brea',       href: '/pages/best-mattress-store-la-brea' },
-    { label: 'Studio City',   href: '/pages/mattress-store-studio-city' },
-    { label: 'Glendale',      href: '/pages/mattress-store-in-glendale' },
-    { label: 'Find a store',  href: '/pages/mattress-store-locations' },
+  { title: 'Visit Us', links: [
+    { label: 'Koreatown',           href: '/pages/koreatown-best-mattress-store' },
+    { label: 'West LA',             href: '/pages/best-mattress-store-west-la' },
+    { label: 'La Brea',             href: '/pages/best-mattress-store-la-brea' },
+    { label: 'Studio City',         href: '/pages/mattress-store-studio-city' },
+    { label: 'Glendale',            href: '/pages/mattress-store-in-glendale' },
+    { label: 'All locations',       href: '/pages/mattress-store-locations' },
   ]},
-  { title: 'Company', links: [
-    { label: 'About',         href: '/pages/about' },
-    { label: 'Careers',       href: '/pages/choose-a-career-with-la-mattress' },
-    { label: 'Reviews',       href: '/pages/reviews' },
-    { label: 'Recycling fee', href: '/pages/mattress-recycling-fee' },
-    { label: 'Accessibility', href: '/pages/data-sharing-opt-out' },
+  { title: 'About', links: [
+    { label: 'About LA Mattress',   href: '/pages/about' },
+    { label: 'Mattress Guides',     href: '/blogs' },
+    { label: 'Customer Reviews',    href: '/pages/reviews' },
+    { label: 'Careers',             href: '/pages/choose-a-career-with-la-mattress' },
+    { label: 'Accessibility',       href: '/pages/data-sharing-opt-out' },
   ]},
 ];
 
