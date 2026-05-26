@@ -1,72 +1,22 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
 import { withSentryConfig } from '@sentry/nextjs';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 /**
- * Next.js's `redirects()` validator requires every `source` to:
+ * Legacy Shopify urlRedirects are NOT declared here.
  *
- *   - start with `/`
- *   - NOT contain `?` / `#` in the path (query matching needs `has`)
- *   - NOT contain `path-to-regexp` meta-characters unless intended as
- *     a route pattern: `:` (named param), `*` (wildcard), `+` (one-or-more),
- *     `(` `)` (groups), `[` `]` / `{` `}` (escape constructs)
+ * They live in `data/url-inventory/redirects.json` (Shopify Admin export),
+ * are codegen'd by `scripts/build-redirects-table.mjs` into
+ * `lib/redirects-table.ts`, and served at the edge by `middleware.ts`.
  *
- * Shopify's urlRedirects table includes legacy entries that violate all
- * of these (250+ with `?_pos=`/`?variant=`, plus paths like
- * `/https:/...` and `/tel:1-800-...` whose embedded `:` makes Next's
- * path-to-regexp parser raise "Missing parameter name at N" and crash
- * the entire build — that's the post-PR-#273 build break + the
- * post-#276 build re-break).
+ * Why not `next.config.mjs#redirects()`:
+ *   - Vercel hard-caps that hook at 1024 entries per deployment.
+ *     Our table is 2000+ entries.
+ *   - Middleware has no such cap and runs in the same edge layer, so
+ *     there's no perf regression — actually faster (O(1) Map lookup vs.
+ *     Next's compiled path-to-regexp chain).
  *
- * Filter both shape (source/destination strings present) AND Next.js's
- * source-format rules. The dropped entries are noisy URL-encoded /
- * protocol-prefixed redirects that the middleware's param-stripping
- * (middleware.ts + lib/route-canonicalization.ts) already handles via
- * 301 — no functional regression from skipping them at the edge.
+ * See middleware.ts for the lookup logic and scripts/build-redirects-table.mjs
+ * for the codegen step (wired into `prebuild` in package.json).
  */
-const PATH_TO_REGEXP_META = /[:*+()\[\]{}]/;
-const NEXT_REDIRECT_SOURCE_VALID = (s) =>
-  typeof s === 'string'
-  && s.startsWith('/')
-  && !s.includes('?')
-  && !s.includes('#')
-  && !PATH_TO_REGEXP_META.test(s);
-
-function loadInventoryRedirects() {
-  try {
-    const raw = readFileSync(resolve(__dirname, 'data/url-inventory/redirects.json'), 'utf8');
-    const json = JSON.parse(raw);
-    if (!Array.isArray(json.redirects)) return [];
-    let dropped = 0;
-    const valid = json.redirects
-      .filter((r) => {
-        if (!r || typeof r.source !== 'string' || typeof r.destination !== 'string') {
-          dropped += 1;
-          return false;
-        }
-        if (!NEXT_REDIRECT_SOURCE_VALID(r.source)) {
-          dropped += 1;
-          return false;
-        }
-        return true;
-      })
-      .map((r) => ({
-        source: r.source,
-        destination: r.destination,
-        permanent: r.permanent !== false,
-      }));
-    if (dropped > 0) {
-      console.warn(`[next.config] Skipped ${dropped} malformed redirect(s) — source must start with "/" and not contain "?" or "#".`);
-    }
-    return valid;
-  } catch (err) {
-    console.warn('[next.config] Could not load redirects.json:', err.message);
-    return [];
-  }
-}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -83,9 +33,6 @@ const nextConfig = {
       { protocol: 'https', hostname: 'cdn.shopify.com' },
       { protocol: 'https', hostname: 'mattressstoreslosangeles.com' },
     ],
-  },
-  async redirects() {
-    return loadInventoryRedirects();
   },
 };
 

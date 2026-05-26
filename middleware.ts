@@ -1,14 +1,20 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { canonicalizeRouteParams } from './lib/route-canonicalization';
+import { REDIRECTS } from './lib/redirects-table';
 
 /**
- * Edge middleware — two responsibilities:
+ * Edge middleware — three responsibilities, evaluated in this order:
  *
- *   1. Protect /admin/* with HTTP Basic Auth + no-index headers.
+ *   1. Apply legacy URL redirects from Shopify's urlRedirects table
+ *      (sourced from `data/url-inventory/redirects.json`, codegen'd
+ *      into `lib/redirects-table.ts`). Moved here from
+ *      `next.config.mjs#redirects()` after the table grew past
+ *      Vercel's 1024-redirect deploy cap. Middleware has no such cap.
  *   2. Canonicalize storefront URLs by stripping query-param noise
  *      (tracking IDs, malformed `?amp;...` from copy-pasted entity-
  *      encoded emails, empty filter values, etc.) via 301 redirect.
  *      See lib/route-canonicalization.ts for the allow-list.
+ *   3. Protect /admin/* with HTTP Basic Auth + no-index headers.
  *
  * Why Basic Auth at the edge (instead of a custom login page):
  *   - Native browser prompt; no UI to build/maintain.
@@ -35,6 +41,15 @@ import { canonicalizeRouteParams } from './lib/route-canonicalization';
 
 const ADMIN_USER = process.env.ADMIN_USER;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+/**
+ * Normalize a path the way the redirect-table lookup expects: strip
+ * trailing slash on any path other than `/` itself. Keeps the lookup
+ * idempotent across `/foo` and `/foo/`.
+ */
+function normPath(p: string): string {
+  return p.length > 1 && p.endsWith('/') ? p.slice(0, -1) : p;
+}
 
 /**
  * Constant-time string compare to avoid Basic-Auth timing oracles.
@@ -66,7 +81,32 @@ function unauthorized(reason: string): NextResponse {
 export function middleware(req: NextRequest): NextResponse {
   const pathname = req.nextUrl.pathname;
 
-  // Storefront param-stripping. Skip when there are no query params
+  // (1) Legacy URL redirects from Shopify's urlRedirects table.
+  // O(1) lookup via Map. Skips /admin (auth-protected) and /_next /api
+  // (no redirect logic needed for build assets or API routes).
+  if (!pathname.startsWith('/admin') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+    const dest = REDIRECTS.get(normPath(pathname));
+    if (dest) {
+      let location: string;
+      if (/^https?:\/\//i.test(dest)) {
+        // Absolute destination — use verbatim. Don't carry incoming
+        // query/hash forward; the destination author chose what's
+        // there.
+        location = dest;
+      } else {
+        // Root-relative destination — merge with incoming origin and
+        // carry forward query/hash so a request like
+        // `/old?utm=x#section` redirects to `/new?utm=x#section`.
+        const target = new URL(dest, req.nextUrl);
+        if (req.nextUrl.search) target.search = req.nextUrl.search;
+        if (req.nextUrl.hash) target.hash = req.nextUrl.hash;
+        location = target.toString();
+      }
+      return NextResponse.redirect(location, 301);
+    }
+  }
+
+  // (2) Storefront param-stripping. Skip when there are no query params
   // (fast path — most requests). When something needs cleaning, 301
   // to the canonical URL so crawlers never see the noisy variant.
   // Runs BEFORE the admin-auth branch because /admin/* is excluded
@@ -86,9 +126,8 @@ export function middleware(req: NextRequest): NextResponse {
     return NextResponse.next();
   }
 
-  // /admin/* requires Basic Auth — fall through to the existing auth
-  // logic. Non-admin storefront paths with no query params just
-  // pass through (returned above).
+  // (3) /admin/* requires Basic Auth — fall through to the auth logic.
+  // Non-admin storefront paths with no query params just pass through.
   if (!pathname.startsWith('/admin')) {
     return NextResponse.next();
   }
@@ -135,23 +174,21 @@ export function middleware(req: NextRequest): NextResponse {
 }
 
 /**
- * Two matcher groups:
- *   1. /admin/* — Basic Auth + no-index headers (this was the original
- *      scope; behaviour unchanged).
- *   2. The four storefront route trees where query-param noise was
- *      flagged by SEMrush 20260521_1 (orphan-page count). Static asset
- *      paths under /_next/ etc. are NOT matched, so middleware doesn't
- *      fire on every chunk or image.
+ * Matcher — must cover every path that may need a legacy redirect.
+ * Previously scoped to /admin + /products + /collections + /blogs +
+ * /search, which missed /pages, /policies, root-level paths
+ * (`/sale`, `/quiz`, etc.), and `/mattresses/*`.
  *
- * Adding /search to canonicalize `?q=` while stripping any junk
- * params alongside.
+ * The negative-lookahead form below runs middleware on EVERY request
+ * except static assets and Next internals. Cheap because middleware
+ * itself short-circuits in <100µs when no redirect rule matches.
+ *
+ *   - /_next/* — Next.js build assets (chunks, images, etc.)
+ *   - /api/*   — API routes (no redirects belong here)
+ *   - /*.{ext} — static files served straight from /public
  */
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/products/:path*',
-    '/collections/:path*',
-    '/blogs/:path*',
-    '/search',
+    '/((?!_next/static|_next/image|_next/data|favicon\\.ico|robots\\.txt|sitemap\\.xml|opengraph-image|icon\\.svg|manifest\\.webmanifest|assets/|api/).*)',
   ],
 };
