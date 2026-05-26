@@ -22,8 +22,16 @@ type MegaTile = {
 };
 type MegaKey = 'mattresses' | 'brands' | 'learn';
 
+// Sleep Quiz is positioned #2 (immediately after "Mattresses") because
+// the canonical browse-vs-decide mental model is "browse all mattresses OR
+// answer 8 questions and let us pick" — adjacency reads as the
+// alternative path, not a tucked-away tool. Matches the primary-nav
+// promotion every top mattress retailer ships (Casper's "Mattress
+// Finder", Saatva's "Find your mattress", DreamCloud's "Sleep Quiz").
+// Phase A discoverability pair with app/_components/quiz-fab.tsx.
 const NAV_ITEMS: { label: string; mega: MegaKey | null; href: string; accent?: boolean }[] = [
   { label: 'Mattresses',     mega: 'mattresses', href: '/collections/mattresses' },
+  { label: 'Sleep Quiz',     mega: null,        href: '/sleep-quiz' },
   { label: 'Adjustable Beds', mega: null,        href: '/collections/adjustable-beds' },
   { label: 'Brands',          mega: 'brands',    href: '/pages/mattress-brands' },
   { label: 'Bedding',         mega: null,        href: '/collections/bedding' },

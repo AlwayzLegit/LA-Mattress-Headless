@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { SleepQuiz } from './sleep-quiz';
 import { allQuizPickHandles } from './quiz-data';
@@ -88,7 +89,15 @@ export default async function SleepQuizPage() {
               before buying, and every mattress ships with a 120-night Love Your Bed Guarantee.
             </p>
           </header>
-          <SleepQuiz productPicks={productPicks} />
+          {/* Suspense boundary required for the useSearchParams() inside
+              SleepQuiz — the homepage lead-in deep-links here with
+              `?position=<id>` to pre-fill Q0. Without the boundary,
+              Next 15 forces this page off static rendering. Fallback is
+              a placeholder of roughly the same shape so the layout
+              doesn't jump while the client takes over. */}
+          <Suspense fallback={<div className="quiz quiz-loading" aria-hidden="true" />}>
+            <SleepQuiz productPicks={productPicks} />
+          </Suspense>
         </div>
       </section>
 
