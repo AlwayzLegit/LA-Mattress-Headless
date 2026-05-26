@@ -2150,18 +2150,97 @@ summary:focus-visible,
 .why-item h3 { margin: 0; }
 .why-item p { margin: 0; font-size: 14px; line-height: 1.6; }
 
-/* ───── Quiz teaser ───── */
-.quiz-teaser { position: relative; overflow: hidden; }
-.quiz-bg { position: absolute; inset: 0; }
-.quiz-grad {
-  position: absolute; inset: 0;
-  background: linear-gradient(95deg, rgba(20, 35, 71, 0.92) 0%, rgba(27, 44, 94, 0.78) 45%, rgba(27, 44, 94, 0.45) 100%);
+/* ───── Three ways to find your match (tri-card discovery) ───── */
+.ways-section {
+  padding: var(--s-8) 0;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
-.quiz-content { position: relative; max-width: 760px; }
-.quiz-content .eyebrow { margin-bottom: 24px; }
-.quiz-title { margin: 0 0 24px; }
-.quiz-body { font-size: 18px; max-width: 540px; margin: 0 0 36px; }
-.quiz-ctas { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.ways-head {
+  max-width: 60ch;
+  margin: 0 0 var(--s-6);
+}
+.ways-title { margin: var(--s-2) 0 var(--s-3); }
+.ways-lede { font-size: 16px; line-height: 1.55; margin: 0; }
+.ways-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
+}
+.ways-card {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-6);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  color: var(--text);
+  text-decoration: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+.ways-card-button {
+  /* Match the link-card visuals exactly so the only difference users
+     perceive is what happens on tap. No browser default button chrome. */
+  width: 100%;
+}
+.ways-card:hover,
+.ways-card:focus-visible {
+  background: var(--surface);
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+.ways-card-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  flex-shrink: 0;
+}
+.ways-card-meta { display: flex; flex-direction: column; gap: 4px; }
+.ways-card-eyebrow { margin-bottom: 2px; }
+.ways-card-title {
+  font-size: 19px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.ways-card-body {
+  font-size: 14.5px;
+  line-height: 1.5;
+  margin: 6px 0 var(--s-3);
+}
+.ways-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: auto;
+  transition: transform 160ms ease;
+}
+.ways-card:hover .ways-card-cta,
+.ways-card:focus-visible .ways-card-cta {
+  transform: translateX(2px);
+}
+@media (max-width: 880px) {
+  .ways-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ways-card,
+  .ways-card-cta { transition: none; transform: none !important; }
+}
 
 /* ───── Reviews ───── */
 .reviews { background: var(--surface-2); }

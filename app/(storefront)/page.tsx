@@ -6,13 +6,13 @@ import {
   BrandStrip,
   FeaturedGuides,
   WhyUs,
-  QuizTeaser,
   Reviews,
 } from '../_components/sections/static-sections';
 import { PopularProducts } from '../_components/sections/popular-products';
 import { Showrooms } from '../_components/sections/showrooms';
 import { FAQ } from '../_components/sections/faq';
 import { QuizLeadIn } from '../_components/sections/quiz-leadin';
+import { WaysToFindMatch } from '../_components/sections/ways-to-find-match';
 import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd } from '@/lib/faq';
 import { composeBrandTitle } from '@/lib/seo';
@@ -84,7 +84,10 @@ export default async function Home() {
       <BrandStrip />
       <FeaturedGuides />
       <WhyUs />
-      <QuizTeaser />
+      {/* Three discovery paths: quiz / chat / showroom. Replaces the
+          old QuizTeaser, which was a single-CTA repeat of what the
+          QuizLeadIn already shows above the fold. */}
+      <WaysToFindMatch />
       <Reviews />
       <FAQ />
       <script

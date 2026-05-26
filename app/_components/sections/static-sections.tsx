@@ -173,34 +173,12 @@ export function WhyUs() {
   );
 }
 
-/* ───── Quiz teaser ───────────────────────────────────── */
-export function QuizTeaser() {
-  return (
-    <section className="section section-dark quiz-teaser">
-      <div className="ph ph-dark quiz-bg" {...phImg('lifestyle-bedroom', 'cover')}>
-        <span className="ph-label">[Bedroom ambient]</span>
-      </div>
-      <div className="quiz-grad" />
-      <div className="container quiz-content">
-        <div className="eyebrow eyebrow-on-dark">2-minute mattress quiz</div>
-        <h2 className="h-display quiz-title">
-          Answer 8 questions.<br />Get a real recommendation.
-        </h2>
-        <p className="muted quiz-body">
-          No email required. We narrow our 200+ models down to the three best for how you actually sleep.
-        </p>
-        <div className="quiz-ctas">
-          <a className="btn btn-lg btn-on-dark" href="/sleep-quiz">
-            Start the quiz <Icon name="arrow-right" size={16} />
-          </a>
-          <Link href="/collections/mattresses" className="link-arrow link-arrow-on-dark">
-            Or browse all mattresses <Icon name="arrow-right" size={14} />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
+/* QuizTeaser was retired in favor of the WaysToFindMatch tri-card
+   section — see app/_components/sections/ways-to-find-match.tsx. The
+   single-CTA "Answer 8 questions" panel was redundant once the
+   homepage hero lead-in surfaced the quiz above the fold and the
+   primary nav slot landed in #284; the new section pairs the quiz
+   with chat + showroom as three distinct discovery paths. */
 
 /* ───── Reviews ──────────────────────────────────────────
  *
