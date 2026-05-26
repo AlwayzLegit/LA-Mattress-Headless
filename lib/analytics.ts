@@ -159,27 +159,6 @@ export type AnalyticsEvent =
       };
     }
   | {
-      // Floating quiz CTA tapped. `pathname` tells us which surface
-      // converted (PLPs vs PDPs vs articles vs homepage) so we can
-      // measure the FAB's incremental lift over the existing 19
-      // in-content quiz links and tune visibility per-route if some
-      // surfaces under-convert.
-      name: 'quiz_fab_clicked';
-      props: {
-        pathname: string;
-      };
-    }
-  | {
-      // Floating quiz CTA dismissed for the session. Frequency
-      // measures FAB intrusiveness — if dismissal-per-impression
-      // creeps above ~10% we should reconsider trigger thresholds
-      // or move to inline-only placements.
-      name: 'quiz_fab_dismissed';
-      props: {
-        pathname: string;
-      };
-    }
-  | {
       // MCP chat widget opened. Fires when the shopper taps the
       // chat bubble. Pathname tells us which surface drove the open
       // so we can correlate chat engagement with the funnel stage

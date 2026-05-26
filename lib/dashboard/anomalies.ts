@@ -1,5 +1,5 @@
 /**
- * Anomaly detector for /admin/dashboard.
+ * Anomaly detector for /admin.
  *
  * Takes the data shapes the page already fetches and returns a list of
  * actionable callouts. Surfaced at the top of the dashboard above the

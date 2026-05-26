@@ -1,7 +1,7 @@
 /**
  * PostHog Query API client — server-only.
  *
- * Used by the /admin/dashboard route to read live PostHog data
+ * Used by the /admin route to read live PostHog data
  * (funnels, event counts, top entry pages, etc.) and render it
  * inline alongside the Shopify Admin widgets. The dashboard goes
  * from "deep-links to PostHog" → "data shown inline + deep-links".

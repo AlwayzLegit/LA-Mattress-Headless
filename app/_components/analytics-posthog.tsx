@@ -96,7 +96,7 @@ export function AnalyticsPostHog() {
   const searchParams = useSearchParams();
   // QA #224: don't track internal admin traffic. Otherwise the
   // dashboard pollutes the very metrics it reports — staff loading
-  // /admin/dashboard was showing up in the Top entry pages card with
+  // /admin was showing up in the Top entry pages card with
   // its own sessions + bounce rate. Pathname check is sufficient: the
   // SDK never initializes on admin routes, so no $pageview, no
   // autocapture, no session replay.

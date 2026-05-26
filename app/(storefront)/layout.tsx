@@ -7,7 +7,6 @@ import { Footer } from '../_components/footer';
 import { CartProvider } from '../_components/cart-context';
 import { CartDrawer } from '../_components/cart-drawer';
 import { CompareTray } from '../_components/compare-tray';
-import { QuizFab } from '../_components/quiz-fab';
 import { ChatWidget } from '../_components/chat/chat-widget';
 import { Announcer } from '../_components/announcer';
 import { Analytics } from '@vercel/analytics/next';
@@ -141,7 +140,6 @@ export default async function StorefrontLayout({ children }: { children: React.R
         <Footer />
         <CartDrawer />
         <CompareTray />
-        <QuizFab />
         <ChatWidget />
         <Announcer />
       </CartProvider>
