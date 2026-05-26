@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Icon, type IconName } from '../icon';
 import { phImg } from '../images';
 import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
-import { getBrands } from '@/lib/shopify';
+import { getBrands, getFeaturedGuides, getWhyUsItems } from '@/lib/shopify';
 import { nonEmptyCollections } from '@/lib/inventory';
 
 /* ───── Shop by category ──────────────────────────────── */
@@ -111,7 +111,14 @@ export async function BrandStrip() {
  * 3+ clicks from home — nav Guides mega → blog index → list →
  * article). Curated (no Shopify fetch needed); same wordmark-strip
  * pattern as BrandStrip above for visual consistency. */
-const FEATURED_GUIDES: { label: string; href: string }[] = [
+/**
+ * Hardcoded fallback — used only when the live `featured_guide`
+ * metaobjects fetch returns empty (Shopify unconfigured, unreachable,
+ * or the metaobject definition wasn't seeded). Merchant adds /
+ * reorders entries in Shopify Admin → Content → Metaobjects →
+ * Featured guide; ISR picks the change up within an hour.
+ */
+const FALLBACK_FEATURED_GUIDES: { label: string; href: string }[] = [
   { label: 'Best mattress in Los Angeles',          href: '/blogs/mattress-buying-guide/best-mattress-los-angeles' },
   { label: 'How to choose a mattress',              href: '/blogs/mattress-buying-guide/how-to-choose-a-mattress' },
   { label: 'Best for back pain',                    href: '/blogs/mattress-buying-guide/best-mattress-for-back-pain' },
@@ -120,7 +127,11 @@ const FEATURED_GUIDES: { label: string; href: string }[] = [
   { label: 'Mattress sizes explained',              href: '/blogs/mattress-buying-guide/how-to-choose-the-best-mattress-size' },
 ];
 
-export function FeaturedGuides() {
+export async function FeaturedGuides() {
+  const live = await getFeaturedGuides();
+  const guides = live.length > 0
+    ? live.map((g) => ({ label: g.label, href: g.href }))
+    : FALLBACK_FEATURED_GUIDES;
   return (
     <section className="brand-strip-section">
       <div className="container">
@@ -131,7 +142,7 @@ export function FeaturedGuides() {
           </Link>
         </div>
         <div className="brand-strip">
-          {FEATURED_GUIDES.map((g) => (
+          {guides.map((g) => (
             <Link href={g.href} key={g.href} className="brand-tile">
               <span className="brand-wordmark">{g.label}</span>
             </Link>
@@ -143,13 +154,24 @@ export function FeaturedGuides() {
 }
 
 /* ───── Why LA Mattress ───────────────────────────────── */
-export function WhyUs() {
-  const items = [
-    { n: '01', title: 'Local for 14 years.',         body: 'Family-owned and operated since 2012. Five LA showrooms, real people on every call — no chatbots, no overseas support.' },
-    { n: '02', title: 'No pressure, no script.',     body: 'Our consultants work on salary — not commission. Lie down as long as you want, leave when you want.' },
-    { n: '03', title: 'Same-day to all of LA.',      body: 'White-glove delivery, mattress setup, and old mattress haul-away — all included on every order over $499. Order by 4pm for same-day.' },
-    { n: '04', title: 'Real return policy.',         body: '120 nights to decide. If it’s not right, we’ll exchange it for free — no restocking fee.' },
-  ];
+
+/**
+ * Hardcoded fallback — used only when live `why_us_item` metaobjects
+ * fetch returns empty. Merchant adds / edits in Shopify Admin →
+ * Content → Metaobjects → Why us item.
+ */
+const FALLBACK_WHY_US: { n: string; title: string; body: string }[] = [
+  { n: '01', title: 'Local for 14 years.',         body: 'Family-owned and operated since 2012. Five LA showrooms, real people on every call — no chatbots, no overseas support.' },
+  { n: '02', title: 'No pressure, no script.',     body: 'Our consultants work on salary — not commission. Lie down as long as you want, leave when you want.' },
+  { n: '03', title: 'Same-day to all of LA.',      body: 'White-glove delivery, mattress setup, and old mattress haul-away — all included on every order over $499. Order by 4pm for same-day.' },
+  { n: '04', title: 'Real return policy.',         body: '120 nights to decide. If it’s not right, we’ll exchange it for free — no restocking fee.' },
+];
+
+export async function WhyUs() {
+  const live = await getWhyUsItems();
+  const items = live.length > 0
+    ? live.map((w) => ({ n: w.eyebrow || String(w.displayOrder).padStart(2, '0'), title: w.title, body: w.body }))
+    : FALLBACK_WHY_US;
   return (
     <section className="section why-us">
       <div className="container">

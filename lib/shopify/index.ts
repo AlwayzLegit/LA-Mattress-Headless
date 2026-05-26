@@ -24,6 +24,8 @@ export { getBrands }                          from './queries/brands';
 export { getShowrooms }                       from './queries/showrooms';
 export { getSiteConfig }                      from './queries/site-config';
 export type { LiveSiteConfig }                from './queries/site-config';
+export { getWhyUsItems, getFeaturedGuides }   from './queries/homepage-sections';
+export type { WhyUsItem, FeaturedGuide }      from './queries/homepage-sections';
 export type { Brand }                         from './queries/brands';
 export type { SearchResult, Predictive, PredictiveArticle, ArticleSearchResult } from './queries/search';
 export { cartCreate, cartLinesAdd, cartLinesUpdate, cartLinesRemove, cartDiscountCodesUpdate, cartNoteUpdate, cartAttributesUpdate, getCart } from './mutations/cart';
