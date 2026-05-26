@@ -38,14 +38,15 @@ test('rewrites a /pages variant slug to its canonical handle', () => {
 });
 
 test('rewrites a blog-article slug variant', () => {
-  // /blogs/mattress-buying-guide/queen-mattress-size-guide-inches-feet-how-to-pick-the-perfect-fit
-  //   → /blogs/mattress-buying-guide/full-vs-queen-mattress
-  // (from the size-cluster redirect group).
+  // /blogs/beds-mattresses/unbeatable-savings-at-la-mattress-stores-best-4th-of-july-mattress-sale-2023
+  //   → /blogs/beds-mattresses/best-4th-of-july-mattress-sale-2023
+  // (long marketing-headline slug variant → canonical short slug, a
+  // common Shopify legacy pattern from blog-editor renames).
   assert.equal(
     resolveRedirectPath(
-      '/blogs/mattress-buying-guide/queen-mattress-size-guide-inches-feet-how-to-pick-the-perfect-fit',
+      '/blogs/beds-mattresses/unbeatable-savings-at-la-mattress-stores-best-4th-of-july-mattress-sale-2023',
     ),
-    '/blogs/mattress-buying-guide/full-vs-queen-mattress',
+    '/blogs/beds-mattresses/best-4th-of-july-mattress-sale-2023',
   );
 });
 

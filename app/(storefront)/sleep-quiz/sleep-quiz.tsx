@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import type { ProductSummary } from '@/lib/shopify';
 import { Icon } from '@/app/_components/icon';
@@ -25,11 +26,28 @@ const SleepQuizResult = dynamic(
 
 const PERSIST_KEY = 'la-mattress.sleep-quiz.v1';
 
+// Build a lookup of valid option ids per question, so a query-string
+// pre-fill (`?position=side`) can never inject a value that isn't a
+// real answer. Trying to set `?position=foo` is silently ignored.
+const VALID_OPTIONS: Record<string, Set<string>> = QUESTIONS.reduce<Record<string, Set<string>>>(
+  (acc, q) => {
+    acc[q.id] = new Set(q.options.map((o) => o.id));
+    return acc;
+  },
+  {},
+);
+
 export function SleepQuiz({ productPicks }: { productPicks: Record<string, ProductSummary> }) {
   // Step 0..QUESTIONS.length-1 = questions, then "result" = done.
   const [step, setStep] = useState<number | 'result'>(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [hydrated, setHydrated] = useState(false);
+  // Read query-string pre-fills. The homepage lead-in
+  // (app/_components/sections/quiz-leadin.tsx) deep-links here as
+  // /sleep-quiz?position=<id> — the shopper has effectively answered
+  // question 1, so we honor it as a real answer and advance to Q2.
+  // Validated against the live options table; bogus values are dropped.
+  const searchParams = useSearchParams();
   // How the user reached the result page — populated by the handler
   // that triggered the transition. Consumed by the completion-event
   // effect below to distinguish "answered every question" from
@@ -37,17 +55,62 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
   // render and we don't want a stale-closure read.
   const completionPathRef = useRef<'answered_all' | 'skipped' | null>(null);
 
-  // Restore prior progress so a navigation away + back doesn't lose answers.
+  // Restore prior progress so a navigation away + back doesn't lose
+  // answers. URL-param pre-fills take precedence over a restored
+  // session — a shopper who just tapped "Side sleeper" on the
+  // homepage lead-in expects to land on Q2 even if they previously
+  // walked away from Q5 last week.
   useEffect(() => {
+    let prefillAnswers: Answers | null = null;
+    if (searchParams) {
+      const collected: Answers = {};
+      for (const [key, value] of searchParams.entries()) {
+        const allowed = VALID_OPTIONS[key];
+        if (allowed && allowed.has(value)) collected[key] = value;
+      }
+      if (Object.keys(collected).length > 0) prefillAnswers = collected;
+    }
     try {
       const raw = window.localStorage.getItem(PERSIST_KEY);
-      if (raw) {
+      if (raw && !prefillAnswers) {
         const data = JSON.parse(raw) as { step?: number | 'result'; answers?: Answers };
         if (data.answers && typeof data.answers === 'object') setAnswers(data.answers);
         if (data.step === 'result' || (typeof data.step === 'number' && data.step >= 0)) setStep(data.step);
+      } else if (prefillAnswers) {
+        setAnswers(prefillAnswers);
+        // Advance past the highest question index that already has an
+        // answer. The homepage lead-in pre-fills `position` (Q0), so
+        // the shopper lands on Q1 — sunk-cost-bias UX pattern (Helix /
+        // Casper / Nectar all use it).
+        let firstUnanswered = 0;
+        for (let i = 0; i < QUESTIONS.length; i += 1) {
+          if (!prefillAnswers[QUESTIONS[i].id]) {
+            firstUnanswered = i;
+            break;
+          }
+          firstUnanswered = i + 1;
+        }
+        setStep(firstUnanswered >= QUESTIONS.length ? 'result' : firstUnanswered);
+        // Mirror the standard quiz_step event for each pre-filled
+        // answer so the funnel sees the same shape as a hand-clicked
+        // first answer (avoids a phantom drop-off at Q0).
+        Object.entries(prefillAnswers).forEach(([qid, choice]) => {
+          const stepIdx = QUESTIONS.findIndex((q) => q.id === qid);
+          if (stepIdx >= 0) {
+            track('quiz_step', {
+              step: stepIdx,
+              question_id: qid,
+              choice,
+              total_steps: QUESTIONS.length,
+            });
+          }
+        });
       }
     } catch { /* ignore */ }
     setHydrated(true);
+    // searchParams is stable per route — including it would cause a
+    // remount loop if Next.js ever re-issues the object reference.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Persist on every change after hydration.

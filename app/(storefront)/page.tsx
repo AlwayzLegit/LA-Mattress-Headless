@@ -12,6 +12,7 @@ import {
 import { PopularProducts } from '../_components/sections/popular-products';
 import { Showrooms } from '../_components/sections/showrooms';
 import { FAQ } from '../_components/sections/faq';
+import { QuizLeadIn } from '../_components/sections/quiz-leadin';
 import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd } from '@/lib/faq';
 import { composeBrandTitle } from '@/lib/seo';
@@ -69,6 +70,13 @@ export default async function Home() {
   return (
     <main>
       <Hero slides={slides} />
+      {/* Quiz lead-in sits directly under the hero so the first
+          interactive surface on the homepage is the "find your match"
+          path. Pre-fills /sleep-quiz?position=<id> on tap, dropping
+          the shopper at Q2 — sunk-cost commitment that lifts quiz
+          completion vs. a cold start. Industry-standard placement
+          (Helix, Casper, Nectar all put it above the fold). */}
+      <QuizLeadIn />
       <RecentlyViewedRail heading="Welcome back" eyebrow="Pick up where you left off" />
       <PopularProducts />
       <ShopByCategory />
