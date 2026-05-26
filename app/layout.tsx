@@ -11,7 +11,7 @@ import './globals.css';
  * app/(storefront)/layout.tsx so it only renders on customer-facing
  * pages. Admin pages (/admin/*) inherit just this bare shell — no
  * navigation, no cart UI, no PostHog / GA4 tracking polluting the
- * very dashboard data /admin/dashboard reports on.
+ * very dashboard data /admin reports on.
  *
  * Per-page metadata (titles, OG images) still inherits from the
  * storefront layout's generateMetadata for storefront pages; admin

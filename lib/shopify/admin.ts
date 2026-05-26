@@ -1,7 +1,7 @@
 /**
  * Shopify Admin API client — server-only.
  *
- * Used by the `/admin/dashboard` route to surface metrics the Storefront
+ * Used by the `/admin` route to surface metrics the Storefront
  * API can't reach (orders, revenue, inventory, customer counts). Reads
  * `SHOPIFY_ADMIN_TOKEN` from the env, which is the same secret the
  * scripts/seo-*.mjs backfills use.

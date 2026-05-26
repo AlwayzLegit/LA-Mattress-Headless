@@ -26,7 +26,7 @@ export default function AdminNotFound() {
           <div className="eyebrow">Internal</div>
           <h1 className="h2" style={{ margin: 0 }}>Not found</h1>
           <p className="muted" style={{ marginTop: 4, fontSize: 13 }}>
-            <Link href="/admin/dashboard">← Back to dashboard</Link>
+            <Link href="/admin">← Back to dashboard</Link>
           </p>
         </div>
       </header>

@@ -1,5 +1,5 @@
 /**
- * Dashboard data fetchers for /admin/dashboard, layered on top of
+ * Dashboard data fetchers for /admin, layered on top of
  * lib/posthog-query.ts. Each fetcher returns its widget's typed data
  * shape, or null on failure (gates the "data unavailable" state).
  *

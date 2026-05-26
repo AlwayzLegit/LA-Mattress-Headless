@@ -12,9 +12,9 @@ import { redirect } from 'next/navigation';
  *     every Shopify Admin GraphQL call (every adminGql() invocation
  *     tagged that string in lib/shopify/admin.ts), so the next render
  *     refetches from Shopify.
- *   - revalidatePath('/admin/dashboard') invalidates the Full Route
- *     Cache entry for the page itself, forcing Next.js to re-render
- *     even if no underlying data dependency changed.
+ *   - revalidatePath('/admin') invalidates the Full Route Cache entry
+ *     for the page itself, forcing Next.js to re-render even if no
+ *     underlying data dependency changed.
  *
  * PostHog HogQL queries aren't cached by Next.js at all (they go through
  * a different fetch wrapper without `next.tags`), so they re-execute on
@@ -26,6 +26,6 @@ import { redirect } from 'next/navigation';
 export async function refreshDashboard(formData: FormData): Promise<void> {
   const range = String(formData.get('range') ?? '30d');
   revalidateTag('admin-dashboard');
-  revalidatePath('/admin/dashboard');
-  redirect(`/admin/dashboard?range=${encodeURIComponent(range)}&refreshed=1`);
+  revalidatePath('/admin');
+  redirect(`/admin?range=${encodeURIComponent(range)}&refreshed=1`);
 }

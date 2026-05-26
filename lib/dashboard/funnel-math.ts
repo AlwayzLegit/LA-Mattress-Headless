@@ -1,7 +1,7 @@
 /**
- * Pure funnel-math helpers used by /admin/dashboard.
+ * Pure funnel-math helpers used by /admin.
  *
- * Extracted from app/admin/dashboard/page.tsx into a standalone file so
+ * Extracted from app/admin/page.tsx into a standalone file so
  * the unit-test suite can exercise them without rendering the page or
  * importing `server-only`. Zero dependencies on Next.js, Sentry, or any
  * data fetcher — every function is a pure transform.

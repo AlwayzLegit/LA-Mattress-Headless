@@ -7,7 +7,7 @@ import { badgeColor, humanize } from '@/lib/dashboard/order-status';
 /**
  * Internal order drill-down at /admin/orders/[id].
  *
- * Linked from the Recent orders table on /admin/dashboard. Renders
+ * Linked from the Recent orders table on /admin. Renders
  * everything a merchant needs to triage an individual order without
  * leaving the admin: line items + refund state, customer + lifetime
  * order count, shipping address, payment + fulfillment status,
@@ -74,7 +74,7 @@ export default async function OrderDetailPage({
   // Preserve the dashboard's range filter on the back link so the
   // merchant returns to the same view they came from.
   const range = typeof sp.range === 'string' ? sp.range : undefined;
-  const backHref = range ? `/admin/dashboard?range=${encodeURIComponent(range)}` : '/admin/dashboard';
+  const backHref = range ? `/admin?range=${encodeURIComponent(range)}` : '/admin';
 
   if (!order) {
     return (
