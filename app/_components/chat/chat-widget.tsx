@@ -7,6 +7,7 @@ import { track } from '@/lib/analytics';
 import { useFocusTrap } from '../use-focus-trap';
 import { useBodyScrollLock } from '../use-body-scroll-lock';
 import { ChatConversation } from './chat-conversation';
+import { CHAT_OPEN_EVENT } from '@/lib/chat/chat-events';
 
 /**
  * Floating chat widget — the panel shell + open/close mechanics. PR-1
@@ -60,6 +61,21 @@ export function ChatWidget() {
       track('chat_dismissed', { source: 'route_change', pathname });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Listen for cross-component open requests — fired by the homepage
+  // "Three ways to find your match" Chat card and (eventually) any
+  // future entry point (cart empty state, exit intent, etc). The
+  // dispatch helper lives in lib/chat/chat-events.ts so callers don't
+  // have to know the event name. No-op when on a hidden route.
+  useEffect(() => {
+    if (isHidden(pathname)) return;
+    const onOpenEvent = () => {
+      setOpen(true);
+      track('chat_opened', { pathname });
+    };
+    window.addEventListener(CHAT_OPEN_EVENT, onOpenEvent);
+    return () => window.removeEventListener(CHAT_OPEN_EVENT, onOpenEvent);
   }, [pathname]);
 
   if (isHidden(pathname)) return null;
