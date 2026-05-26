@@ -16,9 +16,10 @@ import { QuizLeadIn } from '../_components/sections/quiz-leadin';
 import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd } from '@/lib/faq';
 import { composeBrandTitle } from '@/lib/seo';
-import { LOCAL_BUSINESS_LD } from '@/lib/structured-data';
+import { buildLocalBusinessLd } from '@/lib/structured-data';
 import { getSitewideReviewsExtension } from '@/lib/judgeme';
-import { getShopBrand, getHeroSlides } from '@/lib/shopify';
+import { getShopBrand, getHeroSlides, getShowrooms } from '@/lib/shopify';
+import { FALLBACK_SHOWROOMS } from '@/lib/showrooms';
 import { FALLBACK_HERO_SLIDES } from '../_components/hero-slides';
 
 const LOCAL_BUSINESS_ID = 'https://www.mattressstoreslosangeles.com/#localbusiness';
@@ -58,14 +59,22 @@ export default async function Home() {
   // LocalBusiness schema, eligible for the brand review snippet in
   // SERP. Returns null when Judge.me is unconfigured; we fall through
   // to the un-enriched LOCAL_BUSINESS_LD without surfacing an error.
-  const [shopifySlides, reviewsExtension] = await Promise.all([
+  const [shopifySlides, reviewsExtension, liveShowrooms] = await Promise.all([
     getHeroSlides(),
     getSitewideReviewsExtension(LOCAL_BUSINESS_ID),
+    getShowrooms(),
   ]);
   const slides = shopifySlides.length > 0 ? shopifySlides : FALLBACK_HERO_SLIDES;
+  // Live showrooms feed the sitewide LocalBusiness JSON-LD — merchant
+  // edits to hours / phones / addresses in Shopify Admin → Metaobjects →
+  // Showroom propagate within one ISR cycle. Falls back to the static
+  // showroom snapshot if Shopify is unreachable so the homepage never
+  // emits an empty department[] array.
+  const showrooms = liveShowrooms.length > 0 ? liveShowrooms : FALLBACK_SHOWROOMS;
+  const baseLocalBusinessLd = buildLocalBusinessLd(showrooms);
   const localBusinessLd = reviewsExtension
-    ? { ...LOCAL_BUSINESS_LD, ...reviewsExtension }
-    : LOCAL_BUSINESS_LD;
+    ? { ...baseLocalBusinessLd, ...reviewsExtension }
+    : baseLocalBusinessLd;
 
   return (
     <main>

@@ -11,7 +11,7 @@
 // merchant hasn't filled out Brand assets).
 
 import { SITE_BRAND, SITE_PHONE_SCHEMA, SOCIAL_PROFILES } from './site-config';
-import { SHOWROOMS } from './showrooms';
+import { FALLBACK_SHOWROOMS, type Showroom } from './showrooms';
 import type { ShopBrand } from './shopify/queries/shop';
 
 const SITE = 'https://www.mattressstoreslosangeles.com';
@@ -93,55 +93,69 @@ export function buildOrganizationLd(
   };
 }
 
-export const LOCAL_BUSINESS_LD = {
-  '@context': 'https://schema.org',
-  '@type': 'FurnitureStore',
-  '@id': `${SITE}/#localbusiness`,
-  name: SITE_BRAND,
-  url: `${SITE}/`,
-  telephone: SITE_PHONE_SCHEMA,
-  priceRange: '$$$',
-  image: `${SITE}/assets/la-mattress-logo.png`,
-  // Phase 236: top-level FurnitureStore address uses the Studio City
-  // showroom (12306 Ventura Blvd) — that's the Shopify shop.billingAddress,
-  // i.e. the canonical corporate address. Previously hardcoded to an
-  // unrelated `3550 Wilshire Blvd 90010` that didn't match any showroom.
-  // Each individual showroom is still emitted as a `department` below,
-  // so Google sees both the corporate anchor and the 5 branch locations.
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: '12306 Ventura Blvd',
-    addressLocality: 'Studio City',
-    addressRegion: 'CA',
-    postalCode: '91604',
-    addressCountry: 'US',
-  },
-  areaServed: { '@type': 'City', name: 'Los Angeles' },
-  // Each LA showroom emitted as a department branch. The locations-page
-  // template (`/pages/mattress-store-locations`) emits the same shape under
-  // its own @id; including it on the homepage too gives crawlers the full
-  // multi-location signal from the highest-authority page on the site.
-  department: SHOWROOMS.map((s) => ({
+/**
+ * Build the LocalBusiness JSON-LD using a live showroom list. Pass the
+ * array from `await getShowrooms()` to make the sitewide LD reflect the
+ * merchant's current Shopify metaobject data (hours / phones / addresses
+ * propagate within one ISR cycle). When called without an argument,
+ * falls back to the static FALLBACK_SHOWROOMS so render paths that
+ * can't easily await (rare) still get a valid LD.
+ *
+ * Top-level FurnitureStore address uses the Studio City showroom
+ * (12306 Ventura Blvd) — Shopify shop.billingAddress, i.e. the
+ * canonical corporate address. Each individual showroom is also
+ * emitted as a `department` branch so Google sees both the corporate
+ * anchor and the 5 branch locations.
+ */
+export function buildLocalBusinessLd(showrooms: Showroom[] = FALLBACK_SHOWROOMS) {
+  return {
+    '@context': 'https://schema.org',
     '@type': 'FurnitureStore',
-    name: s.name,
-    url: `${SITE}/pages/${s.handle}`,
-    telephone: s.phone,
+    '@id': `${SITE}/#localbusiness`,
+    name: SITE_BRAND,
+    url: `${SITE}/`,
+    telephone: SITE_PHONE_SCHEMA,
+    priceRange: '$$$',
+    image: `${SITE}/assets/la-mattress-logo.png`,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: s.street,
-      addressLocality: s.city,
-      addressRegion: s.region,
-      postalCode: s.postalCode,
+      streetAddress: '12306 Ventura Blvd',
+      addressLocality: 'Studio City',
+      addressRegion: 'CA',
+      postalCode: '91604',
       addressCountry: 'US',
     },
-    ...(s.geo ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } } : {}),
-    // Phase 287: reinforce the GBP/Maps entity association from the
-    // homepage (highest-authority page) too — each department branch
-    // points at its verified Google Business Profile.
-    ...(s.gbpUrl ? { sameAs: [s.gbpUrl] } : {}),
-  })),
-  parentOrganization: { '@id': `${SITE}/#organization` },
-};
+    areaServed: { '@type': 'City', name: 'Los Angeles' },
+    department: showrooms.map((s) => ({
+      '@type': 'FurnitureStore',
+      name: s.name,
+      url: `${SITE}/pages/${s.handle}`,
+      telephone: s.phone,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: s.street,
+        addressLocality: s.city,
+        addressRegion: s.region,
+        postalCode: s.postalCode,
+        addressCountry: 'US',
+      },
+      ...(s.geo ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } } : {}),
+      // Phase 287: reinforce the GBP/Maps entity association from the
+      // homepage (highest-authority page) too — each department branch
+      // points at its verified Google Business Profile.
+      ...(s.gbpUrl ? { sameAs: [s.gbpUrl] } : {}),
+    })),
+    parentOrganization: { '@id': `${SITE}/#organization` },
+  };
+}
+
+/**
+ * Back-compat constant. Prefer `buildLocalBusinessLd(await getShowrooms())`
+ * in new code. Existing imports of `LOCAL_BUSINESS_LD` keep working,
+ * but they're stuck on the static fallback and don't reflect merchant
+ * edits in Shopify Admin.
+ */
+export const LOCAL_BUSINESS_LD = buildLocalBusinessLd();
 
 export const WEBSITE_LD = {
   '@context': 'https://schema.org',
