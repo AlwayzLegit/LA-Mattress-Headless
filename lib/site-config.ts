@@ -1,13 +1,18 @@
 /**
- * Canonical site-wide config — store contact, social, brand identity.
+ * Static fallback for sitewide config — phone, email, brand identity,
+ * social profiles. The live source of truth is `getSiteConfig()` from
+ * lib/shopify/queries/site-config.ts (Shopify `site_config` metaobject,
+ * singleton handle `default`).
  *
- * Anything that used to be a hardcoded constant strewn across components,
- * JSON-LD builders, and not-found pages should reference this module so a
- * single edit propagates everywhere.
- *
- * If we ever migrate this to Shopify-native (shop metafields), the public
- * shape stays the same and only the import source changes.
+ * Existing sync consumers continue importing the formatted constants
+ * below (SITE_PHONE_TEL, SITE_EMAIL, etc.) — they fall back to the
+ * static values when the live fetch hasn't been wired into that
+ * surface yet. Surfaces that have been migrated (footer signature,
+ * Organization JSON-LD, etc.) read live values via `getSiteConfig()`
+ * and use the formatter helpers below to derive the display shapes.
  */
+
+import type { LiveSiteConfig } from './shopify/queries/site-config';
 
 const PHONE_DIGITS = '8002183578';
 
@@ -85,14 +90,67 @@ export const SITE_URL = canonicalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
  */
 export const SOCIAL_PROFILES: readonly string[] = [
   // Phase 293: confirmed owned profiles (merchant-verified 2026-05-15).
-  // Facebook: merchant-selected canonical page (lists
-  //   mattressstoreslosangeles.com as its website, Studio City base).
-  // Instagram: @lamattressstores — matches brand + catalog.
-  // Yelp: biz address 10861 W Pico Blvd == the West LA showroom in
-  //   lib/showrooms.ts (definitive ownership match).
+  // Now also lives in the Shopify `site_config` metaobject — merchant
+  // can add the 5 showroom Google Business Profile URLs there once
+  // they're confirmed, no code change needed.
   'https://www.facebook.com/lamattressstore',
   'https://www.instagram.com/lamattressstores',
   'https://www.yelp.com/biz/los-angeles-mattress-stores-los-angeles',
-  // TODO(merchant): add the 5 showroom Google Business Profile URLs
-  // (g.page / maps share links) once provided — ideal local sameAs.
 ] as const;
+
+/* ────────────────────────────────────────────────────────────────────
+   Formatter helpers — derive the same display shapes the static
+   constants expose from a live LiveSiteConfig (or any { phoneDigits }
+   object). Callers that fetch via getSiteConfig() use these to render
+   the same way the static fallback does — single source of formatting
+   truth across static + dynamic paths.
+   ──────────────────────────────────────────────────────────────────── */
+
+/** `+18002183578` — RFC 3966 for `<a href={tel}>`. */
+export function phoneTelFrom(digits: string): string {
+  return `+1${digits}`;
+}
+
+/** `(800) 218-3578` — visible UI form. */
+export function phoneDisplayFrom(digits: string): string {
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+/** `+1-800-218-3578` — Schema.org JSON-LD `telephone`. */
+export function phoneSchemaFrom(digits: string): string {
+  return `+1-${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+/**
+ * Resolve a live LiveSiteConfig (from `getSiteConfig()`) — or `null`
+ * if Shopify is unreachable / mis-seeded — into the formatted bundle
+ * the storefront chrome consumes. Mirrors the SITE_* constants 1:1.
+ * Use this in server components that have already awaited the live
+ * fetch; client components keep using the static constants.
+ */
+export function resolveSiteConfig(live: LiveSiteConfig | null): {
+  brand: string;
+  phoneTel: string;
+  phoneDisplay: string;
+  phoneSchema: string;
+  email: string;
+  freeDeliveryThreshold: number;
+  freeDeliveryThresholdDisplay: string;
+  socialProfiles: readonly string[];
+} {
+  const phoneDigits = live?.phoneDigits ?? PHONE_DIGITS;
+  const threshold = live?.freeDeliveryThreshold ?? FREE_DELIVERY_THRESHOLD;
+  return {
+    brand: live?.brandName ?? SITE_BRAND,
+    phoneTel: phoneTelFrom(phoneDigits),
+    phoneDisplay: phoneDisplayFrom(phoneDigits),
+    phoneSchema: phoneSchemaFrom(phoneDigits),
+    email: live?.email ?? SITE_EMAIL,
+    freeDeliveryThreshold: threshold,
+    freeDeliveryThresholdDisplay: `$${threshold.toLocaleString('en-US')}`,
+    socialProfiles:
+      live?.socialProfiles && live.socialProfiles.length > 0
+        ? live.socialProfiles
+        : SOCIAL_PROFILES,
+  };
+}

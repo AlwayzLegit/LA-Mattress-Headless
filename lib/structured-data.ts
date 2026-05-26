@@ -10,9 +10,15 @@
 // fallback when shop data isn't available (Shopify unconfigured, or
 // merchant hasn't filled out Brand assets).
 
-import { SITE_BRAND, SITE_PHONE_SCHEMA, SOCIAL_PROFILES } from './site-config';
+import {
+  SITE_BRAND,
+  SITE_PHONE_SCHEMA,
+  SOCIAL_PROFILES,
+  resolveSiteConfig,
+} from './site-config';
 import { FALLBACK_SHOWROOMS, type Showroom } from './showrooms';
 import type { ShopBrand } from './shopify/queries/shop';
+import type { LiveSiteConfig } from './shopify/queries/site-config';
 
 const SITE = 'https://www.mattressstoreslosangeles.com';
 const FALLBACK_LOGO = `${SITE}/assets/la-mattress-logo.png`;
@@ -45,9 +51,14 @@ export const ORGANIZATION_LD = {
 export function buildOrganizationLd(
   shop: ShopBrand | null,
   aggregate?: { rating: number; count: number } | null,
+  siteConfig?: LiveSiteConfig | null,
 ) {
+  const live = resolveSiteConfig(siteConfig ?? null);
   const logo = shop?.brand?.logo?.url ?? FALLBACK_LOGO;
-  const name = shop?.name ?? SITE_BRAND;
+  // Shopify's built-in Brand `name` wins (it's the most-canonical
+  // setting the merchant configures). Falls through to the live
+  // site_config metaobject's `brandName`, then the static SITE_BRAND.
+  const name = shop?.name ?? live.brand;
   // Validate the aggregate before emission. `typeof NaN === 'number'`
   // passes the upstream getShopAggregate guard, so without Number.isFinite
   // here NaN would slip through and emit `"ratingValue": "NaN"` sitewide
@@ -69,8 +80,8 @@ export function buildOrganizationLd(
     name,
     url: `${SITE}/`,
     logo,
-    telephone: SITE_PHONE_SCHEMA,
-    ...(SOCIAL_PROFILES.length > 0 ? { sameAs: [...SOCIAL_PROFILES] } : {}),
+    telephone: live.phoneSchema,
+    ...(live.socialProfiles.length > 0 ? { sameAs: [...live.socialProfiles] } : {}),
     ...(validAggregate
       ? {
           aggregateRating: {
