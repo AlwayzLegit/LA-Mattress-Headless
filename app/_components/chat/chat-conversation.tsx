@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Icon } from '../icon';
-import type { ChatMessage, ChatStreamEvent } from '@/lib/chat/types';
+import { ChatProductCard } from './chat-product-card';
+import type {
+  ChatMessage,
+  ChatStreamEvent,
+  ChatProductCard as ChatProductCardData,
+} from '@/lib/chat/types';
 
 /**
  * The interactive body of the chat panel: message list + input form +
@@ -34,11 +39,79 @@ const SUGGESTED_PROMPTS = [
   "What's your return policy?",
 ];
 
+/**
+ * Inline-attachment shown alongside a chat message. Tool calls Claude
+ * makes during a turn render as one of these — either an in-flight
+ * "Searching for X..." indicator while the tool runs, or the result
+ * cards once the tool returns. Pairing is by `id` so out-of-order
+ * results land in the right spot.
+ */
+type ChatAttachment =
+  | { kind: 'tool_pending'; id: string; tool: string; summary: string }
+  | {
+      kind: 'tool_result';
+      id: string;
+      payload:
+        | { kind: 'products'; cards: ChatProductCardData[] }
+        | { kind: 'product'; card: ChatProductCardData };
+      isError?: boolean;
+    };
+
 type DisplayMessage = ChatMessage & {
   // Local-only state; never persisted or sent upstream.
   streaming?: boolean;
   error?: boolean;
+  attachments?: ChatAttachment[];
 };
+
+/**
+ * Render a single line of Claude output with minimal Markdown support:
+ *   - **bold**     → <strong>
+ *   - [text](url)  → <a> (internal URLs only — drop external for safety)
+ *
+ * Anything else passes through as plain text. We intentionally do NOT
+ * pull in react-markdown for this — it's 30KB+, and the system prompt
+ * already restricts the assistant to bold + links + bullets. Bullets
+ * render natively because they're plain "- " prefixes in the text.
+ */
+function renderInlineMarkdown(text: string): React.ReactNode {
+  // Tokenize on **bold** and [text](url) in a single pass. Greedy
+  // matching is fine because both delimiter pairs are unambiguous.
+  const pattern = /(\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)]+)\))/g;
+  const out: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let keyCounter = 0;
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      out.push(text.slice(lastIndex, match.index));
+    }
+    if (match[2] !== undefined) {
+      // **bold**
+      out.push(<strong key={`b${keyCounter++}`}>{match[2]}</strong>);
+    } else if (match[3] !== undefined && match[4] !== undefined) {
+      const url = match[4];
+      // Only render internal-path links as anchors. External links
+      // (http:// or //) render as plain text — the system prompt
+      // already instructs the assistant not to emit external URLs,
+      // but defense-in-depth catches a bad day.
+      if (url.startsWith('/') && !url.startsWith('//')) {
+        out.push(
+          <a key={`a${keyCounter++}`} href={url}>
+            {match[3]}
+          </a>,
+        );
+      } else {
+        out.push(`${match[3]} (${url})`);
+      }
+    }
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    out.push(text.slice(lastIndex));
+  }
+  return out.length > 0 ? out : text;
+}
 
 function loadHistory(): DisplayMessage[] {
   if (typeof window === 'undefined') return [];
@@ -201,6 +274,41 @@ export function ChatConversation() {
                 }
                 return next;
               });
+            } else if (event.type === 'tool_use') {
+              setMessages((prev) => {
+                const next = [...prev];
+                const last = next[next.length - 1];
+                if (last?.role === 'assistant' && last.streaming) {
+                  const attachments = [...(last.attachments ?? [])];
+                  attachments.push({
+                    kind: 'tool_pending',
+                    id: event.id,
+                    tool: event.tool,
+                    summary: event.summary,
+                  });
+                  next[next.length - 1] = { ...last, attachments };
+                }
+                return next;
+              });
+            } else if (event.type === 'tool_result') {
+              setMessages((prev) => {
+                const next = [...prev];
+                const last = next[next.length - 1];
+                if (last?.role === 'assistant' && last.streaming) {
+                  const attachments = (last.attachments ?? []).map((a) =>
+                    a.kind === 'tool_pending' && a.id === event.id
+                      ? ({
+                          kind: 'tool_result' as const,
+                          id: event.id,
+                          payload: event.payload,
+                          isError: event.isError,
+                        })
+                      : a,
+                  );
+                  next[next.length - 1] = { ...last, attachments };
+                }
+                return next;
+              });
             } else if (event.type === 'error') {
               setMessages((prev) => {
                 const next = [...prev];
@@ -317,20 +425,55 @@ export function ChatConversation() {
         ) : null}
 
         {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`chat-msg chat-msg-${m.role}${m.error ? ' chat-msg-error' : ''}`}
-          >
-            {m.content
-              .split('\n')
-              .map((line, j) => (line.length > 0 ? <p key={j}>{line}</p> : <br key={j} />))}
-            {m.streaming && m.content.length === 0 ? (
-              <span className="chat-typing" aria-label="Assistant is typing">
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            ) : null}
+          <div key={i} className="chat-turn">
+            <div
+              className={`chat-msg chat-msg-${m.role}${m.error ? ' chat-msg-error' : ''}`}
+            >
+              {m.content
+                .split('\n')
+                .map((line, j) =>
+                  line.length > 0 ? (
+                    <p key={j}>{renderInlineMarkdown(line)}</p>
+                  ) : (
+                    <br key={j} />
+                  ),
+                )}
+              {m.streaming && m.content.length === 0 && !m.attachments?.length ? (
+                <span className="chat-typing" aria-label="Assistant is typing">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </span>
+              ) : null}
+            </div>
+            {m.attachments?.map((att) =>
+              att.kind === 'tool_pending' ? (
+                <div key={att.id} className="chat-tool-pending" aria-live="polite">
+                  <span className="chat-typing" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </span>
+                  <span>{att.summary}</span>
+                </div>
+              ) : att.payload.kind === 'products' ? (
+                <div key={att.id} className="chat-cards">
+                  {att.payload.cards.length === 0 ? (
+                    <p className="chat-tool-empty muted">
+                      No matches found. Try different keywords.
+                    </p>
+                  ) : (
+                    att.payload.cards.map((card) => (
+                      <ChatProductCard key={card.handle} card={card} />
+                    ))
+                  )}
+                </div>
+              ) : (
+                <div key={att.id} className="chat-cards">
+                  <ChatProductCard card={att.payload.card} />
+                </div>
+              ),
+            )}
           </div>
         ))}
       </div>
