@@ -686,12 +686,54 @@ summary:focus-visible,
   margin: 0; padding: 0; list-style: none;
 }
 .chat-suggestion-pill {
+  width: 100%;
+  text-align: left;
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
+  font: inherit;
   font-size: 14px;
   background: var(--surface);
   color: var(--text);
+  cursor: default;
+}
+.chat-suggestion-pill-clickable {
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.chat-suggestion-pill-clickable:hover:not(:disabled),
+.chat-suggestion-pill-clickable:focus-visible:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+.chat-suggestion-pill-clickable:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.chat-msg-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+.chat-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+.chat-typing span {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--text-3);
+  animation: chat-typing-bounce 1.2s ease-in-out infinite;
+}
+.chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+.chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes chat-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-typing span { animation: none; opacity: 0.6; }
 }
 .chat-panel-foot {
   flex: 0 0 auto;

@@ -6,49 +6,27 @@ import { Icon } from '../icon';
 import { track } from '@/lib/analytics';
 import { useFocusTrap } from '../use-focus-trap';
 import { useBodyScrollLock } from '../use-body-scroll-lock';
+import { ChatConversation } from './chat-conversation';
 
 /**
- * Floating chat widget — PR-1 of the MCP chat-shopping build.
- *
- * This ships the UI shell only: the bubble opens/closes a panel, the
- * panel renders a "coming soon" placeholder + suggested prompts. No
- * Claude wiring yet — that lands in PR-2 (/api/chat streaming) with
- * Storefront MCP tools in PR-3.
- *
- * Why ship the chrome separately:
- *   - Lets us validate the UX shape (bubble placement, panel size,
- *     mobile breakpoint, focus trap, scroll lock) before the AI
- *     answers are in the loop and start dominating QA attention.
- *   - Visible "coming soon" placeholder is honest UX vs. a chatbot
- *     that fakes responses — readers can't tell the difference until
- *     the integration ships, by which point we've burned trust.
+ * Floating chat widget — the panel shell + open/close mechanics. PR-1
+ * shipped the chrome; PR-2 wires in the live Claude conversation via
+ * <ChatConversation />. PR-3 will add Storefront MCP tools (search,
+ * cart, policy lookup).
  *
  * Positioning: bottom-right (industry default — Intercom, Drift, every
- * mainstream chat widget). z-90 (above QuizFab's 75, which has been
- * bumped up by 80px so they stack vertically rather than overlap on
- * the same anchor point).
+ * mainstream chat widget). z-90.
  *
- * Hidden on the same routes as QuizFab (/admin, /account) — chat in
- * the admin dashboard makes no sense, and shopper questions belong on
- * shopping surfaces. Stays visible on /sleep-quiz + /cart (unlike
- * QuizFab) because the chat IS the assistant that can answer mid-quiz
- * questions and mid-cart edits.
+ * Hidden on /admin and /account — chat in the admin dashboard makes
+ * no sense, and shopper questions belong on shopping surfaces. Stays
+ * visible on /sleep-quiz + /cart because the chat IS the assistant
+ * that can answer mid-quiz / mid-cart questions.
  */
 const HIDDEN_PREFIXES = ['/admin', '/account'];
 
 function isHidden(pathname: string): boolean {
   return HIDDEN_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
-
-// Suggested prompts surfaced when the panel opens. Phrased as questions
-// a real shopper actually asks in showrooms — drives discovery of
-// what the chat *will* be able to do once the LLM lands in PR-2.
-const SUGGESTED_PROMPTS = [
-  'What mattress is best for back pain?',
-  'Compare Tempur-Pedic vs Stearns & Foster',
-  "I'm a side sleeper under 150 lbs — what would you recommend?",
-  "What's your return policy?",
-];
 
 export function ChatWidget() {
   const pathname = usePathname();
@@ -152,51 +130,11 @@ export function ChatWidget() {
               </button>
             </header>
 
-            <div className="chat-panel-body">
-              {/* Placeholder welcome bubble — replaced in PR-2 by a
-                  real Claude system-prompted greeting that streams. */}
-              <div className="chat-msg chat-msg-assistant">
-                <p>
-                  Hi! I&rsquo;m a sleep assistant — ask me anything about mattresses, brands,
-                  firmness, or what fits your sleeping style. I&rsquo;m almost ready to help.
-                </p>
-                <p className="muted" style={{ fontSize: 13, marginTop: 8 }}>
-                  Full chat with product recommendations and showroom Q&amp;A launches shortly.
-                  Try the <a href="/sleep-quiz">2-minute sleep quiz</a> in the meantime — same
-                  matching logic, just guided.
-                </p>
-              </div>
-
-              <div className="chat-suggestions" aria-label="Example questions">
-                <p className="chat-suggestions-eyebrow muted">When I&rsquo;m live, you&rsquo;ll be able to ask…</p>
-                <ul role="list">
-                  {SUGGESTED_PROMPTS.map((p) => (
-                    <li key={p} role="listitem" className="chat-suggestion-pill">{p}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <footer className="chat-panel-foot">
-              {/* Input is intentionally inert in PR-1. The placeholder
-                  text is the disclosure — no fake echoes, no "thinking"
-                  spinner that goes nowhere. Real input wires up in PR-2. */}
-              <div className="chat-input-wrap">
-                <textarea
-                  className="chat-input"
-                  placeholder="Chat input coming soon — try the sleep quiz for now"
-                  rows={1}
-                  disabled
-                  aria-label="Chat input (coming soon)"
-                />
-                <button type="button" className="chat-send" disabled aria-label="Send (coming soon)">
-                  <Icon name="arrow-right" size={16} />
-                </button>
-              </div>
-              <p className="chat-foot-disclosure muted">
-                AI responses can be inaccurate. Verify pricing &amp; availability in cart.
-              </p>
-            </footer>
+            {/* Body + footer (message list, input, streaming response
+                handling) live in <ChatConversation />. Conditional
+                mount via the `open` flag means a closed chat doesn't
+                hold a streaming fetch or sessionStorage subscription. */}
+            <ChatConversation />
           </aside>
         </>
       ) : null}
