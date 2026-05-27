@@ -3065,12 +3065,6 @@
       "permanent": true
     },
     {
-      "id": "gid://shopify/UrlRedirect/411641348349",
-      "source": "/blogs/sleep-health/sleep-disorder-5701",
-      "destination": "https://mattressstoreslosangeles.com/blogs/sleep-health/sleep-disorder-5701",
-      "permanent": true
-    },
-    {
       "id": "gid://shopify/UrlRedirect/411641413885",
       "source": "/blogs/beds-mattresses/anti-snoring-tactics-really-work-1736",
       "destination": "https://mattressstoreslosangeles.com/",
@@ -6446,12 +6440,6 @@
       "id": "gid://shopify/UrlRedirect/430725497085",
       "source": "/collections/california-king",
       "destination": "/collections/california-king-mattresses",
-      "permanent": true
-    },
-    {
-      "id": "gid://shopify/UrlRedirect/431164227837",
-      "source": "/pages/free-120-night-comfort-guarantee",
-      "destination": "https://mattressstoreslosangeles.com/blogs/pages/free-120-night-comfort-guarantee",
       "permanent": true
     },
     {

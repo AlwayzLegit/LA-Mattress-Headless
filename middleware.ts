@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { canonicalizeRouteParams } from './lib/route-canonicalization';
+import { canonicalizeCollectionFilterPath } from './lib/collection-filter-redirect';
 import { REDIRECTS } from './lib/redirects-table';
 
 /**
@@ -103,6 +104,24 @@ export function middleware(req: NextRequest): NextResponse {
         location = target.toString();
       }
       return NextResponse.redirect(location, 301);
+    }
+  }
+
+  // (1.5) Legacy Shopify Liquid filter-subpath redirects. Inputs like
+  // `/collections/mattresses/brand_stress-o-pedic` 404 in our headless
+  // app (there is no `[handle]/[sub]` route), so 301 them to the parent
+  // collection. See lib/collection-filter-redirect.ts for the pattern.
+  // SEMrush 20260527 surfaced 3 of these as broken internal links;
+  // representative article-body inspection shows ~10x that many in the
+  // wild (size_*, type_*, Comfort_*, Brand_* variants). Runs AFTER the
+  // legacy REDIRECTS table so a hand-curated redirect always wins.
+  if (!pathname.startsWith('/admin') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+    const parent = canonicalizeCollectionFilterPath(pathname);
+    if (parent) {
+      const target = new URL(parent, req.nextUrl);
+      if (req.nextUrl.search) target.search = req.nextUrl.search;
+      if (req.nextUrl.hash) target.hash = req.nextUrl.hash;
+      return NextResponse.redirect(target, 301);
     }
   }
 
