@@ -181,6 +181,35 @@ const BATCHES = {
     'englander-mattress-prices-2024',
     'englander-mattress-reviews-2024',
   ],
+
+  /**
+   * semrush-2026-05-27-broken-ext:
+   *   SEMrush 2026-05-27 "External broken links" drill-down — 11
+   *   article bodies linking to third-party domains that responded
+   *   4xx / 5xx / DNS-unresolvable at crawl time. Mix of permanent
+   *   (404, DNS) and transient (429, 500, 502, 503) failures. The
+   *   transient ones are mostly aggressive bot rate-limiting on
+   *   the destination — for our SEO posture it doesn't matter:
+   *   external anchors leak authority and create perpetual broken-
+   *   link maintenance regardless of whether the link works today.
+   *   Pass 4 of clean() unwraps every external anchor in these
+   *   articles, keeping the visible text intact and converting the
+   *   link into prose. The article narrative reads identically;
+   *   SEMrush re-crawl will clear all 11 findings.
+   */
+  'semrush-2026-05-27-broken-ext': [
+    'best-12-hybrid-mattresses-2024',
+    'best-hotel-mattress-topper',
+    'do-all-bed-frames-fit-a-california-king-mattress',
+    'do-beautyrest-mattresses-have-fiberglass',
+    'helix-vs-tempurpedic-a-comprehensive-comparison',
+    'how-to-price-a-used-latex-mattress',
+    'is-a-magnetic-mattress-good-for-health',
+    'is-stearns-and-foster-better-than-beautyrest',
+    'how-to-deflate-an-intex-air-mattress',
+    'can-you-sleep-in-a-room-after-painting-it',
+    'sleeping-on-floor-benefits-health',
+  ],
 };
 
 const ENDPOINT = `https://${STORE}/admin/api/${VERSION}/graphql.json`;
@@ -254,17 +283,23 @@ function clean(body, counts) {
      /<p><b id="docs-internal-guid-[^"]+"><\/b><\/p>\s*/g, '');
 
   // 2. Unwrap parasitic <a href="#:~:text=…"> anchors (keep inner text).
+  //    Phase 305: anchor patterns now use `<a [^>]*?\bhref=` instead of
+  //    `<a href=` because TinyMCE-emitted bodies often interleave a
+  //    `data-mce-fragment="1"` attribute (and others) BEFORE the href
+  //    — the old pattern silently missed ~70% of external anchors in
+  //    affected articles. SEMrush 2026-05-27 broken-ext audit surfaced
+  //    11 broken external links the existing pass 4 couldn't catch.
   pc('text_fragment_unwraps',
-     /<a href="#:~:text=[^"]*"[^>]*>([\s\S]*?)<\/a>/g, '$1');
+     /<a [^>]*?\bhref="#:~:text=[^"]*"[^>]*>([\s\S]*?)<\/a>/g, '$1');
 
   // 3. Self-301 unwrap: links to /blogs/mattress-buying-guide/king-vs-california-king
   //    are circular after #183 (it now 301s back to its hub).
   pc('self_301_unwraps',
-     /<a href="https:\/\/mattressstoreslosangeles\.com\/blogs\/mattress-buying-guide\/king-vs-california-king[^"]*"[^>]*>([\s\S]*?)<\/a>/g, '$1');
+     /<a [^>]*?\bhref="https:\/\/mattressstoreslosangeles\.com\/blogs\/mattress-buying-guide\/king-vs-california-king[^"]*"[^>]*>([\s\S]*?)<\/a>/g, '$1');
 
   // 4. Unwrap external (non-mattressstoreslosangeles.com) anchors — keep visible text.
   pc('external_unwraps',
-     /<a href="https?:\/\/(?!(?:www\.)?mattressstoreslosangeles\.com)[^"]+"[^>]*>([\s\S]*?)<\/a>/g, '$1');
+     /<a [^>]*?\bhref="https?:\/\/(?!(?:www\.)?mattressstoreslosangeles\.com)[^"]+"[^>]*>([\s\S]*?)<\/a>/g, '$1');
 
   // 5. Strip empty anchor tags that may remain after the unwraps.
   pc('empty_anchors',
