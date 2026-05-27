@@ -5089,6 +5089,117 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   margin: 0 auto;
   padding: var(--s-7) var(--container-pad) var(--s-9);
 }
+/* When the dashboard is rendered inside the admin shell (sidebar +
+   toolbar layout), .dash-main already provides outer padding, so the
+   .dashboard wrapper drops its own padding to avoid double-spacing. */
+.dashboard-in-shell {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+  max-width: none;
+}
+/* Admin shell — sidebar + main column. The shell wraps every /admin/*
+   route via app/admin/layout.tsx. Mobile collapses the sidebar into a
+   top strip; desktop keeps it fixed on the left. */
+.dash-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+  background: var(--surface-1);
+}
+@media (max-width: 880px) { .dash-shell { grid-template-columns: 1fr; } }
+.dash-main {
+  min-width: 0; /* let card grids reflow without overflowing */
+  padding: var(--s-6) clamp(var(--s-4), 4vw, var(--s-7)) var(--s-9);
+}
+.dash-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  padding: var(--s-5) var(--s-4);
+  background: var(--surface-2, #fafafa);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+@media (max-width: 880px) {
+  .dash-sidebar {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding: var(--s-4);
+  }
+}
+.dash-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.dash-sidebar-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--text-1);
+  color: var(--surface-1);
+  font-weight: 700;
+  font-size: 13px;
+}
+.dash-sidebar-brand-text { font-weight: 600; font-size: 14px; line-height: 1.15; }
+.dash-sidebar-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+@media (max-width: 880px) {
+  .dash-sidebar-list { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+}
+.dash-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+}
+.dash-sidebar-link:hover { background: var(--surface-1); color: var(--text-1); }
+.dash-sidebar-link-active {
+  background: var(--text-1);
+  color: var(--surface-1);
+  font-weight: 600;
+}
+.dash-sidebar-link-active:hover { background: var(--text-1); color: var(--surface-1); }
+.dash-sidebar-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 14px;
+  opacity: 0.85;
+}
+/* Top toolbar — sticky, shared across every /admin/* route. */
+.dash-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) 0;
+  margin-bottom: var(--s-5);
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--line);
+}
 .dashboard-head {
   display: flex;
   justify-content: space-between;

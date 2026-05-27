@@ -12,6 +12,13 @@ import { permanentRedirect } from 'next/navigation';
  */
 type Params = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
+// The shared admin layout (app/admin/layout.tsx) renders client
+// components (sidebar + toolbar) that depend on useSearchParams.
+// Static prerendering of this redirect page would try to render those
+// client components without a request, which fails — mark as dynamic
+// so the layout resolves at request time, before the redirect fires.
+export const dynamic = 'force-dynamic';
+
 export default async function LegacyDashboardRedirect({ searchParams }: Params) {
   const params = await searchParams;
   const usp = new URLSearchParams();

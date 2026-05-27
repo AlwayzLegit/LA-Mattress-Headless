@@ -43,8 +43,9 @@ import { detectAnomalies } from '@/lib/dashboard/anomalies';
 import { formatRateDelta, formatRelativeDelta } from '@/lib/dashboard/delta';
 import { parseDateRange, parseCompareFlag, rangeToSearchParams, DATE_RANGE_PRESETS, type DateRange } from '@/lib/dashboard/date-range';
 import { SHOWROOMS } from '@/lib/showrooms';
-import { DateRangePicker } from './_components/date-range-picker';
-import { RefreshButton } from './_components/refresh-button';
+// DateRangePicker + RefreshButton now imported by
+// app/admin/_components/admin-toolbar.tsx, which the shared
+// admin layout renders sticky at the top of every section.
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -134,13 +135,11 @@ export default async function DashboardPage({
     );
   }
 
-  // PostHog project URL for deep-linking. When the env vars aren't
-  // set we still render the dashboard; PostHog widgets show
-  // "data unavailable" with a config hint.
-  const phCfg = postHogConfig();
-  const phProjectUrl = phCfg
-    ? `${phCfg.apiHost.replace(/^https:\/\/us\.posthog\.com$/, 'https://us.posthog.com')}/project/${phCfg.projectId}`
-    : 'https://us.posthog.com';
+  // PostHog deep-link now lives in the shared admin toolbar
+  // (app/admin/_components/admin-toolbar.tsx), which builds the link
+  // from NEXT_PUBLIC_POSTHOG_PROJECT_URL so it's available to client
+  // components too. The toolbar shows the link as a constant external
+  // tool nav next to the refresh button.
 
   // Fan out all queries in parallel — each ~200-500ms; serial would
   // push the page over a second. Phase 300: orderSummary now carries
@@ -247,7 +246,7 @@ export default async function DashboardPage({
   const renderedAt = new Date();
 
   return (
-    <main className="dashboard">
+    <main className="dashboard dashboard-in-shell">
       <header className="dashboard-head">
         <div>
           <div className="eyebrow">Internal</div>
@@ -258,24 +257,11 @@ export default async function DashboardPage({
             {!POSTHOG_CONFIGURED ? ' · PostHog widgets disabled (env vars missing)' : null}
           </p>
         </div>
-        <div className="dashboard-head-actions">
-          <DateRangePicker active={range} compare={compare} />
-          <RefreshButton range={range} compare={compare} />
-          <nav className="dashboard-links">
-            <a href="https://jetnine.sentry.io/issues/?project=la-mattress-headless" target="_blank" rel="noopener noreferrer">
-              Sentry →
-            </a>
-            <a href={phProjectUrl} target="_blank" rel="noopener noreferrer">
-              PostHog →
-            </a>
-            <a href="https://vercel.com/alwayzlegits-projects/la-mattress-headless" target="_blank" rel="noopener noreferrer">
-              Vercel →
-            </a>
-            <a href={`${SHOPIFY_ADMIN_BASE}/`} target="_blank" rel="noopener noreferrer">
-              Shopify Admin →
-            </a>
-          </nav>
-        </div>
+        {/* DateRangePicker + RefreshButton + external-tool links now
+            live in app/admin/_components/admin-toolbar.tsx, rendered by
+            the shared admin layout sticky at the top of every section.
+            phProjectUrl + SHOPIFY_ADMIN_BASE are still computed below
+            for the layout's link hrefs via NEXT_PUBLIC_* env vars. */}
       </header>
 
       {/* QA 2026-05-22: count Shopify-Admin-backed cards whose fetch
@@ -322,17 +308,12 @@ export default async function DashboardPage({
           below the header). */}
       {anomalies.length > 0 ? <AnomalyStrip anomalies={anomalies} /> : null}
 
-      {/* QA #224: section nav so the 18 cards aren't a wall of tiles.
-          Anchor links jump to each section; scroll-margin-top in CSS
-          keeps the heading from disappearing behind sticky headers. */}
-      <nav className="dashboard-section-nav" aria-label="Dashboard sections">
-        <a href="#section-revenue">Revenue</a>
-        <a href="#section-customers">Customers</a>
-        <a href="#section-funnel">Funnel</a>
-        <a href="#section-acquisition">Acquisition</a>
-        <a href="#section-catalog">Catalog &amp; search</a>
-        <a href="#section-health">System</a>
-      </nav>
+      {/* In-page section nav was replaced by the persistent left-rail
+          sidebar (app/admin/_components/sidebar.tsx, rendered by the
+          shared admin layout). Each sidebar link points to the same
+          `#section-X` anchors the in-page nav used, so the
+          scroll-margin-top CSS that keeps headings below sticky
+          headers still applies. */}
 
       {/* SECTION: Revenue & orders --- */}
       <section id="section-revenue" className="dash-section">

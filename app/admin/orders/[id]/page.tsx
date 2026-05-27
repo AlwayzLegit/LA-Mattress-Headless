@@ -87,7 +87,7 @@ export default async function OrderDetailPage({
 
   if (!order) {
     return (
-      <main className="dashboard">
+      <main className="dashboard dashboard-in-shell">
         <header className="dashboard-head">
           <div>
             <div className="eyebrow">Internal</div>
@@ -114,7 +114,7 @@ export default async function OrderDetailPage({
   const fmtDate = (iso: string) => new Date(iso).toLocaleString();
 
   return (
-    <main className="dashboard">
+    <main className="dashboard dashboard-in-shell">
       <header className="dashboard-head">
         <div>
           <div className="eyebrow">Internal · Order</div>
