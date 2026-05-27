@@ -143,7 +143,15 @@ export async function hogQL(query: string): Promise<HogQLResult | null> {
         Authorization: `Bearer ${cfg.apiKey}`,
       },
       body: JSON.stringify({ query: { kind: 'HogQLQuery', query } }),
-      next: { revalidate: 300, tags: ['admin-dashboard'] },
+      // No fetch-level caching — every hogQL call is admin-dashboard-only
+      // and parameterized on the active date range. Cache misses on
+      // range changes were the original "time filter doesn't work" bug.
+      // Route-level dynamic = 'force-dynamic' on app/admin/page.tsx
+      // makes the page uncached; we keep the cache tag for backwards
+      // compatibility with refreshDashboard()'s revalidateTag call
+      // (which is a no-op in no-store mode).
+      cache: 'no-store',
+      next: { tags: ['admin-dashboard'] },
     });
     if (!res.ok) {
       const body = await res.text();

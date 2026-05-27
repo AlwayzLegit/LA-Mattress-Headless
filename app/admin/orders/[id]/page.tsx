@@ -45,7 +45,7 @@ export default async function OrderDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ range?: string | string[] }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -71,10 +71,19 @@ export default async function OrderDetailPage({
 
   const order = await getOrderDetail(id).catch(() => null);
 
-  // Preserve the dashboard's range filter on the back link so the
-  // merchant returns to the same view they came from.
-  const range = typeof sp.range === 'string' ? sp.range : undefined;
-  const backHref = range ? `/admin?range=${encodeURIComponent(range)}` : '/admin';
+  // Preserve the dashboard's full date-range URL state (preset / from /
+  // to / compare) on the back link so the merchant returns to the same
+  // view they came from — the prior version only round-tripped `range`,
+  // so the back-link from a custom-date-or-compare dashboard silently
+  // collapsed to the default 30-day preset.
+  const backParams = new URLSearchParams();
+  for (const k of ['range', 'from', 'to', 'compare']) {
+    const v = sp[k];
+    const s = typeof v === 'string' ? v : Array.isArray(v) ? v[0] : null;
+    if (s) backParams.set(k, s);
+  }
+  const backQs = backParams.toString();
+  const backHref = backQs ? `/admin?${backQs}` : '/admin';
 
   if (!order) {
     return (

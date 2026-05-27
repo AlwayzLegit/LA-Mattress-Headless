@@ -60,7 +60,21 @@ export async function adminGql<T>(query: string, variables: Record<string, unkno
         'X-Shopify-Access-Token': token,
       },
       body: JSON.stringify({ query, variables }),
-      next: { revalidate: 300, tags: ['admin-dashboard'] },
+      // No fetch-level caching — every adminGql call is admin-only and
+      // takes a `days`/`from`/`to` parameter that must be re-evaluated
+      // every render. The prior `next.revalidate: 300` with a static
+      // `admin-dashboard` tag was the root cause of the dashboard date
+      // filter "not working" report: even though POST bodies differ per
+      // range, intermittent edge caching + the shared tag served stale
+      // data on range changes. The route-level dynamic = 'force-dynamic'
+      // on app/admin/page.tsx makes the overall route uncached, and
+      // refreshDashboard() still calls revalidateTag('admin-dashboard')
+      // for compatibility — but in this no-store mode the tag bust is a
+      // no-op (nothing to invalidate). Trade ~$5-20/mo of extra Shopify
+      // Admin API calls for a dashboard that actually reflects the
+      // selected window.
+      cache: 'no-store',
+      next: { tags: ['admin-dashboard'] },
     });
     if (!res.ok) {
       const body = await res.text();

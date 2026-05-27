@@ -38,11 +38,13 @@ import {
   getTopSearches,
   getTopTrafficSources,
 } from '@/lib/posthog-dashboard';
-import { refreshDashboard } from './actions';
 import { computeAbandonment, funnelConversionRate } from '@/lib/dashboard/funnel-math';
 import { detectAnomalies } from '@/lib/dashboard/anomalies';
 import { formatRateDelta, formatRelativeDelta } from '@/lib/dashboard/delta';
+import { parseDateRange, parseCompareFlag, rangeToSearchParams, DATE_RANGE_PRESETS, type DateRange } from '@/lib/dashboard/date-range';
 import { SHOWROOMS } from '@/lib/showrooms';
+import { DateRangePicker } from './_components/date-range-picker';
+import { RefreshButton } from './_components/refresh-button';
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -71,27 +73,14 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false, nocache: true, noimageindex: true },
 };
 
-// Refresh server-rendered data every 5 minutes; merchant can hit the
-// page reload to force a re-render anytime.
-export const revalidate = 300;
-
-// Phase 300: time-range picker drives every fetcher's `days` parameter.
-// Three sensible windows (7-day / 30-day / 90-day). Anything outside
-// this whitelist gets clamped to the default to keep the URL surface
-// tight — accepting arbitrary day counts would invite cache-poisoning
-// the revalidate tag with hundreds of variants.
-type RangeKey = '7d' | '30d' | '90d';
-const RANGE_OPTIONS: Record<RangeKey, { days: number; label: string }> = {
-  '7d':  { days: 7,  label: 'Last 7 days' },
-  '30d': { days: 30, label: 'Last 30 days' },
-  '90d': { days: 90, label: 'Last 90 days' },
-};
-const DEFAULT_RANGE: RangeKey = '30d';
-
-function parseRange(raw: string | string[] | undefined): RangeKey {
-  if (typeof raw !== 'string') return DEFAULT_RANGE;
-  return raw in RANGE_OPTIONS ? (raw as RangeKey) : DEFAULT_RANGE;
-}
+// Fully dynamic — the dashboard's date-range picker drives every
+// fetcher and the page must re-render per request to honour the
+// active window. The prior `revalidate = 300` caused stale data to
+// leak across range changes (Vercel edge can cache the route by URL
+// without distinguishing search params), which manifested as "the
+// time filter doesn't work" reports. Combined with the cache: 'no-store'
+// on adminGql / hogQL the dashboard is now always fresh.
+export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage({
   searchParams,
@@ -99,41 +88,36 @@ export default async function DashboardPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const rangeKey = parseRange(params.range);
-  const { days, label: rangeLabel } = RANGE_OPTIONS[rangeKey];
+  const range = parseDateRange(params);
+  const compare = parseCompareFlag(params);
+  const { days, label: rangeLabel } = range;
+  // Short label rendered in card headers ("7d" / "30d" / "MTD" / "Custom").
+  const rangeShort =
+    range.isPreset && range.preset
+      ? DATE_RANGE_PRESETS.find((p) => p.key === range.preset)?.short ?? range.label
+      : 'Custom';
+  // Pre-built query string for any deep-link that needs to round-trip
+  // the active range (e.g. /admin/orders/[id]?{range query}).
+  const rangeQuery = rangeToSearchParams(range, { compare }).toString();
   const justRefreshed = params.refreshed === '1';
 
-  // QA #224 B4: cache key fragments by full URL, so /admin?x=1
-  // and /admin?x=2 allocate separate Next.js Data Cache entries
-  // for the same parsed-range render. Solve by canonicalizing: if the
-  // URL has any param outside the allow-list, or `range` is a value the
-  // whitelist clamps, redirect to the canonical clean URL so subsequent
-  // hits share one cache entry.
-  //
-  // Allow-list:
-  //   range=7d|30d|90d  — the picker
-  //   refreshed=1       — set by the refresh server action's redirect
-  //
-  // Anything else (typos, share-tracker UTM params, random ?x=1) gets
-  // stripped. Bookmarks with stripped params still work — they redirect
-  // once to the clean URL, the second hit comes from cache.
-  const ALLOWED_PARAMS = new Set(['range', 'refreshed']);
-  const canonicalRange = rangeKey;
-  const canonicalRefreshed = justRefreshed;
-  const incoming = new URLSearchParams();
-  for (const [k, v] of Object.entries(params)) {
-    if (typeof v === 'string') incoming.set(k, v);
-    else if (Array.isArray(v) && v.length > 0) incoming.set(k, v[v.length - 1] ?? '');
-  }
-  const canonical = new URLSearchParams();
-  // Only include `range` in the canonical URL if it was explicitly
-  // requested — leaving it off matches the default-page shape ('/')
-  // and avoids redirect loops on /admin (no params).
-  if (typeof params.range === 'string') canonical.set('range', canonicalRange);
-  if (canonicalRefreshed) canonical.set('refreshed', '1');
+  // Canonicalize the URL to a tight allow-list so bookmarked links
+  // strip noisy UTM / share-tracker params. The previous version
+  // accepted only `range`; now `from`/`to`/`compare` are valid too.
+  const ALLOWED_PARAMS = new Set(['range', 'from', 'to', 'compare', 'refreshed']);
+  const canonical = rangeToSearchParams(range, { compare });
+  if (justRefreshed) canonical.set('refreshed', '1');
   const hasUnknown = Object.keys(params).some((k) => !ALLOWED_PARAMS.has(k));
-  const rangeIsClamped = typeof params.range === 'string' && params.range !== canonicalRange;
-  if (hasUnknown || rangeIsClamped) {
+  // Detect range params that parsed to a different canonical (e.g. a
+  // misspelled preset that fell back to the default) and 302 the user
+  // to the cleaned URL.
+  const requestedRange = typeof params.range === 'string' ? params.range : null;
+  const requestedFrom = typeof params.from === 'string' ? params.from : null;
+  const requestedTo = typeof params.to === 'string' ? params.to : null;
+  const isClamped =
+    (requestedRange !== null && range.isPreset && range.preset !== requestedRange) ||
+    (requestedFrom !== null && requestedTo !== null && range.isPreset);
+  if (hasUnknown || isClamped) {
     const qs = canonical.toString();
     redirect(qs ? `/admin?${qs}` : '/admin');
   }
@@ -269,14 +253,14 @@ export default async function DashboardPage({
           <div className="eyebrow">Internal</div>
           <h1 className="h2" style={{ margin: 0 }}>LA Mattress dashboard</h1>
           <p className="muted" style={{ marginTop: 4, fontSize: 13 }}>
-            Rendered {renderedAt.toLocaleString()} · auto-refresh every 5 minutes
+            Rendered {renderedAt.toLocaleString()} · {rangeLabel}
             {justRefreshed ? <span className="dash-refreshed-pill"> · just refreshed</span> : null}
             {!POSTHOG_CONFIGURED ? ' · PostHog widgets disabled (env vars missing)' : null}
           </p>
         </div>
         <div className="dashboard-head-actions">
-          <RangePicker active={rangeKey} />
-          <RefreshButton rangeKey={rangeKey} />
+          <DateRangePicker active={range} compare={compare} />
+          <RefreshButton range={range} compare={compare} />
           <nav className="dashboard-links">
             <a href="https://jetnine.sentry.io/issues/?project=la-mattress-headless" target="_blank" rel="noopener noreferrer">
               Sentry →
@@ -407,7 +391,7 @@ export default async function DashboardPage({
                           <td>
                             <strong>
                               <Link
-                                href={`/admin/orders/${numericIdFromGid(o.id)}?range=${rangeKey}`}
+                                href={`/admin/orders/${numericIdFromGid(o.id)}${rangeQuery ? `?${rangeQuery}` : ''}`}
                                 prefetch={false}
                               >
                                 {o.name}
@@ -470,7 +454,7 @@ export default async function DashboardPage({
           {/* Day-of-week order heatmap */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Orders by weekday · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Orders by weekday · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>Shopify · order count</span>
             </div>
             {orderSummary && orderSummary.daily.length >= 7 ? (
@@ -483,7 +467,7 @@ export default async function DashboardPage({
           {/* Hour-of-day order heatmap */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Orders by hour · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Orders by hour · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>Shopify · Pacific · order count</span>
             </div>
             {orderSummary ? (
@@ -496,7 +480,7 @@ export default async function DashboardPage({
           {/* Refund + cancellation health */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Refunds &amp; cancels · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Refunds &amp; cancels · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>Shopify · share of orders</span>
             </div>
             {refundHealth ? (
@@ -565,7 +549,7 @@ export default async function DashboardPage({
           {/* Customer insights */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Customers · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Customers · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>Shopify · new vs repeat</span>
             </div>
             {customerInsights ? (
@@ -730,7 +714,7 @@ export default async function DashboardPage({
               answering "are we acquiring or servicing this period?" */}
           <div className="dash-card dash-card-wide">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>New vs repeat buyers · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>New vs repeat buyers · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>
                 Shopify · orders bucketed by customer lifetime-order count
               </span>
@@ -893,7 +877,7 @@ export default async function DashboardPage({
           {/* Cart + checkout abandonment */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Cart abandonment · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Cart abandonment · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>PostHog · derived from funnel</span>
             </div>
             {abandonment ? (
@@ -935,7 +919,7 @@ export default async function DashboardPage({
           {/* Quiz funnel */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Quiz funnel · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Quiz funnel · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>
                 PostHog
                 {quizCompletionNow !== null ? (
@@ -984,7 +968,7 @@ export default async function DashboardPage({
               the 3-row Quiz funnel above can't. */}
           <div className="dash-card dash-card-wide">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Quiz step drop-off · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Quiz step drop-off · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>
                 PostHog · unique persons per quiz_step event
               </span>
@@ -1046,7 +1030,7 @@ export default async function DashboardPage({
               renamed; share-of-traffic % takes its place. */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Sessions by device · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Sessions by device · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>PostHog · share of sessions</span>
             </div>
             {deviceBreakdown ? (
@@ -1071,7 +1055,7 @@ export default async function DashboardPage({
           {/* Top traffic sources — with donut chart */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Traffic sources · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Traffic sources · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
             </div>
             {sources ? (
@@ -1117,7 +1101,7 @@ export default async function DashboardPage({
           {/* Revenue + AOV by source */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Revenue by source · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Revenue by source · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>PostHog · initial UTM</span>
             </div>
             {revenueBySource ? (
@@ -1200,7 +1184,7 @@ export default async function DashboardPage({
           {/* Showroom traffic — pageviews per LA location */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Showroom traffic · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Showroom traffic · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>PostHog · pageviews per LA location</span>
             </div>
             {showroomTraffic ? (
@@ -1215,7 +1199,7 @@ export default async function DashboardPage({
           {/* Top-converting blog articles — content-to-revenue attribution */}
           <div className="dash-card dash-card-wide">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Top-converting articles · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Top-converting articles · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>PostHog · same-session attribution</span>
             </div>
             {convertingArticles ? (
@@ -1362,7 +1346,7 @@ export default async function DashboardPage({
           {/* Top searches */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Top searches · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Top searches · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
             </div>
             {searches ? (
@@ -1408,7 +1392,7 @@ export default async function DashboardPage({
               converter; expand inventory for high-volume zero-result). */}
           <div className="dash-card">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Search → purchase · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Search → purchase · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>
                 PostHog · per-session first search query (≥ 5 sessions)
               </span>
@@ -1635,7 +1619,7 @@ export default async function DashboardPage({
               drill-down view Vercel ships out of the box. */}
           <div className="dash-card dash-card-wide">
             <div className="dash-card-hd">
-              <h2 className="h3" style={{ margin: 0 }}>Core Web Vitals · {rangeKey}</h2>
+              <h2 className="h3" style={{ margin: 0 }}>Core Web Vitals · {rangeShort}</h2>
               <span className="muted" style={{ fontSize: 12 }}>
                 PostHog · field data via web-vitals → useReportWebVitals
               </span>
@@ -1756,50 +1740,12 @@ function PostHogConfigHint() {
   );
 }
 
-/**
- * Phase 300: time-range picker. Pure server-side anchor-link navigation
- * — no JS, no client component. Clicking a range updates the URL
- * `?range=` param and the page server-renders with the new window.
- *
- * Anchored to the same path so the picker works whether the merchant
- * arrives at /admin or /admin?range=anything.
- */
-function RangePicker({ active }: { active: RangeKey }) {
-  return (
-    <div className="dash-range-picker" role="group" aria-label="Date range">
-      {(Object.keys(RANGE_OPTIONS) as RangeKey[]).map((k) => (
-        <Link
-          key={k}
-          href={`/admin?range=${k}`}
-          className={`dash-range-btn${k === active ? ' dash-range-btn-active' : ''}`}
-          aria-pressed={k === active}
-          prefetch={false}
-        >
-          {k}
-        </Link>
-      ))}
-    </div>
-  );
-}
-
-/**
- * QA #224: a hard refresh button. Browser reload would only re-fetch
- * within the current 5-min revalidate window; this form posts to the
- * refreshDashboard server action which calls revalidateTag +
- * revalidatePath to bust the Data Cache + Full Route Cache before
- * re-rendering. Renders as a plain submit button next to the range
- * picker; no JS needed.
- */
-function RefreshButton({ rangeKey }: { rangeKey: RangeKey }) {
-  return (
-    <form action={refreshDashboard} className="dash-refresh-form">
-      <input type="hidden" name="range" value={rangeKey} />
-      <button type="submit" className="dash-refresh-btn" title="Force refresh — bust cache and re-fetch">
-        ↻ Refresh
-      </button>
-    </form>
-  );
-}
+// RangePicker + RefreshButton now live in
+// app/admin/_components/date-range-picker.tsx and
+// app/admin/_components/refresh-button.tsx — extracted so the dashboard
+// page can stay focused on data fetching + layout while the picker
+// (which needs hooks for the custom-range popover + outside-click
+// dismiss) compiles as a separate client-component island.
 
 /**
  * Sessions-by-device table. Used to show Conv% but that column was
