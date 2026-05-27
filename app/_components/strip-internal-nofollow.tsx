@@ -5,8 +5,8 @@ import { stripInternalNofollowFromRel } from '@/lib/strip-nofollow';
 
 /**
  * Strips rel="nofollow" / "sponsored" / "ugc" from anchors whose href
- * is internal (root-relative path or in-page fragment) inside the
- * Judge.me widget container.
+ * is internal (root-relative path, in-page fragment, OR absolute URL
+ * matching window.location.origin).
  *
  * Background — SEMrush 20260521_1 follow-up: 334 PDPs flagged
  * "Nofollow attributes in internal links". Server-side
@@ -20,6 +20,9 @@ import { stripInternalNofollowFromRel } from '@/lib/strip-nofollow';
  *   - "Write a Review" → href="#jdgm-write-review-form" rel="nofollow"
  *   - Reply / Helpful actions → form anchors with rel="nofollow"
  *   - Pagination → in-page anchors with rel="nofollow"
+ *   - Review-permalink share trays (Phase 306) — absolute self-host
+ *     URLs to the PDP itself, sometimes appended at document.body
+ *     level rather than inside the widget mount
  *
  * All of these point to in-page fragments or same-host paths — i.e.
  * "internal" — so rel="nofollow" wastes a tiny bit of internal link
@@ -27,17 +30,17 @@ import { stripInternalNofollowFromRel } from '@/lib/strip-nofollow';
  * in 2019). External Judge.me URLs (judge.me/u/whatever) keep their
  * nofollow untouched.
  *
- * Cost: one MutationObserver per PDP, attached on mount, disconnected
- * on unmount. The observer is scoped to `.judgeme-widget-mount` so it
- * doesn't see the whole DOM. Initial pass strips anything already in
- * the container at mount time; the observer catches Judge.me's later
- * re-renders (review pagination, etc).
+ * Cost: one MutationObserver on document.body for the page lifetime.
+ * The handler filters on `a[rel]` descendants so the vast majority
+ * of unrelated DOM churn (analytics, Next.js prefetches, route
+ * transitions, etc.) is skipped in O(1). Phase 306 widened scope from
+ * `.judgeme-widget-mount` to `document.body` because Judge.me's modal
+ * overlays and share-trays render outside the mount container; the
+ * narrower scope let those slip past and SEMrush kept flagging them
+ * (277 PDPs in the 20260527 re-crawl).
  */
 export function StripInternalNofollow() {
   useEffect(() => {
-    const root = document.querySelector('.judgeme-widget-mount');
-    if (!root) return;
-
     // Pass `window.location.origin` so absolute self-host URLs (e.g.
     // `https://mattressstoreslosangeles.com/products/X`) count as
     // internal too. Judge.me's widget injects same-site permalinks in
@@ -61,25 +64,47 @@ export function StripInternalNofollow() {
       }
     };
 
-    // Initial pass — strip anything already in the widget container.
-    root.querySelectorAll('a').forEach((a) => applyTo(a as HTMLAnchorElement));
+    // Initial pass — strip anything already on the page. Judge.me's
+    // preloader loads `lazyOnload`, so on first paint the widget mount
+    // is usually empty; but if the widget has already hydrated (e.g.
+    // BFCache restore, route re-entry), we want to catch those anchors
+    // right away.
+    document.querySelectorAll('a[rel]').forEach((a) => applyTo(a as HTMLAnchorElement));
 
-    // Watch for Judge.me's later DOM injections (review pagination,
-    // form submissions that swap the write-review subtree, etc.).
+    // Phase 306: SEMrush 20260527 still flagged 277 PDPs with internal
+    // nofollow links despite the 20260525 fix. Diagnosis: the previous
+    // observer was scoped to `.judgeme-widget-mount`, but Judge.me's
+    // widget appends some interactive elements (the write-review modal
+    // overlay, the photo-upload popover, the "share this review" tray)
+    // directly to `document.body` — outside the mount container.
+    // Those anchors slip past the scoped observer.
+    //
+    // Fix: observe `document.body` for the whole page lifetime, but
+    // filter aggressively in the handler so we only re-process nodes
+    // that could plausibly carry rel="nofollow". Touching every <a>
+    // tag injected anywhere in the document would be wasteful; the
+    // filter keeps the per-event work bounded.
     const observer = new MutationObserver((mutations) => {
       for (const m of mutations) {
         for (const node of m.addedNodes) {
           if (!(node instanceof Element)) continue;
-          if (node.tagName === 'A') {
+          // Direct <a> insertion — check it.
+          if (node.tagName === 'A' && node.hasAttribute('rel')) {
             applyTo(node as HTMLAnchorElement);
+            continue;
           }
-          // Newly-added subtrees may contain <a> descendants Judge.me
-          // injects in a single batch (e.g. a whole review card).
-          node.querySelectorAll?.('a').forEach((a) => applyTo(a as HTMLAnchorElement));
+          // Subtree insertion (a whole Judge.me card, a modal, etc.).
+          // Only walk if there's at least one anchor with `rel`
+          // descendant inside, so we skip the bulk of unrelated DOM
+          // churn (analytics scripts, Next.js prefetches, etc.).
+          const candidates = node.querySelectorAll?.('a[rel]');
+          if (candidates && candidates.length > 0) {
+            candidates.forEach((a) => applyTo(a as HTMLAnchorElement));
+          }
         }
       }
     });
-    observer.observe(root, { childList: true, subtree: true });
+    observer.observe(document.body, { childList: true, subtree: true });
 
     return () => observer.disconnect();
   }, []);
