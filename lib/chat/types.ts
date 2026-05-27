@@ -47,7 +47,7 @@ export type ChatStreamEvent =
   | { type: 'delta'; text: string }
   | {
       type: 'tool_use';
-      tool: 'search_products' | 'get_product';
+      tool: 'search_products' | 'get_product' | 'read_cart';
       /** Stable id we issue so tool_result can be paired to its tool_use in the UI. */
       id: string;
       /** Human-readable preview of what the assistant is doing, e.g. "Searching for cooling hybrid queen". */
