@@ -225,7 +225,11 @@ export default async function ShopifyPage(props: Params) {
     // This way new sale pages automatically light up their curated grid
     // as soon as the merchant tags products + creates the collection,
     // with no code change per sale event.
-    const curatedHandle = page.handle.replace(/-\d{4}$/, '');
+    // Year-range handles like `new-years-sale-2026-2027` carry two trailing
+    // year tokens (the sale spans Dec → Jan); single `-YYYY$` regex would
+    // leave `-2026` in place and miss the curated `new-years-sale` collection.
+    // Strip up to two trailing year suffixes.
+    const curatedHandle = page.handle.replace(/-\d{4}(-\d{4})?$/, '');
     const curated =
       curatedHandle !== page.handle
         ? await getCollectionByHandle({
@@ -658,6 +662,77 @@ const SALE_CATEGORY_CHIPS = [
   { label: 'Adjustable bases', href: '/collections/adjustable-beds' },
 ];
 
+/**
+ * Build the SaleEvent + AggregateOffer JSON-LD that anchors the sale
+ * page in Google's events / sale-rich-result graph.
+ *
+ * Only emitted when `custom.sale_starts_at` is populated on the page —
+ * older sale pages without the metafield render without this LD (and
+ * keep the generic WebPage LD that layout.tsx emits).
+ *
+ * eventStatus transitions automatically: `EventScheduled` until the
+ * window opens, `EventScheduled` (active) inside, and downgraded to a
+ * past-event marker once the window closes so search engines don't
+ * misrepresent a stale page as currently active.
+ */
+function buildSaleEventLd(
+  page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>,
+  featuredProducts: ProductSummary[],
+  onSaleCount: number,
+  saleHasEnded: boolean,
+): Record<string, unknown> | null {
+  if (!page.saleStartsAt) return null;
+  const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
+  const url = `${SITE}/pages/${page.handle}`;
+  const description = firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined;
+
+  // Aggregate price range across the curated/on-sale featured products.
+  // Falls back to a wide store-wide range when featuredProducts is empty
+  // (no curated collection yet) so the schema still validates.
+  const priceAmounts = featuredProducts
+    .flatMap((p) => [Number.parseFloat(p.priceRange.minVariantPrice.amount), Number.parseFloat(p.priceRange.maxVariantPrice.amount)])
+    .filter((n) => Number.isFinite(n) && n > 0);
+  const lowPrice = priceAmounts.length ? Math.min(...priceAmounts) : 199;
+  const highPrice = priceAmounts.length ? Math.max(...priceAmounts) : 8999;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SaleEvent',
+    '@id': `${url}#sale-event`,
+    name: cleanTitle,
+    ...(description ? { description } : {}),
+    url,
+    startDate: page.saleStartsAt,
+    ...(page.saleEndsAt ? { endDate: page.saleEndsAt } : {}),
+    eventStatus: saleHasEnded
+      ? 'https://schema.org/EventPostponed'
+      : 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
+    organizer: { '@id': `${SITE}/#organization` },
+    location: SHOWROOMS.map((s) => ({
+      '@type': 'FurnitureStore',
+      name: s.name,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: s.street,
+        addressLocality: s.city,
+        addressRegion: s.region,
+        postalCode: s.postalCode,
+        addressCountry: 'US',
+      },
+    })),
+    offers: {
+      '@type': 'AggregateOffer',
+      url,
+      priceCurrency: 'USD',
+      lowPrice: lowPrice.toFixed(2),
+      highPrice: highPrice.toFixed(2),
+      offerCount: onSaleCount || featuredProducts.length || 1,
+      availability: 'https://schema.org/InStock',
+    },
+  };
+}
+
 function SalePage({
   page,
   featuredProducts,
@@ -668,9 +743,28 @@ function SalePage({
   onSaleCount: number;
 }) {
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
+  // Once `custom.sale_ends_at` is in the past, the page stays live (good
+  // for evergreen "what is the X sale" search intent) but flips into an
+  // "ended" mode: a banner explains the sale closed and points to
+  // current offers, and the SaleEvent JSON-LD downgrades eventStatus.
+  // Keeping the URL indexable beats 404'ing after the event — emails
+  // sent during the sale keep working as archive links.
+  const saleEndedAt = page.saleEndsAt ? Date.parse(page.saleEndsAt) : NaN;
+  const saleHasEnded = Number.isFinite(saleEndedAt) && Date.now() > saleEndedAt;
+  const saleEventLd = buildSaleEventLd(page, featuredProducts, onSaleCount, saleHasEnded);
 
   return (
     <main>
+      {saleEventLd ? (
+        <script
+          type="application/ld+json"
+          // SaleEvent / AggregateOffer JSON-LD. Emitted from the page
+          // (not the layout) because only the page handler has the
+          // resolved featuredProducts + onSaleCount that feed
+          // lowPrice / highPrice / offerCount.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(saleEventLd) }}
+        />
+      ) : null}
       <header className="sale-page-hero">
         <div className="container sale-page-hero-inner">
           <nav className="lp-breadcrumbs sale-page-breadcrumbs" aria-label="Breadcrumb">
@@ -678,14 +772,22 @@ function SalePage({
             <span className="sep" aria-hidden="true">/</span>
             <span>{cleanTitle}</span>
           </nav>
-          <div className="eyebrow eyebrow-on-dark sale-page-eyebrow">Limited-time event</div>
+          <div className="eyebrow eyebrow-on-dark sale-page-eyebrow">
+            {saleHasEnded ? 'Sale ended' : 'Limited-time event'}
+          </div>
           <h1 className="sale-page-title">{cleanTitle}</h1>
-          {page.bodySummary ? (
+          {saleHasEnded ? (
+            <p className="sale-page-lede">
+              This event has ended. The brands featured here are usually included in our next sale — check current offers below, or call us at{' '}
+              <a href={`tel:${SITE_PHONE_TEL}`} style={{ color: 'inherit', textDecoration: 'underline' }}>{SITE_PHONE_DISPLAY}</a>{' '}
+              for early access to upcoming markdowns.
+            </p>
+          ) : page.bodySummary ? (
             <p className="sale-page-lede">{page.bodySummary}</p>
           ) : null}
           <div className="sale-page-ctas">
             <Link href="/collections/on-sale" className="btn btn-lg btn-on-dark">
-              Shop the Sale <Icon name="arrow-right" size={16} />
+              {saleHasEnded ? 'See current offers' : 'Shop the Sale'} <Icon name="arrow-right" size={16} />
             </Link>
             <Link href="/pages/mattress-store-locations" className="btn btn-lg btn-ghost-on-dark">
               Find a showroom

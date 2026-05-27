@@ -38,6 +38,12 @@ export type PageInv = {
   isPublished: boolean;
   publishedAt: string | null;
   updatedAt: string;
+  // Optional: when present, the page should be hidden from sitemap +
+  // generateStaticParams while `availableAt` is in the future. Mirrors
+  // the `custom.available_at` metafield on Shopify pages; populated by
+  // scripts/pull-inventory.mjs for sale pages. Older snapshots that
+  // pre-date this field omit it (which means "always available").
+  availableAt?: string | null;
 };
 
 export type BlogArticleInv = {
@@ -75,8 +81,22 @@ export const products:    ProductInv[]    = productsJson.products as ProductInv[
 export const pages:       PageInv[]       = pagesJson.pages as PageInv[];
 export const blogs:       BlogInv[]       = blogsJson.blogs as BlogInv[];
 
-/** Pages with `isPublished: true` are the only ones with live `/pages/{handle}` URLs. */
-export const publishedPages: PageInv[] = pages.filter((p) => p.isPublished);
+/**
+ * Pages whose Shopify `isPublished` flag is true AND (if they carry an
+ * `availableAt` metafield) whose availability window has already opened.
+ *
+ * The `availableAt` gate keeps pre-launch sale pages out of the sitemap
+ * and out of generateStaticParams until they're ready for shoppers — the
+ * SalePage dispatch in app/(storefront)/pages/[handle]/page.tsx already
+ * 404's the route until that time, but skipping pre-renders avoids
+ * shipping SSG'd 404s and avoids leaking the URL to crawlers.
+ */
+export const publishedPages: PageInv[] = pages.filter((p) => {
+  if (!p.isPublished) return false;
+  if (!p.availableAt) return true;
+  const t = Date.parse(p.availableAt);
+  return Number.isFinite(t) ? Date.now() >= t : true;
+});
 
 /** Collections with at least one published product. The empty ones still resolve in Shopify but are weak SEO surfaces. */
 export const nonEmptyCollections: CollectionInv[] = collections.filter((c) => c.productsCount > 0);

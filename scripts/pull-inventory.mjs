@@ -155,11 +155,18 @@ async function pullProducts() {
 }
 
 async function pullPages() {
+  // `availableAt` is the date-gate metafield read by lib/inventory.ts's
+  // publishedPages filter and by the SalePage dispatch. We pull it here
+  // so the snapshot drives sitemap + generateStaticParams visibility
+  // without an extra Shopify roundtrip per page on render. Null when the
+  // page has no metafield set (i.e. non-sale pages, or sale pages whose
+  // metafield hasn't been authored yet).
   const Q = `
     query Pgs($first: Int!, $after: String) {
       pages(first: $first, after: $after) {
         edges { node {
           id handle title isPublished publishedAt updatedAt
+          availableAt: metafield(namespace: "custom", key: "available_at") { value }
         } }
         pageInfo { hasNextPage endCursor }
       }
@@ -175,6 +182,7 @@ async function pullPages() {
     isPublished: n.isPublished,
     publishedAt: n.publishedAt,
     updatedAt: n.updatedAt,
+    availableAt: n.availableAt?.value ?? null,
   }));
 }
 

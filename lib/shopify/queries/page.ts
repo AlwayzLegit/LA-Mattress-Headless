@@ -15,13 +15,17 @@ const GET_PAGE_BY_HANDLE = /* GraphQL */ `
       updatedAt
       createdAt
       seo { ...SeoFields }
-      availableAt: metafield(namespace: "custom", key: "available_at") { value }
+      availableAt:  metafield(namespace: "custom", key: "available_at")  { value }
+      saleStartsAt: metafield(namespace: "custom", key: "sale_starts_at") { value }
+      saleEndsAt:   metafield(namespace: "custom", key: "sale_ends_at")   { value }
     }
   }
 `;
 
-type RawPage = Omit<Page, 'availableAt'> & {
-  availableAt: { value: string | null } | null;
+type RawPage = Omit<Page, 'availableAt' | 'saleStartsAt' | 'saleEndsAt'> & {
+  availableAt:  { value: string | null } | null;
+  saleStartsAt: { value: string | null } | null;
+  saleEndsAt:   { value: string | null } | null;
 };
 type Raw = { page: RawPage | null };
 
@@ -35,5 +39,10 @@ export const getPageByHandle = cache(async (handle: string): Promise<Page | null
   );
   const p = data.page;
   if (!p) return null;
-  return { ...p, availableAt: p.availableAt?.value ?? null };
+  return {
+    ...p,
+    availableAt:  p.availableAt?.value  ?? null,
+    saleStartsAt: p.saleStartsAt?.value ?? null,
+    saleEndsAt:   p.saleEndsAt?.value   ?? null,
+  };
 });

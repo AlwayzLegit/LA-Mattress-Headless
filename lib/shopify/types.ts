@@ -227,6 +227,13 @@ export type Page = {
   // SalePage dispatch in app/(storefront)/pages/[handle]/page.tsx uses
   // this to hide scheduled sale pages until 7 days before the event.
   availableAt: string | null;
+  // Sale event window — `custom.sale_starts_at` / `custom.sale_ends_at`.
+  // Used to populate SaleEvent JSON-LD startDate/endDate and to render
+  // the "sale has ended" banner once endsAt has passed. Both are null
+  // on non-sale pages (and may be null on sale pages that don't carry
+  // the metafields, in which case the SaleEvent LD is omitted).
+  saleStartsAt: string | null;
+  saleEndsAt: string | null;
 };
 
 export type ArticleAuthor = { name: string; bio: string | null };
