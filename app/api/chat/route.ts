@@ -3,7 +3,19 @@ import Anthropic from '@anthropic-ai/sdk';
 import * as Sentry from '@sentry/nextjs';
 import { CHAT_SYSTEM_PROMPT } from '@/lib/chat/system-prompt';
 import { CHAT_TOOLS, executeTool } from '@/lib/chat/tools';
+import { HOSTED_MCP_TOOLS, executeHostedTool } from '@/lib/chat/shopify-mcp';
 import type { ChatMessage, ChatStreamEvent } from '@/lib/chat/types';
+
+/**
+ * Feature flag for the Shopify hosted Storefront MCP migration.
+ *
+ * Set `CHAT_USE_HOSTED_MCP=true` in Vercel env to flip the chat tool
+ * surface from our custom in-house wrappers (lib/chat/tools.ts) onto
+ * Shopify's hosted MCP server (lib/chat/shopify-mcp.ts). Default off
+ * — the foundation is shipped in PR-1; PR-2 will flip the default
+ * after we've validated the hosted-MCP path on production traffic.
+ */
+const USE_HOSTED_MCP = process.env.CHAT_USE_HOSTED_MCP === 'true';
 
 /**
  * /api/chat — PR-2 of Phase B. Streaming chat backed by Claude Opus 4.7.
@@ -74,14 +86,17 @@ function sse(payload: ChatStreamEvent): string {
  * on one line on mobile.
  */
 function summarizeToolUse(name: string, input: unknown): string {
-  if (name === 'read_cart') return 'Checking your cart';
+  if (name === 'read_cart' || name === 'get_cart') return 'Checking your cart';
   if (typeof input !== 'object' || input === null) return name;
   const obj = input as Record<string, unknown>;
-  if (name === 'search_products' && typeof obj.query === 'string') {
+  if ((name === 'search_products' || name === 'search_catalog') && typeof obj.query === 'string') {
     return `Searching for "${obj.query.slice(0, 80)}"`;
   }
   if (name === 'get_product' && typeof obj.handle === 'string') {
     return `Looking up ${obj.handle.slice(0, 80)}`;
+  }
+  if (name === 'search_shop_policies_and_faqs' && typeof obj.query === 'string') {
+    return `Looking up policy: "${obj.query.slice(0, 80)}"`;
   }
   return name;
 }
@@ -190,7 +205,8 @@ export async function POST(req: NextRequest): Promise<Response> {
                 cache_control: { type: 'ephemeral' },
               },
             ],
-            tools: CHAT_TOOLS,
+            // Feature-flagged tool surface — flip via CHAT_USE_HOSTED_MCP.
+            tools: USE_HOSTED_MCP ? HOSTED_MCP_TOOLS : CHAT_TOOLS,
             messages: running,
           });
 
@@ -233,16 +249,25 @@ export async function POST(req: NextRequest): Promise<Response> {
           running.push({ role: 'assistant', content: final.content });
 
           // Execute every tool_use block in parallel — they're
-          // independent reads against the Storefront API.
+          // independent reads against the Storefront API (or the
+          // Shopify hosted MCP when the flag is on).
           const executions = await Promise.all(
             toolUses.map(async (tu) => {
               send({
                 type: 'tool_use',
-                tool: tu.name as 'search_products' | 'get_product' | 'read_cart',
+                tool: tu.name as
+                  | 'search_products'
+                  | 'get_product'
+                  | 'read_cart'
+                  | 'search_catalog'
+                  | 'get_cart'
+                  | 'search_shop_policies_and_faqs',
                 id: tu.id,
                 summary: summarizeToolUse(tu.name, tu.input),
               });
-              const result = await executeTool(tu.name, tu.input);
+              const result = USE_HOSTED_MCP
+                ? await executeHostedTool(tu.name, tu.input)
+                : await executeTool(tu.name, tu.input);
               if (result.uiPayload) {
                 send({
                   type: 'tool_result',
