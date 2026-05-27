@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Icon, type IconName } from '../icon';
 import { phImg } from '../images';
 import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
-import { getBrands, getFeaturedGuides, getWhyUsItems } from '@/lib/shopify';
+import { getBrands, getFeaturedGuides, getWhyUsItems, getCategoryTiles } from '@/lib/shopify';
 import { nonEmptyCollections } from '@/lib/inventory';
 
 /* ───── Shop by category ──────────────────────────────── */
@@ -18,16 +18,26 @@ function countLabel(handle: string): string {
   return c && c.productsCount > 0 ? `${c.productsCount} models` : 'Shop now';
 }
 
-const CATEGORIES: { name: string; meta: string; img: string; label: string; href: string }[] = [
-  { name: 'Memory Foam', meta: countLabel('memory-foam-mattresses'), img: 'cat-memory-foam', label: '[Memory foam]',   href: '/collections/memory-foam-mattresses' },
-  { name: 'Hybrid',      meta: countLabel('hybrid-mattresses'),      img: 'cat-hybrid',      label: '[Hybrid]',         href: '/collections/hybrid-mattresses' },
-  { name: 'Innerspring', meta: countLabel('innerspring-mattresses'), img: 'cat-innerspring', label: '[Innerspring]',    href: '/collections/innerspring-mattresses' },
-  { name: 'Latex',       meta: countLabel('latex-mattresses'),       img: 'cat-latex',       label: '[Latex]',          href: '/collections/latex-mattresses' },
-  { name: 'Cooling',     meta: countLabel('cooling-mattresses'),     img: 'cat-cooling',     label: '[Cooling]',        href: '/collections/cooling-mattresses' },
-  { name: 'Adjustable',  meta: countLabel('adjustable-beds'),        img: 'cat-adjustable',  label: '[Adjustable base]',href: '/collections/adjustable-beds' },
+/**
+ * Hardcoded fallback — used only when the live `shop_by_category_tile`
+ * metaobjects fetch returns empty. Merchant adds / reorders / replaces
+ * tiles in Shopify Admin → Content → Metaobjects → Shop-by-category
+ * tile; ISR picks the change up within an hour.
+ */
+const FALLBACK_CATEGORIES: { name: string; href: string; imgKey: string | null; countHandle: string | null }[] = [
+  { name: 'Memory Foam', href: '/collections/memory-foam-mattresses', imgKey: 'cat-memory-foam', countHandle: 'memory-foam-mattresses' },
+  { name: 'Hybrid',      href: '/collections/hybrid-mattresses',      imgKey: 'cat-hybrid',      countHandle: 'hybrid-mattresses' },
+  { name: 'Innerspring', href: '/collections/innerspring-mattresses', imgKey: 'cat-innerspring', countHandle: 'innerspring-mattresses' },
+  { name: 'Latex',       href: '/collections/latex-mattresses',       imgKey: 'cat-latex',       countHandle: 'latex-mattresses' },
+  { name: 'Cooling',     href: '/collections/cooling-mattresses',     imgKey: 'cat-cooling',     countHandle: 'cooling-mattresses' },
+  { name: 'Adjustable',  href: '/collections/adjustable-beds',        imgKey: 'cat-adjustable',  countHandle: 'adjustable-beds' },
 ];
 
-export function ShopByCategory() {
+export async function ShopByCategory() {
+  const live = await getCategoryTiles();
+  const tiles = live.length > 0
+    ? live.map((t) => ({ name: t.name, href: t.href, imgKey: t.imgKey, countHandle: t.countCollectionHandle }))
+    : FALLBACK_CATEGORIES;
   return (
     <section className="section section-tight">
       <div className="container">
@@ -41,18 +51,26 @@ export function ShopByCategory() {
           </Link>
         </div>
         <div className="cat-grid">
-          {CATEGORIES.map((c) => (
-            <Link href={c.href} key={c.name} className="cat-tile">
-              <div className="ph cat-tile-img" {...phImg(c.img, 'cover', 'warm')}>
-                <span className="ph-label">{c.label}</span>
-              </div>
-              <div className="cat-tile-meta">
-                <div className="cat-tile-name">{c.name}</div>
-                <div className="cat-tile-sub muted">{c.meta}</div>
-                <span className="cat-tile-arrow"><Icon name="arrow-up-right" size={16} /></span>
-              </div>
-            </Link>
-          ))}
+          {tiles.map((c) => {
+            const meta = c.countHandle ? countLabel(c.countHandle) : 'Shop now';
+            const placeholderLabel = `[${c.name}]`;
+            return (
+              <Link href={c.href} key={c.name} className="cat-tile">
+                {c.imgKey ? (
+                  <div className="ph cat-tile-img" {...phImg(c.imgKey, 'cover', 'warm')}>
+                    <span className="ph-label">{placeholderLabel}</span>
+                  </div>
+                ) : (
+                  <div className="ph cat-tile-img" aria-hidden="true" />
+                )}
+                <div className="cat-tile-meta">
+                  <div className="cat-tile-name">{c.name}</div>
+                  <div className="cat-tile-sub muted">{meta}</div>
+                  <span className="cat-tile-arrow"><Icon name="arrow-up-right" size={16} /></span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -30,6 +30,24 @@ export type FeaturedGuide = {
   href: string;
 };
 
+export type TrustItem = {
+  displayOrder: number;
+  /** Maps to IconName in app/_components/icon.tsx. */
+  icon: string;
+  label: string;
+  href: string;
+};
+
+export type CategoryTile = {
+  displayOrder: number;
+  name: string;
+  href: string;
+  /** Collection handle whose product count drives the tile subtitle. */
+  countCollectionHandle: string | null;
+  /** phImg key for the placeholder. Empty → no image rendered. */
+  imgKey: string | null;
+};
+
 type RawField = { key: string; value: string | null };
 type RawMetaobjectNode = { id: string; handle: string; fields: RawField[] };
 type RawListResponse = { metaobjects: { nodes: RawMetaobjectNode[] } };
@@ -114,6 +132,76 @@ export const getFeaturedGuides = cache(async (): Promise<FeaturedGuide[]> => {
         };
       })
       .filter((x): x is FeaturedGuide => x !== null);
+  } catch {
+    return [];
+  }
+});
+
+const TRUST_ITEMS_QUERY = /* GraphQL */ `
+  query LiveTrustItems {
+    metaobjects(type: "trust_item", first: 12, sortKey: "display_order") {
+      nodes { id handle fields { key value } }
+    }
+  }
+`;
+
+const CATEGORY_TILES_QUERY = /* GraphQL */ `
+  query LiveCategoryTiles {
+    metaobjects(type: "shop_by_category_tile", first: 24, sortKey: "display_order") {
+      nodes { id handle fields { key value } }
+    }
+  }
+`;
+
+export const getTrustItems = cache(async (): Promise<TrustItem[]> => {
+  try {
+    const data = await shopifyFetch<RawListResponse>(
+      TRUST_ITEMS_QUERY,
+      {},
+      { next: { revalidate: 3600, tags: ['metaobject:trust_item'] } },
+    );
+    return data.metaobjects.nodes
+      .map((node): TrustItem | null => {
+        const fields = fieldMap(node);
+        const icon = str(fields, 'icon');
+        const label = str(fields, 'label');
+        const href = str(fields, 'href');
+        if (!icon || !label || !href || !href.startsWith('/')) return null;
+        return {
+          displayOrder: num(fields, 'display_order'),
+          icon,
+          label,
+          href,
+        };
+      })
+      .filter((x): x is TrustItem => x !== null);
+  } catch {
+    return [];
+  }
+});
+
+export const getCategoryTiles = cache(async (): Promise<CategoryTile[]> => {
+  try {
+    const data = await shopifyFetch<RawListResponse>(
+      CATEGORY_TILES_QUERY,
+      {},
+      { next: { revalidate: 3600, tags: ['metaobject:shop_by_category_tile'] } },
+    );
+    return data.metaobjects.nodes
+      .map((node): CategoryTile | null => {
+        const fields = fieldMap(node);
+        const name = str(fields, 'name');
+        const href = str(fields, 'href');
+        if (!name || !href || !href.startsWith('/')) return null;
+        return {
+          displayOrder: num(fields, 'display_order'),
+          name,
+          href,
+          countCollectionHandle: str(fields, 'count_collection_handle') ?? null,
+          imgKey: str(fields, 'img_key') ?? null,
+        };
+      })
+      .filter((x): x is CategoryTile => x !== null);
   } catch {
     return [];
   }
