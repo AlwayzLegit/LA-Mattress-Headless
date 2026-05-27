@@ -41,7 +41,25 @@ const EMPTY_FALLBACK_CATEGORIES: { label: string; href: string; sub: string }[] 
   { label: 'Sleep Quiz',       href: '/sleep-quiz',                            sub: '8 questions, 2 minutes' },
 ];
 
-type Params = { params: Promise<{ handle: string }> };
+type Params = {
+  params: Promise<{ handle: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+/**
+ * Sale-page preview bypass. When the merchant sets
+ * `SALE_PAGE_PREVIEW_TOKEN` in env and visits a pre-launch sale URL with
+ * `?preview=<that-token>`, the date gate is skipped and the full sale
+ * page renders — useful for QAing copy + visuals before `available_at`
+ * passes. Returns false when the env var is unset (preview disabled by
+ * default — no token leak risk).
+ */
+function previewMatches(searchParam: string | string[] | undefined): boolean {
+  const expected = process.env.SALE_PAGE_PREVIEW_TOKEN;
+  if (!expected) return false;
+  const got = Array.isArray(searchParam) ? searchParam[0] : searchParam;
+  return Boolean(got) && got === expected;
+}
 
 // 6h ISR window for CMS pages (locations, showrooms, financing,
 // returns, FAQ, sale pages). Pages change less often than 10min
@@ -70,6 +88,8 @@ export function generateStaticParams() {
 
 export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
+  const searchParams = (await props.searchParams) ?? {};
+  const isPreview = previewMatches(searchParams.preview);
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
   if (isCodedPage(params.handle)) {
     const m = codedPageMeta(params.handle);
@@ -91,8 +111,10 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!page) return { title: 'Page not found' };
   // Mirror the SalePage storefront date gate: when `custom.available_at`
   // is in the future, hide metadata so the pre-launch URL isn't indexed
-  // or shared with rich SEO data before the sale goes live.
-  if (isSalePage(page.handle) && page.availableAt) {
+  // or shared with rich SEO data before the sale goes live. Preview
+  // token bypasses the gate; preview URLs explicitly request noindex
+  // below so the previewer page never accidentally leaks to crawlers.
+  if (isSalePage(page.handle) && page.availableAt && !isPreview) {
     const t = Date.parse(page.availableAt);
     if (Number.isFinite(t) && Date.now() < t) return { title: 'Page not found' };
   }
@@ -146,6 +168,11 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
+    // Preview-token bypass: hard-noindex the preview URL so a crawler
+    // that stumbles onto a shared preview link never adds it to the
+    // index ahead of the real sale launch. Public (non-preview) URLs
+    // inherit the default robots policy from the layout.
+    ...(isPreview ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       // CMS pages here are marketing surfaces (locations, showrooms,
       // financing, returns, warranty, FAQ) — not blog posts. Use the
@@ -179,6 +206,8 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 
 export default async function ShopifyPage(props: Params) {
   const params = await props.params;
+  const searchParams = (await props.searchParams) ?? {};
+  const isPreview = previewMatches(searchParams.preview);
   if (!SHOPIFY_CONFIGURED) notFound();
   // Coded /pages/* dispatched here instead of via a standalone static
   // leaf route under app/pages/* (`reviews`, `data-sharing-opt-out`
@@ -211,8 +240,9 @@ export default async function ShopifyPage(props: Params) {
     // (sale starts_at − 7 days) so each holiday page goes live exactly
     // a week before the event without any cron / Shopify Flow rigging.
     // When `available_at` is in the future, treat the page as 404 — the
-    // page exists in Shopify but isn't yet ready for shoppers.
-    if (page.availableAt) {
+    // page exists in Shopify but isn't yet ready for shoppers. The
+    // preview-token query param bypasses the gate for staging QA.
+    if (page.availableAt && !isPreview) {
       const t = Date.parse(page.availableAt);
       if (Number.isFinite(t) && Date.now() < t) notFound();
     }
@@ -248,7 +278,7 @@ export default async function ShopifyPage(props: Params) {
           }).catch(() => null);
     const featuredProducts = saleCollection?.products.nodes ?? [];
     const onSaleCount = saleCollection?.products.nodes.length ?? 0;
-    return <SalePage page={page} featuredProducts={featuredProducts} onSaleCount={onSaleCount} />;
+    return <SalePage page={page} featuredProducts={featuredProducts} onSaleCount={onSaleCount} isPreview={isPreview} />;
   }
   // Phase 277e: neighborhood pages (mattress-store-beverly-hills, etc.)
   // render the NeighborhoodPage template — physically distinct from a
@@ -737,12 +767,17 @@ function SalePage({
   page,
   featuredProducts,
   onSaleCount,
+  isPreview = false,
 }: {
   page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
   featuredProducts: ProductSummary[];
   onSaleCount: number;
+  isPreview?: boolean;
 }) {
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
+  const isPreLaunch = Boolean(
+    page.availableAt && Number.isFinite(Date.parse(page.availableAt)) && Date.now() < Date.parse(page.availableAt),
+  );
   // Once `custom.sale_ends_at` is in the past, the page stays live (good
   // for evergreen "what is the X sale" search intent) but flips into an
   // "ended" mode: a banner explains the sale closed and points to
@@ -755,13 +790,39 @@ function SalePage({
 
   return (
     <main>
-      {saleEventLd ? (
+      {isPreview && isPreLaunch ? (
+        <div
+          role="status"
+          // Preview-mode banner. Tells the merchant they're seeing a
+          // pre-launch URL via the SALE_PAGE_PREVIEW_TOKEN bypass and
+          // warns that the public sees a 404 here. Inline styles so
+          // it works regardless of theme/CSS-load order.
+          style={{
+            background: '#ffe9b3',
+            color: '#5a3d00',
+            padding: '8px 16px',
+            fontSize: 13,
+            fontWeight: 600,
+            textAlign: 'center',
+            borderBottom: '1px solid #d4a700',
+          }}
+        >
+          Preview mode — this sale page is not yet live to the public (goes live{' '}
+          {page.availableAt
+            ? new Date(page.availableAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+            : 'on its scheduled date'}
+          ). The page is currently hidden by the storefront date gate.
+        </div>
+      ) : null}
+      {!isPreLaunch && saleEventLd ? (
         <script
           type="application/ld+json"
           // SaleEvent / AggregateOffer JSON-LD. Emitted from the page
           // (not the layout) because only the page handler has the
           // resolved featuredProducts + onSaleCount that feed
-          // lowPrice / highPrice / offerCount.
+          // lowPrice / highPrice / offerCount. Suppressed in preview
+          // mode so the pre-launch URL never seeds Google's sale
+          // rich-result cache ahead of the real go-live.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(saleEventLd) }}
         />
       ) : null}

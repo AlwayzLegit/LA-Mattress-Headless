@@ -80,26 +80,12 @@ function aggregateRatingFor(
   };
 }
 
-// Moved here so the page-template dispatch has a single source of
-// truth shared by page.tsx and this builder.
-const SALE_HANDLE_PATTERNS = [
-  /(^|-)sale(-|$)/i,
-  /memorial-day/i,
-  /labor-day/i,
-  /presidents-?day/i,
-  /mlk-?day/i,
-  /july-?4|fourth-of-july|independence-day/i,
-  /black-friday/i,
-  /cyber-monday/i,
-  /christmas/i,
-  /new-year/i,
-  /spring-sale|summer-sale|fall-sale|winter-sale/i,
-  /clearance/i,
-  /deals?-event/i,
-];
-export function isSalePage(handle: string): boolean {
-  return SALE_HANDLE_PATTERNS.some((p) => p.test(handle));
-}
+// isSalePage / SALE_HANDLE_PATTERNS now live in lib/sale-handles.ts so
+// the storefront page query can import them without pulling this
+// module's Page-type dependency. Re-exported here so existing callers
+// (page.tsx, this file's getPageJsonLd dispatch) keep working.
+export { isSalePage, SALE_HANDLE_PATTERNS } from './sale-handles';
+import { isSalePage } from './sale-handles';
 
 function genericPageLd(page: Page): PageLd[] {
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
