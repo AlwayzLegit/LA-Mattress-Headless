@@ -5119,29 +5119,106 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 }
 .dash-range-picker {
   display: inline-flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+/* The preset row sits in its own pill group; the Custom button + popover
+   sit alongside; the Compare toggle sits at the far right with its own
+   spacing so it doesn't read as part of the preset cluster. */
+.dash-range-picker > .dash-range-btn {
   border: 1px solid var(--line);
   border-radius: var(--r-2);
-  overflow: hidden;
-  background: var(--surface-1);
 }
 .dash-range-btn {
+  display: inline-flex;
+  align-items: center;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   padding: 6px 12px;
   color: var(--text-2);
   text-decoration: none;
-  border-right: 1px solid var(--line);
-  background: transparent;
-  transition: background 0.12s;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface-1);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  font-family: inherit;
 }
-.dash-range-btn:last-child { border-right: none; }
 .dash-range-btn:hover { background: var(--surface-2, #f5f5f5); color: var(--text-1); }
 .dash-range-btn-active {
   background: var(--text-1);
   color: var(--surface-1);
+  border-color: var(--text-1);
   font-weight: 600;
 }
 .dash-range-btn-active:hover { background: var(--text-1); color: var(--surface-1); }
+.dash-range-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 240px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+.dash-range-popover label {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  color: var(--text-2);
+  gap: 4px;
+}
+.dash-range-popover input[type="date"] {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  background: var(--surface-1);
+  color: var(--text-1);
+}
+.dash-range-apply {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border: none;
+  border-radius: var(--r-1);
+  background: var(--text-1);
+  color: var(--surface-1);
+  cursor: pointer;
+}
+.dash-range-apply:disabled {
+  background: var(--surface-2, #f5f5f5);
+  color: var(--text-3, #999);
+  cursor: not-allowed;
+}
+.dash-range-compare {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-2);
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface-1);
+  cursor: pointer;
+  user-select: none;
+}
+.dash-range-compare input[type="checkbox"] { margin: 0; }
+.dash-range-compare:has(input:checked) {
+  border-color: var(--text-1);
+  color: var(--text-1);
+  font-weight: 600;
+}
 /* QA #224: hard refresh button + "just refreshed" pill */
 .dash-refresh-form {
   display: inline-flex;
