@@ -15,11 +15,15 @@ const GET_PAGE_BY_HANDLE = /* GraphQL */ `
       updatedAt
       createdAt
       seo { ...SeoFields }
+      availableAt: metafield(namespace: "custom", key: "available_at") { value }
     }
   }
 `;
 
-type Raw = { page: Page | null };
+type RawPage = Omit<Page, 'availableAt'> & {
+  availableAt: { value: string | null } | null;
+};
+type Raw = { page: RawPage | null };
 
 // Memoized so the /pages/[handle] segment layout (JSON-LD) and the
 // page itself share a single Storefront request per render.
@@ -29,5 +33,7 @@ export const getPageByHandle = cache(async (handle: string): Promise<Page | null
     { handle },
     { tags: [`page:${handle}`] },
   );
-  return data.page ?? null;
+  const p = data.page;
+  if (!p) return null;
+  return { ...p, availableAt: p.availableAt?.value ?? null };
 });

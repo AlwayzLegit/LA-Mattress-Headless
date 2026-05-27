@@ -222,6 +222,11 @@ export type Page = {
   updatedAt: string;
   createdAt: string;
   seo: Seo;
+  // ISO datetime when the page should become visible to shoppers; sourced
+  // from the `custom.available_at` page metafield. Null when unset. The
+  // SalePage dispatch in app/(storefront)/pages/[handle]/page.tsx uses
+  // this to hide scheduled sale pages until 7 days before the event.
+  availableAt: string | null;
 };
 
 export type ArticleAuthor = { name: string; bio: string | null };

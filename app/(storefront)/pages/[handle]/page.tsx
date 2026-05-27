@@ -89,6 +89,13 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   }
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) return { title: 'Page not found' };
+  // Mirror the SalePage storefront date gate: when `custom.available_at`
+  // is in the future, hide metadata so the pre-launch URL isn't indexed
+  // or shared with rich SEO data before the sale goes live.
+  if (isSalePage(page.handle) && page.availableAt) {
+    const t = Date.parse(page.availableAt);
+    if (Number.isFinite(t) && Date.now() < t) return { title: 'Page not found' };
+  }
   // Phase 289: same fix as blog articles — when the merchant hasn't
   // set a custom seo.title, append " | LA Mattress" so the title
   // differs from the H1 (H1 uses sentence-cased + brand-stripped
@@ -200,6 +207,15 @@ export default async function ShopifyPage(props: Params) {
   if (showroom) return <ShowroomPage page={page} showroom={showroom} />;
   if (page.handle === 'mattress-store-locations') return <LocationsIndexPage page={page} />;
   if (isSalePage(page.handle)) {
+    // Storefront date gate: sale pages set `custom.available_at` to
+    // (sale starts_at − 7 days) so each holiday page goes live exactly
+    // a week before the event without any cron / Shopify Flow rigging.
+    // When `available_at` is in the future, treat the page as 404 — the
+    // page exists in Shopify but isn't yet ready for shoppers.
+    if (page.availableAt) {
+      const t = Date.parse(page.availableAt);
+      if (Number.isFinite(t) && Date.now() < t) notFound();
+    }
     // Phase 278: SalePage shows a real product grid + category chips.
     // Phase 284: prefer a curated sale collection if one exists for this
     // event (e.g. `memorial-day-sale-2026` → `/collections/memorial-day-sale`).
