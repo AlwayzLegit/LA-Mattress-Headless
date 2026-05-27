@@ -15,10 +15,24 @@ export default function imageLoader({ src, width, quality }: LoaderArgs): string
   const q = quality ?? 75;
 
   if (src.startsWith('https://cdn.shopify.com/')) {
-    // Shopify supports `width`, `height`, `crop`, `format`, `quality`
+    // Shopify CDN supports `width`, `height`, `crop`, `format`, `quality`
     // query params on any image URL; the CDN edge transforms + caches.
+    //
+    // Force `format=webp` + propagate `quality`: Shopify auto-negotiates
+    // format from the `Accept` header on a normal browser fetch, but
+    // Next.js's `<link rel="preload" as="image">` (emitted for
+    // `priority` images, which are LCP candidates) does NOT send
+    // `Accept: image/webp` — so the preloaded variant lands as raw
+    // JPEG/PNG and the LCP image payload balloons. Pinning `format=webp`
+    // in the URL forces the WebP variant regardless of Accept header.
+    // WebP support is universal (Chrome, Firefox, Safari ≥14, Edge —
+    // ~98% global). Article hero images dropping from ~250KB JPEG to
+    // ~50KB WebP at q=75 is the single biggest LCP lever for our
+    // long-form article pages.
     const u = new URL(src);
     u.searchParams.set('width', String(width));
+    u.searchParams.set('format', 'webp');
+    u.searchParams.set('quality', String(q));
     return u.toString();
   }
 
