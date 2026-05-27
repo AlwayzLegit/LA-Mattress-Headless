@@ -14,11 +14,11 @@ import { FAQ } from '../_components/sections/faq';
 import { QuizLeadIn } from '../_components/sections/quiz-leadin';
 import { WaysToFindMatch } from '../_components/sections/ways-to-find-match';
 import { RecentlyViewedRail } from '../_components/recently-viewed';
-import { faqJsonLd } from '@/lib/faq';
+import { faqJsonLd, resolveHomepageFaq } from '@/lib/faq';
 import { composeBrandTitle } from '@/lib/seo';
 import { buildLocalBusinessLd } from '@/lib/structured-data';
 import { getSitewideReviewsExtension } from '@/lib/judgeme';
-import { getShopBrand, getHeroSlides, getShowrooms } from '@/lib/shopify';
+import { getShopBrand, getHeroSlides, getShowrooms, getFaqItems } from '@/lib/shopify';
 import { FALLBACK_SHOWROOMS } from '@/lib/showrooms';
 import { FALLBACK_HERO_SLIDES } from '../_components/hero-slides';
 
@@ -59,11 +59,16 @@ export default async function Home() {
   // LocalBusiness schema, eligible for the brand review snippet in
   // SERP. Returns null when Judge.me is unconfigured; we fall through
   // to the un-enriched LOCAL_BUSINESS_LD without surfacing an error.
-  const [shopifySlides, reviewsExtension, liveShowrooms] = await Promise.all([
+  const [shopifySlides, reviewsExtension, liveShowrooms, liveFaq] = await Promise.all([
     getHeroSlides(),
     getSitewideReviewsExtension(LOCAL_BUSINESS_ID),
     getShowrooms(),
+    getFaqItems(),
   ]);
+  // Live FAQ for the homepage JSON-LD — same subset rendered by
+  // <FAQ />, so the structured data and the visible accordion stay in
+  // lock-step. Falls back to the static constant on empty.
+  const homepageFaq = resolveHomepageFaq(liveFaq);
   const slides = shopifySlides.length > 0 ? shopifySlides : FALLBACK_HERO_SLIDES;
   // Live showrooms feed the sitewide LocalBusiness JSON-LD — merchant
   // edits to hours / phones / addresses in Shopify Admin → Metaobjects →
@@ -102,7 +107,7 @@ export default async function Home() {
       <script
         id="ld-faq-home"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(homepageFaq)) }}
       />
       <script
         id="ld-localbusiness-home"

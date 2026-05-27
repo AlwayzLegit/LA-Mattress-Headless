@@ -26,6 +26,8 @@ export { getSiteConfig }                      from './queries/site-config';
 export type { LiveSiteConfig }                from './queries/site-config';
 export { getWhyUsItems, getFeaturedGuides, getTrustItems, getCategoryTiles } from './queries/homepage-sections';
 export type { WhyUsItem, FeaturedGuide, TrustItem, CategoryTile } from './queries/homepage-sections';
+export { getFaqItems }                        from './queries/faq';
+export type { LiveFaqItem }                   from './queries/faq';
 export type { Brand }                         from './queries/brands';
 export type { SearchResult, Predictive, PredictiveArticle, ArticleSearchResult } from './queries/search';
 export { cartCreate, cartLinesAdd, cartLinesUpdate, cartLinesRemove, cartDiscountCodesUpdate, cartNoteUpdate, cartAttributesUpdate, getCart } from './mutations/cart';
