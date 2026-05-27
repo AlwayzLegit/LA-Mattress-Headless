@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import crypto from 'node:crypto';
 
 import Image from 'next/image';
 
@@ -53,12 +54,23 @@ type Params = {
  * page renders — useful for QAing copy + visuals before `available_at`
  * passes. Returns false when the env var is unset (preview disabled by
  * default — no token leak risk).
+ *
+ * Comparison is constant-time via `crypto.timingSafeEqual` to match the
+ * webhook HMAC verifier (api/revalidate/route.ts:39). A naive `===` on a
+ * server-side string compare leaks per-character timing, letting an
+ * attacker recover the token byte-by-byte under enough samples; the
+ * length check still leaks the token length but that's acceptable for a
+ * fixed-format secret. `Buffer.from` on potentially-undefined input is
+ * guarded by the early null returns.
  */
 function previewMatches(searchParam: string | string[] | undefined): boolean {
   const expected = process.env.SALE_PAGE_PREVIEW_TOKEN;
   if (!expected) return false;
   const got = Array.isArray(searchParam) ? searchParam[0] : searchParam;
-  return Boolean(got) && got === expected;
+  if (!got) return false;
+  const a = Buffer.from(got);
+  const b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 // 6h ISR window for CMS pages (locations, showrooms, financing,
@@ -700,16 +712,18 @@ const SALE_CATEGORY_CHIPS = [
  * older sale pages without the metafield render without this LD (and
  * keep the generic WebPage LD that layout.tsx emits).
  *
- * eventStatus transitions automatically: `EventScheduled` until the
- * window opens, `EventScheduled` (active) inside, and downgraded to a
- * past-event marker once the window closes so search engines don't
- * misrepresent a stale page as currently active.
+ * eventStatus is fixed to `EventScheduled` (Schema.org's EventStatus
+ * enum has no "completed" value — Cancelled/MovedOnline/Postponed/
+ * Rescheduled/Scheduled). Google's structured-data guidelines say a
+ * past event is signalled by `endDate < now`, not by a status change.
+ * Putting `EventPostponed` on a finished sale would semantically mean
+ * "delayed", not "ended" — which is worse than just relying on the
+ * timestamp.
  */
 function buildSaleEventLd(
   page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>,
   featuredProducts: ProductSummary[],
   onSaleCount: number,
-  saleHasEnded: boolean,
 ): Record<string, unknown> | null {
   if (!page.saleStartsAt) return null;
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
@@ -734,9 +748,10 @@ function buildSaleEventLd(
     url,
     startDate: page.saleStartsAt,
     ...(page.saleEndsAt ? { endDate: page.saleEndsAt } : {}),
-    eventStatus: saleHasEnded
-      ? 'https://schema.org/EventPostponed'
-      : 'https://schema.org/EventScheduled',
+    eventStatus: 'https://schema.org/EventScheduled',
+    // Sale events at LA Mattress are bought in person at one of 5
+    // showrooms OR fulfilled online — Mixed is Schema.org's intent for
+    // events with both physical and virtual participation.
     eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
     organizer: { '@id': `${SITE}/#organization` },
     location: SHOWROOMS.map((s) => ({
@@ -786,7 +801,7 @@ function SalePage({
   // sent during the sale keep working as archive links.
   const saleEndedAt = page.saleEndsAt ? Date.parse(page.saleEndsAt) : NaN;
   const saleHasEnded = Number.isFinite(saleEndedAt) && Date.now() > saleEndedAt;
-  const saleEventLd = buildSaleEventLd(page, featuredProducts, onSaleCount, saleHasEnded);
+  const saleEventLd = buildSaleEventLd(page, featuredProducts, onSaleCount);
 
   return (
     <main>
