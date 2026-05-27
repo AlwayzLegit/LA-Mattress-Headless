@@ -63,7 +63,7 @@ export const getFaqItems = cache(async (): Promise<LiveFaqItem[]> => {
       {},
       { next: { revalidate: 3600, tags: ['metaobject:faq_item'] } },
     );
-    return data.metaobjects.nodes
+    const items = data.metaobjects.nodes
       .map((node): LiveFaqItem | null => {
         const fields = new Map(node.fields.map((f) => [f.key, f]));
         const question = getStr(fields, 'question');
@@ -81,6 +81,15 @@ export const getFaqItems = cache(async (): Promise<LiveFaqItem[]> => {
         };
       })
       .filter((x): x is LiveFaqItem => x !== null);
+    // Dedupe by question text — defense against duplicate metaobjects
+    // emitting the same Q&A twice in the accordion and the JSON-LD.
+    const seen = new Set<string>();
+    return items.filter((it) => {
+      const key = it.question.trim().toLowerCase();
+      if (key.length === 0 || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   } catch {
     return [];
   }

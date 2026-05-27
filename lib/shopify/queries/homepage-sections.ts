@@ -84,6 +84,30 @@ function num(fields: Map<string, RawField>, key: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+/**
+ * Drop duplicate entries by a stable identity key. Preserves the
+ * first occurrence — relies on the caller having already sorted by
+ * `displayOrder` (Shopify's `sortKey: "display_order"`), so the
+ * lowest-numbered entry wins. Industry-standard defense against
+ * accidental duplicate metaobjects (re-runs of a seed script,
+ * merchant copy-paste, race-condition creates) — without this, two
+ * trust items with the same label would render twice in the
+ * top-of-page strip. The Shopify Admin metaobject API has no native
+ * uniqueness constraint on field values, so the query layer has to
+ * enforce it.
+ */
+function dedupeBy<T>(items: T[], keyFn: (item: T) => string): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const item of items) {
+    const key = keyFn(item).trim().toLowerCase();
+    if (key.length === 0 || seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+
 export const getWhyUsItems = cache(async (): Promise<WhyUsItem[]> => {
   try {
     const data = await shopifyFetch<RawListResponse>(
@@ -91,7 +115,7 @@ export const getWhyUsItems = cache(async (): Promise<WhyUsItem[]> => {
       {},
       { next: { revalidate: 3600, tags: ['metaobject:why_us_item'] } },
     );
-    return data.metaobjects.nodes
+    const items = data.metaobjects.nodes
       .map((node): WhyUsItem | null => {
         const fields = fieldMap(node);
         const title = str(fields, 'title');
@@ -105,6 +129,7 @@ export const getWhyUsItems = cache(async (): Promise<WhyUsItem[]> => {
         };
       })
       .filter((x): x is WhyUsItem => x !== null);
+    return dedupeBy(items, (it) => it.title);
   } catch {
     return [];
   }
@@ -117,7 +142,7 @@ export const getFeaturedGuides = cache(async (): Promise<FeaturedGuide[]> => {
       {},
       { next: { revalidate: 3600, tags: ['metaobject:featured_guide'] } },
     );
-    return data.metaobjects.nodes
+    const items = data.metaobjects.nodes
       .map((node): FeaturedGuide | null => {
         const fields = fieldMap(node);
         const label = str(fields, 'label');
@@ -132,6 +157,7 @@ export const getFeaturedGuides = cache(async (): Promise<FeaturedGuide[]> => {
         };
       })
       .filter((x): x is FeaturedGuide => x !== null);
+    return dedupeBy(items, (it) => it.href);
   } catch {
     return [];
   }
@@ -160,7 +186,7 @@ export const getTrustItems = cache(async (): Promise<TrustItem[]> => {
       {},
       { next: { revalidate: 3600, tags: ['metaobject:trust_item'] } },
     );
-    return data.metaobjects.nodes
+    const items = data.metaobjects.nodes
       .map((node): TrustItem | null => {
         const fields = fieldMap(node);
         const icon = str(fields, 'icon');
@@ -175,6 +201,7 @@ export const getTrustItems = cache(async (): Promise<TrustItem[]> => {
         };
       })
       .filter((x): x is TrustItem => x !== null);
+    return dedupeBy(items, (it) => it.label);
   } catch {
     return [];
   }
@@ -187,7 +214,7 @@ export const getCategoryTiles = cache(async (): Promise<CategoryTile[]> => {
       {},
       { next: { revalidate: 3600, tags: ['metaobject:shop_by_category_tile'] } },
     );
-    return data.metaobjects.nodes
+    const items = data.metaobjects.nodes
       .map((node): CategoryTile | null => {
         const fields = fieldMap(node);
         const name = str(fields, 'name');
@@ -202,6 +229,7 @@ export const getCategoryTiles = cache(async (): Promise<CategoryTile[]> => {
         };
       })
       .filter((x): x is CategoryTile => x !== null);
+    return dedupeBy(items, (it) => it.href);
   } catch {
     return [];
   }
