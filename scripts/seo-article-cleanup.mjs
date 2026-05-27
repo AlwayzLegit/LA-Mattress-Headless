@@ -164,6 +164,23 @@ const BATCHES = {
     'can-you-wash-tempurpedic-pillows',
     'can-cockroaches-live-in-a-mattress',
   ],
+  /**
+   * semrush-2026-05-27-broken-int:
+   *   SEMrush 2026-05-27 audit drill-downs for internal broken links
+   *   (404s) and redirect chains. Four articles linked to legacy
+   *   "collection / brand filter" URLs that Shopify no longer serves
+   *   ("/collections/X/Brand_Y", "/collections/X/brand_y") or to
+   *   collection URLs with Shopify search tracking params
+   *   ("?_pos=N&_fid=25dfdec8e&_ss=c") that 308/301-chain to the bare
+   *   collection. Pass 9 / 10 of clean() rewrites those hrefs to the
+   *   parent collection so the link stays internal and returns 200.
+   */
+  'semrush-2026-05-27-broken-int': [
+    'best-mattress-for-degenerative-disc-disease',
+    'best-mattress-los-angeles-mattress-store',
+    'englander-mattress-prices-2024',
+    'englander-mattress-reviews-2024',
+  ],
 };
 
 const ENDPOINT = `https://${STORE}/admin/api/${VERSION}/graphql.json`;
@@ -265,6 +282,38 @@ function clean(body, counts) {
   //    `?&amp;`, `?amp;`, or a trailing `?` right before `"` / `#`).
   pc('orphan_amp_chain',  /\?(&|&amp;|amp;)+/g, '?');
   pc('orphan_trailing_q', /\?(?=["#])/g, '');
+
+  // 9. Strip Shopify search tracking params (`_pos` / `_fid` / `_ss`)
+  //    from internal collection URLs. SEMrush 2026-05-27 audit found
+  //    that articles linking to `?amp;_fid=25dfdec8e&_ss=c` triggered
+  //    4-hop redirect chains (apex→www→bare-collection). Match both
+  //    the literal `&` and HTML-entity `&amp;` variants. Idempotent.
+  pc('strip_pos_lit',     /([?&])_pos=\d+(?=[&"#]|&amp;)/g, '$1');
+  pc('strip_pos_ent',     /&amp;_pos=\d+(?=[&"#]|&amp;)/g, '');
+  pc('strip_fid_lit',     /([?&])_fid=[a-zA-Z0-9]+(?=[&"#]|&amp;)/g, '$1');
+  pc('strip_fid_ent',     /&amp;_fid=[a-zA-Z0-9]+(?=[&"#]|&amp;)/g, '');
+  pc('strip_ss_lit',      /([?&])_ss=[a-zA-Z0-9]+(?=[&"#]|&amp;)/g, '$1');
+  pc('strip_ss_ent',      /&amp;_ss=[a-zA-Z0-9]+(?=[&"#]|&amp;)/g, '');
+
+  // 10. Strip dead brand-filter segments from internal collection
+  //    URLs. The legacy Shopify theme exposed `/collections/X/Brand_Y`
+  //    and lowercase `/collections/X/brand_y` faceted URLs; the
+  //    current storefront 404s them. SEMrush 2026-05-27 internal
+  //    broken-links report flagged 3 such anchors across the
+  //    `semrush-2026-05-27-broken-int` batch. The pattern is
+  //    deterministic — strip the trailing `/Brand_*` or `/brand_*`
+  //    path segment, leaving the parent collection URL intact. Match
+  //    only when followed by `"`, `?`, `#`, or `&` so we don't gobble
+  //    legitimate path segments.
+  pc('strip_brand_filter_cap',
+     /(\/collections\/[a-z0-9-]+)\/Brand_[A-Za-z0-9-]+(?=["?#&])/g, '$1');
+  pc('strip_brand_filter_low',
+     /(\/collections\/[a-z0-9-]+)\/brand_[A-Za-z0-9-]+(?=["?#&])/g, '$1');
+
+  // 11. After step 9 + 10, fold any newly-orphan trailing artifacts
+  //    that may have been left mid-string (e.g. `?&"` → `"`).
+  pc('orphan_amp_chain_2', /\?(&|&amp;|amp;)+/g, '?');
+  pc('orphan_trailing_q_2', /\?(?=["#])/g, '');
 
   // 8. Refresh hardcoded outdated year in section headings.
   pc('year_refresh',
