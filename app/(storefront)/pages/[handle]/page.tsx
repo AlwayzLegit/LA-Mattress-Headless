@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import crypto from 'node:crypto';
 
 import Image from 'next/image';
 
@@ -16,6 +15,9 @@ import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { isSalePage } from '@/lib/page-jsonld';
 import { isCodedPage, codedPageMeta, CODED_PAGE_HANDLES } from '@/lib/coded-pages';
+import { isPreviewEnabled } from '@/lib/preview-auth-cookie';
+import { buildSaleEventLd } from '@/lib/sale-event-ld';
+import { SalePageCtaTracker } from '@/app/_components/sale-page-cta-tracker';
 import { Icon } from '@/app/_components/icon';
 import { PlpCard } from '@/app/_components/plp-card';
 import { BrandDirectory } from '@/app/_components/sections/brand-directory';
@@ -44,34 +46,7 @@ const EMPTY_FALLBACK_CATEGORIES: { label: string; href: string; sub: string }[] 
 
 type Params = {
   params: Promise<{ handle: string }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
-
-/**
- * Sale-page preview bypass. When the merchant sets
- * `SALE_PAGE_PREVIEW_TOKEN` in env and visits a pre-launch sale URL with
- * `?preview=<that-token>`, the date gate is skipped and the full sale
- * page renders — useful for QAing copy + visuals before `available_at`
- * passes. Returns false when the env var is unset (preview disabled by
- * default — no token leak risk).
- *
- * Comparison is constant-time via `crypto.timingSafeEqual` to match the
- * webhook HMAC verifier (api/revalidate/route.ts:39). A naive `===` on a
- * server-side string compare leaks per-character timing, letting an
- * attacker recover the token byte-by-byte under enough samples; the
- * length check still leaks the token length but that's acceptable for a
- * fixed-format secret. `Buffer.from` on potentially-undefined input is
- * guarded by the early null returns.
- */
-function previewMatches(searchParam: string | string[] | undefined): boolean {
-  const expected = process.env.SALE_PAGE_PREVIEW_TOKEN;
-  if (!expected) return false;
-  const got = Array.isArray(searchParam) ? searchParam[0] : searchParam;
-  if (!got) return false;
-  const a = Buffer.from(got);
-  const b = Buffer.from(expected);
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
-}
 
 // 6h ISR window for CMS pages (locations, showrooms, financing,
 // returns, FAQ, sale pages). Pages change less often than 10min
@@ -100,8 +75,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
-  const searchParams = (await props.searchParams) ?? {};
-  const isPreview = previewMatches(searchParams.preview);
+  const isPreview = await isPreviewEnabled();
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
   if (isCodedPage(params.handle)) {
     const m = codedPageMeta(params.handle);
@@ -218,8 +192,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 
 export default async function ShopifyPage(props: Params) {
   const params = await props.params;
-  const searchParams = (await props.searchParams) ?? {};
-  const isPreview = previewMatches(searchParams.preview);
+  const isPreview = await isPreviewEnabled();
   if (!SHOPIFY_CONFIGURED) notFound();
   // Coded /pages/* dispatched here instead of via a standalone static
   // leaf route under app/pages/* (`reviews`, `data-sharing-opt-out`
@@ -704,79 +677,9 @@ const SALE_CATEGORY_CHIPS = [
   { label: 'Adjustable bases', href: '/collections/adjustable-beds' },
 ];
 
-/**
- * Build the SaleEvent + AggregateOffer JSON-LD that anchors the sale
- * page in Google's events / sale-rich-result graph.
- *
- * Only emitted when `custom.sale_starts_at` is populated on the page —
- * older sale pages without the metafield render without this LD (and
- * keep the generic WebPage LD that layout.tsx emits).
- *
- * eventStatus is fixed to `EventScheduled` (Schema.org's EventStatus
- * enum has no "completed" value — Cancelled/MovedOnline/Postponed/
- * Rescheduled/Scheduled). Google's structured-data guidelines say a
- * past event is signalled by `endDate < now`, not by a status change.
- * Putting `EventPostponed` on a finished sale would semantically mean
- * "delayed", not "ended" — which is worse than just relying on the
- * timestamp.
- */
-function buildSaleEventLd(
-  page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>,
-  featuredProducts: ProductSummary[],
-  onSaleCount: number,
-): Record<string, unknown> | null {
-  if (!page.saleStartsAt) return null;
-  const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
-  const url = `${SITE}/pages/${page.handle}`;
-  const description = firstNonEmpty(page.seo.description, page.bodySummary, undefined) || undefined;
-
-  // Aggregate price range across the curated/on-sale featured products.
-  // Falls back to a wide store-wide range when featuredProducts is empty
-  // (no curated collection yet) so the schema still validates.
-  const priceAmounts = featuredProducts
-    .flatMap((p) => [Number.parseFloat(p.priceRange.minVariantPrice.amount), Number.parseFloat(p.priceRange.maxVariantPrice.amount)])
-    .filter((n) => Number.isFinite(n) && n > 0);
-  const lowPrice = priceAmounts.length ? Math.min(...priceAmounts) : 199;
-  const highPrice = priceAmounts.length ? Math.max(...priceAmounts) : 8999;
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'SaleEvent',
-    '@id': `${url}#sale-event`,
-    name: cleanTitle,
-    ...(description ? { description } : {}),
-    url,
-    startDate: page.saleStartsAt,
-    ...(page.saleEndsAt ? { endDate: page.saleEndsAt } : {}),
-    eventStatus: 'https://schema.org/EventScheduled',
-    // Sale events at LA Mattress are bought in person at one of 5
-    // showrooms OR fulfilled online — Mixed is Schema.org's intent for
-    // events with both physical and virtual participation.
-    eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
-    organizer: { '@id': `${SITE}/#organization` },
-    location: SHOWROOMS.map((s) => ({
-      '@type': 'FurnitureStore',
-      name: s.name,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: s.street,
-        addressLocality: s.city,
-        addressRegion: s.region,
-        postalCode: s.postalCode,
-        addressCountry: 'US',
-      },
-    })),
-    offers: {
-      '@type': 'AggregateOffer',
-      url,
-      priceCurrency: 'USD',
-      lowPrice: lowPrice.toFixed(2),
-      highPrice: highPrice.toFixed(2),
-      offerCount: onSaleCount || featuredProducts.length || 1,
-      availability: 'https://schema.org/InStock',
-    },
-  };
-}
+// buildSaleEventLd lives in lib/sale-event-ld.ts for unit-testability
+// (tests/ssr/lib-sale-event-ld.test.mjs). Single source of truth for
+// the SaleEvent + AggregateOffer JSON-LD shape the page emits.
 
 function SalePage({
   page,
@@ -841,6 +744,15 @@ function SalePage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(saleEventLd) }}
         />
       ) : null}
+      <SalePageCtaTracker
+        handle={page.handle}
+        saleStartsAt={page.saleStartsAt}
+        saleEndsAt={page.saleEndsAt}
+        isPreLaunch={isPreLaunch}
+        isPostSale={saleHasEnded}
+        isPreview={isPreview}
+        featuredProductCount={featuredProducts.length}
+      />
       <header className="sale-page-hero">
         <div className="container sale-page-hero-inner">
           <nav className="lp-breadcrumbs sale-page-breadcrumbs" aria-label="Breadcrumb">
@@ -862,10 +774,20 @@ function SalePage({
             <p className="sale-page-lede">{page.bodySummary}</p>
           ) : null}
           <div className="sale-page-ctas">
-            <Link href="/collections/on-sale" className="btn btn-lg btn-on-dark">
+            <Link
+              href="/collections/on-sale"
+              className="btn btn-lg btn-on-dark"
+              data-cta="shop_the_sale"
+              data-cta-position="hero"
+            >
               {saleHasEnded ? 'See current offers' : 'Shop the Sale'} <Icon name="arrow-right" size={16} />
             </Link>
-            <Link href="/pages/mattress-store-locations" className="btn btn-lg btn-ghost-on-dark">
+            <Link
+              href="/pages/mattress-store-locations"
+              className="btn btn-lg btn-ghost-on-dark"
+              data-cta="find_a_showroom"
+              data-cta-position="hero"
+            >
               Find a showroom
             </Link>
           </div>
@@ -925,7 +847,12 @@ function SalePage({
               ))}
             </div>
             <div className="sale-page-grid-foot">
-              <Link href="/collections/on-sale" className="btn btn-primary btn-lg">
+              <Link
+                href="/collections/on-sale"
+                className="btn btn-primary btn-lg"
+                data-cta="see_every_mattress"
+                data-cta-position="grid"
+              >
                 See every mattress on sale <Icon name="arrow-right" size={16} />
               </Link>
             </div>
@@ -950,10 +877,20 @@ function SalePage({
           <h2 className="h2">Ready to upgrade your sleep?</h2>
           <p className="muted">Free LA delivery, 0% APR financing, 120-night exchange. Every mattress on the floor at all 5 showrooms.</p>
           <div className="sale-page-ctas">
-            <Link href="/collections/on-sale" className="btn btn-primary btn-lg">
+            <Link
+              href="/collections/on-sale"
+              className="btn btn-primary btn-lg"
+              data-cta="shop_the_sale"
+              data-cta-position="footer"
+            >
               Shop the Sale <Icon name="arrow-right" size={16} />
             </Link>
-            <Link href="/sleep-quiz" className="btn btn-ghost btn-lg">
+            <Link
+              href="/sleep-quiz"
+              className="btn btn-ghost btn-lg"
+              data-cta="sleep_quiz"
+              data-cta-position="footer"
+            >
               Take the 2-min quiz
             </Link>
           </div>

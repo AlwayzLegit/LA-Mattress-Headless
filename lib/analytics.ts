@@ -202,6 +202,39 @@ export type AnalyticsEvent =
       };
     }
   | {
+      // Sale-page impression — fires once per /pages/<event>-sale-<year>
+      // view. Lets us measure the lift each seasonal hero slide drives
+      // into the corresponding sale page, vs. organic SEO landings.
+      // `handle` is the page handle (e.g. `independence-day-sale-2026`);
+      // `is_pre_launch` marks views during the 7-day pre-launch window
+      // (page live but slide hidden — these come from direct links,
+      // search, or email). `is_preview` marks merchant QA views via
+      // draftMode so they can be excluded from production funnels.
+      name: 'sale_page_view';
+      props: {
+        handle: string;
+        sale_starts_at?: string;
+        sale_ends_at?: string;
+        is_pre_launch: boolean;
+        is_post_sale: boolean;
+        is_preview: boolean;
+        featured_product_count: number;
+      };
+    }
+  | {
+      // CTA click on a sale page — the "Shop the Sale" / "Find a
+      // showroom" / "Take the quiz" buttons in the hero + footer
+      // sections. `cta` identifies which button; `position` separates
+      // hero CTAs (top, above the fold) from footer CTAs (bottom,
+      // after the scroll). Drives conversion-rate funnels per CTA.
+      name: 'sale_page_cta_click';
+      props: {
+        handle: string;
+        cta: 'shop_the_sale' | 'find_a_showroom' | 'sleep_quiz' | 'see_every_mattress';
+        position: 'hero' | 'footer' | 'grid';
+      };
+    }
+  | {
       // Server-side event — fires from app/api/webhooks/shopify/
       // order-paid via the Shopify orders/paid webhook → posthog-node.
       // Closes the revenue funnel (cart_view → checkout_started →

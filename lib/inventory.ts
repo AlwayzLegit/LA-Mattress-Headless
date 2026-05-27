@@ -13,6 +13,7 @@ import collectionsJson from '@/data/url-inventory/collections.json';
 import productsJson    from '@/data/url-inventory/products.json';
 import pagesJson       from '@/data/url-inventory/pages.json';
 import blogsJson       from '@/data/url-inventory/blogs.json';
+import { isPageAvailable } from './page-availability';
 
 export type CollectionInv = {
   handle: string;
@@ -90,13 +91,12 @@ export const blogs:       BlogInv[]       = blogsJson.blogs as BlogInv[];
  * SalePage dispatch in app/(storefront)/pages/[handle]/page.tsx already
  * 404's the route until that time, but skipping pre-renders avoids
  * shipping SSG'd 404s and avoids leaking the URL to crawlers.
+ *
+ * Predicate lives in lib/page-availability.ts so it's unit-testable
+ * without dragging the bulky url-inventory JSON snapshots into the
+ * test sandbox.
  */
-export const publishedPages: PageInv[] = pages.filter((p) => {
-  if (!p.isPublished) return false;
-  if (!p.availableAt) return true;
-  const t = Date.parse(p.availableAt);
-  return Number.isFinite(t) ? Date.now() >= t : true;
-});
+export const publishedPages: PageInv[] = pages.filter((p) => isPageAvailable(p));
 
 /** Collections with at least one published product. The empty ones still resolve in Shopify but are weak SEO surfaces. */
 export const nonEmptyCollections: CollectionInv[] = collections.filter((c) => c.productsCount > 0);
