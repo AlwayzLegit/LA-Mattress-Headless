@@ -46,6 +46,7 @@ import { SHOWROOMS } from '@/lib/showrooms';
 // DateRangePicker + RefreshButton now imported by
 // app/admin/_components/admin-toolbar.tsx, which the shared
 // admin layout renders sticky at the top of every section.
+import { AdminDataTable } from './_components/data-table';
 
 // Shopify Admin product editor URL — built from the store domain so
 // the deep-link routes to the right store. Falls back to the generic
@@ -353,41 +354,54 @@ export default async function DashboardPage({
                   </>
                 ) : null}
                 <h3 className="eyebrow" style={{ marginTop: 'var(--s-5)' }}>Recent orders</h3>
-                <table className="dash-table">
-                  <thead>
-                    <tr>
-                      <th>Order</th>
-                      <th>Customer</th>
-                      <th>Total</th>
-                      <th>Fulfillment</th>
-                      <th>When</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orderSummary.recentOrders.length === 0 ? (
-                      <tr><td colSpan={5} className="muted">No orders in this window.</td></tr>
-                    ) : (
-                      orderSummary.recentOrders.map((o) => (
-                        <tr key={o.id}>
-                          <td>
-                            <strong>
-                              <Link
-                                href={`/admin/orders/${numericIdFromGid(o.id)}${rangeQuery ? `?${rangeQuery}` : ''}`}
-                                prefetch={false}
-                              >
-                                {o.name}
-                              </Link>
-                            </strong>
-                          </td>
-                          <td>{o.customer ?? '—'}</td>
-                          <td className="tnum">{fmtMoney(o.total, o.currency)}</td>
-                          <td>{o.fulfillmentStatus ?? '—'}</td>
-                          <td className="muted" style={{ fontSize: 12 }}>{relativeTime(o.createdAt)}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                {orderSummary.recentOrders.length === 0 ? (
+                  <p className="muted">No orders in this window.</p>
+                ) : (
+                  <AdminDataTable
+                    rows={orderSummary.recentOrders}
+                    rowKey={(o) => o.id}
+                    csvFilename="recent-orders"
+                    searchPlaceholder="Search by order # or customer…"
+                    emptyLabel="No orders match."
+                    columns={[
+                      {
+                        label: 'Order',
+                        get: (o) => o.name,
+                        render: (o) => (
+                          <strong>
+                            <Link
+                              href={`/admin/orders/${numericIdFromGid(o.id)}${rangeQuery ? `?${rangeQuery}` : ''}`}
+                              prefetch={false}
+                            >
+                              {o.name}
+                            </Link>
+                          </strong>
+                        ),
+                      },
+                      {
+                        label: 'Customer',
+                        get: (o) => o.customer ?? '',
+                        render: (o) => <>{o.customer ?? '—'}</>,
+                      },
+                      {
+                        label: 'Total',
+                        align: 'right',
+                        get: (o) => o.total,
+                        render: (o) => fmtMoney(o.total, o.currency),
+                      },
+                      {
+                        label: 'Fulfillment',
+                        get: (o) => o.fulfillmentStatus ?? '',
+                        render: (o) => <>{o.fulfillmentStatus ?? '—'}</>,
+                      },
+                      {
+                        label: 'When',
+                        get: (o) => o.createdAt,
+                        render: (o) => <span className="muted" style={{ fontSize: 12 }}>{relativeTime(o.createdAt)}</span>,
+                      },
+                    ]}
+                  />
+                )}
               </>
             ) : (
               <p className="muted">Order data unavailable. Check Vercel function logs.</p>
@@ -1334,30 +1348,39 @@ export default async function DashboardPage({
               searches.length === 0 ? (
                 <p className="muted">No search data yet — event ships in PostHog Phase 1.</p>
               ) : (
-                <table className="dash-table">
-                  <thead>
-                    <tr>
-                      <th>Query</th>
-                      <th>Count</th>
-                      <th>Zero-result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {searches.map((s) => (
-                      <tr key={s.query}>
-                        <td>
-                          <Link href={`/search?q=${encodeURIComponent(s.query)}`} prefetch={false} target="_blank" rel="noopener noreferrer">
-                            {s.query}
-                          </Link>
-                        </td>
-                        <td className="tnum">{s.searches}</td>
-                        <td className={`tnum ${s.zeroPct > 25 ? 'dash-warn' : ''}`}>
+                <AdminDataTable
+                  rows={searches}
+                  rowKey={(s) => s.query}
+                  csvFilename="top-searches"
+                  searchPlaceholder="Filter queries…"
+                  columns={[
+                    {
+                      label: 'Query',
+                      get: (s) => s.query,
+                      render: (s) => (
+                        <Link
+                          href={`/search?q=${encodeURIComponent(s.query)}`}
+                          prefetch={false}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {s.query}
+                        </Link>
+                      ),
+                    },
+                    { label: 'Count', align: 'right', get: (s) => s.searches },
+                    {
+                      label: 'Zero-result',
+                      align: 'right',
+                      get: (s) => (s.zeroResult > 0 ? `${s.zeroResult} (${s.zeroPct.toFixed(0)}%)` : '0'),
+                      render: (s) => (
+                        <span className={s.zeroPct > 25 ? 'dash-warn' : ''}>
                           {s.zeroResult > 0 ? `${s.zeroResult} (${s.zeroPct.toFixed(0)}%)` : '0'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </span>
+                      ),
+                    },
+                  ]}
+                />
               )
             ) : POSTHOG_CONFIGURED ? (
               <p className="muted">Search data unavailable.</p>
