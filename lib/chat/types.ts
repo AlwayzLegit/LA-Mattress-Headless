@@ -47,7 +47,15 @@ export type ChatStreamEvent =
   | { type: 'delta'; text: string }
   | {
       type: 'tool_use';
-      tool: 'search_products' | 'get_product' | 'read_cart';
+      tool:
+        // Custom in-house tools (lib/chat/tools.ts)
+        | 'search_products'
+        | 'get_product'
+        | 'read_cart'
+        // Shopify hosted Storefront MCP tools (lib/chat/shopify-mcp.ts)
+        | 'search_catalog'
+        | 'get_cart'
+        | 'search_shop_policies_and_faqs';
       /** Stable id we issue so tool_result can be paired to its tool_use in the UI. */
       id: string;
       /** Human-readable preview of what the assistant is doing, e.g. "Searching for cooling hybrid queen". */
