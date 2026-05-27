@@ -74,6 +74,7 @@ function sse(payload: ChatStreamEvent): string {
  * on one line on mobile.
  */
 function summarizeToolUse(name: string, input: unknown): string {
+  if (name === 'read_cart') return 'Checking your cart';
   if (typeof input !== 'object' || input === null) return name;
   const obj = input as Record<string, unknown>;
   if (name === 'search_products' && typeof obj.query === 'string') {
@@ -237,7 +238,7 @@ export async function POST(req: NextRequest): Promise<Response> {
             toolUses.map(async (tu) => {
               send({
                 type: 'tool_use',
-                tool: tu.name as 'search_products' | 'get_product',
+                tool: tu.name as 'search_products' | 'get_product' | 'read_cart',
                 id: tu.id,
                 summary: summarizeToolUse(tu.name, tu.input),
               });

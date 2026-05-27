@@ -2,6 +2,7 @@ import 'server-only';
 import type Anthropic from '@anthropic-ai/sdk';
 import { searchProducts } from '@/lib/shopify/queries/search';
 import { getProductByHandle } from '@/lib/shopify/queries/product';
+import { readCart } from '@/app/_actions/cart';
 import type { ProductSummary, Money } from '@/lib/shopify/types';
 
 /**
@@ -85,6 +86,23 @@ export const CHAT_TOOLS: Anthropic.Tool[] = [
       required: ['handle'],
     },
   },
+  {
+    name: 'read_cart',
+    description: [
+      "Inspect the shopper's current cart so you can answer questions like",
+      "'what's in my cart?', 'how much is my total?', 'should I add an",
+      "adjustable base?', or tailor recommendations against what they",
+      "already have. Returns line items (title + variant + quantity + price),",
+      "subtotal, total quantity, applied discount codes, and a /cart link",
+      "for hand-off when they're ready to checkout. Returns an empty cart",
+      "state when the shopper hasn't added anything yet — say so plainly",
+      "and offer to recommend something instead of hallucinating items.",
+    ].join(' '),
+    input_schema: {
+      type: 'object',
+      properties: {},
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -155,6 +173,8 @@ export async function executeTool(
         return await runSearchProducts(rawInput);
       case 'get_product':
         return await runGetProduct(rawInput);
+      case 'read_cart':
+        return await runReadCart();
       default:
         return {
           llmContent: JSON.stringify({ error: `Unknown tool: ${name}` }),
@@ -261,5 +281,55 @@ async function runGetProduct(rawInput: unknown): Promise<ToolExecution> {
       description: product.description?.slice(0, 800) ?? null,
     }),
     uiPayload: { kind: 'product', card },
+  };
+}
+
+/**
+ * Read the shopper's current cart by reading the `cartId` cookie set by
+ * our server actions and fetching the cart from Shopify. Returns a
+ * compact summary the LLM can reason about — line items, totals, and
+ * the canonical /cart hand-off URL.
+ *
+ * No `uiPayload` — cart state is rendered by the existing CartDrawer
+ * component, not by the chat panel. We just give Claude enough context
+ * to talk about what's there.
+ */
+async function runReadCart(): Promise<ToolExecution> {
+  const cart = await readCart();
+  if (!cart || cart.lines.nodes.length === 0) {
+    return {
+      llmContent: JSON.stringify({
+        is_empty: true,
+        cart_url: '/cart',
+        message: 'Cart is empty.',
+      }),
+    };
+  }
+
+  const fmt = (m: Money) => Number.parseFloat(m.amount);
+  const currency = cart.cost.totalAmount.currencyCode;
+  const lines = cart.lines.nodes.map((line) => ({
+    title: line.merchandise.product.title,
+    variant: line.merchandise.title,
+    quantity: line.quantity,
+    price: fmt(line.cost.subtotalAmount),
+    product_url: `/products/${line.merchandise.product.handle}`,
+  }));
+
+  return {
+    llmContent: JSON.stringify({
+      is_empty: false,
+      total_quantity: cart.totalQuantity,
+      subtotal: fmt(cart.cost.subtotalAmount),
+      total: fmt(cart.cost.totalAmount),
+      currency,
+      lines,
+      discount_codes: cart.discountCodes.filter((d) => d.applicable).map((d) => d.code),
+      // Hand-off URLs the assistant can offer the shopper. /cart is the
+      // cart-edit page; cart.checkoutUrl jumps straight to the Shopify
+      // checkout (skip the cart-review step) when they're ready.
+      cart_url: '/cart',
+      checkout_url: cart.checkoutUrl,
+    }),
   };
 }
