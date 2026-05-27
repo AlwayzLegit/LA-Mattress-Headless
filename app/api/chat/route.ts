@@ -9,13 +9,19 @@ import type { ChatMessage, ChatStreamEvent } from '@/lib/chat/types';
 /**
  * Feature flag for the Shopify hosted Storefront MCP migration.
  *
- * Set `CHAT_USE_HOSTED_MCP=true` in Vercel env to flip the chat tool
- * surface from our custom in-house wrappers (lib/chat/tools.ts) onto
- * Shopify's hosted MCP server (lib/chat/shopify-mcp.ts). Default off
- * — the foundation is shipped in PR-1; PR-2 will flip the default
- * after we've validated the hosted-MCP path on production traffic.
+ * Phase ~303 (PR 2 of 3): default ON now that the Knowledge Base
+ * content has been verified in Shopify Admin (13 `faq_item`
+ * metaobjects + 30+ Pages including the full delivery / contact /
+ * returns / financing / warranty / 120-night-guarantee write-ups +
+ * 3/5 shop policies). The hosted MCP's `search_shop_policies_and_faqs`
+ * tool indexes all three sources, so chat answers stay in lock-step
+ * with merchant edits in Shopify Admin without code changes.
+ *
+ * Opt out (rollback to the custom in-house tools in lib/chat/tools.ts)
+ * by setting `CHAT_USE_HOSTED_MCP=false` in Vercel env. PR 3 will
+ * remove the opt-out path entirely.
  */
-const USE_HOSTED_MCP = process.env.CHAT_USE_HOSTED_MCP === 'true';
+const USE_HOSTED_MCP = process.env.CHAT_USE_HOSTED_MCP !== 'false';
 
 /**
  * /api/chat — PR-2 of Phase B. Streaming chat backed by Claude Opus 4.7.
