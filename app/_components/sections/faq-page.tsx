@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icon } from '../icon';
-import { FAQ_PAGE_SECTIONS } from '@/lib/faq';
+import { resolveFaqPageSections } from '@/lib/faq';
+import { getFaqItems } from '@/lib/shopify';
 import { renderFaqAnswer } from '@/lib/faq-render';
 
 const HELPFUL_LINKS = [
@@ -18,7 +19,12 @@ const HELPFUL_LINKS = [
  * FAQ_PAGE_SECTIONS. FAQPage JSON-LD is emitted by the segment layout
  * (lib/coded-pages.ts), not here.
  */
-export function FaqPage() {
+export async function FaqPage() {
+  // Live FAQ — merchant edits Shopify Admin → Content → Metaobjects
+  // → FAQ item; ISR picks up within an hour. Falls back to the
+  // hardcoded FAQ_PAGE_SECTIONS constant when the live fetch is empty.
+  const live = await getFaqItems();
+  const sections = resolveFaqPageSections(live);
   return (
     <main className="container" style={{ paddingTop: 'var(--s-7)', paddingBottom: 'var(--s-9)' }}>
       <article className="cms-page">
@@ -37,7 +43,7 @@ export function FaqPage() {
           </p>
         </header>
 
-        {FAQ_PAGE_SECTIONS.map((section) => (
+        {sections.map((section) => (
           <section className="section" key={section.title} style={{ marginTop: 'var(--s-6)' }}>
             <h2 className="h2" style={{ marginBottom: 'var(--s-3)' }}>{section.title}</h2>
             <div className="faq-list">

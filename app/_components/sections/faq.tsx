@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icon } from '../icon';
-import { HOMEPAGE_FAQ } from '@/lib/faq';
+import { resolveHomepageFaq } from '@/lib/faq';
+import { getFaqItems } from '@/lib/shopify';
 import { renderFaqAnswer } from '@/lib/faq-render';
 
 /**
@@ -24,7 +25,13 @@ import { renderFaqAnswer } from '@/lib/faq-render';
  * the .faq-item[open] / :not([open]) selectors in globals.css. No
  * JS, no client component, no hydration cost on this section.
  */
-export function FAQ() {
+export async function FAQ() {
+  // Live FAQ — merchant edits Shopify Admin → Content → Metaobjects
+  // → FAQ item (show_on_homepage=true items only); ISR picks up
+  // within one cycle. Falls back to the hardcoded HOMEPAGE_FAQ
+  // constant if the live fetch is empty.
+  const live = await getFaqItems();
+  const items = resolveHomepageFaq(live);
   return (
     <section className="section faq">
       <div className="container faq-inner">
@@ -36,7 +43,7 @@ export function FAQ() {
           </Link>
         </div>
         <div className="faq-list">
-          {HOMEPAGE_FAQ.map((it, i) => (
+          {items.map((it, i) => (
             // Open first item by default (matches the previous
             // useState(0) initial state).
             <details key={i} className="faq-item" open={i === 0}>

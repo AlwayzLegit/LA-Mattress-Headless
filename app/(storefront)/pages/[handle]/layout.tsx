@@ -31,7 +31,7 @@ export default async function PageHandleLayout({
   let ld;
   if (isCodedPage(handle)) {
     // No Shopify page behind these — JSON-LD comes from lib/coded-pages.
-    ld = getCodedPageJsonLd(handle);
+    ld = await getCodedPageJsonLd(handle);
   } else {
     // Fetch the shop aggregate alongside the page so showroom /
     // locations-index / neighborhood LocalBusiness LD can carry an

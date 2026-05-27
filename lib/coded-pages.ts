@@ -8,7 +8,8 @@
  * (dispatch + generateMetadata + generateStaticParams), the segment
  * layout (JSON-LD), and app/sitemap.ts.
  */
-import { faqJsonLd, FAQ_PAGE_ITEMS } from './faq';
+import { faqJsonLd, FAQ_PAGE_ITEMS, resolveFaqPageSections } from './faq';
+import { getFaqItems } from './shopify/queries/faq';
 
 const SITE = 'https://www.mattressstoreslosangeles.com';
 
@@ -57,7 +58,7 @@ export function codedPageMeta(handle: CodedPageHandle) {
 
 export type CodedPageLd = { key: string; data: unknown };
 
-export function getCodedPageJsonLd(handle: CodedPageHandle): CodedPageLd[] {
+export async function getCodedPageJsonLd(handle: CodedPageHandle): Promise<CodedPageLd[]> {
   const url = `${SITE}/pages/${handle}`;
   const name = META[handle].h1;
   const description = META[handle].description;
@@ -96,7 +97,17 @@ export function getCodedPageJsonLd(handle: CodedPageHandle): CodedPageLd[] {
     },
   ];
   if (handle === 'faq') {
-    out.push({ key: 'ld-faq-page', data: faqJsonLd(FAQ_PAGE_ITEMS) });
+    // Live FAQ from Shopify metaobjects, flattened into the
+    // FAQPage JSON-LD shape. Falls back to FAQ_PAGE_ITEMS when the
+    // live fetch returns empty so we never emit zero-question
+    // structured data.
+    const live = await getFaqItems();
+    const sections = resolveFaqPageSections(live);
+    const items = sections.flatMap((s) => s.items);
+    out.push({
+      key: 'ld-faq-page',
+      data: faqJsonLd(items.length > 0 ? items : FAQ_PAGE_ITEMS),
+    });
   }
   return out;
 }
