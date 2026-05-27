@@ -5185,6 +5185,60 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   font-size: 14px;
   opacity: 0.85;
 }
+/* Searchable / CSV-exportable data table wrapper — used by sections
+   with mid-sized lists (Top searches, Top products, Low stock, SEO
+   gaps, Blog SEO gaps). The wrapper adds a search input + match
+   count + CSV export button above the existing .dash-table. */
+.dash-datatable { display: flex; flex-direction: column; gap: 10px; }
+.dash-datatable-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dash-datatable-search {
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 320px;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  background: var(--surface-1);
+  color: var(--text-1);
+}
+.dash-datatable-search::placeholder { color: var(--text-3, #999); }
+.dash-datatable-search:focus {
+  outline: none;
+  border-color: var(--text-1);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+.dash-datatable-count { font-size: 12px; }
+.dash-datatable-export {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  background: var(--surface-1);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.dash-datatable-export:hover {
+  background: var(--text-1);
+  color: var(--surface-1);
+  border-color: var(--text-1);
+}
+.dash-datatable-export:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--surface-1);
+  color: var(--text-2);
+  border-color: var(--line);
+}
 /* Top toolbar — sticky, shared across every /admin/* route. */
 .dash-toolbar {
   position: sticky;
