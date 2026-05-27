@@ -167,7 +167,16 @@ export const getShowrooms = cache(async (): Promise<Showroom[]> => {
     const showrooms = data.metaobjects.nodes
       .map(toShowroom)
       .filter((s): s is Showroom => s !== null);
-    return showrooms;
+    // Dedupe by handle — defense against a duplicate metaobject (e.g.
+    // re-run seed, merchant copy-paste) showing the same showroom twice
+    // in the locator and inflating the LocalBusiness department[] array.
+    const seen = new Set<string>();
+    return showrooms.filter((s) => {
+      const key = s.handle.trim().toLowerCase();
+      if (key.length === 0 || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   } catch {
     return [];
   }
