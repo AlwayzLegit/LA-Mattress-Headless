@@ -13,9 +13,21 @@ here so the merchant has a versioned record of what was flagged when.
   `seo.title` and `seo.description` from `data/url-inventory/` so the
   merchant can see what's there now without opening Shopify Admin.
 
-The 20260528 snapshot covers 53 `(url, keyword)` tuples — 48 missing in
-title, 46 in H1, 12 in meta description, 20 in body. (Same `(url, kw)`
-pair often misses in multiple elements, so the rows are deduped.)
+- `backlinks-outreach-YYYYMMDD.csv` — per target-domain rows showing
+  outreach priority class (A-publisher / A-directory / A-aggregator /
+  B-niche / B-evaluate / C-competitor / C-low-value / D-search /
+  D-self / D-noise), with each domain's mention count, the pages on
+  our site that should be linked, and the keywords those pages target.
+
+- `backlinks-outreach-YYYYMMDD.md` — companion outreach brief with
+  per-tier email templates and a "what NOT to do" section. Read this
+  alongside the CSV.
+
+The 20260528 keyword snapshot covers 53 `(url, keyword)` tuples — 48
+missing in title, 46 in H1, 12 in meta description, 20 in body. The
+20260528 backlinks snapshot ranks 328 target domains across 945 ideas
+into 10 priority tiers (10 are tier-A — the only ones with both a real
+backlink path AND domain authority that moves the needle).
 
 ## How to act on a snapshot
 
@@ -41,15 +53,20 @@ pair often misses in multiple elements, so the rows are deduped.)
 When a new Semrush export arrives:
 
 ```bash
+# Keyword-coverage audit (reads CSV, outputs CSV):
 # 1. Save the Semrush XLSX as CSV (Excel: File → Save As → CSV)
 # 2. Re-run the script — it reads the inventory snapshot for the
 #    current-state columns, so refresh that too if it's stale.
 node scripts/pull-inventory.mjs                                   # optional refresh
 node scripts/seo-keyword-audit.mjs path/to/semrush-export.csv \
   > docs/seo-audits/keyword-audit-YYYYMMDD.csv
+
+# Backlinks outreach (reads XLSX directly via openpyxl):
+python3 scripts/seo-backlinks-outreach.py path/to/semrush-export.xlsx \
+  > docs/seo-audits/backlinks-outreach-YYYYMMDD.csv
 ```
 
-The script writes CSV to stdout and a one-line summary to stderr.
+Both scripts write CSV to stdout and a one-line summary to stderr.
 
 ## Why these were flagged
 
@@ -64,8 +81,15 @@ noise) and merchants can usually ignore it.
 
 ## Related code
 
-- `scripts/seo-keyword-audit.mjs` — generator. Reads CSV, joins
-  against `data/url-inventory/`, emits the checklist CSV.
+- `scripts/seo-keyword-audit.mjs` — keyword-audit generator. Reads
+  CSV, joins against `data/url-inventory/`, emits the per-page
+  checklist CSV.
+- `scripts/seo-backlinks-outreach.py` — backlinks-outreach generator.
+  Reads XLSX directly via openpyxl, dedupes by target domain,
+  classifies each one into a priority tier from a curated dictionary.
+  Anything not pre-classified falls into `B-evaluate` so nothing is
+  silently dropped — extend the `CLASSIFICATION` dict in the script
+  as new domains appear in future exports.
 - `lib/article-autolink.ts` — closes the sister problem of "no
   internal links in body" by injecting first-mention internal links
   inside article bodies.
