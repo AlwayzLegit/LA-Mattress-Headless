@@ -3640,6 +3640,28 @@ summary:focus-visible,
 }
 @media (max-width: 880px) { .cart-summary { position: static; } }
 
+/* "Or $X/mo with 0% APR" line under the cart's estimated-total row.
+   Same visual treatment as .pdp-financing-line so the financing
+   affordance reads identically across the funnel (PDP → cart → cart
+   drawer). Subtle accent tint, full-width tap target, links to the
+   financing page. */
+.cart-financing-line {
+  display: inline-flex; align-items: center; gap: 8px;
+  width: 100%;
+  margin-top: var(--s-3);
+  padding: 10px 12px;
+  font-size: 13px; line-height: 1.4;
+  color: var(--accent);
+  background: rgba(207, 75, 50, 0.06);
+  border: 1px solid rgba(207, 75, 50, 0.15);
+  border-radius: var(--r-2);
+  text-decoration: none;
+  transition: background var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease);
+}
+.cart-financing-line:hover { background: rgba(207, 75, 50, 0.1); border-color: rgba(207, 75, 50, 0.25); }
+.cart-financing-line strong { color: var(--text); font-weight: 600; }
+.cart-financing-line svg { flex-shrink: 0; }
+
 /* PLP hero — split layout with lifestyle image. Per design handoff
    (plp.css §Hero band): grid 1.2fr / 1fr, eyebrow + h-display title +
    lede on the left, 16:10 lifestyle image on the right. */
