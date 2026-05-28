@@ -3374,6 +3374,114 @@ summary:focus-visible,
 .cart-subtotal { font-size: 18px; font-weight: 600; }
 
 /* Phase 293: cart feature suite */
+/* "Protect your investment" nudge above the drawer footer. One-line
+   link styled as a soft callout, not a hero card — sits between the
+   line list and the footer so it doesn't disrupt the line-scan but
+   catches the eye on the way to checkout. */
+.cart-protector-nudge {
+  display: flex; align-items: center; gap: var(--s-3);
+  margin: 0 var(--s-5) var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  font-size: 13px; line-height: 1.4;
+  color: var(--text);
+  background: rgba(207, 75, 50, 0.06);
+  border: 1px solid rgba(207, 75, 50, 0.15);
+  border-radius: var(--r-2);
+  text-decoration: none;
+  transition: background var(--d-fast) var(--ease);
+}
+.cart-protector-nudge:hover { background: rgba(207, 75, 50, 0.1); }
+.cart-protector-nudge > svg:first-child { flex-shrink: 0; color: var(--accent); }
+.cart-protector-nudge > svg:last-child { flex-shrink: 0; color: var(--accent); margin-left: auto; }
+.cart-protector-nudge strong { font-weight: 600; }
+
+/* Promo-code expander inside the drawer footer. Collapsed state is a
+   small disclosure link; expanded state shows input + apply + cancel.
+   Applied codes show as removable chips above the input. */
+.cart-promo { margin-top: var(--s-4); }
+.cart-promo-toggle {
+  appearance: none;
+  background: none; border: 0; padding: 4px 0;
+  font: inherit; font-size: 13px;
+  color: var(--text-2); text-decoration: underline; text-underline-offset: 2px;
+  cursor: pointer;
+}
+.cart-promo-toggle:hover { color: var(--text); }
+.cart-promo-form {
+  display: flex; gap: 6px;
+  align-items: stretch;
+  margin-top: 6px;
+}
+.cart-promo-input {
+  flex: 1; min-width: 0;
+  padding: 10px 12px;
+  font: inherit; font-size: 14px;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  color: var(--text);
+  text-transform: uppercase;
+}
+.cart-promo-input:focus { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
+.cart-promo-input:disabled { opacity: 0.6; cursor: not-allowed; }
+.cart-promo-submit {
+  padding: 10px 16px;
+  font: inherit; font-size: 13px; font-weight: 600;
+  background: var(--text);
+  color: var(--surface);
+  border: 1px solid var(--text);
+  border-radius: var(--r-2);
+  cursor: pointer;
+  transition: background var(--d-fast) var(--ease);
+  white-space: nowrap;
+}
+.cart-promo-submit:hover:not(:disabled) { background: var(--text-2); border-color: var(--text-2); }
+.cart-promo-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.cart-promo-cancel {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px;
+  padding: 0;
+  background: var(--surface);
+  color: var(--text-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-2);
+  cursor: pointer;
+  transition: color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease);
+}
+.cart-promo-cancel:hover { color: var(--text); border-color: var(--text-3); }
+.cart-promo-error {
+  font-size: 12px; color: var(--accent);
+  margin: 6px 0 0;
+}
+.cart-promo-applied {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 8px;
+}
+.cart-promo-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 6px 4px 8px;
+  font-size: 12px; font-weight: 600;
+  color: var(--text);
+  background: rgba(34, 139, 34, 0.08);
+  border: 1px solid rgba(34, 139, 34, 0.2);
+  border-radius: var(--r-1);
+}
+.cart-promo-chip > svg:first-child { color: var(--trust, #228b22); }
+.cart-promo-chip-remove {
+  appearance: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px;
+  padding: 0; margin-left: 2px;
+  background: none; border: 0;
+  color: var(--text-3);
+  cursor: pointer;
+  border-radius: 999px;
+  transition: background var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
+}
+.cart-promo-chip-remove:hover { background: rgba(0,0,0,0.06); color: var(--text); }
+.cart-promo-chip-remove:disabled { opacity: 0.4; cursor: not-allowed; }
+
 .cart-freeship-bar { margin-top: var(--s-4); }
 .cart-freeship-msg { font-size: 13px; line-height: 1.4; margin: 0 0 6px; }
 .cart-freeship-bar[data-unlocked="true"] .cart-freeship-msg { color: var(--accent); }

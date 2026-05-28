@@ -12,6 +12,8 @@ import { announce } from './announcer';
 import { formatMoney } from '@/lib/format';
 import { FreeShippingBar } from '@/app/(storefront)/cart/free-shipping-bar';
 import { track } from '@/lib/analytics';
+import { CartPromoCode } from './cart-promo-code';
+import { PdpDeliveryCutoff } from './pdp-delivery-cutoff';
 
 export function CartDrawer() {
   const { cart, drawerOpen, closeDrawer, updateLine, removeLine, pending } = useCart();
@@ -82,6 +84,18 @@ export function CartDrawer() {
 
   const lines = cart?.lines.nodes ?? [];
   const isEmpty = lines.length === 0;
+
+  // Cross-sell heuristic: when the cart has a mattress and no
+  // protector/cover/sheet/encasement, surface a one-line nudge to add
+  // a mattress protector. Title-based detection (the cart-line product
+  // shape doesn't include productType) — broad enough to catch all
+  // mattress lines, narrow enough that "protector" / "encasement" /
+  // "sheet" suppress the prompt for shoppers already covered.
+  const hasMattress = lines.some((l) => /mattress/i.test(l.merchandise.product.title));
+  const hasProtector = lines.some((l) =>
+    /protector|cover|encasement|sheet/i.test(l.merchandise.product.title),
+  );
+  const showProtectorNudge = hasMattress && !hasProtector;
 
   return (
     <div className="cart-drawer-root" role="dialog" aria-label="Shopping cart" aria-modal="true" ref={drawerRef}>
@@ -174,8 +188,38 @@ export function CartDrawer() {
               })}
             </ul>
 
+            {/* Cross-sell nudge: "Protect your investment". Renders
+                only when the cart has a mattress and no
+                protector/cover/sheet — direct conversion + warranty
+                preservation hint (stains void the 120-night
+                exchange). Single line, link to the protector
+                collection; not a card strip so it doesn't compete
+                with the line list visually. */}
+            {showProtectorNudge ? (
+              <Link
+                href="/collections/mattress-protector"
+                onClick={closeDrawer}
+                className="cart-protector-nudge"
+              >
+                <Icon name="shield" size={16} />
+                <span>
+                  <strong>Protect your investment.</strong> A mattress protector keeps your 120-night exchange intact — stains void it.
+                </span>
+                <Icon name="arrow-right" size={14} />
+              </Link>
+            ) : null}
+
             <footer className="cart-drawer-ft">
+              {/* Live same-day-delivery cutoff. Same component as the
+                  PDP rail so the urgency hint is consistent across
+                  the funnel. */}
+              <PdpDeliveryCutoff />
               {cart ? <FreeShippingBar subtotal={cart.cost.subtotalAmount} /> : null}
+              {/* Promo-code expander. Closes the abandonment leak
+                  where shoppers leave to Google "LA Mattress discount
+                  code" because the field used to only exist at
+                  Shopify-hosted checkout. */}
+              <CartPromoCode />
               <div className="cart-summary-row">
                 <span className="muted">Subtotal</span>
                 <span className="tnum cart-subtotal">
