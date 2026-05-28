@@ -100,6 +100,140 @@ export async function adminGql<T>(query: string, variables: Record<string, unkno
 }
 
 /* ------------------------------------------------------------------------ *
+ * Connection health probe
+ * ------------------------------------------------------------------------ */
+
+export type AdminHealthResult = {
+  ok: boolean;
+  /** HTTP status from Shopify, or null when the request didn't get there. */
+  status: number | null;
+  /** Human-readable one-liner. Safe to render in the dashboard banner. */
+  message: string;
+  /** Specific cause hint the dashboard / health endpoint can branch on. */
+  cause:
+    | 'ok'
+    | 'unconfigured'
+    | 'invalid_token'
+    | 'insufficient_scope'
+    | 'rate_limited'
+    | 'shopify_down'
+    | 'graphql_error'
+    | 'network_error';
+  /** Bytes of the Shopify error body (when present), truncated for safety. */
+  detail?: string;
+};
+
+/**
+ * One-shot Shopify Admin health probe. Runs the cheapest possible
+ * authenticated query — `shop { name }` — and classifies the response.
+ *
+ * Used by:
+ *   - app/admin/health/route.ts (curl-testable JSON endpoint)
+ *   - app/admin/page.tsx banner (status-specific copy when the
+ *     dashboard's other queries are failing)
+ *
+ * Does NOT call adminGql() because it wants the HTTP status back, not
+ * `null` on failure. Implementation diverges minimally — same fetch
+ * shape, same headers — so it stays in lock-step with the production
+ * adminGql path.
+ */
+export async function getAdminHealth(): Promise<AdminHealthResult> {
+  const { store, token, version } = adminConfig();
+  if (!store || !token) {
+    return {
+      ok: false,
+      status: null,
+      cause: 'unconfigured',
+      message: `Missing env vars: SHOPIFY_STORE_DOMAIN=${Boolean(store)} SHOPIFY_ADMIN_TOKEN=${Boolean(token)}`,
+    };
+  }
+  let res: Response;
+  try {
+    res = await fetch(`https://${store}/admin/api/${version}/graphql.json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': token,
+      },
+      body: JSON.stringify({ query: '{ shop { name myshopifyDomain } }' }),
+      cache: 'no-store',
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (err) {
+    return {
+      ok: false,
+      status: null,
+      cause: 'network_error',
+      message: `Could not reach ${store}: ${err instanceof Error ? err.message : 'unknown error'}`,
+    };
+  }
+  if (res.status === 401) {
+    const body = await res.text();
+    return {
+      ok: false,
+      status: 401,
+      cause: 'invalid_token',
+      message:
+        'Shopify rejected the token (HTTP 401). Common causes: whitespace in SHOPIFY_ADMIN_TOKEN, the custom app was uninstalled/reinstalled in Shopify Admin, or the token belongs to a different store than SHOPIFY_STORE_DOMAIN.',
+      detail: body.slice(0, 300),
+    };
+  }
+  if (res.status === 403) {
+    const body = await res.text();
+    return {
+      ok: false,
+      status: 403,
+      cause: 'insufficient_scope',
+      message:
+        'Shopify accepted the token but rejected the request (HTTP 403). The custom app likely lacks one of: read_orders, read_customers, read_products, read_collections, read_inventory. Update scopes in Shopify Partners → app → API access, then reinstall.',
+      detail: body.slice(0, 300),
+    };
+  }
+  if (res.status === 429) {
+    return {
+      ok: false,
+      status: 429,
+      cause: 'rate_limited',
+      message: 'Shopify rate-limited the request. Refresh the dashboard in a minute.',
+    };
+  }
+  if (res.status >= 500) {
+    return {
+      ok: false,
+      status: res.status,
+      cause: 'shopify_down',
+      message: `Shopify Admin API returned HTTP ${res.status}. Check status.shopify.com.`,
+    };
+  }
+  if (!res.ok) {
+    const body = await res.text();
+    return {
+      ok: false,
+      status: res.status,
+      cause: 'graphql_error',
+      message: `Shopify returned HTTP ${res.status}.`,
+      detail: body.slice(0, 300),
+    };
+  }
+  const json = (await res.json()) as { data?: { shop?: { name?: string } }; errors?: unknown };
+  if (json.errors) {
+    return {
+      ok: false,
+      status: 200,
+      cause: 'graphql_error',
+      message: 'Shopify returned 200 but the GraphQL response carried errors.',
+      detail: JSON.stringify(json.errors).slice(0, 300),
+    };
+  }
+  return {
+    ok: true,
+    status: 200,
+    cause: 'ok',
+    message: `Connected to ${json.data?.shop?.name ?? store}.`,
+  };
+}
+
+/* ------------------------------------------------------------------------ *
  * Dashboard data fetchers
  * ------------------------------------------------------------------------ */
 
