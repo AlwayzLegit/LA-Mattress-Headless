@@ -10,10 +10,12 @@ import { randomUUID } from 'node:crypto';
  * serverless function lifetime, shutdown() called at the end of each
  * handler to wait for the network flush.
  *
- * Distinct id: each request gets a per-turn UUID because the server is
- * stateless and the client doesn't propagate a session id today. That
- * means we lose per-user funnel correlation but keep all the aggregate
- * metrics (avg latency, fallback rate, tool-call distribution).
+ * Distinct id: the client generates a per-chat session UUID (stored
+ * in sessionStorage; survives refresh, dies on tab close) and sends
+ * it with every chat request. Server uses it as PostHog distinct_id
+ * so all turns from one chat correlate into a session — unlocks
+ * funnel + retention queries. When the client doesn't send one
+ * (legacy request, bad payload), we fall back to a per-turn UUID.
  */
 
 const POSTHOG_KEY =
@@ -35,6 +37,12 @@ function getPostHog(): PostHog | null {
 }
 
 export type ChatTurnProperties = {
+  /**
+   * Client-generated chat session id (UUID v4 from sessionStorage).
+   * Optional — when missing we mint a per-turn id so telemetry still
+   * works for clients that don't send one.
+   */
+  session_id?: string | null;
   /** Total wall-clock duration of the route handler, milliseconds. */
   duration_ms: number;
   /** Number of messages in the conversation window (after server-side cap). */
@@ -64,8 +72,12 @@ export type ChatTurnProperties = {
 export async function captureChatTurn(props: ChatTurnProperties): Promise<void> {
   const client = getPostHog();
   if (!client) return;
-  // Per-turn UUID — see module doc above for why.
-  const distinctId = `chat-anon-${randomUUID()}`;
+  // Use the client-supplied session id so all turns in one chat
+  // share a distinct_id and land in the same PostHog session.
+  // Fall back to a per-turn UUID for clients that don't send one.
+  const distinctId = props.session_id
+    ? `chat-session-${props.session_id}`
+    : `chat-anon-${randomUUID()}`;
   client.capture({
     distinctId,
     event: 'chat_turn_completed',

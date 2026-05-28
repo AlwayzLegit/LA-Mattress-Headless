@@ -29,8 +29,35 @@ import type {
  */
 
 const STORAGE_KEY = 'la-mattress.chat.v1';
+const SESSION_ID_KEY = 'la-mattress.chat.session_id.v1';
+const SESSION_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MAX_STORED_MESSAGES = 20;
 const MAX_INPUT_CHARS = 4000;
+
+/**
+ * Per-chat session UUID. Generated lazily on first send, persisted in
+ * sessionStorage so it survives refresh (matches the history-persistence
+ * model) and dies on tab close (one chat session = one tab visit).
+ * Sent to /api/chat in the request body; the server uses it as PostHog
+ * distinct_id so all turns in one chat correlate into a session.
+ */
+function getOrCreateSessionId(): string | null {
+  if (typeof window === 'undefined') return null;
+  const newId = () =>
+    typeof window.crypto?.randomUUID === 'function' ? window.crypto.randomUUID() : null;
+  try {
+    const existing = window.sessionStorage.getItem(SESSION_ID_KEY);
+    if (existing && SESSION_ID_RE.test(existing)) return existing;
+    const fresh = newId();
+    if (fresh) window.sessionStorage.setItem(SESSION_ID_KEY, fresh);
+    return fresh;
+  } catch {
+    // sessionStorage disabled / quota exceeded — fall back to an
+    // in-memory id for this React tree. Loses session correlation
+    // across reloads but keeps distinct_id stable for this visit.
+    return newId();
+  }
+}
 
 const SUGGESTED_PROMPTS = [
   'What mattress is best for back pain?',
@@ -247,10 +274,14 @@ export function ChatConversation() {
       setIsStreaming(true);
 
       try {
+        const sessionId = getOrCreateSessionId();
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: upstreamMessages }),
+          body: JSON.stringify({
+            messages: upstreamMessages,
+            ...(sessionId ? { session_id: sessionId } : {}),
+          }),
           signal: ctrl.signal,
         });
 
