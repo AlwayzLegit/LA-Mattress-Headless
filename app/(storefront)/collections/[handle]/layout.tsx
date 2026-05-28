@@ -2,6 +2,7 @@ import { getCollectionByHandle } from '@/lib/shopify';
 import { getCollectionJsonLd } from '@/lib/collection-jsonld';
 import { categoryFaqFor } from '@/lib/plp-content';
 import { faqJsonLd } from '@/lib/faq';
+import { getShopAggregate } from '@/lib/judgeme';
 
 /**
  * Segment layout for /collections/[handle]. Emits the PLP JSON-LD HERE
@@ -25,9 +26,18 @@ export default async function CollectionHandleLayout({
   params: Promise<{ handle: string }>;
 }) {
   const { handle } = await params;
-  const collection = await getCollectionByHandle({ handle, first: 1 }).catch(() => null);
+  // Fan out the two cheap fetches (collection meta + shop aggregate)
+  // in parallel — the aggregate adds the sitewide AggregateRating to
+  // the CollectionPage JSON-LD's mainEntity (Semrush 20260528 idea-fix
+  // for 19 collection URLs). Judge.me responds in ~150-300ms but is
+  // already cached at the fetch layer (revalidate: 3600), so the
+  // average payload here is just the wait on the cache lookup.
+  const [collection, aggregate] = await Promise.all([
+    getCollectionByHandle({ handle, first: 1 }).catch(() => null),
+    getShopAggregate().catch(() => null),
+  ]);
 
-  const ld = collection ? getCollectionJsonLd(collection) : [];
+  const ld = collection ? getCollectionJsonLd(collection, aggregate) : [];
   // FAQPage schema for the below-grid PlpContentBlock — handle-derived,
   // emitted here so it isn't trapped in the suspended subtree either.
   ld.push({ key: `ld-plp-faq-${handle}`, data: faqJsonLd(categoryFaqFor(handle)) });

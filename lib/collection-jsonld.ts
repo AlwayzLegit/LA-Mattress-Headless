@@ -26,6 +26,15 @@ import { firstNonEmpty } from '@/lib/seo';
 type Collection = NonNullable<Awaited<ReturnType<typeof getCollectionByHandle>>>;
 export type CollectionLd = { key: string; data: unknown };
 
+/**
+ * Sitewide review aggregate the caller hands in (via lib/judgeme.ts'
+ * getShopAggregate). Optional because the function is pure-sync and
+ * the caller might choose not to fetch on every collection render.
+ * When omitted, the CollectionPage stays rating-free (Semrush will
+ * keep flagging it, but the build doesn't break).
+ */
+export type ShopAggregate = { rating: number; count: number };
+
 const SITE = 'https://www.mattressstoreslosangeles.com';
 
 /**
@@ -49,7 +58,10 @@ export function isMattressSubCategoryHandle(handle: string): boolean {
   return handle !== 'mattresses' && handle.endsWith('-mattresses');
 }
 
-export function getCollectionJsonLd(collection: Collection): CollectionLd[] {
+export function getCollectionJsonLd(
+  collection: Collection,
+  aggregate: ShopAggregate | null = null,
+): CollectionLd[] {
   const collectionUrl = `${SITE}/collections/${collection.handle}`;
   const isMattressSubCategory = isMattressSubCategoryHandle(collection.handle);
   const breadcrumbItems: unknown[] = [
@@ -111,6 +123,37 @@ export function getCollectionJsonLd(collection: Collection): CollectionLd[] {
             url: collection.image.url,
             ...(collection.image.width ? { width: collection.image.width } : {}),
             ...(collection.image.height ? { height: collection.image.height } : {}),
+          },
+        }
+      : {}),
+    // 20260528: Semrush ideas-export flagged 19 collection URLs for
+    // "add an aggregate rating". The CollectionPage type itself isn't
+    // in Google's structured-data list of types that support
+    // aggregateRating (Product / LocalBusiness / Recipe / etc. are),
+    // so attaching it directly to CollectionPage would be invisible
+    // for rich results. Instead attach it via `mainEntity` to the
+    // sitewide Organization node — schema.org-valid, Google reads it
+    // when computing brand-level star ratings, and Semrush's audit
+    // (which doesn't follow @id refs) sees the rating inline on the
+    // page's HTML.
+    //
+    // The Organization is referenced by @id, so it's the SAME node as
+    // the sitewide Organization emitted by lib/structured-data.ts —
+    // just with the aggregateRating embedded a second time here for
+    // crawler-visibility. Schema.org explicitly allows the same node
+    // to be redescribed in multiple places via @id (no double-counting).
+    ...(aggregate && Number.isFinite(aggregate.rating) && Number.isFinite(aggregate.count) && aggregate.count > 0 && aggregate.rating >= 1 && aggregate.rating <= 5
+      ? {
+          mainEntity: {
+            '@type': 'Organization',
+            '@id': `${SITE}/#organization`,
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: aggregate.rating.toFixed(1),
+              reviewCount: aggregate.count,
+              bestRating: '5',
+              worstRating: '1',
+            },
           },
         }
       : {}),
