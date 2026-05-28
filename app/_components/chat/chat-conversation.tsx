@@ -8,6 +8,7 @@ import type {
   ChatStreamEvent,
   ChatProductCard as ChatProductCardData,
 } from '@/lib/chat/types';
+import { parseChatStreamChunk } from '@/lib/chat/sse-parser';
 
 /**
  * The interactive body of the chat panel: message list + input form +
@@ -304,29 +305,16 @@ export function ChatConversation() {
 
         // SSE event delimiter is a blank line (`\n\n`). Buffer partial
         // chunks across reads — TextDecoder({stream: true}) handles
-        // multi-byte UTF-8 boundaries.
+        // multi-byte UTF-8 boundaries; parseChatStreamChunk handles
+        // event-boundary buffering and JSON parsing (unit-tested in
+        // tests/ssr/lib-chat-sse-parser.test.mjs).
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          let boundary: number;
-          while ((boundary = buffer.indexOf('\n\n')) !== -1) {
-            const rawEvent = buffer.slice(0, boundary);
-            buffer = buffer.slice(boundary + 2);
-            // Only `data:` lines carry payload. We don't emit named
-            // events from the server, so anything else is ignored.
-            const dataLine = rawEvent
-              .split('\n')
-              .find((line) => line.startsWith('data:'));
-            if (!dataLine) continue;
-            const json = dataLine.slice(5).trim();
-            if (!json) continue;
-            let event: ChatStreamEvent;
-            try {
-              event = JSON.parse(json) as ChatStreamEvent;
-            } catch {
-              continue;
-            }
+          const decoded = decoder.decode(value, { stream: true });
+          const { events, buffer: nextBuffer } = parseChatStreamChunk(buffer, decoded);
+          buffer = nextBuffer;
+          for (const event of events) {
             if (event.type === 'delta') {
               setMessages((prev) => {
                 const next = [...prev];
