@@ -10,6 +10,7 @@ import {
   writeWishlistSet,
 } from '@/app/_components/wishlist-store';
 import { formatMoney } from '@/lib/format';
+import { formatMonthlyPayment, FINANCING_DEFAULT_MONTHS } from '@/lib/financing-calc';
 
 /**
  * Saved items list — design handoff §Account · Saved items.
@@ -100,6 +101,14 @@ export function WishlistView() {
           const price = p.priceAmount && p.priceCurrency
             ? formatMoney({ amount: p.priceAmount, currencyCode: p.priceCurrency })
             : null;
+          // Financing line — same affordance the PLP / PDP / cart /
+          // quiz result carry. Renders only at the $1,500 Synchrony
+          // threshold. Reads from the snapshot we wrote at save time
+          // (older v1 saves without priceAmount silently skip — no
+          // line, no bug).
+          const monthlyLabel = p.priceAmount
+            ? formatMonthlyPayment(p.priceAmount, FINANCING_DEFAULT_MONTHS)
+            : null;
           return (
             <article key={p.handle} className="wishlist-card">
               <Link href={`/products/${p.handle}`} className="wishlist-card-link">
@@ -119,6 +128,11 @@ export function WishlistView() {
                 <div className="wishlist-card-body">
                   {p.vendor ? <div className="wishlist-card-vendor">{p.vendor}</div> : null}
                   <h3 className="wishlist-card-name">{p.title}</h3>
+                  {monthlyLabel ? (
+                    <div className="pcard-financing tnum">
+                      From <strong>{monthlyLabel}</strong> · 0% APR
+                    </div>
+                  ) : null}
                   <div className="wishlist-card-foot">
                     {price ? <span className="wishlist-card-price tnum">{price}</span> : <span />}
                     <span className="wishlist-card-cta">

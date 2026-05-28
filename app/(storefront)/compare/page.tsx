@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getProductByHandle } from '@/lib/shopify';
 import type { Product } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
+import { formatMonthlyPayment, FINANCING_DEFAULT_MONTHS } from '@/lib/financing-calc';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { Icon } from '@/app/_components/icon';
 import { CompareRemove } from './compare-remove';
@@ -126,6 +127,25 @@ export default async function ComparePage({ searchParams }: Search) {
                     {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
                   </td>
                 ))}
+              </SpecRow>
+              {/* Financing row mirrors the per-card "From $X/mo" line on
+                  PLP / PDP / cart / quiz so a side-by-side decision
+                  sees the monthly anchor right under the cash price.
+                  Falls back to em-dash for products below the $1,500
+                  Synchrony threshold (matches the "—" pattern other
+                  unavailable rows use). */}
+              <SpecRow label={`0% APR · ${FINANCING_DEFAULT_MONTHS} mo`}>
+                {products.map((p) => {
+                  const m = formatMonthlyPayment(
+                    p.priceRange.minVariantPrice.amount,
+                    FINANCING_DEFAULT_MONTHS,
+                  );
+                  return (
+                    <td key={p.id} className="tnum">
+                      {m ? `From ${m}` : '—'}
+                    </td>
+                  );
+                })}
               </SpecRow>
               <SpecRow label="Brand">
                 {products.map((p) => <td key={p.id}>{p.vendor || '—'}</td>)}
