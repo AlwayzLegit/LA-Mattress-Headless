@@ -308,6 +308,13 @@ export type HostedToolExecution = {
     | { kind: 'products'; cards: ChatProductCard[] }
     | { kind: 'product'; card: ChatProductCard };
   isError?: boolean;
+  /**
+   * True when the hosted MCP call failed and the executor fell back
+   * to an in-house Storefront tool. The route handler reads this for
+   * telemetry (chat_turn_completed.fallback_count) so we can monitor
+   * hosted-MCP health from PostHog dashboards.
+   */
+  fallbackUsed?: boolean;
 };
 
 async function runSearchCatalog(input: Record<string, unknown>): Promise<HostedToolExecution> {
@@ -422,7 +429,8 @@ export async function executeHostedTool(
       message: `Hosted MCP ${name} failed, falling back to in-house tools: ${message}`,
       data: { tool: name },
     });
-    return fallbackToInHouseTool(name, args, message);
+    const fallback = await fallbackToInHouseTool(name, args, message);
+    return { ...fallback, fallbackUsed: true };
   }
 }
 
