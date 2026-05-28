@@ -104,18 +104,46 @@ export function shopifyProductIdFromGid(gid: string): string | null {
  * header and for sitewide review-aggregate JSON-LD if we ever want it.
  */
 export async function getShopAggregate(): Promise<ShopReviewsAggregate | null> {
-  if (!ENABLED) return null;
+  if (!ENABLED) {
+    // 20260528 diagnostic — the AggregateRating wired in #316 isn't
+    // rendering on collection / PDP / /pages/reviews even with both
+    // JUDGEME_* env vars set + redeployed. Log the gate state to
+    // narrow down whether the function is even entering the fetch
+    // path. Revert this log once the issue is identified.
+    console.error('[judgeme:debug] getShopAggregate skipped — ENABLED=false (token or shop domain missing at module init)');
+    return null;
+  }
   try {
-    const res = await fetch(buildUrl('/widgets/index_information'), {
+    const url = buildUrl('/widgets/index_information');
+    // URL contains the api_token in the query string — log the path +
+    // host only, not the full URL, so we don't leak the token to the
+    // runtime logs / Sentry.
+    const safeUrl = url.split('?')[0];
+    const res = await fetch(url, {
       next: { revalidate: 3600, tags: ['judgeme:aggregate'] },
     });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { average_rating?: number; reviews_count?: number };
-    if (typeof data.average_rating !== 'number' || typeof data.reviews_count !== 'number') {
+    const status = res.status;
+    if (!res.ok) {
+      const body = await res.text().catch(() => '<unreadable>');
+      console.error(`[judgeme:debug] HTTP ${status} on ${safeUrl}: ${body.slice(0, 400)}`);
       return null;
     }
+    const raw = await res.text();
+    let data: { average_rating?: number; reviews_count?: number };
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      console.error(`[judgeme:debug] non-JSON 200 from ${safeUrl}: ${raw.slice(0, 300)}`);
+      return null;
+    }
+    if (typeof data.average_rating !== 'number' || typeof data.reviews_count !== 'number') {
+      console.error(`[judgeme:debug] unexpected shape from ${safeUrl}. avg=${typeof data.average_rating}/${JSON.stringify(data.average_rating)} count=${typeof data.reviews_count}/${JSON.stringify(data.reviews_count)} keys=${Object.keys(data ?? {}).join(',')} raw=${raw.slice(0, 300)}`);
+      return null;
+    }
+    console.error(`[judgeme:debug] OK rating=${data.average_rating} count=${data.reviews_count}`);
     return { rating: data.average_rating, count: data.reviews_count };
-  } catch {
+  } catch (err) {
+    console.error(`[judgeme:debug] fetch threw: ${err instanceof Error ? err.message : String(err)}`);
     return null;
   }
 }
