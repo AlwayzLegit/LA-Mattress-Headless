@@ -194,6 +194,7 @@ export const HOSTED_MCP_TOOLS: Anthropic.Tool[] = [
       "Search the LA Mattress Store catalog for mattresses, adjustable bases, bedding, and accessories.",
       "Use this whenever the shopper asks for a recommendation, mentions a budget / brand / material / size,",
       "or asks what's available. Returns products with title, vendor, price range, and PDP URLs — surface those as Markdown links.",
+      "ALWAYS pass max_price_cents (and min_price_cents when relevant) when the shopper states a budget — without the filter the catalog will return premium picks alongside the budget ones and the cards will show items outside their range. Convert dollars to cents: 'under $1000' → max_price_cents: 100000.",
       "Do NOT call this for policy/return/financing questions — use search_shop_policies_and_faqs instead.",
     ].join(' '),
     input_schema: {
