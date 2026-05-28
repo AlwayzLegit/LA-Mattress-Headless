@@ -77,9 +77,13 @@ export function ChatProductCard({ card }: { card: ChatProductCardData }) {
         <div className="chat-card-title">{card.title}</div>
         <div className="chat-card-meta">
           <span className="chat-card-price">{priceLabel}</span>
-          {ratingLabel ? (
-            <span className="chat-card-rating">
-              <Icon name="star" size={11} /> {ratingLabel}
+          {ratingLabel && card.rating != null && card.ratingCount != null ? (
+            <span
+              className="chat-card-rating"
+              aria-label={`Rated ${card.rating.toFixed(1)} out of 5, ${card.ratingCount} ${card.ratingCount === 1 ? 'review' : 'reviews'}`}
+            >
+              <Icon name="star" size={11} aria-hidden="true" />{' '}
+              <span aria-hidden="true">{ratingLabel}</span>
             </span>
           ) : null}
         </div>
