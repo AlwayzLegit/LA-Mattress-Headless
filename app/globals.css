@@ -2651,6 +2651,60 @@ summary:focus-visible,
 .pdp-delivery-row svg { flex-shrink: 0; margin-top: 2px; color: var(--text); }
 .pdp-delivery-title { font-size: 13px; font-weight: 600; line-height: 1.3; }
 .pdp-delivery-sub { font-size: 12px; line-height: 1.4; margin-top: 2px; }
+/* Showroom-bridge row — clickable, so visually distinct from the
+   three info rows above it. Underline on hover lets shoppers know it
+   navigates somewhere. */
+.pdp-delivery-link {
+  text-decoration: none; color: inherit;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+  cursor: pointer;
+  transition: opacity var(--d-fast) var(--ease);
+}
+.pdp-delivery-link:hover { opacity: 0.78; }
+.pdp-delivery-link:hover .pdp-delivery-title { text-decoration: underline; text-underline-offset: 2px; }
+
+/* "From $X/mo with 0% APR financing →" line under the BuyBox.
+   Subtle accent-colored bar that frames the financing option without
+   competing with the price. Tap-friendly target (full-width link). */
+.pdp-financing-line {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  margin-top: var(--s-3);
+  font-size: 13px;
+  color: var(--accent);
+  background: rgba(207, 75, 50, 0.06);
+  border: 1px solid rgba(207, 75, 50, 0.15);
+  border-radius: var(--r-2);
+  text-decoration: none;
+  transition: background var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease);
+}
+.pdp-financing-line:hover { background: rgba(207, 75, 50, 0.1); border-color: rgba(207, 75, 50, 0.25); }
+.pdp-financing-line strong { color: var(--text); font-weight: 600; }
+.pdp-financing-line svg { flex-shrink: 0; }
+
+/* Live same-day-delivery cutoff line above the .pdp-delivery panel.
+   Stronger visual weight than the info rows below (this is a time-
+   sensitive call-to-action signal, not a static guarantee). */
+.pdp-delivery-cutoff {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  margin-top: var(--s-3);
+  font-size: 13px; line-height: 1.4;
+  border-radius: var(--r-2);
+  background: rgba(34, 139, 34, 0.06);
+  border: 1px solid rgba(34, 139, 34, 0.18);
+  color: var(--text);
+}
+.pdp-delivery-cutoff svg { flex-shrink: 0; color: var(--trust, #228b22); }
+.pdp-delivery-cutoff strong { font-weight: 600; }
+.pdp-delivery-cutoff-next {
+  background: var(--surface-2);
+  border-color: var(--line);
+  color: var(--text-2);
+}
+.pdp-delivery-cutoff-next svg { color: var(--text-3); }
 
 /* Sticky mobile add-to-cart bar — fixed to viewport bottom on small screens
    only. Hidden by default; shown when the in-page ATC button leaves the
