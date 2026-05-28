@@ -84,8 +84,24 @@ export function StripInternalNofollow() {
     // that could plausibly carry rel="nofollow". Touching every <a>
     // tag injected anywhere in the document would be wasteful; the
     // filter keeps the per-event work bounded.
+    //
+    // 2026-05-28: Skip mutations whose target sits inside the live
+    // `.jdgm-widget` mount. Judge.me's pagination ("Load more")
+    // injects new review cards there in batches; our rel-mutating
+    // setAttribute on each batch was a candidate cause of the
+    // user-reported "Load more doesn't work" bug. Modal overlays /
+    // share-trays / photo popovers append at document.body level
+    // (outside `.jdgm-widget`) so this skip preserves Phase 306's
+    // SEMrush fix for those without poking the widget's internal
+    // state during pagination.
     const observer = new MutationObserver((mutations) => {
       for (const m of mutations) {
+        // m.target is the parent node whose children list changed.
+        // Skip if it lives inside the Judge.me review widget — those
+        // mutations are part of the widget's own pagination/render
+        // pipeline and shouldn't be touched by our rel-stripping pass.
+        const target = m.target;
+        if (target instanceof Element && target.closest('.jdgm-widget')) continue;
         for (const node of m.addedNodes) {
           if (!(node instanceof Element)) continue;
           // Direct <a> insertion — check it.
