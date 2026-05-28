@@ -80,6 +80,7 @@ export function JudgemeWidget({ productId }: Props) {
         src="https://cdnwidget.judge.me/widget_preloader.js"
       />
       <div
+        id="judgeme-widget-mount"
         className="judgeme-widget-mount"
         // Reserve a minimum vertical space so the lazy widget can
         // hydrate without triggering CLS (Cumulative Layout Shift).
@@ -88,6 +89,10 @@ export function JudgemeWidget({ productId }: Props) {
         // grows downward only (no shift above), which Google doesn't
         // count toward CLS. For unreviewed products the placeholder
         // height is wasted but stays small enough to be acceptable.
+        // The id is also a scroll anchor target for the server-rendered
+        // "Write a review" CTA in pdp-reviews-section.tsx — pre-widget-
+        // hydration the user lands at the placeholder area where the
+        // widget appears once the preloader finishes.
         style={{ minHeight: '320px' }}
       >
         <div
