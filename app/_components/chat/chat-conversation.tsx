@@ -40,6 +40,38 @@ const SUGGESTED_PROMPTS = [
 ];
 
 /**
+ * Map a raw upstream error (Anthropic API error, fetch failure, SSE
+ * error event) to a clean user-facing message. Shoppers should never
+ * see "HTTP 504", "Anthropic API error", or any other backend jargon —
+ * give them an actionable next step (try again / call the showroom)
+ * instead. The raw message still goes to console for dev visibility
+ * and to Sentry from the server side.
+ */
+function friendlyChatError(rawMessage: string, status?: number): string {
+  if (typeof window !== 'undefined') {
+    // Surface the raw cause for dev debugging without showing it.
+    // eslint-disable-next-line no-console
+    console.error('[chat]', status ? `status ${status}` : '', rawMessage);
+  }
+  if (status === 429) {
+    return "We're getting a lot of questions right now. Give it a moment and try again.";
+  }
+  if (status === 503) {
+    return "The chat assistant is briefly unavailable. Call (213) 984-4654 or try again in a minute.";
+  }
+  if (status === 504 || /timeout|timed out/i.test(rawMessage)) {
+    return "That took longer than expected. Try a shorter question, or call (213) 984-4654.";
+  }
+  if (typeof status === 'number' && status >= 400) {
+    return "Something went wrong on our end. Try rephrasing, or call (213) 984-4654.";
+  }
+  if (/network|fetch|failed to fetch/i.test(rawMessage)) {
+    return "Looks like a connection hiccup. Check your network and try again.";
+  }
+  return "I hit an error mid-response. Try again, or call (213) 984-4654.";
+}
+
+/**
  * Inline-attachment shown alongside a chat message. Tool calls Claude
  * makes during a turn render as one of these — either an in-flight
  * "Searching for X..." indicator while the tool runs, or the result
@@ -223,14 +255,16 @@ export function ChatConversation() {
         });
 
         if (!res.ok || !res.body) {
-          let errMessage = `Chat unavailable (HTTP ${res.status}).`;
+          let rawError = `HTTP ${res.status}`;
           try {
             const json = (await res.json()) as { error?: string };
-            if (typeof json.error === 'string') errMessage = json.error;
+            if (typeof json.error === 'string') rawError = json.error;
           } catch {
-            /* non-JSON body, keep the generic */
+            /* non-JSON body, keep the status code */
           }
-          throw new Error(errMessage);
+          // Throw a friendly message — the raw cause is logged inside
+          // friendlyChatError() for dev visibility.
+          throw new Error(friendlyChatError(rawError, res.status));
         }
 
         const reader = res.body.getReader();
@@ -310,15 +344,17 @@ export function ChatConversation() {
                 return next;
               });
             } else if (event.type === 'error') {
+              const friendly = friendlyChatError(event.message, event.status);
               setMessages((prev) => {
                 const next = [...prev];
                 const last = next[next.length - 1];
                 if (last?.role === 'assistant' && last.streaming) {
+                  // Preserve any partial text the assistant already
+                  // streamed — only show the error copy if we have
+                  // nothing else to show.
                   next[next.length - 1] = {
                     role: 'assistant',
-                    content:
-                      last.content ||
-                      "I hit an error mid-response. Try again, or call (213) 984-4654.",
+                    content: last.content || friendly,
                     streaming: false,
                     error: true,
                   };
@@ -346,14 +382,20 @@ export function ChatConversation() {
             return next;
           });
         } else {
-          const msg = err instanceof Error ? err.message : 'Network error.';
+          // err.message is already a friendly string when it came from
+          // the HTTP-error throw path above (we threw friendlyChatError
+          // there). For any other thrown error (network failure,
+          // unexpected exception), sanitize before showing.
+          const raw = err instanceof Error ? err.message : 'Network error.';
+          const looksFriendly = /\(213\) 984-4654|try again|connection hiccup|moment/i.test(raw);
+          const content = looksFriendly ? raw : friendlyChatError(raw);
           setMessages((prev) => {
             const next = [...prev];
             const last = next[next.length - 1];
             if (last?.role === 'assistant' && last.streaming) {
               next[next.length - 1] = {
                 role: 'assistant',
-                content: msg,
+                content,
                 streaming: false,
                 error: true,
               };
