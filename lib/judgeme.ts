@@ -101,49 +101,59 @@ export function shopifyProductIdFromGid(gid: string): string | null {
 
 /**
  * Sitewide aggregate (avg rating + total count) for the /pages/reviews
- * header and for sitewide review-aggregate JSON-LD if we ever want it.
+ * header and the AggregateRating JSON-LD on collection / generic CMS
+ * pages (lib/collection-jsonld.ts + lib/page-jsonld.ts, both wired in
+ * via mainEntity → Organization in #316).
+ *
+ * Implementation note (20260528): the original /widgets/index_information
+ * endpoint Judge.me used to return a pre-aggregated
+ * `{ average_rating, reviews_count }` payload was migrated away from
+ * their public REST surface — every collection / PDP / /pages/reviews
+ * was rendering without aggregateRating because that endpoint started
+ * returning their generic "Oops, page not found" HTML. PRs #324 / #326
+ * / #328 progressively narrowed down the new working surface:
+ *
+ *   - /api/v1/reviews/count       → JSON { count: N } (200 OK)
+ *   - /api/v1/reviews?rating=X    → JSON list filtered by rating
+ *
+ * Both accept query-string auth (`?api_token=X&shop_domain=Y`).
+ *
+ * Strategy: fire 5 parallel /reviews/count calls (one per rating 1-5)
+ * and compute the exact weighted average. 5 small JSON responses,
+ * cached at the fetch layer for 1h, ~50-150ms total wall time
+ * dominated by the slowest tail.
+ *
+ * Returns null when:
+ *   - env vars are unset (ENABLED gate)
+ *   - any /reviews/count call returns non-2xx
+ *   - the total count is zero (no reviews → no AggregateRating)
+ *   - the computed avg falls outside [1, 5] (sanity guard so we
+ *     don't emit invalid AggregateRating to Google)
  */
 export async function getShopAggregate(): Promise<ShopReviewsAggregate | null> {
-  if (!ENABLED) {
-    // 20260528 diagnostic — the AggregateRating wired in #316 isn't
-    // rendering on collection / PDP / /pages/reviews even with both
-    // JUDGEME_* env vars set + redeployed. Log the gate state to
-    // narrow down whether the function is even entering the fetch
-    // path. Revert this log once the issue is identified.
-    console.error('[judgeme:debug] getShopAggregate skipped — ENABLED=false (token or shop domain missing at module init)');
-    return null;
-  }
+  if (!ENABLED) return null;
   try {
-    const url = buildUrl('/widgets/index_information');
-    // URL contains the api_token in the query string — log the path +
-    // host only, not the full URL, so we don't leak the token to the
-    // runtime logs / Sentry.
-    const safeUrl = url.split('?')[0];
-    const res = await fetch(url, {
-      next: { revalidate: 3600, tags: ['judgeme:aggregate'] },
-    });
-    const status = res.status;
-    if (!res.ok) {
-      const body = await res.text().catch(() => '<unreadable>');
-      console.error(`[judgeme:debug] HTTP ${status} on ${safeUrl}: ${body.slice(0, 400)}`);
-      return null;
-    }
-    const raw = await res.text();
-    let data: { average_rating?: number; reviews_count?: number };
-    try {
-      data = JSON.parse(raw);
-    } catch {
-      console.error(`[judgeme:debug] non-JSON 200 from ${safeUrl}: ${raw.slice(0, 300)}`);
-      return null;
-    }
-    if (typeof data.average_rating !== 'number' || typeof data.reviews_count !== 'number') {
-      console.error(`[judgeme:debug] unexpected shape from ${safeUrl}. avg=${typeof data.average_rating}/${JSON.stringify(data.average_rating)} count=${typeof data.reviews_count}/${JSON.stringify(data.reviews_count)} keys=${Object.keys(data ?? {}).join(',')} raw=${raw.slice(0, 300)}`);
-      return null;
-    }
-    console.error(`[judgeme:debug] OK rating=${data.average_rating} count=${data.reviews_count}`);
-    return { rating: data.average_rating, count: data.reviews_count };
-  } catch (err) {
-    console.error(`[judgeme:debug] fetch threw: ${err instanceof Error ? err.message : String(err)}`);
+    const ratings = [1, 2, 3, 4, 5] as const;
+    const counts = await Promise.all(
+      ratings.map((rating) =>
+        fetch(buildUrl('/reviews/count', { rating }), {
+          next: { revalidate: 3600, tags: ['judgeme:aggregate'] },
+        }).then(async (res) => {
+          if (!res.ok) return null;
+          const data = (await res.json().catch(() => null)) as { count?: number } | null;
+          return typeof data?.count === 'number' ? data.count : null;
+        }).catch(() => null),
+      ),
+    );
+    if (counts.some((c) => c === null)) return null;
+    const safeCounts = counts as number[];
+    const total = safeCounts.reduce((s, c) => s + c, 0);
+    if (total <= 0) return null;
+    const weighted = ratings.reduce((s, r, i) => s + r * safeCounts[i], 0);
+    const avg = weighted / total;
+    if (!Number.isFinite(avg) || avg < 1 || avg > 5) return null;
+    return { rating: avg, count: total };
+  } catch {
     return null;
   }
 }
