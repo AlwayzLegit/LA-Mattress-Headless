@@ -156,7 +156,12 @@ export async function getStorefrontReviews({
     const fetchSize = dedupe ? Math.min(perPage * 4, 100) : perPage;
     const res = await fetch(
       buildUrl('/reviews', { per_page: fetchSize, page, rating: minRating, published: 'true' }),
-      { next: { revalidate: 3600, tags: ['judgeme:reviews'] } },
+      // Tag versioned (`v2`) to force a cache miss on the deploy that
+      // introduced dedupeReviews(). Vercel's data cache is shared across
+      // deployments, so the same URL keyed against the old `judgeme:reviews`
+      // tag would have kept serving the pre-dedup payload until the 1h
+      // TTL elapsed naturally.
+      { next: { revalidate: 3600, tags: ['judgeme:reviews-v2'] } },
     );
     if (!res.ok) return [];
     const data = (await res.json()) as ReviewsResponse;
