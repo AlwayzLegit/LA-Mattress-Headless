@@ -16,6 +16,8 @@ import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
 import { PdpReviewsSection } from '@/app/_components/pdp-reviews-section';
 import { TrackPdpView } from '@/app/_components/track-pdp-view';
+import { PdpDeliveryCutoff } from '@/app/_components/pdp-delivery-cutoff';
+import { formatMonthlyPayment, FINANCING_DEFAULT_MONTHS } from '@/lib/financing-calc';
 import { BuyBox } from './buy-box';
 import { PdpCtaRow } from './pdp-cta-row';
 import { PdpGallery } from './gallery';
@@ -288,6 +290,28 @@ function ProductView({ product, related }: { product: Product; related: ProductS
               productImage={product.featuredImage}
             />
 
+            {/* Financing-per-month callout below the price psychology of
+                the BuyBox. Renders only for products $1,500+ — the
+                Synchrony promo minimum. Industry-standard pattern
+                (Tempur-Pedic, Saatva, Casper all carry this) that reframes
+                a $2,699 mattress as a $112/mo decision. Links to the
+                financing page so a curious shopper can see terms. */}
+            {(() => {
+              const monthly = formatMonthlyPayment(
+                product.priceRange.minVariantPrice.amount,
+                FINANCING_DEFAULT_MONTHS,
+              );
+              if (!monthly) return null;
+              return (
+                <Link href="/pages/mattress-store-financing" className="pdp-financing-line">
+                  <Icon name="card" size={14} />
+                  <span>
+                    From <strong className="tnum">{monthly}</strong> with 0% APR financing over {FINANCING_DEFAULT_MONTHS} months →
+                  </span>
+                </Link>
+              );
+            })()}
+
             <PdpCtaRow
               handle={product.handle}
               title={product.title}
@@ -297,6 +321,12 @@ function ProductView({ product, related }: { product: Product; related: ProductS
               priceAmount={product.priceRange.minVariantPrice.amount}
               priceCurrency={product.priceRange.minVariantPrice.currencyCode}
             />
+
+            {/* Live same-day-delivery cutoff indicator. Counts down to
+                the 4 PM LA cutoff during the day; switches to
+                "tomorrow" copy after. Client-only render so the
+                time-dependent string doesn't break ISR hydration. */}
+            <PdpDeliveryCutoff />
 
             <div className="pdp-delivery">
               <div className="pdp-delivery-row">
@@ -320,6 +350,16 @@ function ProductView({ product, related }: { product: Product; related: ProductS
                   <div className="muted pdp-delivery-sub">Synchrony or Acima · terms vary by approval · apply at checkout</div>
                 </div>
               </div>
+              {/* Showroom-bridge: closes the loop between PDP and the
+                  locations page. Pattern lifted from Apple's "Available
+                  at Apple stores" link under the buy box. */}
+              <Link href="/pages/mattress-store-locations" className="pdp-delivery-row pdp-delivery-link">
+                <Icon name="pin" size={18} />
+                <div>
+                  <div className="pdp-delivery-title">Try it at a showroom</div>
+                  <div className="muted pdp-delivery-sub">On the floor at all 5 LA showrooms — Koreatown, West LA, La Brea, Studio City, Glendale →</div>
+                </div>
+              </Link>
             </div>
           </div>
         </aside>
