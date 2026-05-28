@@ -17,6 +17,8 @@ import { Icon } from '@/app/_components/icon';
 import { RecentlyViewedRail } from '@/app/_components/recently-viewed';
 import { RelatedRail } from '@/app/(storefront)/products/[handle]/related-rail';
 import { formatMoney } from '@/lib/format';
+import { PdpDeliveryCutoff } from '@/app/_components/pdp-delivery-cutoff';
+import { formatMonthlyPayment, FINANCING_DEFAULT_MONTHS } from '@/lib/financing-calc';
 
 export const metadata: Metadata = {
   title: 'Cart',
@@ -73,6 +75,26 @@ export default async function CartPage() {
     ...lines.flatMap((l) => l.discountAllocations),
   ].reduce((sum, d) => sum + (Number.parseFloat(d.discountedAmount.amount) || 0), 0);
   const discountCurrency = cart.cost.totalAmount.currencyCode;
+
+  // Protector cross-sell nudge — same heuristic as the cart drawer
+  // (#340). Title-based: cart contains a mattress, no protector/
+  // cover/sheet/encasement. Warranty hook: stains void the 120-night
+  // exchange. Single line, not a card strip — the existing "You may
+  // also like" rail handles broad cross-sell.
+  const hasMattress = lines.some((l) => /mattress/i.test(l.merchandise.product.title));
+  const hasProtector = lines.some((l) =>
+    /protector|cover|encasement|sheet/i.test(l.merchandise.product.title),
+  );
+  const showProtectorNudge = hasMattress && !hasProtector;
+
+  // "From $X/mo with 0% APR" — mirrors the PDP financing callout (#339).
+  // Renders only for cart totals at or above the Synchrony $1,500
+  // minimum; reframes a $2,699 cart as a $112/mo decision in the
+  // last-mile review.
+  const totalMonthly = formatMonthlyPayment(
+    cart.cost.totalAmount.amount,
+    FINANCING_DEFAULT_MONTHS,
+  );
 
   return (
     <main className="container cart-page" style={{ paddingTop: 'var(--s-7)', paddingBottom: 'var(--s-9)' }}>
@@ -150,11 +172,28 @@ export default async function CartPage() {
               );
             })}
           </ul>
+          {showProtectorNudge ? (
+            <Link
+              href="/collections/mattress-protector"
+              className="cart-protector-nudge"
+              style={{ margin: '0 0 var(--s-4)' }}
+            >
+              <Icon name="shield" size={16} />
+              <span>
+                <strong>Protect your investment.</strong> A mattress protector keeps your 120-night exchange intact — stains void it.
+              </span>
+              <Icon name="arrow-right" size={14} />
+            </Link>
+          ) : null}
           <DeliveryDate initialDate={deliveryDate} />
         </section>
 
         <aside className="cart-summary">
           <div className="eyebrow">Order summary</div>
+          {/* Live same-day-delivery cutoff. Same component as the PDP
+              rail and the cart drawer (#340) so the urgency carries
+              through every stop in the funnel. */}
+          <PdpDeliveryCutoff />
           <FreeShippingBar subtotal={cart.cost.subtotalAmount} />
           <div className="cart-summary-row" style={{ marginTop: 'var(--s-4)' }}>
             <span className="muted">Subtotal</span>
@@ -182,6 +221,14 @@ export default async function CartPage() {
             <strong>Estimated total</strong>
             <strong className="tnum">{formatMoney(cart.cost.totalAmount)}</strong>
           </div>
+          {totalMonthly ? (
+            <Link href="/pages/mattress-store-financing" className="cart-financing-line">
+              <Icon name="card" size={14} />
+              <span>
+                Or <strong className="tnum">{totalMonthly}</strong> with 0% APR over {FINANCING_DEFAULT_MONTHS} months →
+              </span>
+            </Link>
+          ) : null}
           <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-2)' }}>
             Tax &amp; shipping calculated at checkout.
           </p>
