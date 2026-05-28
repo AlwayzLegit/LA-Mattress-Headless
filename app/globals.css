@@ -4375,6 +4375,17 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 .gd-body p { margin: 0 0 var(--s-4); text-wrap: pretty; }
 .gd-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .gd-body a:hover { color: var(--accent-2); }
+/* Safety-net link appended by lib/article-autolink.ts when the article
+   body would otherwise ship zero internal links. Visually marked as a
+   small italic CTA so it reads as a "continue browsing" prompt rather
+   than blending with merchant copy. */
+.gd-body .article-autolink-fallback {
+  margin-top: var(--s-5);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--text-3, var(--text-2));
+}
+.gd-body .article-autolink-fallback a { color: inherit; }
 .gd-body ul, .gd-body ol { padding-left: var(--s-5); margin: 0 0 var(--s-4); }
 .gd-body li { margin-bottom: var(--s-2); }
 .gd-body blockquote {

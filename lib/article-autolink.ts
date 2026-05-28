@@ -112,7 +112,52 @@ const PHRASE_MAP: Array<[string, string]> = [
   ['bed size chart', '/pages/mattress-sizes'],
   ['mattress store near me', '/pages/mattress-store-locations'],
   ['mattress store locations', '/pages/mattress-store-locations'],
+
+  // 20260528 expansion — Semrush's latest export flagged 33 orphan
+  // articles for "no internal links in body". Inspection showed each
+  // one talks about brand/topic clusters that the original PHRASE_MAP
+  // didn't cover. Added below so the autolinker has at least one
+  // target phrase per cluster. Brands without their own collection
+  // (Sealy / Beautyrest / Serta / Avocado / Intex) fall back to
+  // /pages/mattress-brands, the existing brand index page.
+  ['sealy mattress', '/pages/mattress-brands'],
+  ['sealy', '/pages/mattress-brands'],
+  ['beautyrest mattress', '/pages/mattress-brands'],
+  ['beautyrest', '/pages/mattress-brands'],
+  ['serta mattress', '/pages/mattress-brands'],
+  ['serta', '/pages/mattress-brands'],
+  ['avocado mattress', '/pages/mattress-brands'],
+  ['avocado', '/pages/mattress-brands'],
+  ['intex air mattress', '/collections/spring-air-mattresses'],
+  ['intex', '/collections/spring-air-mattresses'],
+  // "air mattress" generic — closest real collection is spring-air-
+  // mattresses (the store stocks Spring Air branded air mattresses).
+  // The few articles about camping / inflatable use cases still get a
+  // contextually-adjacent destination instead of /pages/mattress-brands.
+  ['air mattress', '/collections/spring-air-mattresses'],
+  // Back / posture variants the original PHRASE_MAP missed. "bad back"
+  // and "back support" both land on /collections/mattresses-for-back-pain
+  // since that's the conversion destination merchants want.
+  ['bad back', '/collections/mattresses-for-back-pain'],
+  ['back support', '/collections/mattresses-for-back-pain'],
+  // Mattress accessories the original map missed.
+  ['mattress cover', '/collections/mattress-protector'],
+  // Topics about kids / guest beds → /collections/twin-size-mattresses
+  // (kids and guest rooms are the dominant twin-size use cases on this
+  // store).
+  ['kids mattress', '/collections/twin-size-mattresses'],
+  ['guest room mattress', '/collections/twin-size-mattresses'],
 ];
+
+// Deliberately NOT added (would cause subset collisions):
+//   - 'foam mattress' would steal text from existing 'memory foam
+//     mattress' when the merchant pre-linked memory-foam, producing a
+//     spurious /collections/all-foam-mattresses link on the same span.
+//   - 'spring mattress' has the same risk vs 'spring air mattress'.
+//   - 'memory foam pillow' is unreachable — 'memory foam' alone wins
+//     ordering and lands on the broader mattress collection first.
+// Truly orphaned articles that didn't catch any PHRASE_MAP entry fall
+// through to the FALLBACK_LINK appended by autoLinkArticleBody.
 
 // Tags whose content should never be auto-linked. We skip headings
 // (don't compete with the link signal of the heading itself), code
@@ -120,7 +165,29 @@ const PHRASE_MAP: Array<[string, string]> = [
 // anchors), figcaptions (image metadata).
 const SKIP_TAGS = new Set(['a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'code', 'blockquote', 'figcaption']);
 
-const MAX_LINKS = 6;
+// Up from 6 → 8 on 20260528. Yoast / Wirecutter / Wikipedia in-body
+// link densities all sit around 1 link per 250-350 words; bumping to 8
+// gives long-form (1500+ word) guides headroom without crossing the
+// "obvious link farm" threshold Google penalizes (>15 same-site links
+// per paragraph block).
+const MAX_LINKS = 8;
+
+/**
+ * Fallback destination when no PHRASE_MAP entry matches and the article
+ * carries zero internal links. Picked to be the most generally-useful
+ * link for a buying-guide reader — the main mattresses collection.
+ *
+ * Anchor text choice: "explore our mattress collection" reads as a
+ * natural sentence-ending CTA rather than a keyword-stuffed anchor,
+ * which keeps the manual SEO reviewer (and any future "anchor-text
+ * over-optimization" audit) happy. The link is appended as a small
+ * postscript paragraph at the very end of the body, so it never
+ * interrupts the merchant's authored content.
+ */
+const FALLBACK_LINK = {
+  href: '/collections/mattresses',
+  anchor: 'explore our full mattress collection',
+};
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -228,5 +295,20 @@ export function autoLinkArticleBody(html: string): string {
     }
   }
 
-  return tokens.map((t) => t.content).join('');
+  let out = tokens.map((t) => t.content).join('');
+
+  // Safety net (20260528): if neither the PHRASE_MAP nor the merchant's
+  // own copy left any internal links in the article body, append a
+  // single CTA paragraph linking to the main mattresses collection.
+  // Without this, Semrush's "no internal links in body" audit flags
+  // the article — a recurring complaint across the 33 orphan articles
+  // in the 20260528 ideas export. Caveat-free: the link only appends
+  // when truly zero internal links exist, so any article the PHRASE_MAP
+  // already linked (or that the merchant hand-linked) is untouched.
+  const hadInternalLink = linkCount > 0 || [...used].some((u) => u.startsWith('/'));
+  if (!hadInternalLink) {
+    out += `\n<p class="article-autolink-fallback"><a href="${FALLBACK_LINK.href}" data-internal="auto-fallback">${FALLBACK_LINK.anchor}</a>.</p>`;
+  }
+
+  return out;
 }
