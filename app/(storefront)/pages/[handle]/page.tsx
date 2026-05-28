@@ -29,6 +29,8 @@ import { ReviewsPage } from '@/app/_components/sections/reviews-page';
 import { DataOptOutPage } from '@/app/_components/sections/data-opt-out-page';
 import { LocationsFinder } from '@/app/_components/sections/locations-finder';
 import { getStorefrontReviews } from '@/lib/judgeme';
+import { ServicePage } from '@/app/_components/sections/service-page';
+import { isServicePage, SERVICE_PAGES } from '@/lib/service-pages';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -222,6 +224,13 @@ export default async function ShopifyPage(props: Params) {
   const showroom = findShowroom(page.handle);
   if (showroom) return <ShowroomPage page={page} showroom={showroom} />;
   if (page.handle === 'mattress-store-locations') return <LocationsIndexPage page={page} />;
+  // "Confidence" service pages (financing / warranty / comfort-exchange /
+  // delivery / contact) share a brand-level template chrome — hero + trust
+  // strip + sticky TOC + CTA — while their merchant-authored CMS bodies
+  // stay editable in Shopify Admin. Config lives in lib/service-pages.ts.
+  if (isServicePage(page.handle)) {
+    return <ServicePage page={page} config={SERVICE_PAGES[page.handle]} />;
+  }
   if (isSalePage(page.handle)) {
     // Storefront date gate: sale pages set `custom.available_at` to
     // (sale starts_at − 7 days) so each holiday page goes live exactly
