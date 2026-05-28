@@ -624,6 +624,13 @@ function ShowroomPage({
               height={900}
               sizes="(max-width: 1024px) 100vw, 1080px"
               priority
+              // Explicit fetchPriority backs up the `priority` prop —
+              // showroom hero photos showed LCP p95 9.3s on
+              // /pages/mattress-store-studio-city (and similar tails on
+              // koreatown / la-brea / west-la). priority should add
+              // fetchPriority="high" automatically; the explicit hint
+              // removes any browser-scheduler ambiguity.
+              fetchPriority="high"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>

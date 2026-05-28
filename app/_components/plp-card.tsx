@@ -69,6 +69,13 @@ export function PlpCard({
               sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
               style={{ objectFit: 'contain', width: '100%', height: '100%' }}
               priority={priority}
+              // Explicit fetchPriority on LCP-candidate cards. priority
+              // implies fetchPriority="high" in Next 15, but PostHog
+              // web-vitals showed PLPs with LCP tails (p95 4-6s) — the
+              // explicit hint removes any ambiguity from the browser's
+              // resource scheduler when other priority resources (hero
+              // image, web fonts) are also in flight.
+              fetchPriority={priority ? 'high' : 'auto'}
               loading={priority ? 'eager' : 'lazy'}
             />
           ) : (
