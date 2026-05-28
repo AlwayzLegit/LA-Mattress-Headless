@@ -2,8 +2,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ProductSummary } from '@/lib/shopify';
 import { formatPriceRange } from '@/lib/format';
+import { formatMonthlyPayment, FINANCING_DEFAULT_MONTHS } from '@/lib/financing-calc';
 import { PcardSpecs } from './pcard-specs';
 import { CompareToggle } from './compare-toggle';
+import { PlpWishlistHeart } from './plp-wishlist-heart';
 import { ReviewsBadge } from './reviews-badge';
 
 /**
@@ -35,14 +37,23 @@ export function PlpCard({
   const minCompare = Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount);
   const onSale = minCompare > 0 && minCompare > minPrice;
   const pctOff = onSale ? Math.round((1 - minPrice / minCompare) * 100) : 0;
+  // Per-card financing line — only renders for products ≥ $1,500 (the
+  // Synchrony minimum). Mirrors the PDP/cart financing callout so the
+  // "From $X/mo" affordance reads consistently across browse → product
+  // → cart. Static label (no link); the whole card already goes to the
+  // PDP where the linked version lives.
+  const monthlyLabel = formatMonthlyPayment(
+    product.priceRange.minVariantPrice.amount,
+    FINANCING_DEFAULT_MONTHS,
+  );
 
   return (
-    // Article wraps the link + the CompareToggle as siblings. Previously
-    // the Compare <button> sat inside the <Link>, which is HTML5-invalid
-    // (a > button) and creates ergonomics weirdness even when
-    // stopPropagation cancels the bubble. The article carries the
-    // .pcard / .plp-card visual styles; the inner .pcard-link is a
-    // flat flex-column for image + meta only.
+    // Article wraps the link + the CompareToggle + wishlist heart as
+    // siblings. Previously the Compare <button> sat inside the <Link>,
+    // which is HTML5-invalid (a > button); same applies to the heart.
+    // The article carries the .pcard / .plp-card visual styles; the
+    // inner .pcard-link is a flat flex-column for image + meta only.
+    // .plp-card-heart absolute-positions over the image via CSS.
     <article className="pcard plp-card">
       <Link href={`/products/${product.handle}`} className="pcard-link">
         <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
@@ -81,8 +92,22 @@ export function PlpCard({
               {formatPriceRange(product.priceRange.minVariantPrice, product.priceRange.maxVariantPrice)}
             </span>
           </div>
+          {monthlyLabel ? (
+            <div className="pcard-financing tnum">
+              From <strong>{monthlyLabel}</strong> · 0% APR
+            </div>
+          ) : null}
         </div>
       </Link>
+      <PlpWishlistHeart
+        handle={product.handle}
+        title={product.title}
+        vendor={product.vendor ?? null}
+        imageUrl={product.featuredImage?.url ?? null}
+        imageAlt={product.featuredImage?.altText ?? null}
+        priceAmount={product.priceRange.minVariantPrice.amount}
+        priceCurrency={product.priceRange.minVariantPrice.currencyCode}
+      />
       <CompareToggle handle={product.handle} title={product.title} />
     </article>
   );

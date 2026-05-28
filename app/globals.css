@@ -1970,6 +1970,51 @@ summary:focus-visible,
   z-index: 2;
 }
 .pcard-fav:hover { background: #fff; color: var(--sale); }
+
+/* PLP wishlist heart — sibling of the <Link>, absolute-positioned
+   over the top-right of the image. Lives outside the link so the
+   click doesn't bubble to navigate. Anchors to the article (.pcard
+   gets position: relative below). Industry-standard pattern
+   (Saatva / Casper / Mattress Firm all carry a save heart on PLP
+   cards). Fills + flips to accent color when the product is in the
+   wishlist; the wishlist-store sync keeps it in lockstep with the
+   PDP Save button and /wishlist page across tabs. */
+.plp-card { position: relative; }
+.plp-card-heart {
+  position: absolute; top: 22px; right: 22px;
+  z-index: 2;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--d-fast) var(--ease), color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+}
+.plp-card-heart:hover { color: var(--accent); border-color: var(--accent); transform: scale(1.06); }
+.plp-card-heart.is-on { color: var(--accent); border-color: var(--accent); background: #fff; }
+.plp-card-heart.is-on svg { fill: currentColor; }
+/* Slightly smaller heart + tighter offset on mobile so it doesn't
+   crowd the small product image. */
+@media (max-width: 640px) {
+  .plp-card-heart { width: 32px; height: 32px; top: 18px; right: 18px; }
+}
+
+/* "From $X/mo · 0% APR" line under the price on PLP cards. Tiny
+   accent-tinted muted treatment so it doesn't compete with the
+   primary price. Same affordance the PDP and cart show, scaled
+   down for card density. */
+.pcard-financing {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+}
+.pcard-financing strong { color: var(--accent); font-weight: 600; }
 .pcard-meta { padding: 16px 0 0; display: flex; flex-direction: column; gap: 6px; }
 .pcard-brand { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); font-weight: 500; }
 .pcard-name {
