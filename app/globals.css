@@ -6142,3 +6142,122 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   color: var(--text-2);
 }
 .dash-funnel-drop.dash-warn { color: var(--warn, #b94a00); font-weight: 600; }
+
+/* ===========================================================================
+   Service pages — financing, warranty, comfort exchange, delivery, contact
+   ===========================================================================
+   Shared template chrome for the five "confidence" pages. Each renders
+   merchant-authored CMS content inside this scaffolding: hero + 3-item
+   trust strip + sticky right-rail TOC + end-of-page CTA. Pattern lifted
+   from Saatva / Sleep Number support page architecture; copy stays in
+   Shopify Admin so the merchant can evolve content without code changes. */
+
+.service-page { padding: 0 0 var(--s-9); max-width: 1100px; margin: 0 auto; }
+
+/* Hero — eyebrow + h1 + lede + "last updated" stamp. Tight, scannable,
+   establishes what the page answers before the body. */
+.service-page-hero { margin: var(--s-5) 0 var(--s-6); max-width: 760px; }
+.service-page-hero h1 { margin: var(--s-3) 0 var(--s-4); }
+.service-page-lede { font-size: 18px; line-height: 1.55; color: var(--text-2); margin: 0 0 var(--s-3); max-width: 60ch; }
+.service-page-updated { font-size: 13px; margin: var(--s-2) 0 0; }
+
+/* Trust strip — 3 icon items in a row. Same vocabulary as the locations-trust
+   strip but with a stronger card treatment so it doesn't disappear into the
+   page above the fold. Each item: 20px accent icon + title + sub. */
+.service-page-trust {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-4);
+  padding: var(--s-5);
+  margin: 0 0 var(--s-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+}
+@media (max-width: 760px) {
+  .service-page-trust { grid-template-columns: 1fr; gap: var(--s-3); padding: var(--s-4); }
+}
+.service-page-trust-item { display: flex; align-items: flex-start; gap: var(--s-3); }
+.service-page-trust-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; flex: 0 0 36px;
+  border-radius: 999px;
+  background: rgba(207, 75, 50, 0.08);
+  color: var(--accent);
+}
+.service-page-trust-title { font-size: 15px; font-weight: 600; color: var(--text); margin: 0 0 2px; line-height: 1.3; }
+.service-page-trust-sub { font-size: 13px; color: var(--text-3); margin: 0; line-height: 1.45; }
+
+/* Body + TOC two-column layout. TOC sticks to the right rail on desktop;
+   on tablet/mobile the TOC hides (the body is short enough on a narrow
+   viewport that scrolling beats jumping). The body keeps its existing
+   .rte / .cms-body typography from the global stylesheet. */
+.service-page-layout {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: var(--s-7);
+  align-items: start;
+}
+@media (max-width: 980px) {
+  .service-page-layout { grid-template-columns: 1fr; gap: var(--s-5); }
+}
+.service-page-body { min-width: 0; max-width: 70ch; }
+
+/* Right-rail TOC. Sticky just below the topbar (--nav-h + a bit of
+   breathing room). Hidden on tablet/mobile via a media query. */
+.service-page-toc {
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  font-size: 13px;
+  max-height: calc(100vh - var(--nav-h) - 48px);
+  overflow-y: auto;
+}
+@media (max-width: 980px) { .service-page-toc { display: none; } }
+.service-page-toc-label {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-3);
+  margin: 0 0 var(--s-2);
+}
+.service-page-toc-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.service-page-toc-list a {
+  display: block;
+  padding: 6px 8px;
+  border-radius: var(--r-1);
+  color: var(--text-2);
+  text-decoration: none;
+  line-height: 1.4;
+  transition: background var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
+}
+.service-page-toc-list a:hover {
+  background: var(--surface-2, rgba(0, 0, 0, 0.035));
+  color: var(--text);
+}
+
+/* Bottom CTA strip — headline + primary action (+ optional secondary).
+   Closes the page with a clear next step instead of trailing off into
+   the merchant's wrap-up paragraph. */
+.service-page-cta {
+  margin-top: var(--s-7);
+  padding: var(--s-6) var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  text-align: center;
+}
+.service-page-cta-headline {
+  font-size: 20px; font-weight: 600; color: var(--text);
+  margin: 0 0 var(--s-4);
+  letter-spacing: -0.01em;
+}
+.service-page-cta-actions {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--s-3); flex-wrap: wrap;
+}
