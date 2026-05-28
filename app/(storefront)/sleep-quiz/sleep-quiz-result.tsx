@@ -7,6 +7,7 @@ import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { announce } from '@/app/_components/announcer';
 import { formatPriceRange } from '@/lib/format';
+import { formatMonthlyPayment, FINANCING_DEFAULT_MONTHS } from '@/lib/financing-calc';
 import type { ProductSummary } from '@/lib/shopify';
 import { track } from '@/lib/analytics';
 import { QUESTIONS, type Answers, type Recommendation } from './quiz-data';
@@ -110,6 +111,26 @@ export function SleepQuizResult({
             Find a showroom
           </Link>
         </div>
+        {/* Trust strip — same vocabulary as the PDP delivery info,
+            scaled down to a horizontal row below the result CTAs. Tells
+            a freshly-matched shopper what they get for clicking through
+            (free delivery, 120-night exchange, 0% APR) right when
+            they're closest to a decision. Same icons everywhere so the
+            visual language reads as a single brand promise. */}
+        <ul className="quiz-result-trust" aria-label="What every recommendation comes with">
+          <li>
+            <Icon name="truck" size={14} aria-hidden="true" />
+            <span>Free LA white-glove delivery</span>
+          </li>
+          <li>
+            <Icon name="shield" size={14} aria-hidden="true" />
+            <span>120-night Love Your Bed exchange</span>
+          </li>
+          <li>
+            <Icon name="card" size={14} aria-hidden="true" />
+            <span>0% APR financing on orders $1,500+</span>
+          </li>
+        </ul>
       </div>
 
       {pick ? (
@@ -193,6 +214,14 @@ function QuizProductHero({ pick, onClick }: { pick: ProductSummary; onClick: () 
   const minCompare = Number.parseFloat(pick.compareAtPriceRange.minVariantPrice.amount);
   const onSale = minCompare > 0 && minCompare > minPrice;
   const pctOff = onSale ? Math.round((1 - minPrice / minCompare) * 100) : 0;
+  // Financing per-month line — same affordance as the PLP card, PDP,
+  // and cart. Reframes the "Our top pick for you" hero as a $X/mo
+  // decision so a shopper who's just seen $2,699 doesn't bounce on
+  // sticker shock. Renders only at the $1,500 Synchrony threshold.
+  const monthlyLabel = formatMonthlyPayment(
+    pick.priceRange.minVariantPrice.amount,
+    FINANCING_DEFAULT_MONTHS,
+  );
 
   return (
     <Link
@@ -235,6 +264,11 @@ function QuizProductHero({ pick, onClick }: { pick: ProductSummary; onClick: () 
             {formatPriceRange(pick.priceRange.minVariantPrice, pick.priceRange.maxVariantPrice)}
           </span>
         </div>
+        {monthlyLabel ? (
+          <div className="pcard-financing tnum" style={{ marginTop: 6 }}>
+            From <strong>{monthlyLabel}</strong> · 0% APR for {FINANCING_DEFAULT_MONTHS} months
+          </div>
+        ) : null}
         <div className="quiz-result-product-cta">
           <span className="btn btn-primary btn-lg">
             See this mattress <Icon name="arrow-right" size={14} />
