@@ -4796,6 +4796,16 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 }
 .pdp-reviews-avg { font-weight: 600; font-size: 22px; }
 .pdp-reviews-empty { margin: 0; font-size: 14px; }
+.pdp-reviews-cta-row {
+  display: flex;
+  justify-content: flex-start;
+  margin: var(--s-4) 0 var(--s-5);
+}
+.pdp-reviews-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 .pdp-reviews-list {
   list-style: none;
   padding: 0;
