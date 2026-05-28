@@ -58,7 +58,12 @@ const COLS: Col[] = [
     { label: 'Mattress Guides',     href: '/blogs' },
     { label: 'Customer Reviews',    href: '/pages/reviews' },
     { label: 'Careers',             href: '/pages/choose-a-career-with-la-mattress' },
-    { label: 'Accessibility',       href: '/pages/data-sharing-opt-out' },
+    // "Accessibility" link removed from this column because the only
+    // available destination (/pages/data-sharing-opt-out) is the CCPA
+    // opt-out, not an accessibility statement. The legal-links row at
+    // the bottom still carries the CCPA destination under its honest
+    // label ("Do Not Sell My Info"). When the merchant publishes a
+    // real /pages/accessibility statement, add it back here.
   ]},
 ];
 
@@ -166,10 +171,14 @@ export async function Footer() {
       </div>
       <div className="container footer-bottom">
         <div className="footer-meta-line muted">© 2026 LA Mattress Store. All rights reserved.</div>
+        {/* Legal-links row. The previous version had "Accessibility"
+            and "Do Not Sell My Info" both pointing at the same CCPA
+            opt-out destination — misleading. Removed the misnamed
+            "Accessibility" entry; the honest CCPA label stays. Add a
+            real /pages/accessibility link here when one ships. */}
         <ul className="footer-legal-links">
           <li><Link href="/pages/privacy-policy">Privacy</Link></li>
           <li><Link href="/pages/terms-conditions">Terms</Link></li>
-          <li><Link href="/pages/data-sharing-opt-out">Accessibility</Link></li>
           <li><Link href="/pages/data-sharing-opt-out">Do Not Sell My Info</Link></li>
           <li><Link href="/pages/sitemap">Sitemap</Link></li>
         </ul>
