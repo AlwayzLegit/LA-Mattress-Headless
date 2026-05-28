@@ -7,7 +7,10 @@
  *   - skip-tag stack respects headings, code, blockquote, existing <a>
  *   - dedup against merchant-authored anchors already in the source
  *   - idempotent re-runs (safe across ISR + cache regenerations)
- *   - hard cap at MAX_LINKS=6 per article
+ *   - hard cap at MAX_LINKS=8 per article (bumped from 6 on 20260528)
+ *   - safety-net fallback link appended only when zero internal
+ *     links would otherwise ship (closes Semrush "no internal links
+ *     in body" gap on orphan articles)
  *
  * Pure-function tests — no Shopify, no Next.js, no fixtures beyond the
  * inline strings.
@@ -82,8 +85,9 @@ test('trailing slash on existing anchor still dedups', () => {
   assert.equal(count(out, 'data-internal="auto"'), 0);
 });
 
-test('caps at MAX_LINKS=6 per article', () => {
-  // 8 distinct phrases in 8 paragraphs — only 6 should be linked.
+test('caps at MAX_LINKS=8 per article', () => {
+  // 10 distinct phrases in 10 paragraphs — only 8 should be linked.
+  // Bumped from 6 → 8 on 20260528 (see lib/article-autolink.ts).
   const html = [
     '<p>A memory foam mattress.</p>',
     '<p>A hybrid mattress.</p>',
@@ -93,14 +97,69 @@ test('caps at MAX_LINKS=6 per article', () => {
     '<p>A king mattress.</p>',
     '<p>A twin mattress.</p>',
     '<p>An adjustable bed.</p>',
+    '<p>An organic mattress.</p>',
+    '<p>A cooling mattress.</p>',
   ].join('');
   const out = autoLinkArticleBody(html);
-  assert.equal(count(out, 'data-internal="auto"'), 6);
+  assert.equal(count(out, 'data-internal="auto"'), 8);
 });
 
-test('passthrough when no phrases match', () => {
+test('passthrough (modulo fallback) when no phrases match', () => {
+  // No PHRASE_MAP entry matches → fallback paragraph appended so the
+  // article still ships at least one internal link in the body.
   const html = '<p>This article is about cats and dogs and nothing else.</p>';
-  assert.equal(autoLinkArticleBody(html), html);
+  const out = autoLinkArticleBody(html);
+  assert.ok(out.startsWith(html), 'original HTML preserved verbatim');
+  assert.match(out, /data-internal="auto-fallback"/, 'fallback link appended');
+  assert.equal(count(out, '<a href="'), 1, 'exactly one link (the fallback)');
+});
+
+test('does NOT append fallback when at least one PHRASE_MAP match was found', () => {
+  const out = autoLinkArticleBody('<p>Try a memory foam mattress.</p>');
+  assert.equal(count(out, 'data-internal="auto-fallback"'), 0);
+  assert.equal(count(out, 'data-internal="auto"'), 1);
+});
+
+test('does NOT append fallback when the merchant pre-linked an internal URL', () => {
+  // Pre-linked article body, no PHRASE_MAP-matchable text, hand-link to
+  // an internal destination → fallback should NOT fire.
+  const html = '<p>Read <a href="/pages/showrooms">our showroom guide</a>.</p>';
+  const out = autoLinkArticleBody(html);
+  assert.equal(count(out, 'data-internal="auto-fallback"'), 0);
+  assert.equal(count(out, '<a href="'), 1, 'merchant link preserved, no fallback added');
+});
+
+test('orphan-article topical clusters now get a PHRASE_MAP link', () => {
+  // Topic snippets sampled from the 33 orphan blog articles flagged in
+  // the Semrush 20260528 ideas export. Each should now match SOMETHING
+  // in PHRASE_MAP and ship a non-fallback internal link.
+  // (Articles about "foam vs spring" intentionally fall through to the
+  // fallback — see the "deliberately NOT added" comment in
+  // lib/article-autolink.ts. The real such articles still get linked
+  // via 'back pain' / 'memory foam' / etc. matches present in their
+  // longer bodies.)
+  const samples = [
+    '<p>The Sealy vs Beautyrest question comes up a lot.</p>',
+    '<p>Looking at a Serta mattress?</p>',
+    '<p>An Avocado vs Tempur-Pedic comparison.</p>',
+    '<p>An Intex air mattress is great for camping.</p>',
+    '<p>If you have a bad back, the right mattress matters.</p>',
+    '<p>A mattress cover protects against allergens.</p>',
+    '<p>A kids mattress sizing primer.</p>',
+  ];
+  for (const html of samples) {
+    const out = autoLinkArticleBody(html);
+    assert.match(out, /data-internal="auto"(?!-fallback)/, `expected a PHRASE_MAP link in: ${html}`);
+    assert.equal(count(out, 'data-internal="auto-fallback"'), 0, `should not need fallback: ${html}`);
+  }
+});
+
+test('truly-orphan article body still gets the fallback link', () => {
+  // Article body with no PHRASE_MAP-matchable text and no merchant
+  // links — the safety-net fallback fires.
+  const html = '<p>Sleep hygiene fundamentals: routine, light, temperature.</p>';
+  const out = autoLinkArticleBody(html);
+  assert.match(out, /<a href="\/collections\/mattresses" data-internal="auto-fallback">/);
 });
 
 test('idempotent — running twice yields the same output', () => {
@@ -114,8 +173,14 @@ test('word boundary — does not match inside larger words', () => {
   // "submattress" should NOT match "mattress" — \b matters.
   // (No phrase in the map happens to be "mattress" alone; "submattress
   // protector" should also not match "mattress protector".)
+  // With the 20260528 fallback in place, the autolinker still appends a
+  // single /collections/mattresses fallback link when nothing matched,
+  // so this assertion checks the original HTML is preserved verbatim
+  // at the start of the output (no spurious word-boundary mid-match).
   const html = '<p>The matter is settled, mattersome though it is.</p>';
-  assert.equal(autoLinkArticleBody(html), html);
+  const out = autoLinkArticleBody(html);
+  assert.ok(out.startsWith(html));
+  assert.equal(count(out, 'data-internal="auto"(?!-fallback)'), 0, 'no auto-PHRASE link injected');
 });
 
 test('preserves original case from the source', () => {
@@ -131,9 +196,13 @@ test('handles empty input', () => {
 
 test('handles whitespace-only text nodes between tags', () => {
   // Tag-only HTML shouldn't blow up; whitespace-only text shouldn't
-  // trigger matching either.
-  const out = autoLinkArticleBody('<div><p>   </p></div>');
-  assert.equal(out, '<div><p>   </p></div>');
+  // trigger matching either. Fallback DOES append since no internal
+  // link is present anywhere in the body — assert the original HTML
+  // is preserved as a prefix and the only added link is the fallback.
+  const html = '<div><p>   </p></div>';
+  const out = autoLinkArticleBody(html);
+  assert.ok(out.startsWith(html));
+  assert.equal(count(out, 'data-internal="auto-fallback"'), 1);
 });
 
 test('matches plural form of a phrase', () => {
