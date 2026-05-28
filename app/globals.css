@@ -4367,6 +4367,21 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 /* Result */
 .quiz-result-head { margin-bottom: var(--s-7); }
 .quiz-result-cta { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+
+/* Trust strip on the quiz result, below the primary + showroom CTAs.
+   Same vocabulary as the PDP delivery info — free delivery / 120-night
+   exchange / 0% APR — scaled down to a single horizontal row so the
+   recommendation page closes the funnel with the same brand promises
+   the PDP and cart carry. */
+.quiz-result-trust {
+  list-style: none; margin: var(--s-5) 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-5);
+  font-size: 13px; color: var(--text-2);
+}
+.quiz-result-trust li {
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.quiz-result-trust svg { color: var(--accent); flex-shrink: 0; }
 .quiz-result-rationale,
 .quiz-result-alts { margin-top: var(--s-6); padding-top: var(--s-5); border-top: 1px solid var(--line); }
 .quiz-result-rationale ul,
