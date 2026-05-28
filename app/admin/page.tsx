@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import {
   ADMIN_CONFIGURED,
+  getAdminHealth,
   getBlogSeoGaps,
   getCatalogHealth,
   getCustomerInsights,
@@ -182,6 +183,7 @@ export default async function DashboardPage({
     showroomTraffic,
     convertingArticles,
     webVitals,
+    adminHealth,
   ] = await Promise.all([
     getOrderSummaryWithTrends(days).catch(() => null),
     getCatalogHealth().catch(() => null),
@@ -210,6 +212,11 @@ export default async function DashboardPage({
       : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getTopConvertingArticles(days, 10).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getWebVitals(days).catch(() => null) : Promise.resolve(null),
+    // Single cheap probe (shop { name }) — used to drive the banner's
+    // diagnostic copy when other queries fail. Same fetch shape as
+    // adminGql so a failure here mirrors what the dashboard's data
+    // queries are seeing.
+    getAdminHealth(),
   ]);
 
   // Cart + checkout abandonment derived from the conversion funnel.
@@ -270,14 +277,14 @@ export default async function DashboardPage({
             for the layout's link hrefs via NEXT_PUBLIC_* env vars. */}
       </header>
 
-      {/* QA 2026-05-22: count Shopify-Admin-backed cards whose fetch
-          returned null. When the count crosses the threshold (3+) it's
-          almost always a token / scope incident, not 9 unrelated
-          failures — surface a single actionable banner instead of
-          letting the merchant infer it from 9 "data unavailable"
-          fallbacks scattered across the page. The threshold of 3 is
-          generous on purpose (1-2 nulls can be transient; 3+ is a
-          pattern). */}
+      {/* Shopify Admin connection banner.
+          The health probe (`shop { name }`) runs alongside every other
+          query and classifies any failure precisely (401 invalid_token,
+          403 insufficient_scope, 429 rate_limited, 5xx shopify_down,
+          network_error). When the probe fails, the banner names the
+          cause and the fix. When the probe passes but 3+ data queries
+          still failed, fall back to the generic "partial outage" copy.
+          Quick eyeball check: curl <site>/admin/health (Basic Auth). */}
       {(() => {
         const adminQueries = [
           orderSummary, catalog, topProducts, seoGaps, blogSeoGaps, lowStock,
@@ -285,24 +292,112 @@ export default async function DashboardPage({
           refundHealth,
         ];
         const failedCount = adminQueries.filter((q) => q === null).length;
-        if (failedCount < 3) return null;
+        if (adminHealth.ok && failedCount < 3) return null;
+
+        // Banner copy + fix hint vary by precise cause.
+        let heading: string;
+        let body: React.ReactNode;
+        if (!adminHealth.ok) {
+          switch (adminHealth.cause) {
+            case 'unconfigured':
+              heading = 'Shopify Admin credentials missing.';
+              body = (
+                <>
+                  Set <code>SHOPIFY_STORE_DOMAIN</code> and <code>SHOPIFY_ADMIN_TOKEN</code> in
+                  Vercel env vars, then redeploy.
+                </>
+              );
+              break;
+            case 'invalid_token':
+              heading = 'Shopify is rejecting the token (HTTP 401).';
+              body = (
+                <>
+                  Most likely a copy-paste artifact (trailing whitespace / newline in{' '}
+                  <code>SHOPIFY_ADMIN_TOKEN</code>), an uninstalled / reinstalled custom app
+                  (which rotates the token), or a token belonging to a different store than{' '}
+                  <code>SHOPIFY_STORE_DOMAIN</code>. Reissue the token in Shopify Admin →
+                  Settings → Apps → your custom app → API credentials, paste exactly into
+                  Vercel, and redeploy.
+                </>
+              );
+              break;
+            case 'insufficient_scope':
+              heading = 'Token accepted but request denied (HTTP 403).';
+              body = (
+                <>
+                  The custom app is missing one of:{' '}
+                  <code>read_orders / read_customers / read_products / read_collections / read_inventory</code>.
+                  Grant the scope in Shopify Partners → app → API access, then reinstall the
+                  app on the store.
+                </>
+              );
+              break;
+            case 'rate_limited':
+              heading = 'Shopify rate-limited the admin query.';
+              body = <>Refresh the dashboard in a minute. If this persists, reduce parallel queries.</>;
+              break;
+            case 'shopify_down':
+              heading = `Shopify Admin API is returning HTTP ${adminHealth.status}.`;
+              body = (
+                <>
+                  Likely a Shopify-side incident — check{' '}
+                  <a href="https://www.shopifystatus.com" target="_blank" rel="noopener noreferrer">
+                    status.shopify.com
+                  </a>
+                  .
+                </>
+              );
+              break;
+            case 'network_error':
+              heading = 'Could not reach Shopify Admin.';
+              body = (
+                <>
+                  The dashboard couldn&rsquo;t open a connection to <code>{process.env.SHOPIFY_STORE_DOMAIN}</code>.
+                  Check that the domain is correct and that no outbound network policy is
+                  blocking <code>*.myshopify.com</code>.
+                </>
+              );
+              break;
+            case 'graphql_error':
+            default:
+              heading = `Shopify returned an unexpected error (status ${adminHealth.status ?? '?'}).`;
+              body = (
+                <>
+                  See Sentry for the full GraphQL error body. Detail:{' '}
+                  <code>{adminHealth.detail?.slice(0, 160) ?? adminHealth.message}</code>.
+                </>
+              );
+              break;
+          }
+        } else {
+          // Health probe passed but data queries still fell over — usually
+          // a single misbehaving query, not a global outage.
+          heading = `Shopify Admin connection degraded.`;
+          body = (
+            <>
+              {failedCount} of {adminQueries.length} admin queries returned no data, but the
+              connection probe succeeded. Check Sentry for the specific failing query.
+            </>
+          );
+        }
+
         return (
           <div role="alert" className="dash-incident-banner">
             <div>
-              <strong>Shopify Admin connection degraded.</strong>
-              {' '}
-              {failedCount} of {adminQueries.length} admin queries returned no data.
-              Most likely a token rotation or scope change.
+              <strong>{heading}</strong> {body}
             </div>
             <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
-              Check <code>SHOPIFY_ADMIN_TOKEN</code> in Vercel env vars; confirm
-              <code>read_orders / read_customers / read_products / read_collections / read_inventory</code>
-              {' '}scopes are granted in Shopify Partners → app → API access.
-              {' '}<a
+              <a href="/admin/health" target="_blank" rel="noopener noreferrer">
+                /admin/health
+              </a>{' '}
+              ·{' '}
+              <a
                 href="https://jetnine.sentry.io/issues/?project=la-mattress-headless&query=is%3Aunresolved+admin.ts"
                 target="_blank"
                 rel="noopener noreferrer"
-              >Recent admin errors in Sentry →</a>
+              >
+                Recent admin errors in Sentry →
+              </a>
             </div>
           </div>
         );
