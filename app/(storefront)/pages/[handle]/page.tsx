@@ -27,6 +27,8 @@ import { FaqPage } from '@/app/_components/sections/faq-page';
 import { PriceConfidencePage } from '@/app/_components/sections/price-confidence';
 import { ReviewsPage } from '@/app/_components/sections/reviews-page';
 import { DataOptOutPage } from '@/app/_components/sections/data-opt-out-page';
+import { LocationsFinder } from '@/app/_components/sections/locations-finder';
+import { getStorefrontReviews } from '@/lib/judgeme';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -354,7 +356,13 @@ function summarizeHours(hours: Showroom['hours']): string {
   return `${first.day} ${open}–${close}`;
 }
 
-function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>> }) {
+async function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>> }) {
+  // Pull 3 sitewide top reviews for social proof on the page. Judge.me
+  // tags reviews to products, not locations, so the snippets are brand-
+  // wide rather than per-showroom — still real customer voices. Falls
+  // back to an empty array when Judge.me isn't configured / errors.
+  const recentReviews = await getStorefrontReviews({ perPage: 3, minRating: 5 });
+
   return (
     <main className="container">
       <article className="locations-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
@@ -416,81 +424,32 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
           />
         </section>
 
-        <section className="locations-grid" aria-label="Showroom directory">
-          {SHOWROOMS.map((s) => {
-            // Directions deep-link. Prefer the verified GBP profile
-            // (gbpUrl) when present — opens the canonical Google
-            // Maps listing the shopper can star, review, or get
-            // turn-by-turn from. Fallback to the address-encoded
-            // mapUrl for showrooms that haven't been GBP-linked yet.
-            const directionsHref = s.gbpUrl ?? s.mapUrl;
-            return (
-              // Card is an <article>, not a <Link>, so the tel: + map
-              // anchors aren't nested inside another <a> (invalid HTML
-              // that breaks tap-to-call on iOS Safari). Three actions:
-              // Call (tel:), Directions (Google Maps), Details (PDP).
-              <article key={s.handle} className="location-card location-card-rich">
-                {s.imageUrl ? (
-                  <Link href={`/pages/${s.handle}`} className="location-card-photo" aria-label={`${s.name} — view details`}>
-                    <Image
-                      src={s.imageUrl}
-                      alt={`${s.name} storefront`}
-                      width={520}
-                      height={400}
-                      sizes="(max-width: 720px) 100vw, 260px"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  </Link>
-                ) : null}
-                <div className="location-card-meta">
-                  <div className="eyebrow">{s.area}</div>
-                  <h2 className="location-card-name">
-                    <Link href={`/pages/${s.handle}`}>{s.name}</Link>
-                  </h2>
-                  <ShowroomOpenStatus showroom={s} />
-                  <address className="location-card-addr">
-                    <div>{s.street}</div>
-                    <div>{s.city}, {s.region} {s.postalCode}</div>
-                    {s.crossStreet ? <div className="muted" style={{ fontSize: 13, marginTop: 'var(--s-1)' }}>Near {s.crossStreet}</div> : null}
-                  </address>
-                  <div className="location-card-hours muted" style={{ fontSize: 13 }}>
-                    {summarizeHours(s.hours)}
-                  </div>
-                  {s.nearbyAreas.length > 0 ? (
-                    <div className="location-card-areas muted" style={{ fontSize: 13, marginTop: 'var(--s-2)' }}>
-                      Serving {s.nearbyAreas.slice(0, 3).join(', ')}
-                      {s.nearbyAreas.length > 3 ? ` + ${s.nearbyAreas.length - 3} more` : ''}
-                    </div>
-                  ) : null}
-                  <div className="location-card-actions">
-                    <a
-                      href={`tel:${s.phone}`}
-                      className="location-action location-action-primary tnum"
-                      aria-label={`Call ${s.name} at ${formatPhone(s.phone)}`}
-                    >
-                      <Icon name="phone" size={14} /> Call
-                    </a>
-                    <a
-                      href={directionsHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="location-action"
-                      aria-label={`Get directions to ${s.name}`}
-                    >
-                      <Icon name="pin" size={14} /> Directions
-                    </a>
-                    <Link
-                      href={`/pages/${s.handle}`}
-                      className="location-action"
-                      aria-label={`${s.name} store details`}
-                    >
-                      <Icon name="arrow-right" size={14} /> Details
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+        {/* Showroom directory + ZIP/geolocation finder. Client component
+            owns the directory rendering so it can re-sort + annotate
+            cards with distance once the shopper provides coordinates.
+            Server passes the static showroom array down; no per-request
+            geocoding cost. */}
+        <LocationsFinder showrooms={SHOWROOMS} />
+
+        {/* "Walk in today" evergreen perks strip. Three reasons to
+            visit right now rather than later, lifted from the trust
+            strip but framed as immediate-action ("walk in", "today",
+            "now") rather than passive guarantees. Sits directly under
+            the directory because it answers the natural follow-up
+            question once a shopper has picked a closest showroom. */}
+        <section className="locations-perks" aria-label="Reasons to visit a showroom today">
+          <div className="locations-perks-item">
+            <div className="locations-perks-eyebrow">No appointment</div>
+            <p>Walk in any day during open hours. Weekday mornings are quietest.</p>
+          </div>
+          <div className="locations-perks-item">
+            <div className="locations-perks-eyebrow">Same-day delivery</div>
+            <p>Order by 4 PM and we&rsquo;ll deliver, set up, and haul away your old mattress tonight.</p>
+          </div>
+          <div className="locations-perks-item">
+            <div className="locations-perks-eyebrow">Lie on every brand</div>
+            <p>Compare Tempur-Pedic, Stearns &amp; Foster, Helix, Sealy, and 6 more — all on the floor.</p>
+          </div>
         </section>
 
         {/* What to expect + Plan your visit. Two substantive panels
@@ -524,6 +483,53 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
             </ul>
           </div>
         </section>
+
+        {/* Customer voices — three sitewide top reviews as social proof
+            on the locations page. Judge.me reviews are product-tagged,
+            not location-tagged, so these are brand-wide rather than
+            per-showroom. Only renders when Judge.me returns results
+            (no empty state — better to omit the section than show
+            placeholder copy). */}
+        {recentReviews.length > 0 ? (
+          <section className="locations-reviews" aria-label="Customer reviews">
+            <header className="locations-reviews-head">
+              <h2 className="h2">What shoppers say after visiting</h2>
+              <Link href="/pages/reviews" className="link-arrow">
+                Read all reviews <Icon name="arrow-right" size={14} />
+              </Link>
+            </header>
+            <ul className="locations-reviews-grid" role="list">
+              {recentReviews.map((r) => {
+                const date = new Date(r.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                });
+                return (
+                  <li key={r.id} className="locations-review-card">
+                    <div className="locations-review-stars" aria-label={`${r.rating} out of 5 stars`}>
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <span
+                          key={i}
+                          className={i < Math.round(r.rating) ? 'locations-review-star-on' : 'locations-review-star-off'}
+                          aria-hidden="true"
+                        >
+                          <Icon name="star" size={14} />
+                        </span>
+                      ))}
+                    </div>
+                    {r.title ? <p className="locations-review-title">{r.title}</p> : null}
+                    <p className="locations-review-body">&ldquo;{r.body}&rdquo;</p>
+                    <p className="locations-review-meta muted">
+                      <span>{r.reviewer.name || 'Verified buyer'}</span>
+                      <span>·</span>
+                      <time dateTime={r.created_at}>{date}</time>
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ) : null}
 
         {/* "Why visit a showroom" was previously a long paragraph + bullet
             list here. Both moved into the structured locations-context

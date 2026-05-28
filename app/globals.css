@@ -4718,6 +4718,167 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 .locations-context-panel li:last-child { margin-bottom: 0; }
 .locations-context-panel li strong { color: var(--text); }
 
+/* Locations finder — ZIP input + "Use my location" button. Compact
+   bar above the showroom directory. Inline form layout on desktop
+   collapses to stacked on phones so the buttons stay tap-friendly. */
+.locations-finder { margin: 0 0 var(--s-5); }
+.locations-finder-label {
+  display: block;
+  font-size: 13px; font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  margin-bottom: var(--s-2);
+}
+.locations-finder-row {
+  display: flex; align-items: stretch; gap: var(--s-2);
+  flex-wrap: wrap;
+}
+.locations-finder-input {
+  flex: 1 1 180px; min-width: 0;
+  padding: 12px 14px;
+  font: inherit; font-size: 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.locations-finder-input:focus { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
+.locations-finder-input:disabled { opacity: 0.6; cursor: not-allowed; }
+.locations-finder-submit,
+.locations-finder-geo {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  font: inherit; font-size: 14px; font-weight: 600;
+  border-radius: var(--r-2);
+  cursor: pointer;
+  transition: background var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), opacity var(--d-fast) var(--ease);
+  white-space: nowrap;
+}
+.locations-finder-submit {
+  background: var(--text);
+  color: var(--surface);
+  border: 1px solid var(--text);
+}
+.locations-finder-submit:hover:not(:disabled) { background: var(--text-2); border-color: var(--text-2); }
+.locations-finder-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.locations-finder-geo {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+.locations-finder-geo:hover:not(:disabled) { background: var(--surface-2); border-color: var(--text-3); }
+.locations-finder-geo:disabled { opacity: 0.5; cursor: not-allowed; }
+.locations-finder-error,
+.locations-finder-success {
+  font-size: 13px;
+  margin: var(--s-2) 0 0;
+}
+.locations-finder-error { color: var(--accent); }
+.locations-finder-success { color: var(--text-2); }
+.locations-finder-success .link-inline {
+  appearance: none;
+  background: none; border: 0; padding: 0;
+  font: inherit; font-size: 13px;
+  color: var(--text-2); text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Distance badge inside the location card eyebrow row. */
+.location-card-eyebrow-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-2); flex-wrap: wrap;
+  margin-bottom: var(--s-2);
+}
+.location-card-eyebrow-row .eyebrow { margin-bottom: 0; }
+.location-card-distance {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  background: rgba(207, 75, 50, 0.08);
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* "Walk in today" perks strip under the directory. */
+.locations-perks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+}
+@media (max-width: 760px) { .locations-perks { grid-template-columns: 1fr; gap: var(--s-3); padding: var(--s-4); } }
+.locations-perks-eyebrow {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--accent);
+  margin-bottom: var(--s-2);
+}
+.locations-perks-item p {
+  margin: 0;
+  font-size: 14px; line-height: 1.55;
+  color: var(--text-2);
+}
+
+/* Customer reviews snippet on the locations page. */
+.locations-reviews { margin-top: var(--s-7); }
+.locations-reviews-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--s-3); flex-wrap: wrap;
+  margin-bottom: var(--s-5);
+}
+.locations-reviews-head h2 { margin: 0; }
+.locations-reviews-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-4);
+}
+@media (max-width: 880px) { .locations-reviews-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 580px) { .locations-reviews-grid { grid-template-columns: 1fr; } }
+.locations-review-card {
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  display: flex; flex-direction: column; gap: var(--s-2);
+  min-width: 0;
+}
+.locations-review-stars { display: inline-flex; gap: 1px; }
+.locations-review-star-on { color: #f5a623; }
+.locations-review-star-off { color: var(--line-strong); }
+.locations-review-title {
+  margin: 0;
+  font-size: 14px; font-weight: 600; line-height: 1.35;
+  color: var(--text);
+  min-width: 0; overflow-wrap: anywhere;
+}
+.locations-review-body {
+  margin: 0;
+  font-size: 14px; line-height: 1.55;
+  color: var(--text-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-width: 0; overflow-wrap: anywhere;
+}
+.locations-review-meta {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px;
+  margin-top: auto;
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
 /* Trust strip on /pages/mattress-store-locations — three reassurance
    bullets between hero and showroom grid. Mirrors the SalePage trust
    strip pattern (3 columns desktop → 1 column mobile). */
