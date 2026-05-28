@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/nextjs';
 import { CHAT_SYSTEM_PROMPT } from '@/lib/chat/system-prompt';
 import { CHAT_TOOLS, executeTool } from '@/lib/chat/tools';
 import { HOSTED_MCP_TOOLS, executeHostedTool } from '@/lib/chat/shopify-mcp';
+import { captureChatTurn } from '@/lib/chat/telemetry';
 import type { ChatMessage, ChatStreamEvent } from '@/lib/chat/types';
 
 /**
@@ -68,7 +69,13 @@ export const dynamic = 'force-dynamic';
 // client aborts.
 export const maxDuration = 60;
 
-const MAX_MESSAGES = 20;
+// Sliding-window cap on conversation length. 40 turns covers the
+// long-tail "shopper went deep on options + then asked about cart +
+// then asked about delivery" flow without bloating the request size
+// — at ~250 tokens/turn average, 40 turns is ~10K tokens of dialogue,
+// well under Opus 4.7's context budget alongside the cached system
+// prompt and tool results.
+const MAX_MESSAGES = 40;
 const MAX_USER_CHARS = 4000;
 
 type ChatRequestBody = { messages?: unknown };
@@ -103,6 +110,9 @@ function summarizeToolUse(name: string, input: unknown): string {
   }
   if (name === 'search_shop_policies_and_faqs' && typeof obj.query === 'string') {
     return `Looking up policy: "${obj.query.slice(0, 80)}"`;
+  }
+  if (name === 'compare_products' && Array.isArray(obj.handles)) {
+    return `Comparing ${obj.handles.length} products`;
   }
   return name;
 }
@@ -160,6 +170,18 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   const client = new Anthropic();
   const encoder = new TextEncoder();
+  const turnStartedAt = Date.now();
+
+  // Per-turn telemetry accumulators. Captured to PostHog at the end of
+  // the route so we can monitor chat health (latency, fallback rate,
+  // tool-call mix, cache hit ratio) without sampling individual sessions.
+  let toolCallsCount = 0;
+  let fallbackCount = 0;
+  let loopIterations = 0;
+  const toolsCalled = new Set<string>();
+  let hasError = false;
+  let finalStopReason: string | null = null;
+  let finalUsage = { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0 };
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -193,17 +215,15 @@ export async function POST(req: NextRequest): Promise<Response> {
           content: m.content,
         }));
 
-        let finalStopReason: string | null = null;
-        let finalUsage: {
-          input_tokens: number;
-          output_tokens: number;
-          cache_read_input_tokens: number;
-        } = { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0 };
-
         for (let iter = 0; iter < MAX_LOOP_ITERATIONS; iter += 1) {
+          loopIterations = iter + 1;
           const aiStream = client.messages.stream({
             model: 'claude-opus-4-7',
-            max_tokens: 2048,
+            // 4096 leaves room for a complex multi-turn answer that
+            // synthesizes 3+ tool results (search + compare + policy)
+            // into a real recommendation. 2048 was clipping the long
+            // tail of "help me pick" turns mid-paragraph.
+            max_tokens: 4096,
             system: [
               {
                 type: 'text',
@@ -257,6 +277,8 @@ export async function POST(req: NextRequest): Promise<Response> {
           // Execute every tool_use block in parallel — they're
           // independent reads against the Storefront API (or the
           // Shopify hosted MCP when the flag is on).
+          toolCallsCount += toolUses.length;
+          toolUses.forEach((tu) => toolsCalled.add(tu.name));
           const executions = await Promise.all(
             toolUses.map(async (tu) => {
               send({
@@ -265,6 +287,7 @@ export async function POST(req: NextRequest): Promise<Response> {
                   | 'search_products'
                   | 'get_product'
                   | 'read_cart'
+                  | 'compare_products'
                   | 'search_catalog'
                   | 'get_cart'
                   | 'search_shop_policies_and_faqs',
@@ -274,6 +297,9 @@ export async function POST(req: NextRequest): Promise<Response> {
               const result = USE_HOSTED_MCP
                 ? await executeHostedTool(tu.name, tu.input)
                 : await executeTool(tu.name, tu.input);
+              if (USE_HOSTED_MCP && (result as { fallbackUsed?: boolean }).fallbackUsed) {
+                fallbackCount += 1;
+              }
               if (result.uiPayload) {
                 send({
                   type: 'tool_result',
@@ -321,6 +347,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         // surface a user-readable message and Sentry can ingest the
         // stack. Specific error types get specific user copy via the
         // status field (rate limit → "we're busy, try again").
+        hasError = true;
         const isApiError = err instanceof Anthropic.APIError;
         const message = isApiError
           ? err.message
@@ -335,6 +362,23 @@ export async function POST(req: NextRequest): Promise<Response> {
         send({ type: 'error', message, status });
       } finally {
         controller.close();
+        // Fire-and-forget telemetry. Awaited inside captureChatTurn so
+        // PostHog actually flushes before the function tears down, but
+        // we don't await here — the stream is already closed.
+        void captureChatTurn({
+          duration_ms: Date.now() - turnStartedAt,
+          messages_count: messages.length,
+          tool_calls_count: toolCallsCount,
+          tools_called: Array.from(toolsCalled),
+          fallback_count: fallbackCount,
+          loop_iterations: loopIterations,
+          stop_reason: finalStopReason,
+          input_tokens: finalUsage.input_tokens,
+          output_tokens: finalUsage.output_tokens,
+          cache_read_input_tokens: finalUsage.cache_read_input_tokens,
+          has_error: hasError,
+          hosted_mcp: USE_HOSTED_MCP,
+        });
       }
     },
     cancel() {

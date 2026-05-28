@@ -1,11 +1,13 @@
 import 'server-only';
 import type Anthropic from '@anthropic-ai/sdk';
+import * as Sentry from '@sentry/nextjs';
 import type { ChatProductCard } from './types';
 import {
   ucpProductToCard,
   extractProductsArray,
   extractSingleProduct,
 } from './ucp-mapper';
+import { executeTool, type ToolExecution } from './tools';
 
 // Re-export the pure mapper from a server-only module too so route
 // handlers can keep their imports tidy (one module per concern).
@@ -89,9 +91,33 @@ type JsonRpcResponse = {
 };
 
 /**
+ * Per-attempt timeout for a single Shopify hosted MCP fetch. 12s is
+ * generous for an interactive chat call but covers the long tail of
+ * Shopify's UCP catalog endpoint on cold paths. Combined with one
+ * retry, total worst-case wall time is ~25s — still under the route's
+ * 60s Vercel function timeout.
+ */
+const MCP_FETCH_TIMEOUT_MS = 12_000;
+
+/**
+ * One retry on transient failures (timeouts, network errors, 5xx).
+ * 4xx responses are NOT retried — they're auth/argument bugs that
+ * won't fix themselves.
+ */
+const MCP_MAX_RETRIES = 1;
+const MCP_RETRY_BACKOFF_MS = 500;
+
+function isTransientStatus(status: number): boolean {
+  // 408 Request Timeout, 425 Too Early, 429 Too Many Requests, all 5xx.
+  return status === 408 || status === 425 || status === 429 || status >= 500;
+}
+
+/**
  * Send a JSON-RPC `tools/call` to a Shopify hosted MCP endpoint and
- * return the structured result. Throws on transport / RPC errors so
- * the chat tool executor can fall back to a friendly error message.
+ * return the structured result. Retries once on transient errors
+ * (timeout / network / 5xx). Throws on auth/4xx errors or after the
+ * retry budget is exhausted so the chat tool executor can fall back
+ * to the in-house Storefront tools.
  */
 async function mcpCall(
   endpoint: string,
@@ -104,22 +130,45 @@ async function mcpCall(
     method: 'tools/call',
     params: { name: toolName, arguments: toolArguments },
   };
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(req),
-    // Short timeout — tool calls are interactive; if Shopify's MCP is
-    // slow we'd rather surface an error than block the SSE stream.
-    signal: AbortSignal.timeout(8000),
-  });
-  if (!res.ok) {
-    throw new Error(`Shopify MCP HTTP ${res.status}: ${await res.text()}`);
+  const body = JSON.stringify(req);
+
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= MCP_MAX_RETRIES; attempt += 1) {
+    if (attempt > 0) {
+      await new Promise((resolve) => setTimeout(resolve, MCP_RETRY_BACKOFF_MS));
+    }
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        signal: AbortSignal.timeout(MCP_FETCH_TIMEOUT_MS),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        const err = new Error(`Shopify MCP HTTP ${res.status}: ${text}`);
+        if (!isTransientStatus(res.status) || attempt === MCP_MAX_RETRIES) throw err;
+        lastError = err;
+        continue;
+      }
+      const json = (await res.json()) as JsonRpcResponse;
+      if (json.error) {
+        throw new Error(`Shopify MCP RPC error: ${json.error.message}`);
+      }
+      return json.result?.structuredContent ?? json.result?.content ?? null;
+    } catch (err) {
+      lastError = err;
+      // AbortError (timeout) and TypeError (network) are both retriable.
+      const isAbort = err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError');
+      const isNetwork = err instanceof TypeError;
+      const isRetriableHttp = err instanceof Error && /Shopify MCP HTTP (408|425|429|5\d\d)/.test(err.message);
+      const retriable = isAbort || isNetwork || isRetriableHttp;
+      if (!retriable || attempt === MCP_MAX_RETRIES) throw err;
+    }
   }
-  const json = (await res.json()) as JsonRpcResponse;
-  if (json.error) {
-    throw new Error(`Shopify MCP RPC error: ${json.error.message}`);
-  }
-  return json.result?.structuredContent ?? json.result?.content ?? null;
+  // Unreachable — the loop either returns, throws, or exits via the
+  // retry-exhausted branch above. Re-throw lastError defensively.
+  throw lastError instanceof Error ? lastError : new Error('Shopify MCP call failed.');
 }
 
 // ---------------------------------------------------------------------------
@@ -135,7 +184,8 @@ export type HostedMcpToolName =
   | 'search_catalog'
   | 'get_product'
   | 'get_cart'
-  | 'search_shop_policies_and_faqs';
+  | 'search_shop_policies_and_faqs'
+  | 'compare_products';
 
 export const HOSTED_MCP_TOOLS: Anthropic.Tool[] = [
   {
@@ -216,6 +266,35 @@ export const HOSTED_MCP_TOOLS: Anthropic.Tool[] = [
       required: ['query'],
     },
   },
+  {
+    // Implemented in-house (Storefront API multi-fetch) — Shopify's
+    // hosted MCP has no direct equivalent, so executeHostedTool
+    // dispatches this through executeTool('compare_products', ...).
+    name: 'compare_products',
+    description: [
+      "Compare 2 or 3 products side-by-side. Use when the shopper has narrowed",
+      "to a small finalist set (e.g. 'should I get the Helix Midnight or the",
+      "Tempur ProAdapt?') or when you've recommended multiple options and the",
+      "shopper asks 'what's the difference between them'. Returns a structured",
+      "comparison object with price, firmness, material, height, vendor, and",
+      "rating per product so you can write a tight side-by-side answer without",
+      "improvising any spec. Pass handles from prior search_catalog /",
+      "get_product results — never invent handles.",
+    ].join(' '),
+    input_schema: {
+      type: 'object',
+      properties: {
+        handles: {
+          type: 'array',
+          description: 'Product handles to compare. Must be 2 or 3 handles from a prior catalog search.',
+          items: { type: 'string' },
+          minItems: 2,
+          maxItems: 3,
+        },
+      },
+      required: ['handles'],
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -229,6 +308,13 @@ export type HostedToolExecution = {
     | { kind: 'products'; cards: ChatProductCard[] }
     | { kind: 'product'; card: ChatProductCard };
   isError?: boolean;
+  /**
+   * True when the hosted MCP call failed and the executor fell back
+   * to an in-house Storefront tool. The route handler reads this for
+   * telemetry (chat_turn_completed.fallback_count) so we can monitor
+   * hosted-MCP health from PostHog dashboards.
+   */
+  fallbackUsed?: boolean;
 };
 
 async function runSearchCatalog(input: Record<string, unknown>): Promise<HostedToolExecution> {
@@ -319,6 +405,11 @@ export async function executeHostedTool(
         return await runGetCart();
       case 'search_shop_policies_and_faqs':
         return await runPoliciesAndFaqs(args);
+      case 'compare_products':
+        // No hosted-MCP equivalent — dispatch through the in-house
+        // multi-fetch tool. Output shape is compatible with
+        // HostedToolExecution (both use the shared ChatProductCard).
+        return toHostedExecution(await executeTool('compare_products', args));
       default:
         return {
           llmContent: JSON.stringify({ error: `Unknown tool: ${name}` }),
@@ -327,8 +418,84 @@ export async function executeHostedTool(
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown tool error';
-    return { llmContent: JSON.stringify({ error: message }), isError: true };
+    // Hosted MCP failed (timeout / 5xx / RPC error after retry). Fall
+    // back to the in-house Storefront tools so the shopper still gets
+    // a real answer instead of "catalog is temporarily unreachable".
+    // Sentry breadcrumb tracks fallback frequency so we know when the
+    // hosted MCP is degraded; the user-visible response stays clean.
+    Sentry.addBreadcrumb({
+      category: 'chat.mcp.fallback',
+      level: 'warning',
+      message: `Hosted MCP ${name} failed, falling back to in-house tools: ${message}`,
+      data: { tool: name },
+    });
+    const fallback = await fallbackToInHouseTool(name, args, message);
+    return { ...fallback, fallbackUsed: true };
   }
+}
+
+/**
+ * When the hosted Shopify MCP fails (timeout, 5xx, malformed
+ * response), invoke the equivalent in-house Storefront tool so the
+ * shopper still gets a usable answer. Tool-name mapping:
+ *
+ *   - search_catalog              → search_products (Storefront search)
+ *   - get_product                 → get_product     (Storefront product)
+ *   - get_cart                    → read_cart       (cookie-backed cart)
+ *   - search_shop_policies_and_faqs → soft empty answer; the model
+ *       already knows to say "I don't have that detail — call the
+ *       showroom" per the system prompt's policy fallback instruction.
+ *       Returning `isError: false` with a null answer keeps the model
+ *       from blurting "the tool is unreachable" to the user.
+ */
+async function fallbackToInHouseTool(
+  hostedName: string,
+  args: Record<string, unknown>,
+  originalError: string,
+): Promise<HostedToolExecution> {
+  switch (hostedName) {
+    case 'search_catalog': {
+      // Map UCP shape → in-house shape. The hosted tool takes a free
+      // `query` plus optional price filters; the in-house tool takes
+      // `query` and an optional `limit`. Price filters aren't honored
+      // by the fallback — Claude will see the unfiltered results and
+      // can narrow in its reply.
+      const fallbackInput = {
+        query: typeof args.query === 'string' ? args.query : '',
+        limit: 6,
+      };
+      return toHostedExecution(await executeTool('search_products', fallbackInput));
+    }
+    case 'get_product': {
+      return toHostedExecution(await executeTool('get_product', { handle: args.handle }));
+    }
+    case 'get_cart': {
+      return toHostedExecution(await executeTool('read_cart', {}));
+    }
+    case 'search_shop_policies_and_faqs': {
+      // No in-house equivalent. Return a soft empty answer so the
+      // model gracefully falls back to its quick-reference essentials
+      // and the showroom phone number per system-prompt.ts line 138.
+      return {
+        llmContent: JSON.stringify({ answer: null, sources: [], _fallback: true }),
+      };
+    }
+    default:
+      // Unknown hosted tool — propagate the original error so Claude
+      // can apologize correctly.
+      return {
+        llmContent: JSON.stringify({ error: originalError }),
+        isError: true,
+      };
+  }
+}
+
+function toHostedExecution(exec: ToolExecution): HostedToolExecution {
+  return {
+    llmContent: exec.llmContent,
+    uiPayload: exec.uiPayload,
+    isError: exec.isError,
+  };
 }
 
 // ---------------------------------------------------------------------------

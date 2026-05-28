@@ -52,6 +52,7 @@ export type ChatStreamEvent =
         | 'search_products'
         | 'get_product'
         | 'read_cart'
+        | 'compare_products'
         // Shopify hosted Storefront MCP tools (lib/chat/shopify-mcp.ts)
         | 'search_catalog'
         | 'get_cart'
