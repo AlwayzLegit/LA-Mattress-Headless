@@ -37,6 +37,7 @@ export const SERVICE_PAGE_HANDLES = [
   'love-your-bed-guarantee',
   'mattress-store-delivery',
   'mattress-store-contact',
+  'about',
 ] as const;
 
 export type ServicePageHandle = (typeof SERVICE_PAGE_HANDLES)[number];
@@ -114,6 +115,20 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
       headline: 'Prefer to swing by?',
       primary: { label: 'See all showroom locations', href: '/pages/mattress-store-locations' },
       secondary: { label: 'Call (800) 218-3578', href: 'tel:+18002183578' },
+    },
+  },
+  about: {
+    eyebrow: 'LA-owned · 5 showrooms · since 1979',
+    lede: 'A family-owned LA mattress store with five neighborhood showrooms, salaried sleep consultants, and free white-glove delivery across the city. The brands you know, the prices you compare, the service that makes the difference.',
+    trust: [
+      { icon: 'home', title: 'Family-owned in LA', sub: 'Five showrooms across the city' },
+      { icon: 'check', title: 'Salaried, never commission', sub: 'No upsell pressure — you pick what fits you' },
+      { icon: 'shield', title: '120-night Love Your Bed exchange', sub: 'If it isn’t right, we swap it' },
+    ],
+    cta: {
+      headline: 'Come see what we mean.',
+      primary: { label: 'Find your closest showroom', href: '/pages/mattress-store-locations' },
+      secondary: { label: 'Browse mattresses', href: '/collections/mattresses' },
     },
   },
 };
