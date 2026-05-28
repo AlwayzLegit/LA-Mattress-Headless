@@ -417,80 +417,119 @@ function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnType<typ
         </section>
 
         <section className="locations-grid" aria-label="Showroom directory">
-          {SHOWROOMS.map((s) => (
-            // Card is a <article>, not a <Link>, so we can nest the tel:
-            // anchor for the phone number — nested <a> inside another <a>
-            // is invalid HTML and breaks tap-to-call on iOS Safari. Two
-            // links per card now: the photo + the "Store details" arrow
-            // both go to the showroom page; the phone is its own tel:
-            // anchor that initiates a call instead of navigating.
-            <article key={s.handle} className="location-card location-card-rich">
-              {s.imageUrl ? (
-                <Link href={`/pages/${s.handle}`} className="location-card-photo" aria-label={`${s.name} — view details`}>
-                  <Image
-                    src={s.imageUrl}
-                    alt={`${s.name} storefront`}
-                    width={800}
-                    height={420}
-                    sizes="(max-width: 760px) 100vw, 540px"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </Link>
-              ) : null}
-              <div className="location-card-meta">
-                <div className="eyebrow">{s.area}</div>
-                <h2 className="location-card-name">
-                  <Link href={`/pages/${s.handle}`}>{s.name}</Link>
-                </h2>
-                <ShowroomOpenStatus showroom={s} />
-                <address className="location-card-addr">
-                  <div>{s.street}</div>
-                  <div>{s.city}, {s.region} {s.postalCode}</div>
-                  {s.crossStreet ? <div className="muted" style={{ fontSize: 13, marginTop: 'var(--s-1)' }}>Near {s.crossStreet}</div> : null}
-                </address>
-                <div className="location-card-hours muted" style={{ fontSize: 13 }}>
-                  {summarizeHours(s.hours)}
-                </div>
-                {s.nearbyAreas.length > 0 ? (
-                  <div className="location-card-areas muted" style={{ fontSize: 13, marginTop: 'var(--s-2)' }}>
-                    Serving {s.nearbyAreas.slice(0, 3).join(', ')}
-                    {s.nearbyAreas.length > 3 ? ` + ${s.nearbyAreas.length - 3} more` : ''}
-                  </div>
-                ) : null}
-                <div className="location-card-actions">
-                  <a
-                    href={`tel:${s.phone}`}
-                    className="location-card-phone tnum"
-                    aria-label={`Call ${s.name} at ${formatPhone(s.phone)}`}
-                  >
-                    <Icon name="phone" size={14} /> {formatPhone(s.phone)}
-                  </a>
-                  <Link href={`/pages/${s.handle}`} className="link-arrow">
-                    Store details <Icon name="arrow-right" size={14} />
+          {SHOWROOMS.map((s) => {
+            // Directions deep-link. Prefer the verified GBP profile
+            // (gbpUrl) when present — opens the canonical Google
+            // Maps listing the shopper can star, review, or get
+            // turn-by-turn from. Fallback to the address-encoded
+            // mapUrl for showrooms that haven't been GBP-linked yet.
+            const directionsHref = s.gbpUrl ?? s.mapUrl;
+            return (
+              // Card is an <article>, not a <Link>, so the tel: + map
+              // anchors aren't nested inside another <a> (invalid HTML
+              // that breaks tap-to-call on iOS Safari). Three actions:
+              // Call (tel:), Directions (Google Maps), Details (PDP).
+              <article key={s.handle} className="location-card location-card-rich">
+                {s.imageUrl ? (
+                  <Link href={`/pages/${s.handle}`} className="location-card-photo" aria-label={`${s.name} — view details`}>
+                    <Image
+                      src={s.imageUrl}
+                      alt={`${s.name} storefront`}
+                      width={520}
+                      height={400}
+                      sizes="(max-width: 720px) 100vw, 260px"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   </Link>
+                ) : null}
+                <div className="location-card-meta">
+                  <div className="eyebrow">{s.area}</div>
+                  <h2 className="location-card-name">
+                    <Link href={`/pages/${s.handle}`}>{s.name}</Link>
+                  </h2>
+                  <ShowroomOpenStatus showroom={s} />
+                  <address className="location-card-addr">
+                    <div>{s.street}</div>
+                    <div>{s.city}, {s.region} {s.postalCode}</div>
+                    {s.crossStreet ? <div className="muted" style={{ fontSize: 13, marginTop: 'var(--s-1)' }}>Near {s.crossStreet}</div> : null}
+                  </address>
+                  <div className="location-card-hours muted" style={{ fontSize: 13 }}>
+                    {summarizeHours(s.hours)}
+                  </div>
+                  {s.nearbyAreas.length > 0 ? (
+                    <div className="location-card-areas muted" style={{ fontSize: 13, marginTop: 'var(--s-2)' }}>
+                      Serving {s.nearbyAreas.slice(0, 3).join(', ')}
+                      {s.nearbyAreas.length > 3 ? ` + ${s.nearbyAreas.length - 3} more` : ''}
+                    </div>
+                  ) : null}
+                  <div className="location-card-actions">
+                    <a
+                      href={`tel:${s.phone}`}
+                      className="location-action location-action-primary tnum"
+                      aria-label={`Call ${s.name} at ${formatPhone(s.phone)}`}
+                    >
+                      <Icon name="phone" size={14} /> Call
+                    </a>
+                    <a
+                      href={directionsHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="location-action"
+                      aria-label={`Get directions to ${s.name}`}
+                    >
+                      <Icon name="pin" size={14} /> Directions
+                    </a>
+                    <Link
+                      href={`/pages/${s.handle}`}
+                      className="location-action"
+                      aria-label={`${s.name} store details`}
+                    >
+                      <Icon name="arrow-right" size={14} /> Details
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </section>
 
-        {/* Below-grid copy: long-form local intent + cross-links. The
-            merchant's original 31KB Hydrogen-theme CMS body doesn't render
-            (CSS classes don't exist in this storefront); replacing the most
-            valuable parts here as native components so the page still
-            answers "why visit a showroom" and links to ranking surfaces. */}
-        <section className="section" style={{ marginTop: 'var(--s-7)' }}>
-          <h2 className="h2">Why visit a showroom?</h2>
-          <p className="muted" style={{ maxWidth: '60ch' }}>
-            A 10-minute showroom test tells you more than a hundred online reviews. Lie down on the bed for real, compare three or four options back-to-back, and walk out the same day with free delivery scheduled. Our sleep consultants are <strong>salaried, never commission</strong> — there&rsquo;s no upsell pressure to talk you into a bed your body doesn&rsquo;t agree with.
-          </p>
-          <ul style={{ marginTop: 'var(--s-4)', maxWidth: '60ch', paddingLeft: 'var(--s-5)' }}>
-            <li style={{ marginBottom: 'var(--s-2)' }}>Every mattress on the floor at all five showrooms — Tempur-Pedic, Stearns &amp; Foster, Sealy, Chattam &amp; Wells, Spring Air, Diamond, Englander, Eastman House, Helix, Harvest.</li>
-            <li style={{ marginBottom: 'var(--s-2)' }}>Same-day white-glove delivery anywhere in LA when you order by 4 PM.</li>
-            <li style={{ marginBottom: 'var(--s-2)' }}><Link href="/pages/love-your-bed-guarantee">120-night comfort exchange</Link> — sleep on it, swap it if it isn&rsquo;t right.</li>
-            <li style={{ marginBottom: 'var(--s-2)' }}><Link href="/pages/mattress-store-financing">0% APR financing</Link> through Synchrony or Acima, instant approval at any location.</li>
-          </ul>
+        {/* What to expect + Plan your visit. Two substantive panels
+            under the showroom directory — addresses the "page brings
+            no value beyond a list" feedback. Industry-standard
+            pattern (Sleep Number, Mattress Firm, Casper all carry
+            equivalent "what to expect" copy on their store-finder
+            pages because shoppers showing up to a brick-and-mortar
+            often haven't visited a mattress showroom before). */}
+        <section className="locations-context" aria-label="What to expect at our showrooms">
+          <div className="locations-context-panel">
+            <h2>What every showroom has</h2>
+            <ul>
+              <li><strong>30+ mattresses on the floor</strong> from Tempur-Pedic, Stearns &amp; Foster, Sealy, Chattam &amp; Wells, Spring Air, Diamond, Englander, Eastman House, Helix, and Harvest — every bed in our catalog, every size.</li>
+              <li><strong>Sleep consultants, salaried not commissioned</strong> — no upsell pressure, no &ldquo;you really need the premium one.&rdquo; They&rsquo;ll narrow you down by sleep position, body weight, and back history.</li>
+              <li><strong>Side-by-side comparison setup</strong> — pull two or three finalists together and switch between them in a single session.</li>
+              <li><strong>Adjustable bases on demo</strong> with every mattress so you can test what zero-gravity and head-up actually feel like before you buy.</li>
+              <li><strong>Same-day white-glove delivery</strong> anywhere in LA when you order by 4 PM — setup and old-mattress removal included.</li>
+              <li><strong>0% APR financing</strong> through Synchrony or Acima, instant decision at the counter — bring a driver&rsquo;s license.</li>
+            </ul>
+          </div>
+          <div className="locations-context-panel">
+            <h2>Plan your visit</h2>
+            <ul>
+              <li><strong>Allow 30 to 60 minutes</strong> for a thorough test. Lying down for 5–10 minutes per bed in your sleep position beats any spec sheet, and a back-to-back comparison sharpens the right answer fast.</li>
+              <li><strong>Bring your usual pillow</strong> if you can — head-and-neck alignment changes how a mattress feels under your shoulders.</li>
+              <li><strong>Wear comfortable clothes</strong> you can actually lie down in. Skip the heavy coat.</li>
+              <li><strong>No appointment needed.</strong> Walk in any day during open hours; weekday mornings are quietest if you want a long unhurried session.</li>
+              <li><strong>Bring your partner</strong> if you share the bed. Motion isolation and firmness preferences only show up when both of you are on the bed at once.</li>
+              <li><strong>Accessible at every location</strong> — wheelchair-accessible entrance, parking on-site or street, ADA-compliant facilities. Call ahead if you need help loading a mattress into a vehicle.</li>
+            </ul>
+          </div>
         </section>
+
+        {/* "Why visit a showroom" was previously a long paragraph + bullet
+            list here. Both moved into the structured locations-context
+            panels above (What every showroom has + Plan your visit), so
+            the prose isn't repeated. The remaining sections below are
+            the next-step CTA + SEO cross-links to pillar articles. */}
 
         <section className="section" style={{ marginTop: 'var(--s-6)' }}>
           <h2 className="h2">Not sure where to start?</h2>
