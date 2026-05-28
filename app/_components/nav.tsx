@@ -395,9 +395,21 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
             ))}
           </nav>
           <div className="nav-actions">
-            <HeaderSearch />
-            <NavSaved />
-            <Link className="icon-btn" aria-label="Account" href="/account"><Icon name="user" size={18} /></Link>
+            {/*
+              Search, Saved, Account collapse into the hamburger drawer
+              on mobile — industry-standard pattern (Casper, Saatva,
+              Mattress Firm all do this) that keeps the mobile top bar
+              uncluttered. Cart + hamburger stay visible always because
+              they're the two highest-frequency mobile taps. The
+              .nav-actions-desktop wrapper uses display: contents on
+              desktop so the children still flex inline with cart +
+              hamburger; on mobile it hides the whole group.
+            */}
+            <div className="nav-actions-desktop">
+              <HeaderSearch />
+              <NavSaved />
+              <Link className="icon-btn" aria-label="Account" href="/account"><Icon name="user" size={18} /></Link>
+            </div>
             <button
               className="icon-btn cart-btn"
               aria-label={`Cart, ${count} item${count === 1 ? '' : 's'}`}
