@@ -87,7 +87,7 @@ function aggregateRatingFor(
 export { isSalePage, SALE_HANDLE_PATTERNS } from './sale-handles';
 import { isSalePage } from './sale-handles';
 
-function genericPageLd(page: Page): PageLd[] {
+function genericPageLd(page: Page, aggregate?: ShopAggregate | null): PageLd[] {
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
   const url = `${SITE}/pages/${page.handle}`;
   // Schema audit (2026-05): generic CMS pages now link to the sitewide
@@ -122,6 +122,33 @@ function genericPageLd(page: Page): PageLd[] {
     publisher: { '@id': `${SITE}/#organization` },
     ...(page.createdAt ? { datePublished: page.createdAt } : {}),
     ...(page.updatedAt ? { dateModified: page.updatedAt } : {}),
+    // 20260528 (Semrush #2): generic CMS pages flagged for "add an
+    // aggregate rating" — /pages/mattress-sizes etc. WebPage itself
+    // isn't in Google's list of types that accept aggregateRating,
+    // so attach via mainEntity → Organization (same @id as the
+    // sitewide Org node from lib/structured-data.ts, schema-valid
+    // because Organization IS in Google's list). Same pattern as
+    // collection-jsonld.ts.
+    ...(aggregate &&
+    Number.isFinite(aggregate.rating) &&
+    Number.isFinite(aggregate.count) &&
+    aggregate.count > 0 &&
+    aggregate.rating >= 1 &&
+    aggregate.rating <= 5
+      ? {
+          mainEntity: {
+            '@type': 'Organization',
+            '@id': `${SITE}/#organization`,
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: aggregate.rating.toFixed(1),
+              reviewCount: aggregate.count,
+              bestRating: '5',
+              worstRating: '1',
+            },
+          },
+        }
+      : {}),
   };
   const out: PageLd[] = [
     { key: 'ld-page', data: webPageLd },
@@ -395,6 +422,9 @@ export function getPageJsonLd(page: Page, aggregate?: ShopAggregate | null): Pag
     ];
   }
 
-  // 5. Default CMS page
-  return genericPageLd(page);
+  // 5. Default CMS page — pass the aggregate through so /pages/X CMS
+  //    pages emit aggregateRating via mainEntity → Organization. Covers
+  //    the Semrush 20260528 "add aggregate rating" flag on informational
+  //    pages like /pages/mattress-sizes that aren't a showroom or sale.
+  return genericPageLd(page, aggregate);
 }
