@@ -382,20 +382,22 @@ summary:focus-visible,
 .nav-item-accent { color: var(--accent); }
 .nav-item-accent:hover { color: var(--accent-2); }
 
-.nav-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-/* Wrapper around Search + Saved + Account. display: contents on desktop
-   so the 3 children still participate in .nav-actions' flex layout
-   (the wrapper is "transparent" to layout). On mobile the wrapper
-   collapses to display: none which hides all 3 in one rule — they
-   move into the hamburger drawer instead. Industry-standard mobile
-   e-com pattern (Casper / Saatva / Mattress Firm). */
+.nav-actions {
+  display: flex; align-items: center; gap: 4px;
+  flex-shrink: 0;
+  /* margin-left: auto pushes the actions cluster to the right even
+     when .nav-items (mega menu) is hidden at ≤1024px. Without this,
+     the cluster collapses next to the logo and stops feeling like a
+     header. The desktop layout already has .nav-items { flex: 1 }
+     doing the same job; auto-margin is the responsive backstop. */
+  margin-left: auto;
+}
+/* Wrapper around Search + Saved + Account. display: contents so the
+   3 children participate directly in .nav-actions' flex layout
+   (wrapper is "transparent" to layout). Kept visible at every
+   viewport — the merchant explicitly asked to keep these icons in
+   the topbar instead of hiding them in the hamburger drawer. */
 .nav-actions-desktop { display: contents; }
-/* Hide at phone widths only (≤768px). At tablet portrait (768–1024px)
-   there's still room for the 3 icons alongside the hamburger; phone
-   widths are where the horizontal row gets crowded and the icons add
-   noise without much utility (search is also reachable inside the
-   hamburger drawer's top search field). */
-@media (max-width: 768px) { .nav-actions-desktop { display: none; } }
 
 /* Compare toggle on PLP cards — tertiary text-link at the bottom of the
    meta block. Click stops propagation so the parent <Link> doesn't

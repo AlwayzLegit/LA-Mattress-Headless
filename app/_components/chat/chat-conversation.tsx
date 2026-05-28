@@ -218,6 +218,13 @@ export function ChatConversation() {
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // Sticky-to-bottom state. True when the shopper is already near the
+  // bottom of the transcript — in that case streaming deltas should
+  // keep pushing new content into view. False when the shopper has
+  // scrolled up to re-read; we leave them alone so they can finish
+  // reading without the page yanking out from under them. A ref (not
+  // state) so the auto-scroll effect doesn't re-run when the flag flips.
+  const pinnedToBottomRef = useRef(true);
 
   // Restore once on mount. We don't read storage in the initial state
   // because Next.js SSRs this component (storage is undefined on the
@@ -231,10 +238,15 @@ export function ChatConversation() {
     if (hydrated) persistHistory(messages);
   }, [messages, hydrated]);
 
-  // Scroll-to-bottom whenever messages change. `behavior: 'auto'` (not
-  // 'smooth') for streaming because token deltas arrive faster than
-  // smooth scroll can complete and the animation gets pinned partway.
+  // Sticky-to-bottom auto-scroll. Only scrolls when the shopper is
+  // already pinned near the bottom (within SLOP px). If they've
+  // scrolled up to re-read an earlier answer, the streaming response
+  // grows without disturbing their scroll position — industry-
+  // standard chat UX (ChatGPT, Claude.ai, Slack). `behavior: 'auto'`
+  // for streaming because token deltas fire faster than smooth scroll
+  // can complete and the animation gets pinned partway.
   useEffect(() => {
+    if (!pinnedToBottomRef.current) return;
     const node = scrollRef.current;
     if (!node) return;
     node.scrollTop = node.scrollHeight;
@@ -270,6 +282,11 @@ export function ChatConversation() {
         { role: userMsg.role, content: userMsg.content },
       ];
 
+      // Sending a new turn always re-pins to bottom — the shopper
+      // just typed; they want to see their own message and the
+      // incoming response. Resets the sticky-to-bottom flag in case
+      // they had scrolled up during the previous turn.
+      pinnedToBottomRef.current = true;
       setMessages((prev) => [...prev, userMsg, assistantPlaceholder]);
       setInput('');
       setIsStreaming(true);
@@ -458,6 +475,18 @@ export function ChatConversation() {
       <div
         className="chat-panel-body"
         ref={scrollRef}
+        onScroll={(e) => {
+          // Track sticky-to-bottom state on user scroll. SLOP gives
+          // a 40px tolerance so subpixel rounding / momentum scrolling
+          // doesn't accidentally unpin. Threshold-checked, not
+          // strictly-equal: a shopper who lands within ~40px of the
+          // bottom is considered "following along" and gets the
+          // auto-scroll behavior.
+          const SLOP = 40;
+          const node = e.currentTarget;
+          pinnedToBottomRef.current =
+            node.scrollHeight - node.scrollTop - node.clientHeight < SLOP;
+        }}
         // role="log" tells assistive tech this is a conversation
         // transcript; new entries should be announced as they arrive
         // without re-reading the whole list. aria-live="polite" is
