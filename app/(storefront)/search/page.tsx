@@ -4,12 +4,9 @@ import Image from 'next/image';
 
 import { searchProducts, searchArticles } from '@/lib/shopify';
 import type { ProductSummary, PredictiveArticle } from '@/lib/shopify';
-import { formatPriceRange } from '@/lib/format';
 import { formatPhone, searchShowrooms, type Showroom } from '@/lib/showrooms';
 import { Icon } from '@/app/_components/icon';
-import { CompareToggle } from '@/app/_components/compare-toggle';
-import { PcardSpecs } from '@/app/_components/pcard-specs';
-import { ReviewsBadge } from '@/app/_components/reviews-badge';
+import { PlpCard } from '@/app/_components/plp-card';
 import {
   FilterPanel,
   FilterMobileTrigger,
@@ -275,41 +272,14 @@ export default async function SearchPage(props: Params) {
                   {products.length > 0 ? (
                     <>
                       <div className="plp-grid">
+                        {/* Use the shared PlpCard so search-results inherit
+                            every PLP improvement (wishlist heart from #342,
+                            "From $X/mo" financing line from #342, compare
+                            toggle, reviews badge, sale ribbon, sale-price
+                            display). Was previously a 40-line inline copy
+                            that drifted behind the canonical card. */}
                         {products.map((p, idx) => (
-                          // Article + sibling CompareToggle, see Phase 156
-                          // comment in app/collections/[handle]/page.tsx.
-                          <article key={p.id} className="pcard plp-card">
-                            <Link href={`/products/${p.handle}`} className="pcard-link">
-                              <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
-                                {p.featuredImage ? (
-                                  <Image
-                                    src={p.featuredImage.url}
-                                    alt={p.featuredImage.altText ?? p.title}
-                                    width={600}
-                                    height={600}
-                                    sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                    style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                                    priority={!after && idx < 3}
-                                    loading={!after && idx < 3 ? 'eager' : 'lazy'}
-                                  />
-                                ) : <span className="ph-label">[Image coming]</span>}
-                              </div>
-                              <div className="pcard-meta">
-                                <div className="pcard-brand">{p.vendor}</div>
-                                <div className="pcard-name">{p.title}</div>
-                                {p.reviews ? (
-                                  <div className="pcard-reviews"><ReviewsBadge reviews={p.reviews} size="inline" /></div>
-                                ) : null}
-                                <PcardSpecs specs={p.specs} />
-                                <div className="pcard-price">
-                                  <span className="pcard-now tnum">
-                                    {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
-                                  </span>
-                                </div>
-                              </div>
-                            </Link>
-                            <CompareToggle handle={p.handle} title={p.title} />
-                          </article>
+                          <PlpCard key={p.id} product={p} priority={!after && idx < 3} />
                         ))}
                       </div>
                       <div className="plp-pagination">
@@ -601,40 +571,11 @@ function SearchAllTab({
             </Link>
           </div>
           <div className="plp-grid">
+            {/* PlpCard — shared with /collections and the search
+                Mattresses tab — so the heart, financing line, sale
+                ribbon, etc. show up consistently across every grid. */}
             {products.map((p, idx) => (
-              // Article + sibling CompareToggle, see Phase 156 comment
-              // in app/collections/[handle]/page.tsx.
-              <article key={p.id} className="pcard plp-card">
-                <Link href={`/products/${p.handle}`} className="pcard-link">
-                  <div className="ph pcard-img" style={{ aspectRatio: '1' }}>
-                    {p.featuredImage ? (
-                      <Image
-                        src={p.featuredImage.url}
-                        alt={p.featuredImage.altText ?? p.title}
-                        width={600}
-                        height={600}
-                        sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                        loading={idx < 3 ? 'eager' : 'lazy'}
-                      />
-                    ) : <span className="ph-label">[Image coming]</span>}
-                  </div>
-                  <div className="pcard-meta">
-                    <div className="pcard-brand">{p.vendor}</div>
-                    <div className="pcard-name">{p.title}</div>
-                    {p.reviews ? (
-                      <div className="pcard-reviews"><ReviewsBadge reviews={p.reviews} size="inline" /></div>
-                    ) : null}
-                    <PcardSpecs specs={p.specs} />
-                    <div className="pcard-price">
-                      <span className="pcard-now tnum">
-                        {formatPriceRange(p.priceRange.minVariantPrice, p.priceRange.maxVariantPrice)}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-                <CompareToggle handle={p.handle} title={p.title} />
-              </article>
+              <PlpCard key={p.id} product={p} priority={idx < 3} />
             ))}
           </div>
         </section>
