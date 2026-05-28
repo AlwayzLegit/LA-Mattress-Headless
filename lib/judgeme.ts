@@ -68,19 +68,101 @@ function buildUrl(path: string, params: Record<string, string | number | undefin
 }
 
 /**
+ * Tokenize a review body for similarity comparison. Lowercases, strips
+ * punctuation, splits on whitespace, drops short tokens (<=2 chars) and
+ * common stopwords. The remaining set captures the substantive content
+ * words used in Jaccard similarity.
+ */
+const REVIEW_STOPWORDS = new Set([
+  'the', 'and', 'for', 'are', 'was', 'this', 'that', 'with', 'have',
+  'has', 'had', 'but', 'not', 'you', 'your', 'our', 'their', 'they',
+  'will', 'all', 'any', 'were', 'been', 'being', 'from', 'just', 'very',
+  'too', 'one', 'two', 'about', 'when', 'what', 'who', 'how', 'can',
+  'get', 'got', 'into', 'out', 'over', 'after', 'before', 'than',
+  'then', 'them', 'these', 'those', 'such', 'some', 'much', 'more',
+]);
+function reviewTokens(body: string): Set<string> {
+  return new Set(
+    body
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((t) => t.length > 2 && !REVIEW_STOPWORDS.has(t)),
+  );
+}
+
+/**
+ * Filter near-duplicate reviews so the rendered carousel feels varied
+ * rather than 6 different sleepers all writing "Great service, will
+ * buy again". For each candidate review we check it against the
+ * already-accepted set:
+ *   - exact body match → drop
+ *   - title match (case-insensitive) when both have titles → drop
+ *   - Jaccard similarity over content tokens > 0.55 → drop
+ *
+ * Sorts by body length descending first so when a cluster of near-
+ * duplicates exists we keep the most substantive version. Returns
+ * the kept reviews re-sorted by created_at desc to preserve recency
+ * for the caller.
+ */
+export function dedupeReviews(reviews: JudgemeReview[]): JudgemeReview[] {
+  const seen: { tokens: Set<string>; body: string; title: string }[] = [];
+  const kept: JudgemeReview[] = [];
+  const sorted = [...reviews].sort((a, b) => (b.body?.length ?? 0) - (a.body?.length ?? 0));
+  for (const r of sorted) {
+    const body = (r.body || '').toLowerCase().trim();
+    if (!body) continue;
+    const title = (r.title || '').toLowerCase().trim();
+    const tokens = reviewTokens(body);
+    let duplicate = false;
+    for (const s of seen) {
+      if (s.body === body) { duplicate = true; break; }
+      if (title && s.title && title === s.title) { duplicate = true; break; }
+      if (tokens.size >= 3 && s.tokens.size >= 3) {
+        let intersection = 0;
+        for (const t of tokens) if (s.tokens.has(t)) intersection++;
+        const union = tokens.size + s.tokens.size - intersection;
+        if (union > 0 && intersection / union > 0.55) { duplicate = true; break; }
+      }
+    }
+    if (!duplicate) {
+      seen.push({ tokens, body, title });
+      kept.push(r);
+    }
+  }
+  return kept.sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
+}
+
+/**
  * Latest top-rated reviews across all products. Used on /pages/reviews and
  * on the homepage Reviews section. Cached for 1 hour.
+ *
+ * Over-fetches from Judge.me and applies dedupeReviews() so the rendered
+ * carousels never show 6 different sleepers writing the same short
+ * "Great service" sentiment — varied bodies make the social-proof section
+ * actually persuasive. Pass `dedupe: false` for raw output (rare; only
+ * needed when downstream needs the unfiltered set).
  */
-export async function getStorefrontReviews({ perPage = 12, page = 1, minRating = 4 } = {}): Promise<JudgemeReview[]> {
+export async function getStorefrontReviews({
+  perPage = 12,
+  page = 1,
+  minRating = 4,
+  dedupe = true,
+}: { perPage?: number; page?: number; minRating?: number; dedupe?: boolean } = {}): Promise<JudgemeReview[]> {
   if (!ENABLED) return [];
   try {
+    const fetchSize = dedupe ? Math.min(perPage * 4, 100) : perPage;
     const res = await fetch(
-      buildUrl('/reviews', { per_page: perPage, page, rating: minRating, published: 'true' }),
+      buildUrl('/reviews', { per_page: fetchSize, page, rating: minRating, published: 'true' }),
       { next: { revalidate: 3600, tags: ['judgeme:reviews'] } },
     );
     if (!res.ok) return [];
     const data = (await res.json()) as ReviewsResponse;
-    return data.reviews ?? [];
+    const raw = data.reviews ?? [];
+    if (!dedupe) return raw.slice(0, perPage);
+    return dedupeReviews(raw).slice(0, perPage);
   } catch {
     return [];
   }
