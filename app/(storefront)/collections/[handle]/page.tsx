@@ -234,6 +234,14 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                 sizes="(max-width: 900px) 100vw, 600px"
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                 priority
+                // Explicit fetchPriority backs up the `priority` prop.
+                // Next/Image is supposed to add fetchPriority="high"
+                // automatically when priority is set, but PostHog web-
+                // vitals showed /collections/adjustable-beds at LCP p75
+                // 2.9s (poor) and similar tails on other collection
+                // routes. Explicit hint is cheap and removes any
+                // ambiguity from the browser's resource scheduler.
+                fetchPriority="high"
               />
             </div>
           ) : null}
@@ -303,10 +311,15 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
                     <PlpCard
                       key={p.id}
                       product={p}
-                      // LCP candidates: first 3 cards of the SSR'd first
-                      // page. Subsequent pages (loaded by `PlpLoadMore`
-                      // client-side append) pass `priority={false}`.
-                      priority={!after && idx < 3}
+                      // LCP candidates: first 4 cards of the SSR'd first
+                      // page. At desktop widths (4-col grid via PLP CSS),
+                      // the 4th card is in the first viewport row too —
+                      // priority lets it skip the lazy-loading queue and
+                      // hits the network in the first batch alongside
+                      // the hero image. Subsequent pages (loaded by
+                      // `PlpLoadMore` client-side append) pass
+                      // `priority={false}`.
+                      priority={!after && idx < 4}
                     />
                   ))}
                 </div>
