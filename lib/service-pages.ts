@@ -118,7 +118,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
     },
   },
   about: {
-    eyebrow: 'LA-owned · 5 showrooms · since 1979',
+    eyebrow: 'LA-owned · 5 showrooms · since 2012',
     lede: 'A family-owned LA mattress store with five neighborhood showrooms, salaried sleep consultants, and free white-glove delivery across the city. The brands you know, the prices you compare, the service that makes the difference.',
     trust: [
       { icon: 'home', title: 'Family-owned in LA', sub: 'Five showrooms across the city' },
