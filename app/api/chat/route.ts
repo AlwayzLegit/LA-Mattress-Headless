@@ -68,7 +68,13 @@ export const dynamic = 'force-dynamic';
 // client aborts.
 export const maxDuration = 60;
 
-const MAX_MESSAGES = 20;
+// Sliding-window cap on conversation length. 40 turns covers the
+// long-tail "shopper went deep on options + then asked about cart +
+// then asked about delivery" flow without bloating the request size
+// — at ~250 tokens/turn average, 40 turns is ~10K tokens of dialogue,
+// well under Opus 4.7's context budget alongside the cached system
+// prompt and tool results.
+const MAX_MESSAGES = 40;
 const MAX_USER_CHARS = 4000;
 
 type ChatRequestBody = { messages?: unknown };
@@ -103,6 +109,9 @@ function summarizeToolUse(name: string, input: unknown): string {
   }
   if (name === 'search_shop_policies_and_faqs' && typeof obj.query === 'string') {
     return `Looking up policy: "${obj.query.slice(0, 80)}"`;
+  }
+  if (name === 'compare_products' && Array.isArray(obj.handles)) {
+    return `Comparing ${obj.handles.length} products`;
   }
   return name;
 }
@@ -203,7 +212,11 @@ export async function POST(req: NextRequest): Promise<Response> {
         for (let iter = 0; iter < MAX_LOOP_ITERATIONS; iter += 1) {
           const aiStream = client.messages.stream({
             model: 'claude-opus-4-7',
-            max_tokens: 2048,
+            // 4096 leaves room for a complex multi-turn answer that
+            // synthesizes 3+ tool results (search + compare + policy)
+            // into a real recommendation. 2048 was clipping the long
+            // tail of "help me pick" turns mid-paragraph.
+            max_tokens: 4096,
             system: [
               {
                 type: 'text',
@@ -265,6 +278,7 @@ export async function POST(req: NextRequest): Promise<Response> {
                   | 'search_products'
                   | 'get_product'
                   | 'read_cart'
+                  | 'compare_products'
                   | 'search_catalog'
                   | 'get_cart'
                   | 'search_shop_policies_and_faqs',

@@ -184,7 +184,8 @@ export type HostedMcpToolName =
   | 'search_catalog'
   | 'get_product'
   | 'get_cart'
-  | 'search_shop_policies_and_faqs';
+  | 'search_shop_policies_and_faqs'
+  | 'compare_products';
 
 export const HOSTED_MCP_TOOLS: Anthropic.Tool[] = [
   {
@@ -263,6 +264,35 @@ export const HOSTED_MCP_TOOLS: Anthropic.Tool[] = [
         },
       },
       required: ['query'],
+    },
+  },
+  {
+    // Implemented in-house (Storefront API multi-fetch) — Shopify's
+    // hosted MCP has no direct equivalent, so executeHostedTool
+    // dispatches this through executeTool('compare_products', ...).
+    name: 'compare_products',
+    description: [
+      "Compare 2 or 3 products side-by-side. Use when the shopper has narrowed",
+      "to a small finalist set (e.g. 'should I get the Helix Midnight or the",
+      "Tempur ProAdapt?') or when you've recommended multiple options and the",
+      "shopper asks 'what's the difference between them'. Returns a structured",
+      "comparison object with price, firmness, material, height, vendor, and",
+      "rating per product so you can write a tight side-by-side answer without",
+      "improvising any spec. Pass handles from prior search_catalog /",
+      "get_product results — never invent handles.",
+    ].join(' '),
+    input_schema: {
+      type: 'object',
+      properties: {
+        handles: {
+          type: 'array',
+          description: 'Product handles to compare. Must be 2 or 3 handles from a prior catalog search.',
+          items: { type: 'string' },
+          minItems: 2,
+          maxItems: 3,
+        },
+      },
+      required: ['handles'],
     },
   },
 ];
@@ -368,6 +398,11 @@ export async function executeHostedTool(
         return await runGetCart();
       case 'search_shop_policies_and_faqs':
         return await runPoliciesAndFaqs(args);
+      case 'compare_products':
+        // No hosted-MCP equivalent — dispatch through the in-house
+        // multi-fetch tool. Output shape is compatible with
+        // HostedToolExecution (both use the shared ChatProductCard).
+        return toHostedExecution(await executeTool('compare_products', args));
       default:
         return {
           llmContent: JSON.stringify({ error: `Unknown tool: ${name}` }),

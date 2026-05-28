@@ -103,6 +103,33 @@ export const CHAT_TOOLS: Anthropic.Tool[] = [
       properties: {},
     },
   },
+  {
+    name: 'compare_products',
+    description: [
+      "Compare 2 or 3 products side-by-side. Use when the shopper has narrowed",
+      "to a small finalist set (e.g. 'should I get the Helix Midnight or the",
+      "Tempur ProAdapt?') or when you've recommended multiple options and the",
+      "shopper asks 'what's the difference between them'. Returns the same",
+      "compact card shape as search_products plus a structured comparison",
+      "object with price, firmness, material, height, vendor, and rating",
+      "rows so you can write a tight side-by-side answer without",
+      "improvising any spec. Pass product handles from prior search/get",
+      "results — never invent handles.",
+    ].join(' '),
+    input_schema: {
+      type: 'object',
+      properties: {
+        handles: {
+          type: 'array',
+          description: 'Product handles to compare. Must be 2 or 3 handles already seen in a prior search_products / get_product / search_catalog result.',
+          items: { type: 'string' },
+          minItems: 2,
+          maxItems: 3,
+        },
+      },
+      required: ['handles'],
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -175,6 +202,8 @@ export async function executeTool(
         return await runGetProduct(rawInput);
       case 'read_cart':
         return await runReadCart();
+      case 'compare_products':
+        return await runCompareProducts(rawInput);
       default:
         return {
           llmContent: JSON.stringify({ error: `Unknown tool: ${name}` }),
@@ -331,5 +360,101 @@ async function runReadCart(): Promise<ToolExecution> {
       cart_url: '/cart',
       checkout_url: cart.checkoutUrl,
     }),
+  };
+}
+
+/**
+ * Fetch 2 or 3 products in parallel and return a structured side-by-
+ * side comparison. The LLM-facing JSON includes a `comparison` table
+ * (price, firmness, material, height, vendor, rating per product) so
+ * Claude can write a tight head-to-head without improvising specs.
+ * The `uiPayload` reuses the standard `products` card shape so the
+ * frontend renders the comparison set as inline cards alongside the
+ * model's prose answer — no new UI component needed.
+ */
+async function runCompareProducts(rawInput: unknown): Promise<ToolExecution> {
+  if (typeof rawInput !== 'object' || rawInput === null) {
+    return { llmContent: JSON.stringify({ error: 'Invalid input.' }), isError: true };
+  }
+  const { handles } = rawInput as { handles?: unknown };
+  if (!Array.isArray(handles) || handles.length < 2 || handles.length > 3) {
+    return {
+      llmContent: JSON.stringify({ error: 'handles must be an array of 2 or 3 product handles.' }),
+      isError: true,
+    };
+  }
+  const cleanedHandles = handles
+    .filter((h): h is string => typeof h === 'string' && h.trim().length > 0)
+    .map((h) => h.trim());
+  if (cleanedHandles.length < 2) {
+    return {
+      llmContent: JSON.stringify({ error: 'At least 2 valid product handles are required.' }),
+      isError: true,
+    };
+  }
+
+  const fetched = await Promise.all(
+    cleanedHandles.map(async (handle) => {
+      const product = await getProductByHandle(handle);
+      return { handle, product };
+    }),
+  );
+
+  const missing = fetched.filter((f) => !f.product).map((f) => f.handle);
+  const found = fetched.filter((f) => f.product !== null);
+  if (found.length < 2) {
+    return {
+      llmContent: JSON.stringify({
+        error: 'Fewer than 2 products resolved.',
+        missing_handles: missing,
+      }),
+      isError: true,
+    };
+  }
+
+  const cards = found.map((f) => {
+    const p = f.product!;
+    const summaryLike: ProductSummary = {
+      id: p.id,
+      handle: p.handle,
+      title: p.title,
+      vendor: p.vendor,
+      featuredImage: p.featuredImage,
+      priceRange: p.priceRange,
+      compareAtPriceRange: p.compareAtPriceRange,
+      specs: p.specs
+        ? {
+            firmness: p.specs.firmness,
+            heightInches: p.specs.heightInches,
+            materialType: p.specs.materialType,
+          }
+        : undefined,
+      reviews: p.reviews,
+    };
+    return toCard(summaryLike);
+  });
+
+  // Compact structured comparison for the LLM. Each row is an attribute
+  // and the values align positionally with the `cards` array order.
+  const comparison = {
+    handles: cards.map((c) => c.handle),
+    titles: cards.map((c) => c.title),
+    vendors: cards.map((c) => c.vendor),
+    price_from: cards.map((c) => c.priceRange.minPrice),
+    price_to: cards.map((c) => c.priceRange.maxPrice),
+    currency: cards[0]?.priceRange.currency ?? 'USD',
+    firmness: cards.map((c) => c.firmness),
+    material: cards.map((c) => c.material),
+    rating: cards.map((c) => c.rating),
+    rating_count: cards.map((c) => c.ratingCount),
+    urls: cards.map((c) => c.url),
+  };
+
+  return {
+    llmContent: JSON.stringify({
+      comparison,
+      missing_handles: missing.length > 0 ? missing : undefined,
+    }),
+    uiPayload: { kind: 'products', cards },
   };
 }
