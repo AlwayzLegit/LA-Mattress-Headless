@@ -467,7 +467,23 @@ export function ChatConversation() {
 
   return (
     <>
-      <div className="chat-panel-body" ref={scrollRef}>
+      <div
+        className="chat-panel-body"
+        ref={scrollRef}
+        // role="log" tells assistive tech this is a conversation
+        // transcript; new entries should be announced as they arrive
+        // without re-reading the whole list. aria-live="polite" is
+        // the implicit default for role="log" but stated explicitly
+        // for older AT. aria-atomic="false" keeps the announcer from
+        // reading the whole transcript on each update — only the new
+        // delta. aria-busy flips during streaming so screen readers
+        // can hint that a response is in progress.
+        role="log"
+        aria-live="polite"
+        aria-atomic="false"
+        aria-label="Conversation with the sleep assistant"
+        aria-busy={isStreaming}
+      >
         {showSuggestions ? (
           <>
             <div className="chat-msg chat-msg-assistant">
@@ -501,6 +517,11 @@ export function ChatConversation() {
           <div key={i} className="chat-turn">
             <div
               className={`chat-msg chat-msg-${m.role}${m.error ? ' chat-msg-error' : ''}`}
+              // Error messages should interrupt the screen reader so
+              // shoppers immediately hear what went wrong (rate limit,
+              // outage, network blip). Regular turns ride the log
+              // region's polite announce.
+              {...(m.error ? { role: 'alert' } : {})}
             >
               {m.content
                 .split('\n')
@@ -565,6 +586,9 @@ export function ChatConversation() {
             onKeyDown={onKeyDown}
             disabled={isStreaming}
             aria-label="Chat message"
+            // Pair the input with the AI-disclosure note so the
+            // shopper hears the disclaimer when the field is focused.
+            aria-describedby="chat-foot-disclosure"
             maxLength={MAX_INPUT_CHARS}
           />
           <button
@@ -576,7 +600,7 @@ export function ChatConversation() {
             <Icon name="arrow-right" size={16} />
           </button>
         </div>
-        <p className="chat-foot-disclosure muted">
+        <p id="chat-foot-disclosure" className="chat-foot-disclosure muted">
           AI responses can be inaccurate. Verify pricing &amp; stock in cart.
         </p>
       </form>
