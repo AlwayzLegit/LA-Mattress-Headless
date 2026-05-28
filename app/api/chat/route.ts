@@ -78,7 +78,18 @@ export const maxDuration = 60;
 const MAX_MESSAGES = 40;
 const MAX_USER_CHARS = 4000;
 
-type ChatRequestBody = { messages?: unknown };
+type ChatRequestBody = { messages?: unknown; session_id?: unknown };
+
+// Client-generated chat session UUID. We only accept the canonical
+// v4 hyphenated shape — anything else is silently dropped to avoid
+// PostHog ingesting attacker-controlled distinct_ids from a malformed
+// request body.
+const SESSION_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function extractSessionId(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  return SESSION_ID_RE.test(value) ? value : null;
+}
 
 function isChatMessage(value: unknown): value is ChatMessage {
   if (typeof value !== 'object' || value === null) return false;
@@ -141,6 +152,8 @@ export async function POST(req: NextRequest): Promise<Response> {
       { status: 400 },
     );
   }
+
+  const sessionId = extractSessionId(body.session_id);
 
   // Reject anything that doesn't conform — never let a malformed prior
   // turn (e.g. role: "system") into the upstream call. Trims silently
@@ -366,6 +379,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         // PostHog actually flushes before the function tears down, but
         // we don't await here — the stream is already closed.
         void captureChatTurn({
+          session_id: sessionId,
           duration_ms: Date.now() - turnStartedAt,
           messages_count: messages.length,
           tool_calls_count: toolCallsCount,
