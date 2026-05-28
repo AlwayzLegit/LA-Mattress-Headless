@@ -1299,10 +1299,20 @@ export async function getRefundHealth(days = 30): Promise<DashboardRefundHealth 
  * repeat"; this one answers "who are our best lifetime customers and
  * how many repeat orders does the top of the curve have".
  *
- * Single Shopify query — sortKey=AMOUNT_SPENT, reverse=true. Each
- * page is 250 customers max per Shopify's limit; we take one page.
- * Returns null on any fetch error (dashboard renders a "data
- * unavailable" state per the no-throws convention).
+ * Sampling strategy: Shopify deprecated `CustomerSortKeys.AMOUNT_SPENT`
+ * sometime in the last day (the query has been failing in production
+ * since ~2026-05-27 — Sentry LA-MATTRESS-HEADLESS-18). The remaining
+ * sort keys (CREATED_AT, UPDATED_AT, NAME, ID, LOCATION, RELEVANCE)
+ * don't expose spend, so the dashboard now pulls the 250 most-
+ * recently-updated customers and sorts them client-side by
+ * `amountSpent.amount`. UPDATED_AT skews toward active spenders
+ * (Shopify bumps updatedAt on every order placement), so for a
+ * mattress store the "top by lifetime spend" leaderboard remains
+ * representative — a customer who last bought in 2023 won't appear,
+ * but they wouldn't have been in the top-10 actively-trading set
+ * anyway. Each page is 250 customers max per Shopify's limit; we
+ * take one page. Returns null on any fetch error (dashboard renders
+ * a "data unavailable" state per the no-throws convention).
  * ------------------------------------------------------------------------ */
 
 export type DashboardCustomerLifetime = CustomerLifetimeSummary;
@@ -1325,7 +1335,7 @@ export async function getCustomerLifetime(sampleSize = 250): Promise<DashboardCu
     };
   }>(
     `query CustomerLifetime($first: Int!) {
-      customers(first: $first, sortKey: AMOUNT_SPENT, reverse: true) {
+      customers(first: $first, sortKey: UPDATED_AT, reverse: true) {
         nodes {
           id
           displayName
@@ -1342,14 +1352,20 @@ export async function getCustomerLifetime(sampleSize = 250): Promise<DashboardCu
   // Map raw Shopify response into the shape the pure summarizer expects.
   // numberOfOrders comes back as a string from Shopify (GraphQL
   // UnsignedInt64 scalar) — defensive coerce to number.
-  const customers = data.customers.nodes.map((c) => ({
-    id: numericIdFromGid(c.id),
-    displayName: c.displayName ?? '(no name)',
-    email: c.email,
-    ordersCount: Number(c.numberOfOrders ?? 0),
-    amountSpent: Number.parseFloat(c.amountSpent.amount || '0'),
-    currency: c.amountSpent.currencyCode || 'USD',
-  }));
+  // Sort by amountSpent DESC here (was previously the API's job before
+  // AMOUNT_SPENT got deprecated from CustomerSortKeys). summarizeCustomerLifetime
+  // already iterates the full array to compute the totals + the top-10
+  // leaderboard, so an in-place sort up-front is the smallest change.
+  const customers = data.customers.nodes
+    .map((c) => ({
+      id: numericIdFromGid(c.id),
+      displayName: c.displayName ?? '(no name)',
+      email: c.email,
+      ordersCount: Number(c.numberOfOrders ?? 0),
+      amountSpent: Number.parseFloat(c.amountSpent.amount || '0'),
+      currency: c.amountSpent.currencyCode || 'USD',
+    }))
+    .sort((a, b) => b.amountSpent - a.amountSpent);
 
   return summarizeCustomerLifetime(customers);
 }
