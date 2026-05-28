@@ -23,11 +23,20 @@ here so the merchant has a versioned record of what was flagged when.
   per-tier email templates and a "what NOT to do" section. Read this
   alongside the CSV.
 
+- `semantic-gap-YYYYMMDD.csv` — per `(url, keyword)` rows listing the
+  "semantically related words" Semrush says competitors are using
+  that this page isn't. Each row carries the missing phrases plus a
+  `suggested_action` heuristic (FAQ section / Intro rewrite / Inline
+  sentence) based on how many phrases need to be woven in.
+
 The 20260528 keyword snapshot covers 53 `(url, keyword)` tuples — 48
 missing in title, 46 in H1, 12 in meta description, 20 in body. The
 20260528 backlinks snapshot ranks 328 target domains across 945 ideas
 into 10 priority tiers (10 are tier-A — the only ones with both a real
-backlink path AND domain authority that moves the needle).
+backlink path AND domain authority that moves the needle). The 20260528
+semantic-gap snapshot covers 84 `(url, keyword)` gaps — 41 calling for
+a FAQ section, 14 for an intro paragraph rewrite, 29 for an inline
+sentence addition.
 
 ## How to act on a snapshot
 
@@ -64,9 +73,13 @@ node scripts/seo-keyword-audit.mjs path/to/semrush-export.csv \
 # Backlinks outreach (reads XLSX directly via openpyxl):
 python3 scripts/seo-backlinks-outreach.py path/to/semrush-export.xlsx \
   > docs/seo-audits/backlinks-outreach-YYYYMMDD.csv
+
+# Semantic-gap audit (reads XLSX directly via openpyxl):
+python3 scripts/seo-semantic-gap.py path/to/semrush-export.xlsx \
+  > docs/seo-audits/semantic-gap-YYYYMMDD.csv
 ```
 
-Both scripts write CSV to stdout and a one-line summary to stderr.
+All three scripts write CSV to stdout and a one-line summary to stderr.
 
 ## Why these were flagged
 
@@ -90,6 +103,11 @@ noise) and merchants can usually ignore it.
   Anything not pre-classified falls into `B-evaluate` so nothing is
   silently dropped — extend the `CLASSIFICATION` dict in the script
   as new domains appear in future exports.
+- `scripts/seo-semantic-gap.py` — semantic-gap audit generator. Reads
+  XLSX directly via openpyxl, extracts the backtick-wrapped phrases
+  Semrush flags as "related words competitors use that you don't,"
+  dedupes per (url, keyword), and assigns a heuristic
+  `suggested_action` based on how many phrases each page is missing.
 - `lib/article-autolink.ts` — closes the sister problem of "no
   internal links in body" by injecting first-mention internal links
   inside article bodies.
