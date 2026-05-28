@@ -1,68 +1,85 @@
 /**
- * Diagnostic-only endpoint. Calls Judge.me's /widgets/index_information
- * directly from a server function with the configured env vars and
- * returns the raw response (status, headers, body) as JSON. The token
- * itself is NEVER returned in the response or logs — only the path/host
- * portion of the URL is exposed.
+ * Diagnostic endpoint — probes multiple candidate Judge.me endpoints
+ * to find one that responds with valid aggregate data. The original
+ * /widgets/index_information returns Judge.me's generic 404 HTML
+ * (confirmed via earlier debug run), so Judge.me has migrated that
+ * endpoint and we need to discover the new one.
  *
- * Why this exists: PR #316 wired AggregateRating into the CollectionPage
- * JSON-LD via mainEntity → Organization. Post-deploy verification
- * showed it never renders, and PR #324's added console.error logs
- * proved the underlying Judge.me REST call returns HTTP 404. Vercel
- * runtime logs truncate message bodies in the table view, so we can't
- * read what Judge.me actually says in the 404 body — but THIS endpoint
- * returns the full body to the caller.
- *
- * Auth: protected by the same Basic Auth as /admin (middleware sees
- * /admin/* prefix). Wait — this is /api/debug-judgeme, NOT under
- * /admin, so it's UNPROTECTED. Set robots-noindex header anyway so
- * crawlers don't index it. Delete this endpoint once the diagnosis
- * is complete (revert PR alongside the lib/judgeme.ts debug logs).
+ * Token is NEVER returned (only host/path + 4-char prefix + length).
+ * NoIndex header set. Delete this endpoint once the right endpoint
+ * is identified + the lib/judgeme.ts call site is updated.
  */
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
+
+type ProbeResult = {
+  url: string;
+  status: number | 'fetch-threw';
+  contentType?: string;
+  bodyPrefix: string;
+};
+
+async function probe(url: string): Promise<ProbeResult> {
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    const body = await res.text().catch(() => '<unreadable>');
+    return {
+      url: url.split('?')[0],
+      status: res.status,
+      contentType: res.headers.get('content-type') ?? undefined,
+      bodyPrefix: body.slice(0, 300),
+    };
+  } catch (err) {
+    return {
+      url: url.split('?')[0],
+      status: 'fetch-threw',
+      bodyPrefix: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
 
 export async function GET(): Promise<NextResponse> {
   const token = process.env.JUDGEME_API_TOKEN;
   const shop = process.env.JUDGEME_SHOP_DOMAIN;
   if (!token || !shop) {
     return NextResponse.json(
-      {
-        ok: false,
-        cause: 'env-missing',
-        token_present: Boolean(token),
-        shop_present: Boolean(shop),
-      },
+      { ok: false, cause: 'env-missing', token_present: Boolean(token), shop_present: Boolean(shop) },
       { status: 503, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     );
   }
-  // Strip the token from any returned URL — only return path/host.
-  const url = `https://judge.me/api/v1/widgets/index_information?api_token=${token}&shop_domain=${shop}`;
-  const safeUrl = url.split('?')[0];
-  try {
-    const res = await fetch(url, { cache: 'no-store' });
-    const status = res.status;
-    const headers: Record<string, string> = {};
-    res.headers.forEach((v, k) => { headers[k] = v; });
-    const body = await res.text().catch(() => '<unreadable>');
-    return NextResponse.json(
-      {
-        ok: res.ok,
-        request: { url: safeUrl, shop_domain_used: shop, token_present: true, token_length: token.length, token_prefix: token.slice(0, 4) },
-        response: { status, headers, body: body.slice(0, 2000) },
-      },
-      { status: res.ok ? 200 : 502, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    );
-  } catch (err) {
-    return NextResponse.json(
-      {
-        ok: false,
-        cause: 'fetch-threw',
-        message: err instanceof Error ? err.message : String(err),
-        request: { url: safeUrl, shop_domain_used: shop },
-      },
-      { status: 502, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    );
-  }
+
+  // Candidate endpoint shapes — Judge.me has migrated their public REST
+  // endpoints away from /widgets/index_information (confirmed 404 on
+  // that path). Probe each candidate and report which (if any) returns
+  // 200 + JSON. The merchant's response will narrow down which one to
+  // use in lib/judgeme.ts.
+  const candidates = [
+    `https://judge.me/api/v1/widgets/index_information?api_token=${token}&shop_domain=${shop}`,
+    `https://api.judge.me/api/v1/widgets/index_information?api_token=${token}&shop_domain=${shop}`,
+    `https://api.judge.me/v1/widgets/index_information?api_token=${token}&shop_domain=${shop}`,
+    `https://app.judge.me/api/v1/widgets/index_information?api_token=${token}&shop_domain=${shop}`,
+    `https://judge.me/api/v1/reviews/index_information?api_token=${token}&shop_domain=${shop}`,
+    `https://judge.me/api/v1/shop?api_token=${token}&shop_domain=${shop}`,
+    `https://judge.me/api/v1/reviews/count?api_token=${token}&shop_domain=${shop}`,
+    `https://judge.me/api/v1/reviews?api_token=${token}&shop_domain=${shop}&per_page=1`,
+    `https://cache.judge.me/widgets/index_information?api_token=${token}&shop_domain=${shop}`,
+    `https://cdn.judge.me/widgets/index_information?api_token=${token}&shop_domain=${shop}`,
+    `https://judge.me/api/v1/widget_settings?api_token=${token}&shop_domain=${shop}`,
+    // No-auth public widget badge — works with any shop_domain, no token needed.
+    `https://judge.me/shops/${encodeURIComponent(shop)}/badge`,
+  ];
+
+  const results = await Promise.all(candidates.map(probe));
+
+  return NextResponse.json(
+    {
+      shop_domain_used: shop,
+      token_present: true,
+      token_length: token.length,
+      token_prefix: token.slice(0, 4),
+      probes: results,
+    },
+    { status: 200, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+  );
 }
