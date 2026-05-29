@@ -6505,3 +6505,203 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   display: flex; align-items: center; justify-content: center;
   gap: var(--s-3); flex-wrap: wrap;
 }
+
+/* ===========================================================================
+   Comparison page ("X vs Y") template
+   ---------------------------------------------------------------------------
+   Editorial brand-vs-brand / retailer-vs-retailer pages. Reuses the
+   service-page chrome (.service-page container, .service-page-trust,
+   .service-page-layout, .service-page-toc, .service-page-cta) and adds a
+   "VS" hero plus a restyled comparison body so the merchant's raw
+   <table> + prose reads like a designed comparison instead of a wall.
+   Pattern inspired by Sleep Foundation / NapLab vs-page architecture;
+   copy stays in Shopify Admin. See lib/comparison-pages.ts.
+   =========================================================================== */
+
+.comparison-hero { margin: var(--s-5) 0 var(--s-6); }
+.comparison-hero h1 { margin: var(--s-4) 0 var(--s-3); max-width: 18ch; }
+.comparison-lede { font-size: 18px; line-height: 1.55; color: var(--text-2); margin: 0 0 var(--s-3); max-width: 62ch; }
+.comparison-updated { font-size: 13px; margin: var(--s-2) 0 0; }
+
+/* The VS plates: two contender cards split by a centered badge. Grid so
+   the badge column auto-sizes and the plates share the remaining width. */
+.comparison-vs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: var(--s-3);
+  margin: var(--s-4) 0 var(--s-2);
+  max-width: 720px;
+}
+.comparison-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--s-4) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  text-align: center;
+  box-shadow: var(--sh-1, 0 1px 2px rgba(0, 0, 0, 0.04));
+}
+.comparison-side-name {
+  font-size: clamp(18px, 2.4vw, 22px);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.comparison-side-tag { font-size: 13px; line-height: 1.4; color: var(--text-3); }
+.comparison-vs-badge {
+  align-self: center;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; flex: 0 0 44px;
+  border-radius: 999px;
+  background: var(--brand-navy, #1B2C5E);
+  color: #fff;
+  font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+}
+@media (max-width: 560px) {
+  .comparison-vs { grid-template-columns: 1fr; gap: var(--s-2); }
+  .comparison-vs-badge { width: 36px; height: 36px; flex-basis: 36px; }
+}
+
+/* Body — wider than the 70ch service-page body because the comparison
+   table needs room, but prose blocks stay capped for readability while
+   tables/figures run full width. */
+.comparison-body { max-width: none; }
+.comparison-body > p,
+.comparison-body > ul,
+.comparison-body > ol,
+.comparison-body > h2,
+.comparison-body > h3 { max-width: 68ch; }
+
+/* "Short answer" lead paragraph — the first <p> that opens with a bold
+   verdict. Lift it into a callout so the TL;DR reads as a verdict box. */
+.comparison-body > p:has(> strong:first-child) {
+  background: var(--surface-2, #f7f7f7);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-2);
+  padding: var(--s-4) var(--s-4);
+  max-width: 72ch;
+}
+
+/* Restyle the merchant comparison <table>: full-width card with a tinted
+   header row, emphasized first (label) column, and row hover. The
+   wrapper (.cmp-table-scroll, added by ComparisonPage) lets a wide table
+   scroll horizontally inside its column on any viewport. */
+.cmp-table-scroll {
+  margin: var(--s-5) 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+}
+.cmp-table-scroll table {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  min-width: 540px;
+  font-size: 15px;
+}
+.cmp-table-scroll thead th {
+  background: var(--brand-navy, #1B2C5E);
+  color: #fff;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.cmp-table-scroll th,
+.cmp-table-scroll td {
+  padding: var(--s-3) var(--s-3);
+  border-bottom: 1px solid var(--line);
+}
+/* First column = the row label. Emphasize it and pin it during
+   horizontal scroll so each row stays identifiable. */
+.cmp-table-scroll td:first-child {
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  position: sticky;
+  left: 0;
+}
+.cmp-table-scroll thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.cmp-table-scroll tbody tr:hover td {
+  background: rgba(20, 40, 160, 0.04);
+}
+
+/* "When X is right / When Purple is right" style lists — give the
+   bullets an accent marker so the decision lists scan as checklists. */
+.comparison-body ul { list-style: none; padding-left: 0; }
+.comparison-body ul > li {
+  position: relative;
+  padding-left: var(--s-5);
+}
+.comparison-body ul > li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.62em;
+  width: 7px; height: 7px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+/* ===========================================================================
+   Contact page — action cards
+   ---------------------------------------------------------------------------
+   /pages/mattress-store-contact. Big tappable Call / Email / Visit / Chat
+   cards under the hero (replaces the generic trust strip), then the
+   all-five map (.locations-map-wrap) + styled body. See
+   app/_components/sections/contact-page.tsx.
+   =========================================================================== */
+
+.contact-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-3);
+  margin: 0 0 var(--s-2);
+}
+@media (max-width: 860px) { .contact-actions { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 460px) { .contact-actions { grid-template-columns: 1fr; } }
+
+.contact-action {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--sh-1, 0 1px 2px rgba(0, 0, 0, 0.04));
+  transition: border-color var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+}
+a.contact-action:hover {
+  border-color: var(--accent);
+  box-shadow: var(--sh-2, 0 4px 14px rgba(0, 0, 0, 0.08));
+  transform: translateY(-1px);
+}
+.contact-action-static { cursor: default; }
+.contact-action-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  background: rgba(20, 40, 160, 0.08);
+  color: var(--accent);
+  margin-bottom: var(--s-2);
+}
+.contact-action-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-3);
+}
+.contact-action-value {
+  font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.contact-action-sub { font-size: 13px; color: var(--text-3); line-height: 1.4; }
