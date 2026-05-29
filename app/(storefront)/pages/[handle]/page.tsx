@@ -31,6 +31,8 @@ import { LocationsFinder } from '@/app/_components/sections/locations-finder';
 import { getStorefrontReviews } from '@/lib/judgeme';
 import { ServicePage } from '@/app/_components/sections/service-page';
 import { isServicePage, SERVICE_PAGES } from '@/lib/service-pages';
+import { ComparisonPage } from '@/app/_components/sections/comparison-page';
+import { isComparisonPage, COMPARISON_PAGES } from '@/lib/comparison-pages';
 
 /**
  * Fallback for published pages that have no body content. The previous
@@ -285,6 +287,18 @@ export default async function ShopifyPage(props: Params) {
   // early-exit for the more common path.
   const neighborhood = findNeighborhood(page.handle);
   if (neighborhood) return <NeighborhoodPage page={page} neighborhood={neighborhood} />;
+
+  // Editorial "X vs Y" comparison pages (purple-vs-tempur-pedic,
+  // mattress-firm-vs-la-mattress-store) share a brand-level chrome — a
+  // "VS" hero + trust strip + sticky TOC + CTA — while the merchant-
+  // authored CMS body (verdict, comparison table, FAQ) stays editable in
+  // Shopify Admin and gets restyled into a scannable layout. Config lives
+  // in lib/comparison-pages.ts. Checked after neighborhood (none of the
+  // comparison handles match a neighborhood) and before the default CMS
+  // fallback.
+  if (isComparisonPage(page.handle)) {
+    return <ComparisonPage page={page} config={COMPARISON_PAGES[page.handle]} />;
+  }
 
   return <DefaultPage page={page} />;
 }
