@@ -3,7 +3,6 @@ import { shopifyProductIdFromGid } from '@/lib/judgeme';
 import { JudgemeWidget } from './judgeme-widget';
 import { StripInternalNofollow } from './strip-internal-nofollow';
 import { TrackReviewWidget } from './track-review-widget';
-import { Icon } from './icon';
 import type { ProductReviews } from '@/lib/shopify';
 
 /**
@@ -50,29 +49,24 @@ export function PdpReviewsSection({ productGid, productHandle, reviews }: Props)
         ) : null}
       </header>
 
-      {/* Always-visible "Write a review" CTA. Rendered server-side so it
-          appears regardless of whether Judge.me's client widget has
-          hydrated yet — the widget's own write-review button only
-          appears after the lazyOnload preloader fetches + initializes,
-          and is gated by the Judge.me dashboard's "Write a Review
-          button" toggle (which can be off without warning).
-          The `.jdgm-write-rev-link` class is the selector Judge.me's
-          preloader binds an onClick handler to that opens its form
-          modal — once hydrated, clicking this button triggers the
-          same in-page form their own button would. Pre-hydration the
-          href is `#judgeme-widget-mount` so the click still scrolls
-          the user to the widget area where they can wait a beat for
-          hydration. */}
-      {productId ? (
-        <div className="pdp-reviews-cta-row">
-          <a
-            href="#judgeme-widget-mount"
-            className="jdgm-write-rev-link btn btn-primary pdp-reviews-cta-btn"
-          >
-            <Icon name="star" size={14} /> Write a review
-          </a>
-        </div>
-      ) : null}
+      {/* Phase 308 rollback (2026-05-29): the always-visible
+          `.jdgm-write-rev-link` CTA originally added in #334 was
+          built on the belief that Judge.me's preloader binds a
+          click handler to anchors with that class once the widget
+          hydrates. On the live PDP that binding never took — the
+          button visually existed but only ever triggered the
+          default anchor scroll + URL hash, with no form opening.
+          Two follow-up fixes (#350, #353) tried to repair the
+          wiring without browser access to verify, and both deployed
+          without moving the needle for the user. Removing the
+          external CTA entirely so the only Write-a-Review surface
+          is the one Judge.me renders INSIDE the hydrated widget
+          (gated by the dashboard's Write-a-Review toggle). Their
+          internal button is wired by their own JS and works
+          consistently across configurations. The aggregate badge +
+          review count above stays in place and still tells the
+          shopper this product has reviews even when they haven't
+          scrolled to the widget yet. */}
 
       {/* Phase 249: dropped the LA Mattress-side "Be the first to review X"
           server copy on 0-review PDPs. Judge.me's widget hydrates its own
