@@ -6683,10 +6683,12 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
    inline emphasis, not a callout box (there are too many to box). */
 .guide-body p > strong:first-child { color: var(--brand-navy, #1B2C5E); }
 
-/* The size chart uses <th scope="row"> for its row labels (not <td>), so
-   the shared .cmp-table-scroll td:first-child pin doesn't catch them. Pin
-   and emphasize the row-header column too, matching the label-column look. */
-.guide-body .cmp-table-scroll tbody th {
+/* Some merchant tables use <th scope="row"> for their row labels (e.g. the
+   size chart) rather than <td>, so the .cmp-table-scroll td:first-child pin
+   doesn't catch them. Pin and emphasize the row-header column too, matching
+   the label-column look. Generalized to .cmp-table-scroll (not scoped to one
+   template) so every table-aware page renders row headers consistently. */
+.cmp-table-scroll tbody th {
   position: sticky;
   left: 0;
   text-align: left;
@@ -6695,7 +6697,7 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   background: var(--surface);
   white-space: nowrap;
 }
-.guide-body .cmp-table-scroll caption {
+.cmp-table-scroll caption {
   caption-side: top;
   text-align: left;
   font-size: 13px;
