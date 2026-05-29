@@ -35,6 +35,8 @@ import { ComparisonPage } from '@/app/_components/sections/comparison-page';
 import { isComparisonPage, COMPARISON_PAGES } from '@/lib/comparison-pages';
 import { GuidePage } from '@/app/_components/sections/guide-page';
 import { isGuidePage, GUIDE_PAGES } from '@/lib/guide-pages';
+import { LegalPage } from '@/app/_components/sections/legal-page';
+import { isLegalPage, LEGAL_PAGES } from '@/lib/legal-pages';
 import { ContactPage } from '@/app/_components/sections/contact-page';
 
 /**
@@ -316,6 +318,14 @@ export default async function ShopifyPage(props: Params) {
   // lib/guide-pages.ts. Checked last before the plain CMS fallback.
   if (isGuidePage(page.handle)) {
     return <GuidePage page={page} config={GUIDE_PAGES[page.handle]} />;
+  }
+
+  // Policy / legal pages (terms, privacy, returns, the policy hub,
+  // recycling fee) share a clean readable chrome — hero + "last updated"
+  // + sticky TOC + contact footnote, no marketing trust strip. Config in
+  // lib/legal-pages.ts. Checked last before the plain CMS fallback.
+  if (isLegalPage(page.handle)) {
+    return <LegalPage page={page} config={LEGAL_PAGES[page.handle]} />;
   }
 
   return <DefaultPage page={page} />;

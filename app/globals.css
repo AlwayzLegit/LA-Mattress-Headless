@@ -6704,6 +6704,41 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 }
 
 /* ===========================================================================
+   Policy / legal pages (terms, privacy, returns, policies, recycling-fee)
+   ---------------------------------------------------------------------------
+   Reuse the service-page container + .service-page-layout / TOC, but with a
+   legal tone: no trust strip / marketing CTA. The body gets a narrower,
+   denser measure and section dividers so long legal text stays readable,
+   plus a slim contact footnote at the end. Tables (e.g. the recycling-fee
+   schedule) reuse the shared .cmp-table-scroll treatment. Copy stays in
+   Shopify Admin. See lib/legal-pages.ts + app/_components/sections/legal-page.tsx.
+   =========================================================================== */
+.legal-hero { margin-bottom: var(--s-5); }
+
+.legal-body { max-width: 74ch; font-size: 15px; line-height: 1.65; }
+/* Section dividers: each top-level h2 opens a new section with a hairline
+   rule above it, so a long single-column policy reads as discrete sections. */
+.legal-body h2 {
+  margin-top: var(--s-7);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+}
+.legal-body > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.legal-body h3 { margin-top: var(--s-5); }
+
+/* Slim contact footnote — replaces the marketing CTA the other templates
+   carry. Quiet, informational, sits at the end of the policy text. */
+.legal-footnote {
+  margin: var(--s-7) 0 0;
+  padding: var(--s-4) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface-2, #f7f7f7);
+  max-width: 74ch;
+}
+.legal-footnote p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-2); }
+
+/* ===========================================================================
    Contact page — action cards
    ---------------------------------------------------------------------------
    /pages/mattress-store-contact. Big tappable Call / Email / Visit / Chat
