@@ -12135,7 +12135,13 @@
       "source": "/products/framos-platform-base-13",
       "destination": "/collections/foundations",
       "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/484788568317",
+      "source": "/collections/bedroom-furniture",
+      "destination": "/collections/bed-frames",
+      "permanent": true
     }
   ],
-  "$updateNote": "Appended 190 new Shopify URL redirects (created via MCP this session)"
+  "$updateNote": "Appended bare /collections/bedroom-furniture -> /collections/bed-frames (SEMrush 20260526: 4xx + broken internal link on the dead bare collection; subpaths already redirect, the bare handle did not). Prior: 190 new Shopify URL redirects created via MCP."
 }
