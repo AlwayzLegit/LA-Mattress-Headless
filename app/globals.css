@@ -6661,6 +6661,49 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 }
 
 /* ===========================================================================
+   Buying-guide pages (mattress-sizes, mattress-types)
+   ---------------------------------------------------------------------------
+   Reuse the service-page chrome (.service-page container, hero, trust strip,
+   .service-page-layout / TOC, CTA) and the shared .cmp-table-scroll table
+   treatment. Add only body-level polish for guide content: a slightly wider
+   measure so the size chart breathes, navy inline labels for the mattress-
+   types "The feel:" lead-ins, and pinned/emphasized row-header cells in the
+   size chart (which uses <th scope="row"> rather than <td>). Copy stays in
+   Shopify Admin. See lib/guide-pages.ts + app/_components/sections/guide-page.tsx.
+   =========================================================================== */
+.guide-body { max-width: none; }
+.guide-body > p,
+.guide-body > ul,
+.guide-body > ol,
+.guide-body > h2,
+.guide-body > h3 { max-width: 70ch; }
+
+/* mattress-types lead-ins: <p><strong>The feel:</strong> …>. Tint the
+   leading label navy so each paragraph's category scans at a glance —
+   inline emphasis, not a callout box (there are too many to box). */
+.guide-body p > strong:first-child { color: var(--brand-navy, #1B2C5E); }
+
+/* The size chart uses <th scope="row"> for its row labels (not <td>), so
+   the shared .cmp-table-scroll td:first-child pin doesn't catch them. Pin
+   and emphasize the row-header column too, matching the label-column look. */
+.guide-body .cmp-table-scroll tbody th {
+  position: sticky;
+  left: 0;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  white-space: nowrap;
+}
+.guide-body .cmp-table-scroll caption {
+  caption-side: top;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-3);
+  padding: var(--s-3) var(--s-3) 0;
+}
+
+/* ===========================================================================
    Contact page — action cards
    ---------------------------------------------------------------------------
    /pages/mattress-store-contact. Big tappable Call / Email / Visit / Chat
