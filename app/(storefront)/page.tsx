@@ -91,8 +91,23 @@ export default async function Home() {
           completion vs. a cold start. Industry-standard placement
           (Helix, Casper, Nectar all put it above the fold). */}
       <QuizLeadIn />
-      <RecentlyViewedRail heading="Welcome back" eyebrow="Pick up where you left off" />
       <PopularProducts />
+      {/* RecentlyViewedRail must sit AFTER an above-fold server-rendered
+          section, not directly under the hero. It's a client component
+          that returns null pre-hydration and pops in a full ~400px-tall
+          section once it reads localStorage. With it placed under the
+          hero, the post-hydration pop-in pushed every subsequent
+          section down within the visible viewport — PostHog web-vitals
+          captured a homepage CLS p95 of 0.79 (severe, sourced from the
+          ~5% of returning visitors with 2+ recently-viewed items).
+          Demoting it below PopularProducts moves the shift below the
+          fold for typical viewports (Hero ~700px + QuizLeadIn ~180px +
+          PopularProducts ~600px places the rail past 1400px down), so
+          hydration completes before the user scrolls to where the
+          shift happens. The "Welcome back" eyebrow still surfaces for
+          returning visitors, just after Popular Products instead of
+          before. */}
+      <RecentlyViewedRail heading="Welcome back" eyebrow="Pick up where you left off" />
       <ShopByCategory />
       <Showrooms />
       <BrandStrip />
