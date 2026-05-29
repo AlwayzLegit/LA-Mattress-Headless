@@ -1,8 +1,8 @@
 /**
  * Per-handle configuration for the LegalPage template — the policy /
- * legal pages (terms, privacy, returns, the policy hub, recycling fee)
- * that render long merchant-authored CMS bodies inside a clean, readable
- * chrome:
+ * legal / warranty pages (terms, privacy, returns, the policy hub,
+ * recycling fee, and the per-brand limited-warranty pages) that render
+ * long merchant-authored CMS bodies inside a clean, readable chrome:
  *
  *   - Breadcrumb
  *   - Hero (eyebrow + h1 + "last updated")
@@ -30,6 +30,16 @@ export const LEGAL_PAGE_HANDLES = [
   'returns',
   'policies',
   'mattress-recycling-fee',
+  // Per-brand limited-warranty pages. Mostly flat paragraph walls (no
+  // headings → no TOC), so the win here is the readable measure +
+  // breadcrumb + "last updated" over the full-width DefaultPage wall.
+  // The structured ones (e.g. harvest) also get section dividers + TOC.
+  'tempur-pedic-warranty',
+  '20-year-diamond-mattress-and-foundation-limited-warranty',
+  'harvest-mattress-warranty',
+  'spring-air-limited-warranty-and-mattress-care-guidelines-ensuring-your-sleep-experience',
+  'guidelines-stearns-foster-mattress-limited-warranty-information',
+  'chattam-wells-10-year-non-prorated-limited-warranty-information',
 ] as const;
 
 export type LegalPageHandle = (typeof LEGAL_PAGE_HANDLES)[number];
@@ -44,4 +54,16 @@ export const LEGAL_PAGES: Record<LegalPageHandle, LegalPageConfig> = {
   returns: { eyebrow: 'Policies · Returns & warranty' },
   policies: { eyebrow: 'Policies' },
   'mattress-recycling-fee': { eyebrow: 'Policies · Recycling fee' },
+  'tempur-pedic-warranty': { eyebrow: 'Warranty · Tempur-Pedic' },
+  '20-year-diamond-mattress-and-foundation-limited-warranty': { eyebrow: 'Warranty · Diamond' },
+  'harvest-mattress-warranty': { eyebrow: 'Warranty · Harvest' },
+  'spring-air-limited-warranty-and-mattress-care-guidelines-ensuring-your-sleep-experience': {
+    eyebrow: 'Warranty · Spring Air',
+  },
+  'guidelines-stearns-foster-mattress-limited-warranty-information': {
+    eyebrow: 'Warranty · Stearns & Foster',
+  },
+  'chattam-wells-10-year-non-prorated-limited-warranty-information': {
+    eyebrow: 'Warranty · Chattam & Wells',
+  },
 };
