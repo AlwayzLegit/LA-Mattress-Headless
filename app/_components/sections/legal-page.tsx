@@ -84,9 +84,9 @@ export function LegalPage({
           />
         </div>
 
-        <aside className="legal-footnote" aria-label="Questions about this policy">
+        <aside className="legal-footnote" aria-label="Questions">
           <p>
-            Questions about this policy? Call us at{' '}
+            Questions? Call us at{' '}
             <a href={`tel:${SITE_PHONE_TEL}`}>{SITE_PHONE_DISPLAY}</a> or{' '}
             <Link href="/pages/mattress-store-contact">contact a showroom</Link> — every call
             reaches a real person at a real store.
