@@ -33,6 +33,8 @@ import { ServicePage } from '@/app/_components/sections/service-page';
 import { isServicePage, SERVICE_PAGES } from '@/lib/service-pages';
 import { ComparisonPage } from '@/app/_components/sections/comparison-page';
 import { isComparisonPage, COMPARISON_PAGES } from '@/lib/comparison-pages';
+import { GuidePage } from '@/app/_components/sections/guide-page';
+import { isGuidePage, GUIDE_PAGES } from '@/lib/guide-pages';
 import { ContactPage } from '@/app/_components/sections/contact-page';
 
 /**
@@ -306,6 +308,14 @@ export default async function ShopifyPage(props: Params) {
   // fallback.
   if (isComparisonPage(page.handle)) {
     return <ComparisonPage page={page} config={COMPARISON_PAGES[page.handle]} />;
+  }
+
+  // Editorial buying-guide pages (mattress-sizes, mattress-types) share
+  // the service-page chrome but run wrapCmsTables so the size chart gets
+  // the scannable .cmp-table-scroll card treatment. Config lives in
+  // lib/guide-pages.ts. Checked last before the plain CMS fallback.
+  if (isGuidePage(page.handle)) {
+    return <GuidePage page={page} config={GUIDE_PAGES[page.handle]} />;
   }
 
   return <DefaultPage page={page} />;
