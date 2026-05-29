@@ -6598,39 +6598,39 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   border: 1px solid var(--line);
   border-radius: var(--r-3);
 }
-.comparison-body .cmp-table-scroll table {
+.cmp-table-scroll table {
   margin: 0;
   border: 0;
   border-radius: 0;
   min-width: 540px;
   font-size: 15px;
 }
-.comparison-body .cmp-table-scroll thead th {
+.cmp-table-scroll thead th {
   background: var(--brand-navy, #1B2C5E);
   color: #fff;
   font-size: 13px;
   white-space: nowrap;
 }
-.comparison-body .cmp-table-scroll th,
-.comparison-body .cmp-table-scroll td {
+.cmp-table-scroll th,
+.cmp-table-scroll td {
   padding: var(--s-3) var(--s-3);
   border-bottom: 1px solid var(--line);
 }
 /* First column = the row label. Emphasize it and pin it during
    horizontal scroll so each row stays identifiable. */
-.comparison-body .cmp-table-scroll td:first-child {
+.cmp-table-scroll td:first-child {
   font-weight: 600;
   color: var(--text);
   background: var(--surface);
   position: sticky;
   left: 0;
 }
-.comparison-body .cmp-table-scroll thead th:first-child {
+.cmp-table-scroll thead th:first-child {
   position: sticky;
   left: 0;
   z-index: 1;
 }
-.comparison-body .cmp-table-scroll tbody tr:hover td {
+.cmp-table-scroll tbody tr:hover td {
   background: rgba(20, 40, 160, 0.04);
 }
 
@@ -6650,3 +6650,58 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   border-radius: 999px;
   background: var(--accent);
 }
+
+/* ===========================================================================
+   Contact page — action cards
+   ---------------------------------------------------------------------------
+   /pages/mattress-store-contact. Big tappable Call / Email / Visit / Chat
+   cards under the hero (replaces the generic trust strip), then the
+   all-five map (.locations-map-wrap) + styled body. See
+   app/_components/sections/contact-page.tsx.
+   =========================================================================== */
+
+.contact-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-3);
+  margin: 0 0 var(--s-2);
+}
+@media (max-width: 860px) { .contact-actions { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 460px) { .contact-actions { grid-template-columns: 1fr; } }
+
+.contact-action {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--sh-1, 0 1px 2px rgba(0, 0, 0, 0.04));
+  transition: border-color var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+}
+a.contact-action:hover {
+  border-color: var(--accent);
+  box-shadow: var(--sh-2, 0 4px 14px rgba(0, 0, 0, 0.08));
+  transform: translateY(-1px);
+}
+.contact-action-static { cursor: default; }
+.contact-action-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  background: rgba(20, 40, 160, 0.08);
+  color: var(--accent);
+  margin-bottom: var(--s-2);
+}
+.contact-action-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-3);
+}
+.contact-action-value {
+  font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.contact-action-sub { font-size: 13px; color: var(--text-3); line-height: 1.4; }

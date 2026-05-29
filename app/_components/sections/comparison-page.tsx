@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Icon } from '../icon';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { wrapCmsTables } from '@/lib/cms-html';
 import { stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import type { ComparisonPageConfig } from '@/lib/comparison-pages';
 import { ServicePageToc } from './service-page-toc';
@@ -39,19 +40,6 @@ type PageLike = {
 
 const BODY_ID = 'comparison-page-body';
 
-/**
- * Wrap each <table> in a horizontal-scroll container so a wide
- * comparison grid scrolls within its column instead of blowing out the
- * layout on narrow viewports. The table markup is untouched (screen
- * readers still announce it as a table); only a scroll wrapper is added.
- * Comparison bodies never nest tables, so the open/close swap is safe.
- */
-function wrapTables(html: string): string {
-  return html
-    .replace(/<table/g, '<div class="cmp-table-scroll"><table')
-    .replace(/<\/table>/g, '</table></div>');
-}
-
 export function ComparisonPage({
   page,
   config,
@@ -69,7 +57,7 @@ export function ComparisonPage({
     : null;
   const [left, right] = config.sides;
   const bodyHtml = page.body
-    ? wrapTables(autoLinkArticleBody(sanitizeShopifyHtml(page.body)))
+    ? wrapCmsTables(autoLinkArticleBody(sanitizeShopifyHtml(page.body)))
     : '';
 
   return (
