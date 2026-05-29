@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Icon } from '../icon';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { wrapCmsTables } from '@/lib/cms-html';
 import { stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import type { ServicePageConfig } from '@/lib/service-pages';
 import { ServicePageToc } from './service-page-toc';
@@ -97,7 +98,9 @@ export function ServicePage({
             id={BODY_ID}
             className="rte cms-body service-page-body"
             dangerouslySetInnerHTML={{
-              __html: page.body ? autoLinkArticleBody(sanitizeShopifyHtml(page.body)) : '',
+              __html: page.body
+                ? wrapCmsTables(autoLinkArticleBody(sanitizeShopifyHtml(page.body)))
+                : '',
             }}
           />
         </div>

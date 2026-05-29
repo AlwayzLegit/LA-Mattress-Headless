@@ -35,6 +35,7 @@ export const SERVICE_PAGE_HANDLES = [
   'mattress-store-financing',
   'warranty',
   'love-your-bed-guarantee',
+  'lowest-price-guarantee',
   'mattress-store-delivery',
   'mattress-store-contact',
   'about',
@@ -129,6 +130,20 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
       headline: 'Come see what we mean.',
       primary: { label: 'Find your closest showroom', href: '/pages/mattress-store-locations' },
       secondary: { label: 'Browse mattresses', href: '/collections/mattresses' },
+    },
+  },
+  'lowest-price-guarantee': {
+    eyebrow: 'Price guarantee',
+    lede: 'Find the same mattress for less at an authorized retailer and we beat their price by 10% — for up to 30 days after you buy. Here’s exactly how it works.',
+    trust: [
+      { icon: 'check', title: 'We beat it by 10%', sub: 'Not just match — 10% below the competitor’s price' },
+      { icon: 'shield', title: '30 days after purchase', sub: 'Price drops later? We refund the difference + 10%' },
+      { icon: 'card', title: 'No haggling, no paperwork', sub: 'Send the link or ad — we verify and handle it' },
+    ],
+    cta: {
+      headline: 'Found a lower price? Send it over.',
+      primary: { label: 'Browse mattresses', href: '/collections/mattresses' },
+      secondary: { label: 'Find your closest showroom', href: '/pages/mattress-store-locations' },
     },
   },
 };
