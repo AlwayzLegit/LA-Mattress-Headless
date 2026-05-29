@@ -37,11 +37,32 @@ const VALID_OPTIONS: Record<string, Set<string>> = QUESTIONS.reduce<Record<strin
   {},
 );
 
-export function SleepQuiz({ productPicks }: { productPicks: Record<string, ProductSummary> }) {
+export function SleepQuiz({ productPicksPromise }: { productPicksPromise: Promise<Record<string, ProductSummary>> }) {
   // Step 0..QUESTIONS.length-1 = questions, then "result" = done.
   const [step, setStep] = useState<number | 'result'>(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [hydrated, setHydrated] = useState(false);
+  // Picks resolve in the background while the user answers questions.
+  // Server kicked off `getQuizPicks()` without awaiting (see page.tsx
+  // for the rationale — LCP p95 reduction). We mirror the resolved
+  // value into state so the result step can render synchronously; a
+  // null sentinel means the fetch hasn't landed yet, which gates the
+  // result render to a small loading box. In practice the Promise
+  // resolves within seconds of mount and the user spends ~30–60s on
+  // the questions, so the gating path is virtually never reached.
+  const [productPicks, setProductPicks] = useState<Record<string, ProductSummary> | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    productPicksPromise
+      // Empty record matches the degraded state getQuizPicks itself
+      // returns on Shopify failure (lib/shopify/queries/quiz-picks.ts
+      // Phase 280) — SleepQuizResult falls back to the category
+      // recommendation card when a handle isn't in the map, so this
+      // is a valid recovery path rather than a user-visible error.
+      .then((picks) => { if (!cancelled) setProductPicks(picks); })
+      .catch(() => { if (!cancelled) setProductPicks({}); });
+    return () => { cancelled = true; };
+  }, [productPicksPromise]);
   // Read query-string pre-fills. The homepage lead-in
   // (app/_components/sections/quiz-leadin.tsx) deep-links here as
   // /sleep-quiz?position=<id> — the shopper has effectively answered
@@ -163,7 +184,16 @@ export function SleepQuiz({ productPicks }: { productPicks: Record<string, Produ
     };
   }, []);
 
-  if (step === 'result' && result) return <SleepQuizResult result={result} answers={answers} productPicks={productPicks} onRestart={() => { completionFiredRef.current = false; completionPathRef.current = null; setStep(0); setAnswers({}); }} />;
+  if (step === 'result' && result) {
+    // Picks may not be resolved yet on the rare slow-Shopify roll
+    // where the GraphQL call outlasted the user's quiz interaction.
+    // Render the inert quiz-loading shell (same shape as the page
+    // Suspense fallback) until they land; resolution typically takes
+    // sub-second from this point, so the gating shell is virtually
+    // never visible in practice.
+    if (productPicks === null) return <div className="quiz quiz-loading" aria-hidden="true" />;
+    return <SleepQuizResult result={result} answers={answers} productPicks={productPicks} onRestart={() => { completionFiredRef.current = false; completionPathRef.current = null; setStep(0); setAnswers({}); }} />;
+  }
 
   const idx = step as number;
   const q = QUESTIONS[idx];

@@ -24,11 +24,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function SleepQuizPage() {
-  // Phase 255: pre-fetch all candidate product picks server-side so the
-  // result hero card paints immediately when the user finishes the quiz
-  // instead of stalling on a client-side fetch. ISR caches the bundle.
-  const productPicks = await getQuizPicks(allQuizPickHandles());
+export default function SleepQuizPage() {
+  // Phase 255 follow-up: KICK OFF the picks fetch but DON'T await it
+  // here — pass the unresolved Promise to the client SleepQuiz, which
+  // awaits it lazily once the user reaches the result step. PostHog
+  // web-vitals showed /sleep-quiz LCP p95 = 9.3s vs p75 = 1.96s — that
+  // gulf is the Shopify multi-product fetch (~7 productByHandle queries
+  // in one GraphQL call) blocking SSR on slow-merchant-API rolls of the
+  // dice. The page shell (h1, lede, breadcrumbs, JSON-LD) doesn't
+  // depend on the picks; awaiting them server-side just made the
+  // shopper stare at a blank tab while the GraphQL roundtrip ran. With
+  // the Promise handed to the client unresolved, the shell streams
+  // immediately and the fetch overlaps with the 30–60s the user spends
+  // answering 8 questions. By the time `step === 'result'`, the picks
+  // are practically guaranteed to be resolved — and if not, SleepQuiz
+  // shows a small loading state inline rather than blocking initial
+  // paint. The fetch itself still happens server-side (kept warm by
+  // ISR cache tags via the `quiz-picks` tag in getQuizPicks); only the
+  // await moved.
+  const productPicksPromise = getQuizPicks(allQuizPickHandles());
   const SITE = 'https://www.mattressstoreslosangeles.com';
   const url = `${SITE}/sleep-quiz`;
   const quizLd = {
@@ -96,7 +110,7 @@ export default async function SleepQuizPage() {
               a placeholder of roughly the same shape so the layout
               doesn't jump while the client takes over. */}
           <Suspense fallback={<div className="quiz quiz-loading" aria-hidden="true" />}>
-            <SleepQuiz productPicks={productPicks} />
+            <SleepQuiz productPicksPromise={productPicksPromise} />
           </Suspense>
         </div>
       </section>
