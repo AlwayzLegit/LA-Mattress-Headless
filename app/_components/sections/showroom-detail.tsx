@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { getBrands } from '@/lib/shopify';
 import { type Showroom, SHOWROOMS } from '@/lib/showrooms';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { Icon } from '../icon';
 
 export async function ShowroomDetail({
@@ -108,9 +109,24 @@ export async function ShowroomDetail({
         <section className="section" aria-labelledby="sd-more-h">
           <div className="eyebrow">More about this store</div>
           <h2 id="sd-more-h" className="h2">The {showroom.area} story</h2>
+          {/* Phase 308 SEO audit: route the showroom's merchant CMS
+              body through autoLinkArticleBody so the body picks up
+              first-mention internal links to brand collections, size
+              pages, the sleep quiz, etc. — same pattern every other
+              CMS-body-rendering template uses (service-page,
+              comparison-page, contact-page, legal-page, default page
+              fallback in pages/[handle]/page.tsx). Without this,
+              showroom pages were emitting their merchant body raw,
+              which Semrush 20260530 flagged as `no internal links in
+              body` on /pages/mattress-store-in-glendale (69 prio) and
+              /pages/koreatown-best-mattress-store (3 prio). The
+              showroom's structural chrome (nav, breadcrumbs, "Our
+              other LA showrooms" rail) carries plenty of internal
+              links page-wide, but Semrush's heuristic scopes to the
+              authored body specifically. */}
           <div
             className="rte cms-body"
-            dangerouslySetInnerHTML={{ __html: sanitizeShopifyHtml(cmsBody) }}
+            dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(cmsBody)) }}
           />
         </section>
       ) : null}
