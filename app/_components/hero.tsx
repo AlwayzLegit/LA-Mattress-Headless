@@ -50,36 +50,31 @@ export function Hero({ slides, autoplay = true }: { slides: HeroSlide[]; autopla
               <div className="container hero-content">
                 <div className="hero-copy">
                   <div className="eyebrow eyebrow-on-dark">{s.eyebrow}</div>
-                  {/* Phase 250: only slide 0 renders as <h1> so the page has
-                      exactly one h1 for SEO. Slides 1+ render the same
-                      .hero-title styling on a <p> so they look identical when
-                      the hero rotates client-side (aria-hidden + inert above
-                      already remove them from the a11y tree). Cowork rev-7
-                      flagged SEMrush "Multiple h1 tags" on the homepage,
-                      caused by all 3 slide h1s being in the DOM at once. */}
+                  {/* All slides render as <p>, not <h1>. Phase 250 had
+                      slide 0 carrying the H1 (and slides 1+ rendering
+                      identical .hero-title styling on <p>) so the page
+                      had exactly one H1 — but the slide title comes
+                      from a Shopify metaobject which the merchant
+                      controls. Phase 308 SEO audit (Semrush 20260530)
+                      flagged the homepage for missing target keywords
+                      in the <h1> (`h1_missing_kw` × 4 keywords); we
+                      can't fix that by editing slide 0's text without
+                      either making the slide title non-merchant-
+                      editable or constraining its content. Instead,
+                      every slide renders as <p> now and the page's
+                      canonical H1 is a code-controlled visually-
+                      hidden element at the top of <main> in
+                      app/(storefront)/page.tsx — keyword-loaded,
+                      deterministic, edited via PR. */}
                   {/* Phase 292 (cowork MEDIUM#11): the \n in the slide
                       title is a visual line break (flex-column .hero-line
-                      spans). textContent — what SEMrush/Google read for
-                      the H1 — concatenates adjacent spans with NO
-                      separator, so "Up to\n60% off." surfaced as the
-                      typo "Up to60% off.". Append a trailing space to
-                      every non-last line: it collapses visually (block
-                      span, white-space:normal) but is preserved in
-                      textContent → "Up to 60% off.". aria-label was
-                      already correct. */}
-                  {idx === 0 ? (
-                    <h1 className="hero-title" aria-label={s.title.replace(/\n/g, ' ')}>
-                      {s.title.split('\n').map((l, j, arr) => (
-                        <span key={j} className="hero-line">{j < arr.length - 1 ? `${l} ` : l}</span>
-                      ))}
-                    </h1>
-                  ) : (
-                    <p className="hero-title" aria-label={s.title.replace(/\n/g, ' ')}>
-                      {s.title.split('\n').map((l, j, arr) => (
-                        <span key={j} className="hero-line">{j < arr.length - 1 ? `${l} ` : l}</span>
-                      ))}
-                    </p>
-                  )}
+                      spans). Trailing space on every non-last line
+                      keeps textContent readable across the spans. */}
+                  <p className="hero-title" aria-label={s.title.replace(/\n/g, ' ')}>
+                    {s.title.split('\n').map((l, j, arr) => (
+                      <span key={j} className="hero-line">{j < arr.length - 1 ? `${l} ` : l}</span>
+                    ))}
+                  </p>
                   <p className="hero-body">{s.body}</p>
                   <div className="hero-ctas">
                     <a className="btn btn-lg btn-on-dark" href={s.primary.href}>
