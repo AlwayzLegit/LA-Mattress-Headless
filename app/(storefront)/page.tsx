@@ -100,6 +100,16 @@ export default async function Home() {
 
   return (
     <main>
+      {/* Phase 308 SEO PR C: canonical homepage <h1>. Visually hidden
+          (.sr-only) so the visual hierarchy is unchanged — hero slide 0
+          still reads as the prominent title to a sighted shopper — but
+          screen readers + search engines see this as the page's primary
+          heading. Carries all four homepage target keywords Semrush
+          flagged as missing from the previous slide-0-based <h1>
+          (mattress store, los angeles, shop mattresses, mattress sales).
+          Keep this string in sync with the canonical <title> + meta
+          description in generateMetadata() above. */}
+      <h1 className="sr-only">Mattress Store Los Angeles &mdash; Shop Mattresses &amp; Mattress Sales</h1>
       <Hero slides={slides} />
       {/* Quiz lead-in sits directly under the hero so the first
           interactive surface on the homepage is the "find your match"
