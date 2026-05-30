@@ -15,31 +15,47 @@ import { QuizLeadIn } from '../_components/sections/quiz-leadin';
 import { WaysToFindMatch } from '../_components/sections/ways-to-find-match';
 import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd, resolveHomepageFaq } from '@/lib/faq';
-import { composeBrandTitle } from '@/lib/seo';
 import { buildLocalBusinessLd } from '@/lib/structured-data';
 import { getSitewideReviewsExtension } from '@/lib/judgeme';
-import { getShopBrand, getHeroSlides, getShowrooms, getFaqItems } from '@/lib/shopify';
+import { getHeroSlides, getShowrooms, getFaqItems } from '@/lib/shopify';
 import { FALLBACK_SHOWROOMS } from '@/lib/showrooms';
 import { FALLBACK_HERO_SLIDES } from '../_components/hero-slides';
 
 const LOCAL_BUSINESS_ID = 'https://www.mattressstoreslosangeles.com/#localbusiness';
 
-// Phase 268: homepage title + description now read from Shopify Brand
-// (Settings → Store details → Brand) when available, with hardcoded
-// fallbacks for unconfigured stores or empty Brand fields.
-const FALLBACK_TITLE = 'Mattress Store in Los Angeles | LA Mattress — 5 Showrooms';
-const FALLBACK_DESCRIPTION =
-  'Family-owned Los Angeles mattress store with 5 showrooms — Koreatown, West LA, La Brea, Studio City & Glendale. Shop Tempur-Pedic, Stearns & Foster, Helix & Diamond with free white-glove delivery and 0% APR financing.';
+// Phase 308 SEO audit (Semrush 20260530): live homepage <title> +
+// <meta description> were composed from Shopify Brand fields with code
+// fallbacks (Phase 268 design). Semrush flagged the resulting strings
+// for missing target keywords — "mattress sales" and "shop mattresses"
+// absent from both title and meta description across all 4 homepage
+// target keywords (8,015 priority points). The Brand-composed path
+// was Phase 268's flexibility play; the SEO impact says the homepage
+// is too critical to leave to a field someone may forget to refresh
+// in Shopify Admin. Hard-coding here as the canonical SEO-optimal
+// values. Edit via PR when the keyword strategy shifts. Shopify Brand
+// still reads through for `getShopBrand()` callers elsewhere (OG card,
+// LocalBusiness JSON-LD), so this only overrides the homepage tag
+// strings, not the brand identity itself.
+//
+// Title:    66 chars (under the ~70 SERP truncation threshold). Covers
+//           "mattress store"/"mattress stores", "shop mattresses",
+//           "mattress sales", and the "los angeles" location signal.
+// Meta:    148 chars (under the ~155 SERP truncation threshold). Same
+//           four keyword phrases plus "Tempur-Pedic / Stearns & Foster
+//           / Helix" brand cues + the trust-building "free LA delivery"
+//           differentiator that lifts CTR for local searches.
+const TITLE =
+  'Mattress Store Los Angeles · Shop Mattresses & Sales | LA Mattress';
+const DESCRIPTION =
+  'Shop mattresses at LA Mattress — family-owned Los Angeles mattress store. ' +
+  'Mattress sales on Tempur-Pedic, Stearns & Foster, Helix. Free LA delivery.';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const shop = await getShopBrand();
-  const title = composeBrandTitle(shop?.name ?? 'LA Mattress Store', shop?.brand?.slogan, FALLBACK_TITLE);
-  const description = shop?.brand?.shortDescription ?? shop?.description ?? FALLBACK_DESCRIPTION;
+export function generateMetadata(): Metadata {
   return {
     // `absolute` so the root layout's "%s · LA Mattress Store" template
     // can't re-append the brand a third time (cowork LOW#12).
-    title: { absolute: title },
-    description,
+    title: { absolute: TITLE },
+    description: DESCRIPTION,
     alternates: { canonical: 'https://www.mattressstoreslosangeles.com/' },
   };
 }
