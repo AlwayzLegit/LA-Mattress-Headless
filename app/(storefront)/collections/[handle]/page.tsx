@@ -10,6 +10,7 @@ import type { CollectionSort } from '@/lib/shopify';
 import { collections as inventoryCollections, findCollection } from '@/lib/inventory';
 import { getCollectionSiblings } from '@/lib/collection-siblings';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
+import { getCollectionSeoOverride } from '@/lib/collection-seo-overrides';
 import { categoryIntroFor } from '@/lib/plp-content';
 import { richTextJsonToHtml } from '@/lib/shopify/rich-text';
 import { Icon } from '@/app/_components/icon';
@@ -55,13 +56,23 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Collection' };
   const collection = await getCollectionByHandle({ handle: params.handle, first: 1 }).catch(() => null);
   if (!collection) return { title: 'Collection not found' };
-  const title = capTitle(firstNonEmpty(collection.seo.title, `${collection.title} | LA Mattress Store`));
+  // Phase 308 SEO audit: code-side overrides win over `collection.seo.*`
+  // for specific handles where Semrush flagged keyword-coverage gaps
+  // the merchant's authored seo strings missed. See
+  // lib/collection-seo-overrides.ts for the per-handle rationale and
+  // why each override is in code rather than Shopify Admin.
+  const override = getCollectionSeoOverride(params.handle);
+  const title = capTitle(
+    override?.title ??
+      firstNonEmpty(collection.seo.title, `${collection.title} | LA Mattress Store`),
+  );
   const description = truncDescription(
-    firstNonEmpty(
-      collection.seo.description,
-      collection.description,
-      `Shop ${collection.title.toLowerCase()} at LA Mattress Store. Free white-glove delivery in Los Angeles.`,
-    ),
+    override?.description ??
+      firstNonEmpty(
+        collection.seo.description,
+        collection.description,
+        `Shop ${collection.title.toLowerCase()} at LA Mattress Store. Free white-glove delivery in Los Angeles.`,
+      ),
   );
   const url = `/collections/${collection.handle}`;
   // Canonical is always the bare PLP URL. Any query-string variant
