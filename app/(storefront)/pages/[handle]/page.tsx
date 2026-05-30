@@ -35,6 +35,7 @@ import { ComparisonPage } from '@/app/_components/sections/comparison-page';
 import { isComparisonPage, COMPARISON_PAGES } from '@/lib/comparison-pages';
 import { GuidePage } from '@/app/_components/sections/guide-page';
 import { isGuidePage, GUIDE_PAGES } from '@/lib/guide-pages';
+import { MattressSizesPage } from '@/app/_components/sections/mattress-sizes-page';
 import { LegalPage } from '@/app/_components/sections/legal-page';
 import { isLegalPage, LEGAL_PAGES } from '@/lib/legal-pages';
 import { ContactPage } from '@/app/_components/sections/contact-page';
@@ -143,6 +144,20 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // keyword-bearing brand suffix only when it would otherwise collapse.
   // Caps to TITLE_MAX internally (replaces the prior capTitle call).
   let title = ensureTitleDistinctFromH1(firstNonEmpty(page.seo.title, titleFallback), page.title);
+  // Phase 308 SEO override: `/pages/mattress-sizes` is the single
+  // biggest Semrush-priority URL in the audit (21,599 points). The
+  // merchant-authored seo.title "Mattress Size Chart: Bed Dimensions
+  // Twin to King | LA Mattress" was missing 8 specific keyword
+  // variants Semrush data showed the page was ranking for — in
+  // particular the dimension-format phrasings like "bed dimensions
+  // feet" and "king size measurement mattress". Hard-coded override
+  // wins over the merchant string for this handle only; the rest of
+  // the CMS-page title pipeline (sale-year graft, distinct-from-h1
+  // guarantee) is irrelevant here because the override is already
+  // distinct from the H1 and not a sale page.
+  if (page.handle === 'mattress-sizes') {
+    title = 'Mattress Size Chart · Bed Dimensions in Feet & Inches | LA Mattress';
+  }
   // SEMrush 20260521_1: `/pages/memorial-day-sale-2026` and
   // `/collections/memorial-day-sale` both rendered "Memorial Day Sale |
   // LA Mattress Store" — the merchant authored both with the same
@@ -312,10 +327,22 @@ export default async function ShopifyPage(props: Params) {
     return <ComparisonPage page={page} config={COMPARISON_PAGES[page.handle]} />;
   }
 
-  // Editorial buying-guide pages (mattress-sizes, mattress-types) share
-  // the service-page chrome but run wrapCmsTables so the size chart gets
-  // the scannable .cmp-table-scroll card treatment. Config lives in
-  // lib/guide-pages.ts. Checked last before the plain CMS fallback.
+  // Phase 308 SEO audit: `/pages/mattress-sizes` gets its own
+  // dedicated template that wraps GuidePage's structure with code-
+  // controlled content (multi-format dimensions table, FAQ accordion,
+  // FAQPage JSON-LD) targeting the 17 Semrush-flagged keyword
+  // variants. Checked BEFORE the generic GuidePage so this handle
+  // hits the specialized renderer; mattress-types still uses
+  // GuidePage. See app/_components/sections/mattress-sizes-page.tsx
+  // for the full rationale.
+  if (page.handle === 'mattress-sizes') {
+    return <MattressSizesPage page={page} />;
+  }
+  // Editorial buying-guide pages (mattress-types and any future
+  // additions) share the service-page chrome but run wrapCmsTables so
+  // the size chart gets the scannable .cmp-table-scroll card
+  // treatment. Config lives in lib/guide-pages.ts. Checked last
+  // before the plain CMS fallback.
   if (isGuidePage(page.handle)) {
     return <GuidePage page={page} config={GUIDE_PAGES[page.handle]} />;
   }
