@@ -22,6 +22,8 @@ type Props = {
   show: boolean;
   productTitle: string;
   productImage: ShopifyImage | null;
+  /** Current selection label (e.g. "Queen" / "Queen · Firm"), if any. */
+  variantLabel?: string;
   /** Already-formatted price (`formatMoney(matchingVariant.price)` etc.). */
   price: string;
   /** Pre-computed CTA label — "Adding…" / "Add" / "Out of stock". */
@@ -41,6 +43,7 @@ export function PdpStickyAtcBar({
   show,
   productTitle,
   productImage,
+  variantLabel,
   price,
   ctaLabel,
   disabled,
@@ -62,7 +65,10 @@ export function PdpStickyAtcBar({
         ) : null}
         <div className="pdp-sticky-bar__text">
           <div className="pdp-sticky-bar__title">{productTitle}</div>
-          <div className="pdp-sticky-bar__price tnum">{price}</div>
+          <div className="pdp-sticky-bar__meta">
+            {variantLabel ? <span className="pdp-sticky-bar__variant">{variantLabel}</span> : null}
+            <span className="pdp-sticky-bar__price tnum">{price}</span>
+          </div>
         </div>
         <button
           type="button"

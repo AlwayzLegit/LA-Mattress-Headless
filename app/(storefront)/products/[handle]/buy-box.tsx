@@ -42,6 +42,18 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
   // option). Same predicate the inline picker uses. Drives the mobile
   // sticky-bar behaviour: choices → open the sheet; none → direct add.
   const hasChoices = options.filter((o) => o.values.length > 1).length > 0;
+  // Does one of those choices read as a "Size"? Lets the sticky CTA say
+  // "Select size" (the common mattress case) instead of the generic
+  // "Select options".
+  const hasSizeOption = options.some((o) => o.values.length > 1 && /size/i.test(o.name));
+  // Human label for the current selection (the values of the options that
+  // actually have a choice), e.g. "Queen" or "Queen · Firm". Shown in the
+  // sticky bar so the shopper can see what's selected before adding.
+  const selectedLabel = options
+    .filter((o) => o.values.length > 1)
+    .map((o) => selection[o.name])
+    .filter(Boolean)
+    .join(' · ');
 
   // Reset quantity to 1 whenever the user changes the variant — total
   // shouldn't carry across selections.
@@ -125,6 +137,20 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
     io.observe(target);
     return () => io.disconnect();
   }, []);
+
+  // Tell the floating chat bubble (rendered up in the layout, z-90) to get
+  // out of the way of the mobile sticky bar: lift it above the bar while
+  // the bar is showing, and hide it entirely while the variant sheet — a
+  // modal — is open. Done via body classes so the decoupled widget can
+  // react without prop-drilling. Cleaned up on unmount / state change.
+  useEffect(() => {
+    document.body.classList.toggle('pdp-atc-visible', showSticky);
+    return () => document.body.classList.remove('pdp-atc-visible');
+  }, [showSticky]);
+  useEffect(() => {
+    document.body.classList.toggle('pdp-sheet-open', sheetOpen);
+    return () => document.body.classList.remove('pdp-sheet-open');
+  }, [sheetOpen]);
 
   // Variant-specific price beats the range. Fall back to the range only if
   // no variant matches the current selection (edge case: cleared selection).
@@ -268,42 +294,37 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
         show={showSticky}
         productTitle={productTitle}
         productImage={productImage}
+        // Show the current selection (e.g. "Queen") so the bar never adds
+        // a silent, invisible default — the shopper sees what's selected.
+        variantLabel={selectedLabel || undefined}
         price={
           matchingVariant
             ? formatMoney(matchingVariant.price)
             : formatMoney(priceRange.minVariantPrice)
         }
-        // Sticky CTA mirrors the inline ATC's STATE (not its action).
-        // QA 2026-05-23 P1-2: visitors land on the PDP with a default
-        // variant already selected — inline reads "Add to cart · $5,399"
-        // while the sticky used to read "Choose options" whenever
-        // hasChoices was true, regardless of whether the selection was
-        // already complete. That mismatch confused users about whether
-        // they'd selected anything.
-        //
-        // New priority: if we have a purchasable matching variant the
-        // sticky says "Add to cart" (matches inline). Only fall back to
-        // "Choose options" when the visitor has actively cleared the
-        // selection so no variant matches — the genuine incomplete state.
+        // For any product with a real choice, the sticky CTA opens the
+        // variant sheet so the shopper can pick / confirm the size before
+        // adding — the sheet was built for exactly this ("a shopper who
+        // scrolled straight past the buy box couldn't choose a size").
+        // The selected variant is shown in the bar (above) so this isn't
+        // the confusing "did I select anything?" state an earlier QA pass
+        // worried about. Single-variant products keep the fast direct-add.
         ctaLabel={
           pending
             ? 'Adding…'
-            : matchingVariant?.availableForSale
-              ? 'Add to cart'
-              : matchingVariant
-                ? 'Out of stock'
+            : hasChoices
+              ? matchingVariant?.availableForSale
+                ? hasSizeOption
+                  ? 'Select size'
+                  : 'Select options'
                 : 'Choose options'
+              : matchingVariant?.availableForSale
+                ? 'Add to cart'
+                : 'Out of stock'
         }
         disabled={!canBuy}
         onAdd={() => matchingVariant && addLine(matchingVariant.id, 1)}
-        // Open the variant sheet only when the selection is genuinely
-        // incomplete (no matching variant). For the common
-        // default-auto-selected case, the sticky button adds directly
-        // to cart — same behaviour the inline ATC has, no surprise
-        // intermediate sheet. Visitors who want to change variant scroll
-        // up to the inline picker (matches Amazon / Wayfair / Etsy
-        // mobile conventions).
-        onCtaClick={!matchingVariant ? () => setSheetOpen(true) : undefined}
+        onCtaClick={hasChoices ? () => setSheetOpen(true) : undefined}
       />
 
       {hasChoices ? (
