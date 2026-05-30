@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icon } from './icon';
 import { categoryFaqFor, categoryGuidesFor } from '@/lib/plp-content';
+import { categoryDeepContentFor } from '@/lib/plp-deep-content';
 import { renderFaqAnswer } from '@/lib/faq-render';
 import { resolveRedirectPath, sanitizeShopifyHtml } from '@/lib/sanitize';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
@@ -51,9 +52,20 @@ export function PlpContentBlock({
   // PLP v2.1: sanitize the merchant body with demoteHeadings so any
   // <h1>/<h2> inside become <h3>, sitting one level below the section
   // <h2> that wraps them.
-  const longHtml = descriptionHtml
-    ? autoLinkArticleBody(sanitizeShopifyHtml(descriptionHtml, { demoteHeadings: true }))
-    : '';
+  //
+  // Phase 308 SEO PR: when the merchant body is empty/missing,
+  // fall back to the code-side per-handle deep-content prose in
+  // lib/plp-deep-content.ts. Semrush 20260530 flagged the
+  // highest-traffic collection PLPs for low_word_count +
+  // low_readability + missing_related_words — the merchant body slot
+  // was the gap, since the merchant hadn't filled descriptionHtml on
+  // those handles. Code-side fallback runs autolinker AND emits ~350
+  // words of structured prose targeting the flagged related terms.
+  // Merchant content (when present) still wins; this is fallback-only.
+  const merchantHtml = descriptionHtml ? descriptionHtml.trim() : '';
+  const longHtml = merchantHtml
+    ? autoLinkArticleBody(sanitizeShopifyHtml(merchantHtml, { demoteHeadings: true }))
+    : autoLinkArticleBody(categoryDeepContentFor(handle, title));
   return (
     <section className="plp-content" aria-labelledby={`plp-content-h-${handle}`}>
       <div className="plp-content-intro">
