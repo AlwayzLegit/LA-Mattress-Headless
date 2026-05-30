@@ -28,6 +28,8 @@ import { PriceConfidencePage } from '@/app/_components/sections/price-confidence
 import { ReviewsPage } from '@/app/_components/sections/reviews-page';
 import { DataOptOutPage } from '@/app/_components/sections/data-opt-out-page';
 import { LocationsFinder } from '@/app/_components/sections/locations-finder';
+import { NEIGHBORHOODS } from '@/lib/neighborhoods';
+import { LOCATIONS_FAQ } from '@/lib/locations-faq';
 import { getStorefrontReviews } from '@/lib/judgeme';
 import { ServicePage } from '@/app/_components/sections/service-page';
 import { isServicePage, SERVICE_PAGES } from '@/lib/service-pages';
@@ -36,6 +38,7 @@ import { isComparisonPage, COMPARISON_PAGES } from '@/lib/comparison-pages';
 import { GuidePage } from '@/app/_components/sections/guide-page';
 import { isGuidePage, GUIDE_PAGES } from '@/lib/guide-pages';
 import { MattressSizesPage } from '@/app/_components/sections/mattress-sizes-page';
+import { getPageSeoOverride } from '@/lib/page-seo-overrides';
 import { LegalPage } from '@/app/_components/sections/legal-page';
 import { isLegalPage, LEGAL_PAGES } from '@/lib/legal-pages';
 import { ContactPage } from '@/app/_components/sections/contact-page';
@@ -144,19 +147,19 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // keyword-bearing brand suffix only when it would otherwise collapse.
   // Caps to TITLE_MAX internally (replaces the prior capTitle call).
   let title = ensureTitleDistinctFromH1(firstNonEmpty(page.seo.title, titleFallback), page.title);
-  // Phase 308 SEO override: `/pages/mattress-sizes` is the single
-  // biggest Semrush-priority URL in the audit (21,599 points). The
-  // merchant-authored seo.title "Mattress Size Chart: Bed Dimensions
-  // Twin to King | LA Mattress" was missing 8 specific keyword
-  // variants Semrush data showed the page was ranking for — in
-  // particular the dimension-format phrasings like "bed dimensions
-  // feet" and "king size measurement mattress". Hard-coded override
-  // wins over the merchant string for this handle only; the rest of
-  // the CMS-page title pipeline (sale-year graft, distinct-from-h1
-  // guarantee) is irrelevant here because the override is already
-  // distinct from the H1 and not a sale page.
-  if (page.handle === 'mattress-sizes') {
-    title = 'Mattress Size Chart · Bed Dimensions in Feet & Inches | LA Mattress';
+  // Phase 308 SEO overrides: per-handle title / description hard-codes
+  // win over both `page.seo.*` (which the merchant authored) and the
+  // fallbacks above. Lives in lib/page-seo-overrides.ts so the
+  // override table is a single edit point rather than scattered
+  // conditionals. Same pattern as lib/collection-seo-overrides.ts for
+  // collections + the hard-coded TITLE / DESCRIPTION on the homepage
+  // (page.tsx in this segment). Title override is applied first so
+  // the sale-year-graft below still gets to run on year-stamped sale
+  // pages even when an override is present (none of the current
+  // overrides target sale pages, but the contract is forward-safe).
+  const seoOverride = getPageSeoOverride(page.handle);
+  if (seoOverride?.title) {
+    title = seoOverride.title;
   }
   // SEMrush 20260521_1: `/pages/memorial-day-sale-2026` and
   // `/collections/memorial-day-sale` both rendered "Memorial Day Sale |
@@ -173,7 +176,12 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     );
   }
   const description = truncDescription(
-    firstNonEmpty(page.seo.description, page.bodySummary, `${page.title} — LA Mattress Store`),
+    firstNonEmpty(
+      seoOverride?.description,
+      page.seo.description,
+      page.bodySummary,
+      `${page.title} — LA Mattress Store`,
+    ),
   );
   const url = `/pages/${page.handle}`;
   return {
@@ -648,7 +656,93 @@ async function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnTy
             </li>
           </ul>
         </section>
+
+        {/* Phase 308 SEO PR — neighborhood directory. Each entry in
+            lib/neighborhoods.ts maps a Shopify Page handle to its
+            nearest physical showroom(s). Listing them here gives
+            high-volume LA neighborhood queries ("mattress store
+            beverly hills", "mattress store sherman oaks", etc.) a
+            dedicated link target on the locations index, which both
+            distributes PageRank to those long-tail URLs and answers
+            the "do you serve my neighborhood" question in scannable
+            grid form. The neighborhood data also includes the
+            nearest-showroom mapping, surfaced inline so a shopper
+            who clicks knows which physical store covers them. */}
+        <section className="section locations-neighborhoods" aria-labelledby="locations-neighborhoods-h" style={{ marginTop: 'var(--s-6)' }}>
+          <h2 id="locations-neighborhoods-h" className="h2">Mattress stores by LA neighborhood</h2>
+          <p className="muted" style={{ maxWidth: '60ch' }}>
+            Shopping for a mattress in a specific Los Angeles neighborhood? Each area below is served by one of our five physical showrooms — with the same brand mix, same delivery coverage, and same pricing.
+          </p>
+          <ul className="locations-neighborhoods-grid" role="list">
+            {NEIGHBORHOODS.map((n) => {
+              const nearest = findShowroom(n.nearestShowroomHandles[0]);
+              return (
+                <li key={n.handle} className="locations-neighborhood-card">
+                  <Link href={`/pages/${n.handle}`} className="locations-neighborhood-name">
+                    {n.name} mattress store
+                  </Link>
+                  {nearest ? (
+                    <p className="locations-neighborhood-nearest muted">
+                      Served from <Link href={`/pages/${nearest.handle}`}>{nearest.area}</Link>
+                    </p>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        {/* Phase 308 SEO PR — FAQ. Targets the "mattress stores near
+            me" intent variants Semrush flagged as missing related
+            words on this URL. The same 10 Q&A items feed the
+            FAQPage JSON-LD below for SERP rich-snippet eligibility.
+            Data in lib/locations-faq.ts. */}
+        <section className="section locations-faq" aria-labelledby="locations-faq-h" style={{ marginTop: 'var(--s-6)' }}>
+          <h2 id="locations-faq-h" className="h2">Mattress store FAQs</h2>
+          <p className="muted" style={{ maxWidth: '60ch' }}>
+            The questions shoppers ask before walking in — answered.
+          </p>
+          <div className="ms-faq-list">
+            {LOCATIONS_FAQ.map((item) => (
+              <details key={item.q} className="ms-faq-item">
+                <summary className="ms-faq-q">{item.q}</summary>
+                <div className="ms-faq-a">
+                  <p>
+                    {item.a}
+                    {item.link ? (
+                      <>
+                        {' '}
+                        <Link href={item.link.href}>{item.link.label}</Link>.
+                      </>
+                    ) : null}
+                  </p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
       </article>
+
+      <script
+        id="ld-faq-mattress-store-locations"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: LOCATIONS_FAQ.map((item) => ({
+              '@type': 'Question',
+              name: item.q,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: item.link
+                  ? `${item.a} See: ${SITE}${item.link.href}`
+                  : item.a,
+              },
+            })),
+          }),
+        }}
+      />
     </main>
   );
 }
