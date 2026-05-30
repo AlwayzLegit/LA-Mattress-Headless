@@ -13,6 +13,7 @@ import { Showrooms } from '../_components/sections/showrooms';
 import { FAQ } from '../_components/sections/faq';
 import { QuizLeadIn } from '../_components/sections/quiz-leadin';
 import { WaysToFindMatch } from '../_components/sections/ways-to-find-match';
+import { HomepageSeoContent } from '../_components/sections/homepage-seo-content';
 import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd, resolveHomepageFaq } from '@/lib/faq';
 import { buildLocalBusinessLd } from '@/lib/structured-data';
@@ -133,6 +134,15 @@ export default async function Home() {
           old QuizTeaser, which was a single-CTA repeat of what the
           QuizLeadIn already shows above the fold. */}
       <WaysToFindMatch />
+      {/* Phase 308 SEO PR B: keyword-rich prose block that clears the
+          Semrush homepage flags for `body_missing_kw` ("mattress sales"),
+          `low_word_count`, `missing_related_words` ("twin xl",
+          "mattress online"), and `low_readability`. Placed here, well
+          below the fold, so it doesn't compete with the hero/quiz
+          funnel above and doesn't affect LCP. See
+          app/_components/sections/homepage-seo-content.tsx for the
+          per-paragraph rationale. */}
+      <HomepageSeoContent />
       <Reviews />
       <FAQ />
       <script

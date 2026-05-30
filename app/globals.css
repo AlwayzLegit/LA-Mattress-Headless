@@ -6794,3 +6794,37 @@ a.contact-action:hover {
   overflow-wrap: anywhere;
 }
 .contact-action-sub { font-size: 13px; color: var(--text-3); line-height: 1.4; }
+
+/* ─── Homepage SEO content block ──────────────────────────────────────
+   Below-the-fold prose section added 2026-05-30 to clear Semrush
+   homepage flags (body_missing_kw, low_word_count, missing_related_words,
+   low_readability). Lives between <WaysToFindMatch /> and <Reviews />.
+   See app/_components/sections/homepage-seo-content.tsx for the why
+   behind the copy. */
+.hp-seo-prose {
+  /* ~70ch is the well-established readability sweet spot (Bringhurst's
+     "Elements of Typographic Style"). Wider than this and the eye
+     struggles to find the next line; narrower and the rhythm breaks
+     on short sentences. Centered so it doesn't stretch the section
+     visually past the section-head width. */
+  max-width: 70ch;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+.hp-seo-prose p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text);
+}
+.hp-seo-prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.hp-seo-prose a:hover {
+  text-decoration-thickness: 2px;
+}
