@@ -584,13 +584,24 @@ summary:focus-visible,
   color: var(--accent-fg);
   cursor: pointer;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition: transform 160ms ease, box-shadow 160ms ease, bottom 200ms ease, opacity 160ms ease;
 }
 .chat-bubble:hover,
 .chat-bubble:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28);
 }
+/* On the PDP, keep the floating chat bubble clear of the mobile sticky
+   add-to-cart bar: lift it above the bar (~73px tall + safe area) while
+   the bar is showing so it never covers the Add-to-cart button. Scoped to
+   the same breakpoint the sticky bar appears at (<=1100px) — on desktop
+   the bar is hidden, so no lift. */
+@media (max-width: 1100px) {
+  body.pdp-atc-visible .chat-bubble { bottom: calc(85px + env(safe-area-inset-bottom)); }
+}
+/* While the variant bottom-sheet (a modal) is open, hide the bubble — its
+   z-90 would otherwise float over the sheet. */
+body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
 .chat-bubble.is-open {
   /* When the panel is open, fade the bubble out instead of removing it
      from the DOM — keeps the close-from-button focus target stable. */
@@ -2827,6 +2838,12 @@ summary:focus-visible,
   font-size: 13px; font-weight: 500; color: var(--text);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.pdp-sticky-bar__meta {
+  display: flex; align-items: baseline; gap: var(--s-2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pdp-sticky-bar__variant { font-size: 13px; font-weight: 500; color: var(--text-2); }
+.pdp-sticky-bar__variant::after { content: '·'; margin-left: var(--s-2); color: var(--text-3); }
 .pdp-sticky-bar__price { font-size: 15px; font-weight: 600; color: var(--text); }
 .pdp-sticky-bar .btn { flex: none; padding: 10px 18px; font-size: 14px; }
 /* PDP price row — design handoff §Buy box.
