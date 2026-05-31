@@ -64,6 +64,60 @@ let droppedFormat = 0;
 let droppedSelf = 0;
 let droppedDup = 0;
 
+// Strip stale `?amp;_fid=` / `?_pos=` tracking params from a destination
+// so the redirect lands on the clean canonical URL in one hop. Avoids
+// chains where Shopify's stored redirect target carries a session param
+// that our middleware then strips with a second 301.
+function cleanDest(destination) {
+  let dest = destination;
+  dest = dest.replace(/[?&]amp;_fid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
+  dest = dest.replace(/[?&]_fid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
+  dest = dest.replace(/[?&]_pos=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
+  dest = dest.replace(/[?&]_sid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
+  dest = dest.replace(/[?&]_ss=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
+  dest = dest.replace(/[?&]srsltid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
+  // Clean orphan `?` or `?&` left after param stripping
+  dest = dest.replace(/\?(&|$)/g, (m, tail) => (tail === '&' ? '?' : ''));
+  dest = dest.replace(/\?$/, '');
+  return dest;
+}
+
+// First pass: build a source → cleaned-destination map of all valid
+// entries. Used below to flatten redirect CHAINS (A→B→C) — see
+// resolveChain. Last writer wins on duplicate sources, matching the
+// Map-build semantics middleware uses at runtime.
+const sourceToDest = new Map();
+for (const r of entries) {
+  if (!r || typeof r.source !== 'string' || typeof r.destination !== 'string') continue;
+  if (!isValidSource(r.source)) continue;
+  sourceToDest.set(r.source, cleanDest(r.destination));
+}
+
+// Flatten a redirect chain to its terminal destination so every emitted
+// redirect resolves in a SINGLE hop. SEMrush "Redirect chains and loops"
+// flags A→B→C because a crawler hitting A gets two sequential 301s; our
+// middleware is single-hop (REDIRECTS.get once), so without flattening
+// the chain is served verbatim. Resolving here at codegen keeps the
+// runtime untouched and is self-healing for future Shopify exports.
+//
+// `key` is the chain's own source — excluded from the visited set so a
+// 2-cycle (A→B→A) terminates at B rather than looping. The cap (32) and
+// self-reference / revisit guards make malformed loops terminate at the
+// last good hop instead of hanging the build.
+let chainsFlattened = 0;
+function resolveChain(source, dest) {
+  const visited = new Set([source]);
+  let current = dest;
+  let hops = 0;
+  while (sourceToDest.has(current) && !visited.has(current) && hops < 32) {
+    visited.add(current);
+    current = sourceToDest.get(current);
+    hops += 1;
+  }
+  if (current !== dest) chainsFlattened += 1;
+  return current;
+}
+
 const seen = new Set();
 const lines = [];
 for (const r of entries) {
@@ -75,21 +129,7 @@ for (const r of entries) {
     droppedFormat += 1;
     continue;
   }
-  // Strip stale `?amp;_fid=` / `?_pos=` tracking params from destinations
-  // so the redirect lands on the clean canonical URL in one hop. Avoids
-  // chains where Shopify's stored redirect target carries a session param
-  // that our middleware then strips with a second 301.
-  let dest = r.destination;
-  // Common tracking-param prefixes Shopify writes into redirect targets
-  dest = dest.replace(/[?&]amp;_fid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
-  dest = dest.replace(/[?&]_fid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
-  dest = dest.replace(/[?&]_pos=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
-  dest = dest.replace(/[?&]_sid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
-  dest = dest.replace(/[?&]_ss=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
-  dest = dest.replace(/[?&]srsltid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
-  // Clean orphan `?` or `?&` left after param stripping
-  dest = dest.replace(/\?(&|$)/g, (m, tail) => (tail === '&' ? '?' : ''));
-  dest = dest.replace(/\?$/, '');
+  const dest = resolveChain(r.source, cleanDest(r.destination));
 
   if (r.source === dest) {
     droppedSelf += 1;
@@ -146,3 +186,4 @@ console.log(`  dropped (shape):  ${droppedShape}`);
 console.log(`  dropped (format): ${droppedFormat}`);
 console.log(`  dropped (self):   ${droppedSelf}`);
 console.log(`  dropped (dup):    ${droppedDup}`);
+console.log(`  chains flattened: ${chainsFlattened}`);
