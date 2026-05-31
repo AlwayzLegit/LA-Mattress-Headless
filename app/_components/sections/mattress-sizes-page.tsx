@@ -5,7 +5,7 @@ import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { wrapCmsTables } from '@/lib/cms-html';
 import { stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { GUIDE_PAGES } from '@/lib/guide-pages';
-import { MATTRESS_SIZES, MATTRESS_SIZES_FAQ } from '@/lib/mattress-sizes-data';
+import { MATTRESS_SIZES, MATTRESS_SIZES_FAQ, MATTRESS_SIZES_RELATED_GUIDES } from '@/lib/mattress-sizes-data';
 import { ServicePageToc } from './service-page-toc';
 
 /**
@@ -54,6 +54,7 @@ type PageLike = {
 const BODY_ID = 'guide-page-body';
 const FAQ_HEADING_ID = 'mattress-sizes-faq-heading';
 const DIMS_HEADING_ID = 'mattress-sizes-dims-heading';
+const GUIDES_HEADING_ID = 'mattress-sizes-guides-heading';
 const SITE = 'https://www.mattressstoreslosangeles.com';
 
 export function MattressSizesPage({ page }: { page: PageLike }) {
@@ -203,6 +204,33 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
                     </p>
                   </div>
                 </details>
+              ))}
+            </div>
+          </section>
+
+          {/* Related guides. Curated cross-links to the merchant blog
+              cluster — closes the loop so link equity flows from the hub
+              back to the 20 refreshed size/comparison articles, and so
+              crawlers can discover the full cluster from /pages/mattress-sizes.
+              Grouped By size / Comparisons / Practical so it scans cleanly
+              and helps shoppers self-navigate to the right deep-dive. */}
+          <section className="ms-guides" aria-labelledby={GUIDES_HEADING_ID}>
+            <h2 id={GUIDES_HEADING_ID} className="h2 ms-section-h">Related size guides</h2>
+            <p className="muted ms-section-lede">
+              Deeper dives on every standard mattress size, head-to-head comparison, and room-layout question.
+            </p>
+            <div className="ms-guides-groups">
+              {MATTRESS_SIZES_RELATED_GUIDES.map((group) => (
+                <div key={group.heading} className="ms-guides-group">
+                  <h3 className="ms-guides-group-h">{group.heading}</h3>
+                  <ul className="ms-guides-items">
+                    {group.guides.map((g) => (
+                      <li key={g.href}>
+                        <Link href={g.href}>{g.title}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
             </div>
           </section>

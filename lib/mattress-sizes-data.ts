@@ -208,3 +208,61 @@ export const MATTRESS_SIZES_FAQ: FaqItem[] = [
     a: 'For mainstream bedding-compatible sizes, California King is the longest (84") and King is the widest (76"). Beyond standard, you can custom-order a Wyoming King (84" × 84") or Alaskan King (108" × 108") — call us if you need either; they aren\'t stocked on the floor.',
   },
 ];
+
+/**
+ * Related guides — curated cross-links from /pages/mattress-sizes to the
+ * merchant blog. The 20-article refresh batch (sessions 20260530–31) added
+ * keyword-rich content to every size/comparison article; the hub page was
+ * pointing into them via FAQ links only once. This section closes the loop
+ * so link equity flows both ways and crawlers can discover the full cluster
+ * from the hub. Articles are picked by primary keyword angle — one canonical
+ * per angle to avoid internal-link cannibalization.
+ */
+export type RelatedGuide = {
+  /** Display title — short enough to fit one line on mobile. */
+  title: string;
+  /** Article path under /blogs/mattress-buying-guide/. */
+  href: string;
+};
+
+export type RelatedGuideGroup = {
+  heading: string;
+  guides: RelatedGuide[];
+};
+
+export const MATTRESS_SIZES_RELATED_GUIDES: RelatedGuideGroup[] = [
+  {
+    heading: 'By size',
+    guides: [
+      { title: 'Twin mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-twin-mattress' },
+      { title: 'Full mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-full-mattress' },
+      { title: 'How big is a double bed?', href: '/blogs/mattress-buying-guide/how-bigs-a-double-bed' },
+      { title: 'Queen mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-queen-mattress' },
+      { title: 'Queen size guide — inches, feet, cm', href: '/blogs/mattress-buying-guide/queen-mattress-size-guide-inches-feet-how-to-pick-the-perfect-fit' },
+      { title: 'King mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-king-mattress' },
+      { title: 'King size guide — types & how to choose', href: '/blogs/mattress-buying-guide/king-size-mattress-guide-what-are-the-dimensions-and-benefits' },
+      { title: 'Standard size of a Full bed', href: '/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed' },
+    ],
+  },
+  {
+    heading: 'Size comparisons',
+    guides: [
+      { title: 'Queen vs King', href: '/blogs/mattress-buying-guide/queen-mattress-vs-king-mattress' },
+      { title: 'King vs California King', href: '/blogs/mattress-buying-guide/king-vs-california-king' },
+      { title: 'California King vs King', href: '/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference' },
+      { title: 'Full vs Queen', href: '/blogs/mattress-buying-guide/full-vs-queen-mattress' },
+      { title: 'Queen vs California Queen', href: '/blogs/mattress-buying-guide/queen-vs-california-queen-which-size-fits-your-needs' },
+      { title: 'Twin, Full, Queen & King — full chart', href: '/blogs/mattress-buying-guide/mattress-size-comparison-chart-twin-full-queen-king-explained' },
+    ],
+  },
+  {
+    heading: 'Practical & room layout',
+    guides: [
+      { title: 'Complete mattress size guide', href: '/blogs/mattress-buying-guide/how-to-choose-the-best-mattress-size' },
+      { title: 'How to choose the right size for your lifestyle', href: '/blogs/mattress-buying-guide/how-to-choose-the-right-mattress-size-for-your-lifestyle' },
+      { title: 'Full bed room-layout tips', href: '/blogs/mattress-buying-guide/full-size-mattress-measurements-room-layout-tips' },
+      { title: 'How much space a Full mattress gives you', href: '/blogs/mattress-buying-guide/how-much-space-does-a-full-size-mattress-really-give-you' },
+      { title: 'Will a Queen frame fit a Full mattress?', href: '/blogs/mattress-buying-guide/will-a-queen-bed-frame-fit-a-full-size-mattress' },
+    ],
+  },
+];
