@@ -182,12 +182,14 @@ export async function getStorefrontReviews({
     const fetchSize = dedupe ? Math.min(perPage * 4, 100) : perPage;
     const res = await fetch(
       buildUrl('/reviews', { per_page: fetchSize, page, rating: minRating, published: 'true' }),
-      // Tag versioned (`v2`) to force a cache miss on the deploy that
-      // introduced dedupeReviews(). Vercel's data cache is shared across
-      // deployments, so the same URL keyed against the old `judgeme:reviews`
-      // tag would have kept serving the pre-dedup payload until the 1h
-      // TTL elapsed naturally.
-      { next: { revalidate: 3600, tags: ['judgeme:reviews-v2'] } },
+      // Tag versioned to force a cache miss when the payload semantics
+      // change. Vercel's data cache is shared across deployments, so the
+      // same URL keyed against the old tag keeps serving the stale
+      // payload until the 1h TTL elapses. Bumped v2 → v3 on the
+      // JUDGEME_API_TOKEN swap (2026-06-01) so the new token's reviews
+      // (which actually carry reviewer names) replace the cached
+      // name-less payload immediately instead of waiting out the TTL.
+      { next: { revalidate: 3600, tags: ['judgeme:reviews-v3'] } },
     );
     if (!res.ok) return [];
     const data = (await res.json()) as ReviewsResponse;
@@ -250,7 +252,7 @@ export async function getShopAggregate(): Promise<ShopReviewsAggregate | null> {
     const counts = await Promise.all(
       ratings.map((rating) =>
         fetch(buildUrl('/reviews/count', { rating }), {
-          next: { revalidate: 3600, tags: ['judgeme:aggregate'] },
+          next: { revalidate: 3600, tags: ['judgeme:aggregate-v2'] },
         }).then(async (res) => {
           if (!res.ok) return null;
           const data = (await res.json().catch(() => null)) as { count?: number } | null;
