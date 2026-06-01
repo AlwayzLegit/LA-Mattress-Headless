@@ -28,6 +28,7 @@ import { PriceConfidencePage } from '@/app/_components/sections/price-confidence
 import { ReviewsPage } from '@/app/_components/sections/reviews-page';
 import { DataOptOutPage } from '@/app/_components/sections/data-opt-out-page';
 import { LocationsFinder } from '@/app/_components/sections/locations-finder';
+import { ShowroomsMap } from '@/app/_components/sections/showrooms-map';
 import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { LOCATIONS_FAQ } from '@/lib/locations-faq';
 import { getStorefrontReviews } from '@/lib/judgeme';
@@ -500,15 +501,9 @@ async function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnTy
           browser this is non-critical (mobile users may never scroll to
           it). title is required for a11y on iframes.
         */}
-        <section className="locations-map-wrap" aria-label="All five showroom locations on a map" style={{ marginTop: 'var(--s-7)' }}>
-          <iframe
-            title="LA Mattress Store — all five showroom locations on Google Maps"
-            src="https://www.google.com/maps?q=LA+Mattress+Store+Los+Angeles&z=10&output=embed"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            style={{ width: '100%', height: 360, border: 0, borderRadius: 'var(--radius-lg, 12px)' }}
-          />
-        </section>
+        <div style={{ marginTop: 'var(--s-7)' }}>
+          <ShowroomsMap />
+        </div>
 
         {/* Showroom directory + ZIP/geolocation finder. Client component
             owns the directory rendering so it can re-sort + annotate
