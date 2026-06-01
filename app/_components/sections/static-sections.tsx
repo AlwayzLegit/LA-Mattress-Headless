@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Icon, type IconName } from '../icon';
 import { phImg } from '../images';
-import { getShopAggregate, getStorefrontReviews } from '@/lib/judgeme';
+import { getShopAggregate, getStorefrontReviews, reviewerName } from '@/lib/judgeme';
 import { getBrands, getFeaturedGuides, getWhyUsItems, getCategoryTiles } from '@/lib/shopify';
 import { nonEmptyCollections } from '@/lib/inventory';
 
@@ -264,7 +264,7 @@ export async function Reviews() {
               {r.title ? <h3 className="reviews-home-card-title">{r.title}</h3> : null}
               <p className="reviews-home-card-body">{r.body.length > 220 ? r.body.slice(0, 217) + '…' : r.body}</p>
               <div className="reviews-home-card-meta muted">
-                {r.reviewer.name || 'Anonymous'} · {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                {reviewerName(r)} · {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
               </div>
             </li>
           ))}

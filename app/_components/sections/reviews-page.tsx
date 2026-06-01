@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Icon } from '../icon';
-import { getShopAggregate, getStorefrontReviews, getSitewideReviewsExtension, type JudgemeReview } from '@/lib/judgeme';
+import { getShopAggregate, getStorefrontReviews, getSitewideReviewsExtension, reviewerName, type JudgemeReview } from '@/lib/judgeme';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 const SITE = 'https://www.mattressstoreslosangeles.com';
@@ -171,7 +171,7 @@ function ReviewCard({ review }: { review: JudgemeReview }) {
       {review.title ? <h2 className="review-card-title">{review.title}</h2> : null}
       <p className="review-card-body">{review.body}</p>
       <div className="review-card-meta muted">
-        <span>{review.reviewer.name || 'Anonymous'}</span>
+        <span>{reviewerName(review)}</span>
         <span>·</span>
         <time dateTime={review.created_at}>{date}</time>
       </div>

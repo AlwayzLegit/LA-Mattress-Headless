@@ -39,12 +39,38 @@ export type JudgemeReview = {
   rating: number;
   title: string | null;
   body: string;
-  reviewer: { name: string };
+  // Judge.me's public API has shipped the reviewer name in different
+  // shapes across shops / token tiers: sometimes `reviewer.name`,
+  // sometimes split `first_name` / `last_name`, occasionally a
+  // top-level `reviewer_name`. Type all optional and resolve with
+  // `reviewerName()` so a populated-but-differently-keyed name never
+  // falls through to "Anonymous".
+  reviewer: { name?: string | null; first_name?: string | null; last_name?: string | null } | null;
+  reviewer_name?: string | null;
   product_external_id: number | null;
   created_at: string;
   verified: boolean | null;
   pictures?: { urls: { compact?: string; small?: string; original?: string } }[];
 };
+
+/**
+ * Resolve a display name from a Judge.me review across the field shapes
+ * their public API uses. Returns the fallback only when every known
+ * field is empty.
+ */
+export function reviewerName(r: JudgemeReview, fallback = 'Verified customer'): string {
+  const rv = r.reviewer ?? {};
+  const direct = (rv.name ?? '').trim();
+  if (direct) return direct;
+  const joined = [rv.first_name, rv.last_name]
+    .map((s) => (s ?? '').trim())
+    .filter(Boolean)
+    .join(' ');
+  if (joined) return joined;
+  const top = (r.reviewer_name ?? '').trim();
+  if (top) return top;
+  return fallback;
+}
 
 type ReviewsResponse = {
   current_page: number;
@@ -283,7 +309,7 @@ function truncateReview(body: string, max = 500): string {
 function reviewLdFrom(r: JudgemeReview, itemReviewedId: string): Record<string, unknown> {
   return {
     '@type': 'Review',
-    author: { '@type': 'Person', name: r.reviewer.name || 'Verified customer' },
+    author: { '@type': 'Person', name: reviewerName(r) },
     datePublished: r.created_at,
     reviewBody: truncateReview(r.body || ''),
     ...(r.title ? { name: r.title } : {}),

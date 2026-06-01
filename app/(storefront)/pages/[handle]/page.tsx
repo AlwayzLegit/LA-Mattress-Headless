@@ -31,7 +31,7 @@ import { LocationsFinder } from '@/app/_components/sections/locations-finder';
 import { ShowroomsMap } from '@/app/_components/sections/showrooms-map';
 import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { LOCATIONS_FAQ } from '@/lib/locations-faq';
-import { getStorefrontReviews } from '@/lib/judgeme';
+import { getStorefrontReviews, reviewerName } from '@/lib/judgeme';
 import { ServicePage } from '@/app/_components/sections/service-page';
 import { isServicePage, SERVICE_PAGES } from '@/lib/service-pages';
 import { ComparisonPage } from '@/app/_components/sections/comparison-page';
@@ -601,7 +601,7 @@ async function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnTy
                     {r.title ? <p className="locations-review-title">{r.title}</p> : null}
                     <p className="locations-review-body">&ldquo;{r.body}&rdquo;</p>
                     <p className="locations-review-meta muted">
-                      <span>{r.reviewer.name || 'Verified buyer'}</span>
+                      <span>{reviewerName(r, 'Verified buyer')}</span>
                       <span>·</span>
                       <time dateTime={r.created_at}>{date}</time>
                     </p>
