@@ -6771,34 +6771,50 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   overflow: hidden;
   background: var(--surface);
 }
-.showrooms-map { position: relative; width: 100%; aspect-ratio: 16 / 7; }
+.showrooms-map { position: relative; width: 100%; aspect-ratio: 100 / 64; }
 .showrooms-map-svg { display: block; width: 100%; height: 100%; }
-.showrooms-map-bg { fill: var(--surface-2, #f3f4f6); }
-.showrooms-map-line { stroke: var(--line); stroke-width: 0.6; opacity: 0.7; }
-.showrooms-map-pin { fill: color-mix(in srgb, var(--brand-navy, #1B2C5E) 18%, transparent); }
-.showrooms-map-pin-dot { fill: var(--brand-navy, #1B2C5E); }
+.showrooms-map-ocean { fill: var(--sm-ocean, #cfe0ef); opacity: 0.85; }
+.showrooms-map-fwy path { stroke: var(--sm-fwy, #ffffff); stroke-width: 1.1; opacity: 0.9; stroke-linecap: round; }
+.showrooms-map-fwy path:nth-child(odd) { stroke-width: 1.4; }
+
+/* Teardrop pins — navy, lift + accent on hover/focus of the link. */
+.showrooms-map-pin { fill: var(--brand-navy, #1B2C5E); transition: fill 140ms ease; }
+.showrooms-map-pin-dot { fill: #fff; }
+.showrooms-map-label {
+  font-size: 3.1px; font-weight: 600; fill: var(--text);
+  paint-order: stroke; stroke: var(--surface); stroke-width: 0.9px; stroke-linejoin: round;
+}
+.showrooms-map-pinlink { cursor: pointer; }
+.showrooms-map-pinlink > g { transition: transform 140ms ease; transform-box: fill-box; transform-origin: center bottom; }
+.showrooms-map-pinlink:hover > g,
+.showrooms-map-pinlink:focus-visible > g { transform: translateY(-1.5px); }
+.showrooms-map-pinlink:hover .showrooms-map-pin,
+.showrooms-map-pinlink:focus-visible .showrooms-map-pin { fill: var(--accent, #d8232a); }
+.showrooms-map-pinlink:focus { outline: none; }
 
 .showrooms-map-legend {
   list-style: none; margin: 0; padding: var(--s-3);
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 2px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 2px;
   border-top: 1px solid var(--line);
+  background: var(--surface);
 }
 .showrooms-map-legend-link {
-  display: flex; align-items: baseline; gap: var(--s-2);
+  display: flex; align-items: flex-start; gap: var(--s-2);
   padding: var(--s-2) var(--s-3); border-radius: var(--r-2);
   text-decoration: none; color: var(--text);
   transition: background var(--d-fast, 140ms) var(--ease, ease);
 }
 .showrooms-map-legend-link:hover { background: var(--surface-2, rgba(0,0,0,0.04)); }
 .showrooms-map-legend-pin {
-  width: 9px; height: 9px; border-radius: 999px; flex: none;
-  background: var(--brand-navy, #1B2C5E);
-  align-self: center;
+  width: 10px; height: 10px; border-radius: 999px 999px 999px 2px; flex: none;
+  background: var(--brand-navy, #1B2C5E); transform: rotate(45deg); margin-top: 4px;
 }
+.showrooms-map-legend-text { display: flex; flex-direction: column; line-height: 1.3; }
 .showrooms-map-legend-area { font-weight: 600; font-size: 14px; }
-.showrooms-map-legend-addr { font-size: 13px; }
+.showrooms-map-legend-addr { font-size: 12.5px; }
 @media (max-width: 560px) {
   .showrooms-map { aspect-ratio: 4 / 3; }
+  .showrooms-map-label { font-size: 3.8px; }
 }
 
 /* ===========================================================================
