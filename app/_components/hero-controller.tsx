@@ -41,8 +41,22 @@ export function HeroController({
 }) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
+  // Auto-advancing content is a motion-sensitivity concern (WCAG 2.2.2),
+  // so honor prefers-reduced-motion by not autoplaying. Manual dot/arrow
+  // navigation still works. Defaults true on the server / first paint so
+  // SSR behavior is unchanged; flipped in the effect once we can read the
+  // media query client-side.
+  const [motionOk, setMotionOk] = useState(true);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const apply = () => setMotionOk(!mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
 
   // Sync slide DOM (server-rendered by the parent Hero) when `i`
   // changes. Slides are tagged `data-hero-slide={idx}`. We toggle the
@@ -67,10 +81,10 @@ export function HeroController({
 
   // Autoplay timer.
   useEffect(() => {
-    if (!autoplay || paused) return;
+    if (!autoplay || paused || !motionOk) return;
     const t = setTimeout(() => setI((v) => (v + 1) % slideCount), SLIDE_INTERVAL_MS);
     return () => clearTimeout(t);
-  }, [i, autoplay, paused, slideCount]);
+  }, [i, autoplay, paused, motionOk, slideCount]);
 
   // Phase 226: roving-tabindex keydown handler attached as a native
   // listener instead of via React's `onKeyDown` prop. The Phase 141
