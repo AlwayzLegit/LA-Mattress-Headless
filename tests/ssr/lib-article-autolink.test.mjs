@@ -239,3 +239,23 @@ test('bed frame collection links from singular and plural', () => {
   const plural = autoLinkArticleBody('<p>Modern bed frames look great.</p>');
   assert.match(plural, /<a href="\/collections\/bed-frames"[^>]*>bed frames<\/a>/);
 });
+
+test('selfHref prevents the body linking back to its own page (#8)', () => {
+  // On /collections/memory-foam-mattresses, "memory foam mattress" must
+  // NOT self-link; the budget should go to the *related* collection
+  // ("latex mattress") the same prose mentions.
+  const body = '<p>Our memory foam mattress lineup rivals any latex mattress.</p>';
+  const out = autoLinkArticleBody(body, '/collections/memory-foam-mattresses');
+  assert.doesNotMatch(out, /<a href="\/collections\/memory-foam-mattresses"/);
+  assert.match(out, /<a href="\/collections\/latex-mattresses"[^>]*>latex mattress<\/a>/);
+});
+
+test('selfHref normalizes a trailing slash', () => {
+  const out = autoLinkArticleBody('<p>A great memory foam mattress.</p>', '/collections/memory-foam-mattresses/');
+  assert.doesNotMatch(out, /<a href="\/collections\/memory-foam-mattresses"/);
+});
+
+test('no selfHref keeps the original self-linking behavior for articles', () => {
+  const out = autoLinkArticleBody('<p>A great memory foam mattress.</p>');
+  assert.match(out, /<a href="\/collections\/memory-foam-mattresses"/);
+});

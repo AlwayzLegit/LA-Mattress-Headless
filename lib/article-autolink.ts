@@ -198,11 +198,22 @@ function escapeRegExp(s: string): string {
  * function, idempotent if the same destination was already linked in
  * the source HTML (used-set is seeded from existing <a href="…">).
  *
+ * `selfHref` (optional): the canonical path of the page this body lives
+ * on (e.g. `/collections/memory-foam-mattresses` for that collection's
+ * PLP copy). Seeded into `used` so the autolinker never links a phrase
+ * back to the very page the reader is already on — a wasted self-link
+ * that also dilutes the internal-link graph. On collection PLPs the
+ * body's primary term IS the current collection, so without this the
+ * first (and most prominent) match was always a self-link; seeding it
+ * frees that budget for the genuinely *related* collections the prose
+ * also mentions (latex, cooling, adjustable bases, etc.). No-op for
+ * article bodies that pass no selfHref.
+ *
  * Returns the HTML with injected links plus a stats object for
  * observability (currently unused by callers but useful for debugging
  * / future analytics).
  */
-export function autoLinkArticleBody(html: string): string {
+export function autoLinkArticleBody(html: string, selfHref?: string): string {
   if (!html) return html;
 
   // Tokenize: alternating tag / text chunks. Cheap regex tokenizer —
@@ -225,6 +236,10 @@ export function autoLinkArticleBody(html: string): string {
   // somewhere in the body, the autolinker doesn't add a second link
   // to the same destination.
   const used = new Set<string>();
+  // Seed the current page's own path so the body never self-links (see
+  // the selfHref note in the doc comment). Normalized to match the
+  // trailing-slash handling used for existing-anchor dedup below.
+  if (selfHref) used.add(selfHref.replace(/\/$/, ''));
   const existingHrefRe = /<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi;
   let am: RegExpExecArray | null;
   while ((am = existingHrefRe.exec(html)) !== null) {
