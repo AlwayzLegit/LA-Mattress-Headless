@@ -196,6 +196,25 @@ const SALE_FAQ: FaqItem[] = [
   },
 ];
 
+const BED_FRAME_FAQ: FaqItem[] = [
+  {
+    q: 'Do I need a box spring with these bed frames?',
+    a: 'It depends on the frame. Platform frames have built-in slat or panel support, so no box spring is needed — the mattress sits directly on the frame. Traditional metal frames and some bed frames do need a foundation or box spring underneath. Each product page notes what it requires; if you are unsure, tell us your mattress and we will confirm before delivery.',
+  },
+  {
+    q: 'How far apart should the slats be for my mattress?',
+    a: 'For foam and hybrid mattresses, keep slat gaps to 3 inches or less; for innerspring, 4 inches or less. Wider gaps let the mattress sag between slats and can void the mattress warranty. If a frame has wide slats, a bunkie board adds a flat supportive layer on top — we stock those too.',
+  },
+  {
+    q: 'Will this frame fit my mattress size?',
+    a: 'Our frames come in Twin through California King. Match the frame size to your mattress size — a Queen frame fits a Queen mattress. Adjustable-base-compatible frames are noted on the product page. See our mattress sizes guide at /pages/mattress-sizes for exact dimensions.',
+  },
+  {
+    q: 'Do you deliver and assemble the bed frame?',
+    a: 'Yes. Free white-glove delivery on orders over $499 anywhere in Los Angeles includes assembly of the frame in your room of choice and haul-away of your old frame or foundation. Order by 4 PM for same-day delivery where available.',
+  },
+];
+
 const ADJUSTABLE_FAQ: FaqItem[] = [
   {
     q: 'Will an adjustable base work with my current mattress?',
@@ -570,6 +589,16 @@ export function categoryFaqFor(handle: string): FaqItem[] {
   //    beat any material match).
   if (h.includes('pillow-top')) return [...PILLOW_TOP_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('bed-in-a-box')) return [...BED_IN_BOX_FAQ, ...UNIVERSAL_FAQ];
+
+  // Bed frames / foundations / box springs are NOT mattresses — they
+  // previously fell through to GENERIC_FAQ (whose questions are all
+  // about trying mattresses, firmness, and sizes), so the bed-frames
+  // PLP showed mattress FAQs (and emitted them as FAQPage JSON-LD).
+  // Route to a frame-specific bank. Placed high so it beats the size /
+  // material substring matches below.
+  if (h.includes('bed-frame') || h.includes('foundation') || h.includes('box-spring')) {
+    return [...BED_FRAME_FAQ, ...UNIVERSAL_FAQ];
+  }
 
   // 2. Use-case (back-pain, side-sleepers, couples). These are
   //    high-intent shopper collections and should win over any
