@@ -66,6 +66,14 @@ export function generateMetadata(): Metadata {
 // and emits on every page. Per-template structured data (Product, CollectionPage,
 // BlogPosting, etc.) is emitted by each route's page.tsx.
 
+// Hourly ISR. The homepage had no page-level revalidate, so its static HTML
+// only regenerated on a rebuild or an explicit revalidatePath('/') — which
+// meant content/section changes (hero, brands, reviews, why-us, etc.) didn't
+// surface without a manual flush. An hourly window lets edits appear on their
+// own; Shopify content edits still bust it immediately via the /api/revalidate
+// webhook (which now also revalidates '/').
+export const revalidate = 3600;
+
 export default async function Home() {
   // Phase 267: hero slides come from `hero_slide` Shopify metaobjects
   // when the merchant has created them; otherwise we fall back to the

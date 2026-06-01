@@ -104,6 +104,19 @@ export async function POST(req: Request) {
   const tags = tagsFor(topic, payload);
   for (const tag of tags) revalidateTag(tag);
 
+  // The homepage composes several sections from Shopify content — hero
+  // slides / why-us / featured-guide / announcement metaobjects, the
+  // shop brand, the brand strip + category tiles (derived from
+  // collections), and the reviews rail. Its page-level ISR is hourly, but
+  // bust it immediately when any of those upstreams change so edits show
+  // right away instead of waiting out the window.
+  const homepageTopics =
+    topic.startsWith('collections/') ||
+    topic.startsWith('metaobjects/') ||
+    topic.startsWith('products/') ||
+    topic === 'shop/update';
+  if (homepageTopics) revalidatePath('/');
+
   // Sitemap is generated from inventory.json, which webhooks don't refresh.
   // The data layer expires when its tag is busted; the sitemap stays stale
   // until the next pull-articles-via-storefront.mjs run. Still, revalidate
