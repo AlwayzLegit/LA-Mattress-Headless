@@ -205,19 +205,23 @@ export async function getStorefrontReviews({
     // a deep enough pool to find attributable voices; Judge.me caps at 100.
     const fetchSize = dedupe || preferNamed ? 100 : perPage;
     const res = await fetch(
-      buildUrl('/reviews', { per_page: fetchSize, page, rating: minRating, published: 'true' }),
-      // Tag versioned to force a cache miss when the payload semantics
-      // change. Vercel's data cache is shared across deployments, so the
-      // same URL keyed against the old tag keeps serving the stale
-      // payload until the 1h TTL elapses. Bumped v2 → v3 on the
-      // JUDGEME_API_TOKEN swap (2026-06-01) so the new token's reviews
-      // (which actually carry reviewer names) replace the cached
-      // name-less payload immediately instead of waiting out the TTL.
-      { next: { revalidate: 3600, tags: ['judgeme:reviews-v3'] } },
+      // NOTE: do NOT pass `rating` to /reviews — Judge.me treats it as an
+      // EXACT match, not a minimum (see getShopAggregate below, which fires
+      // one /reviews/count per rating 1-5 precisely for that reason). Passing
+      // `rating=4` returned *only* 4-star reviews, which for this store are
+      // almost all the literal name "Anonymous", while the 5-star reviews
+      // (which carry real reviewer names) were excluded entirely — the actual
+      // cause of #11's wall of "Anonymous". Fetch unfiltered and apply the
+      // `>= minRating` floor client-side below.
+      buildUrl('/reviews', { per_page: fetchSize, page, published: 'true' }),
+      // Tag versioned (v4) to force a cache miss: the request URL changed
+      // (dropped `rating`) so it's a new key anyway, but bumping the tag keeps
+      // the intent explicit. Vercel's data cache is shared across deployments.
+      { next: { revalidate: 3600, tags: ['judgeme:reviews-v4'] } },
     );
     if (!res.ok) return [];
     const data = (await res.json()) as ReviewsResponse;
-    const raw = data.reviews ?? [];
+    const raw = (data.reviews ?? []).filter((r) => (r.rating ?? 0) >= minRating);
     const process = (list: JudgemeReview[]) => (dedupe ? dedupeReviews(list) : list);
     if (!preferNamed) return process(raw).slice(0, perPage);
     // Named first (deduped on their own so they aren't lost to anonymous
