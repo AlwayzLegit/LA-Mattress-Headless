@@ -162,6 +162,18 @@ export function dedupeReviews(reviews: JudgemeReview[]): JudgemeReview[] {
 }
 
 /**
+ * True when a review carries a real, displayable reviewer name — i.e. not
+ * empty and not the literal placeholder "Anonymous" that Judge.me stores
+ * for reviews submitted/imported without a name. Used to prefer named
+ * reviews in the storefront carousels so the social-proof sections lead
+ * with attributable voices rather than a wall of "Anonymous".
+ */
+export function hasRealReviewerName(r: JudgemeReview): boolean {
+  const n = reviewerName(r, '').trim().toLowerCase();
+  return n !== '' && n !== 'anonymous';
+}
+
+/**
  * Latest top-rated reviews across all products. Used on /pages/reviews and
  * on the homepage Reviews section. Cached for 1 hour.
  *
@@ -170,16 +182,28 @@ export function dedupeReviews(reviews: JudgemeReview[]): JudgemeReview[] {
  * "Great service" sentiment — varied bodies make the social-proof section
  * actually persuasive. Pass `dedupe: false` for raw output (rare; only
  * needed when downstream needs the unfiltered set).
+ *
+ * `preferNamed` (default true): a large share of this store's published
+ * reviews carry the literal reviewer name "Anonymous" in Judge.me. To stop
+ * the carousels filling entirely with "Anonymous", we partition the fetched
+ * pool into named vs. anonymous, dedupe each independently, and lead with
+ * the named ones — falling back to anonymous reviews only to top up to
+ * `perPage`. Deduping the named set on its own also stops a named review
+ * being dropped as a near-duplicate of a longer *anonymous* one (which is
+ * how named voices were being lost before).
  */
 export async function getStorefrontReviews({
   perPage = 12,
   page = 1,
   minRating = 4,
   dedupe = true,
-}: { perPage?: number; page?: number; minRating?: number; dedupe?: boolean } = {}): Promise<JudgemeReview[]> {
+  preferNamed = true,
+}: { perPage?: number; page?: number; minRating?: number; dedupe?: boolean; preferNamed?: boolean } = {}): Promise<JudgemeReview[]> {
   if (!ENABLED) return [];
   try {
-    const fetchSize = dedupe ? Math.min(perPage * 4, 100) : perPage;
+    // Over-fetch widely when deduping or preferring named reviews so there's
+    // a deep enough pool to find attributable voices; Judge.me caps at 100.
+    const fetchSize = dedupe || preferNamed ? 100 : perPage;
     const res = await fetch(
       buildUrl('/reviews', { per_page: fetchSize, page, rating: minRating, published: 'true' }),
       // Tag versioned to force a cache miss when the payload semantics
@@ -194,8 +218,14 @@ export async function getStorefrontReviews({
     if (!res.ok) return [];
     const data = (await res.json()) as ReviewsResponse;
     const raw = data.reviews ?? [];
-    if (!dedupe) return raw.slice(0, perPage);
-    return dedupeReviews(raw).slice(0, perPage);
+    const process = (list: JudgemeReview[]) => (dedupe ? dedupeReviews(list) : list);
+    if (!preferNamed) return process(raw).slice(0, perPage);
+    // Named first (deduped on their own so they aren't lost to anonymous
+    // near-duplicates), then anonymous reviews only to top up the count.
+    const named = process(raw.filter(hasRealReviewerName));
+    if (named.length >= perPage) return named.slice(0, perPage);
+    const anon = process(raw.filter((r) => !hasRealReviewerName(r)));
+    return [...named, ...anon].slice(0, perPage);
   } catch {
     return [];
   }
