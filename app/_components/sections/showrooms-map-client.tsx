@@ -48,14 +48,16 @@ export function ShowroomsMapClient({ showrooms }: { showrooms: MapShowroom[] }) 
 
       map = L.map(ref.current, {
         scrollWheelZoom: false, // don't hijack page scroll; pinch/buttons still zoom
-        attributionControl: true,
+        // No on-map attribution control / Leaflet prefix — keeps the map
+        // face clean. The OpenStreetMap + CARTO credit their terms require
+        // is relocated to a discreet line below the map (rendered by the
+        // server component) instead of the bottom-right overlay.
+        attributionControl: false,
       });
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         subdomains: 'abcd',
         maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       }).addTo(map);
 
       const pin = L.divIcon({

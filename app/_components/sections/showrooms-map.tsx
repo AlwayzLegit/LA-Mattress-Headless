@@ -35,6 +35,15 @@ export function ShowroomsMap() {
 
       <ShowroomsMapClient showrooms={mapShowrooms} />
 
+      {/* Minimal map-data credit required by the free OSM/CARTO tiles,
+          relocated here so it isn't an overlay on the map face. */}
+      <p className="locmap-credit">
+        Map data ©{' '}
+        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+        {' '}contributors, ©{' '}
+        <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>
+      </p>
+
       {/* Crawlable, tappable legend — the authoritative navigation, in SSR
           HTML regardless of whether the map JS/tiles load. */}
       <ul className="locmap-legend">
