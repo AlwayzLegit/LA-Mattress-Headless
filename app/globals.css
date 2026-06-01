@@ -2213,6 +2213,19 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
   line-height: 1.3;
   overflow-wrap: break-word;
 }
+/* #13: real brand logos in the homepage strip (reuses lib/brand-logos.ts).
+   Logo-wall treatment — desaturated + dimmed for a uniform row, resolving
+   to full colour on hover/focus of the tile. */
+.brand-tile-logo { padding: 10px 14px; }
+.brand-strip-logo {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; height: 30px;
+  filter: grayscale(100%); opacity: 0.62;
+  transition: filter var(--d-fast), opacity var(--d-fast);
+}
+.brand-tile-logo:hover .brand-strip-logo,
+.brand-tile-logo:focus-visible .brand-strip-logo { filter: none; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .brand-strip-logo { transition: none; } }
 /* Brands directory grid injected into the CMS /pages/mattress-brands
    page — design-system card grid mirroring .gd-card; logo area falls
    back to a wordmark. */

@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Icon, type IconName } from '../icon';
 import { phImg } from '../images';
+import { brandLogo } from '@/lib/brand-logos';
+import { BrandLogo } from '../brand-logo';
 import { getShopAggregate, getStorefrontReviews, reviewerName } from '@/lib/judgeme';
 import { getBrands, getFeaturedGuides, getWhyUsItems, getCategoryTiles } from '@/lib/shopify';
 import { nonEmptyCollections } from '@/lib/inventory';
@@ -110,11 +112,29 @@ export async function BrandStrip() {
           </Link>
         </div>
         <div className="brand-strip">
-          {brands.map((b) => (
-            <Link href={b.href} key={b.href} className="brand-tile">
-              <span className="brand-wordmark">{b.name}</span>
-            </Link>
-          ))}
+          {brands.map((b) => {
+            // Handle derives from the collection href so this works for both
+            // the live getBrands() shape and the wordmark-only fallback.
+            const handle = b.href.replace('/collections/', '');
+            const logo = brandLogo(handle);
+            return (
+              <Link href={b.href} key={b.href} className={`brand-tile${logo ? ' brand-tile-logo' : ''}`}>
+                {logo ? (
+                  <span className="brand-strip-logo">
+                    <BrandLogo
+                      src={logo.src}
+                      alt={logo.alt ?? `${b.name} logo`}
+                      width={logo.width}
+                      height={logo.height}
+                      name={b.name}
+                    />
+                  </span>
+                ) : (
+                  <span className="brand-wordmark">{b.name}</span>
+                )}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
