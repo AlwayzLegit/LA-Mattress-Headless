@@ -1,4 +1,15 @@
 import Link from 'next/link';
+import Image from 'next/image';
+import { SHOWROOMS } from '@/lib/showrooms';
+
+// Real showroom photo for the section media (#13). Prefer the La Brea
+// interior shot, fall back to the first showroom with an image — both are
+// the same Shopify CDN photos already shown on the locations page, so they
+// are known-good and need no new asset.
+const FEATURE_IMG =
+  SHOWROOMS.find((s) => s.handle === 'best-mattress-store-la-brea' && s.imageUrl)?.imageUrl ??
+  SHOWROOMS.find((s) => s.imageUrl)?.imageUrl ??
+  null;
 
 /**
  * SEO-focused prose section for the homepage.
@@ -44,6 +55,8 @@ export function HomepageSeoContent() {
   return (
     <section className="section hp-seo-content" aria-labelledby="hp-seo-heading">
       <div className="container">
+        <div className="hp-seo-split">
+          <div className="hp-seo-main">
         <div className="section-head">
           <div>
             <div className="eyebrow">Los Angeles mattress store</div>
@@ -80,6 +93,27 @@ export function HomepageSeoContent() {
             <Link href="/pages/mattress-store-locations">Los Angeles mattress stores</Link>{' '}
             &mdash; we&rsquo;re open seven days a week.
           </p>
+        </div>
+          </div>
+
+          {FEATURE_IMG ? (
+            <div className="hp-seo-media" aria-hidden="true">
+              <div className="hp-seo-media-frame">
+                <Image
+                  src={FEATURE_IMG}
+                  alt=""
+                  fill
+                  sizes="(max-width: 880px) 100vw, 42vw"
+                  quality={60}
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+              <div className="hp-seo-stat">
+                <span className="hp-seo-stat-num">5</span>
+                <span className="hp-seo-stat-label">showrooms across LA · open 7 days</span>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
     </section>
