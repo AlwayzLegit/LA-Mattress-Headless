@@ -69,10 +69,11 @@ type Params = {
 // but more often than blog articles — showroom hours, sale-page
 // promos, FAQ updates. No `pages/update` webhook exists in
 // Shopify's Admin UI (REST-only or via Shopify Flow), so the
-// revalidate window is the only natural invalidation lever for
-// page-body edits. 6h is a defensible balance between freshness
-// and TTFB.
-export const revalidate = 21600;
+// revalidate window is the main natural invalidation lever for
+// page-body edits. Lowered 6h → 1h so edits (and code/section
+// changes like the locations map) surface within the hour without a
+// manual flush, matching the rest of the site's ~1h cadence.
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
