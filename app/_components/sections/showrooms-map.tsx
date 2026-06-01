@@ -2,25 +2,35 @@ import Link from 'next/link';
 import { SHOWROOMS } from '@/lib/showrooms';
 
 /**
- * Custom showroom locator map — replaces the old Google Maps iframe
- * (`?q=LA+Mattress+Store+Los+Angeles&output=embed`) whose live UI
- * surfaced competitor mattress stores. Shows ONLY our five showrooms.
+ * Showroom locator — a designed, self-contained map of our five LA-area
+ * showrooms. No external tiles, no Maps API key, no third-party request,
+ * and (unlike the old Google embed) no competitor pins.
  *
- * A designed inline-SVG locator (no external tiles, no API key, no
- * third-party request, no competitor pins): each showroom is plotted by
- * its real lat/long, drawn as a labeled teardrop pin over a stylized LA
- * backdrop (coast sliver + freeway reference lines for orientation).
- * Pins are links to the showroom page; the legend below repeats the
- * links for tap targets + crawlability. Authoritative address / hours /
- * directions live in the LocationsFinder directory below this on the page.
+ * Redesign (#5 follow-up): the previous version drew abstract freeway
+ * squiggles + a blob coast over a flat gradient, which read as random
+ * scribbles. This version is a clean, modern locator:
+ *   - a light gridded canvas (street-grid texture via an SVG pattern),
+ *   - geographically meaningful backdrop: the Santa Monica Mountains
+ *     band (which actually separates the Valley showrooms — Studio City,
+ *     Glendale — to the north from the basin showrooms to the south) and
+ *     the Santa Monica Bay coastline to the south-west,
+ *   - faint orientation labels (PACIFIC / SANTA MONICA MTS / THE VALLEY),
+ *   - crisp HTML pin markers (real DOM, so the labels render sharp at any
+ *     size) with a soft brand halo, a pill label, and a smooth
+ *     hover/focus lift to the red accent.
+ *
+ * Pins are positioned by each showroom's real lat/long (same projection
+ * as before) and link to the showroom page. The legend below repeats the
+ * links for tap targets + crawlability; authoritative address / hours /
+ * directions live in the LocationsFinder directory below this.
  */
 
 // Bounding box around the five LA-area showrooms, padded so no pin sits
 // on the edge. Latitude north → top, longitude east → right.
 const BBOX = { minLat: 34.02, maxLat: 34.17, minLon: -118.45, maxLon: -118.24 };
 
-// Per-handle label placement so labels don't collide with neighbouring
-// pins (the five positions are fixed, so this is hand-tuned once).
+// Per-handle label side so pill labels point inward / don't collide with
+// neighbouring pins (the five positions are fixed, so this is tuned once).
 const LABEL_SIDE: Record<string, 'left' | 'right' | 'above'> = {
   'koreatown-best-mattress-store': 'right',
   'best-mattress-store-west-la': 'right',
@@ -44,83 +54,76 @@ export function ShowroomsMap() {
   }));
 
   return (
-    <section className="showrooms-map-wrap" aria-labelledby="showrooms-map-h">
+    <section className="locmap-section" aria-labelledby="showrooms-map-h">
       <h2 id="showrooms-map-h" className="sr-only">
         Our five Los Angeles showroom locations
       </h2>
-      <div className="showrooms-map">
-        <svg
-          className="showrooms-map-svg"
-          viewBox="0 0 100 64"
-          preserveAspectRatio="xMidYMid meet"
-          role="img"
-          aria-label="Map of our five LA showrooms: Koreatown, West LA, La Brea, Studio City, and Glendale."
-        >
+      <div
+        className="locmap"
+        role="img"
+        aria-label="Map of our five LA showrooms: Koreatown, West LA, La Brea, Studio City, and Glendale."
+      >
+        <svg className="locmap-bg" viewBox="0 0 100 64" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <defs>
-            <linearGradient id="sm-land" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--sm-land-top, #eef1f6)" />
-              <stop offset="100%" stopColor="var(--sm-land-bot, #e3e8f0)" />
+            <linearGradient id="lm-land" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f5f7fb" />
+              <stop offset="100%" stopColor="#e8edf5" />
             </linearGradient>
-            <filter id="sm-pin-shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="0.5" stdDeviation="0.6" floodOpacity="0.35" />
-            </filter>
+            <linearGradient id="lm-sea" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#cfe2f3" />
+              <stop offset="100%" stopColor="#b6d2ea" />
+            </linearGradient>
+            <pattern id="lm-grid" width="6.5" height="6.5" patternUnits="userSpaceOnUse">
+              <path d="M6.5 0 H0 V6.5" fill="none" stroke="#cad2e0" strokeWidth="0.18" opacity="0.7" />
+            </pattern>
           </defs>
 
-          {/* Land */}
-          <rect x="0" y="0" width="100" height="64" fill="url(#sm-land)" />
+          {/* Land + street-grid texture */}
+          <rect width="100" height="64" fill="url(#lm-land)" />
+          <rect width="100" height="64" fill="url(#lm-grid)" />
 
-          {/* Coast sliver (Santa Monica Bay is off to the SW — hint only) */}
-          <path d="M0 40 Q5 52 3.5 64 L0 64 Z" className="showrooms-map-ocean" />
+          {/* Santa Monica Mountains band — the real divider between the
+              San Fernando Valley (north) and the LA basin (south). */}
+          <path
+            className="locmap-mtns"
+            d="M0 27 Q22 20 46 25 Q72 30 100 22 L100 32 Q72 39 46 34 Q22 29 0 36 Z"
+          />
 
-          {/* Freeway reference lines (decorative orientation cues) */}
-          <g className="showrooms-map-fwy" fill="none">
-            <path d="M-2 30 Q35 26 64 30 T102 22" />
-            <path d="M14 -2 Q20 25 12 66" />
-            <path d="M2 46 Q45 40 100 44" />
-          </g>
+          {/* Santa Monica Bay — coastline tucked into the south-west
+              corner (kept tight so the West LA pin stays on land). */}
+          <path className="locmap-sea" d="M0 50 Q8 58 13 64 L0 64 Z" fill="url(#lm-sea)" />
 
-          {/* Pins */}
-          {pins.map((p) => {
-            const labelDx = p.side === 'left' ? -3.2 : p.side === 'right' ? 3.2 : 0;
-            const labelDy = p.side === 'above' ? -7.4 : -2.4;
-            const anchor = p.side === 'left' ? 'end' : p.side === 'above' ? 'middle' : 'start';
-            // Project the 0..100 (×0..64) pin into the actual viewBox.
-            const px = p.x;
-            const py = (p.y / 100) * 64;
-            return (
-              <a key={p.handle} href={`/pages/${p.handle}`} className="showrooms-map-pinlink">
-                <g transform={`translate(${px} ${py})`}>
-                  {/* Teardrop pin (tip at the projected point). */}
-                  <path
-                    className="showrooms-map-pin"
-                    filter="url(#sm-pin-shadow)"
-                    d="M0 0 C-2.4 -3.6 -4 -5 -4 -7.6 a4 4 0 1 1 8 0 C4 -5 2.4 -3.6 0 0 Z"
-                  />
-                  <circle cx="0" cy="-7.6" r="1.5" className="showrooms-map-pin-dot" />
-                  <text
-                    className="showrooms-map-label"
-                    x={labelDx}
-                    y={labelDy}
-                    textAnchor={anchor}
-                  >
-                    {p.area}
-                  </text>
-                </g>
-              </a>
-            );
-          })}
+          {/* Faint orientation labels (designed-map styling). */}
+          <text className="locmap-geo" x="3.5" y="61.5" transform="rotate(-31 3.5 61.5)">PACIFIC</text>
+          <text className="locmap-geo" x="50" y="30" textAnchor="middle">SANTA MONICA MTS</text>
+          <text className="locmap-geo" x="55" y="8" textAnchor="middle">THE VALLEY</text>
         </svg>
+
+        <div className="locmap-pins">
+          {pins.map((p) => (
+            <a
+              key={p.handle}
+              href={`/pages/${p.handle}`}
+              className={`locmap-pin locmap-pin--${p.side}`}
+              style={{ left: `${p.x}%`, top: `${p.y}%` }}
+              aria-label={`${p.area} showroom`}
+            >
+              <span className="locmap-chip">{p.area}</span>
+              <span className="locmap-marker" aria-hidden="true" />
+            </a>
+          ))}
+        </div>
       </div>
 
       {/* Crawlable, tappable legend — the authoritative navigation. */}
-      <ul className="showrooms-map-legend">
+      <ul className="locmap-legend">
         {SHOWROOMS.map((s) => (
           <li key={s.handle}>
-            <Link href={`/pages/${s.handle}`} className="showrooms-map-legend-link">
-              <span className="showrooms-map-legend-pin" aria-hidden="true" />
-              <span className="showrooms-map-legend-text">
-                <span className="showrooms-map-legend-area">{s.area}</span>
-                <span className="showrooms-map-legend-addr muted">{s.street}</span>
+            <Link href={`/pages/${s.handle}`} className="locmap-legend-link">
+              <span className="locmap-legend-pin" aria-hidden="true" />
+              <span className="locmap-legend-text">
+                <span className="locmap-legend-area">{s.area}</span>
+                <span className="locmap-legend-addr muted">{s.street}</span>
               </span>
             </Link>
           </li>

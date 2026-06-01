@@ -6784,56 +6784,105 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
    real lat/long; the legend below is the crawlable, linked navigation.
    See app/_components/sections/showrooms-map.tsx.
    =========================================================================== */
-.showrooms-map-wrap {
+.locmap-section {
   border: 1px solid var(--line);
   border-radius: var(--r-3, 12px);
   overflow: hidden;
   background: var(--surface);
 }
-.showrooms-map { position: relative; width: 100%; aspect-ratio: 100 / 64; }
-.showrooms-map-svg { display: block; width: 100%; height: 100%; }
-.showrooms-map-ocean { fill: var(--sm-ocean, #cfe0ef); opacity: 0.85; }
-.showrooms-map-fwy path { stroke: var(--sm-fwy, #ffffff); stroke-width: 1.1; opacity: 0.9; stroke-linecap: round; }
-.showrooms-map-fwy path:nth-child(odd) { stroke-width: 1.4; }
-
-/* Teardrop pins — navy, lift + accent on hover/focus of the link. */
-.showrooms-map-pin { fill: var(--brand-navy, #1B2C5E); transition: fill 140ms ease; }
-.showrooms-map-pin-dot { fill: #fff; }
-.showrooms-map-label {
-  font-size: 3.1px; font-weight: 600; fill: var(--text);
-  paint-order: stroke; stroke: var(--surface); stroke-width: 0.9px; stroke-linejoin: round;
+.locmap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 100 / 64;
+  overflow: hidden;
 }
-.showrooms-map-pinlink { cursor: pointer; }
-.showrooms-map-pinlink > g { transition: transform 140ms ease; transform-box: fill-box; transform-origin: center bottom; }
-.showrooms-map-pinlink:hover > g,
-.showrooms-map-pinlink:focus-visible > g { transform: translateY(-1.5px); }
-.showrooms-map-pinlink:hover .showrooms-map-pin,
-.showrooms-map-pinlink:focus-visible .showrooms-map-pin { fill: var(--accent, #d8232a); }
-.showrooms-map-pinlink:focus { outline: none; }
+.locmap-bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.locmap-mtns { fill: #d7deea; opacity: 0.7; }
+.locmap-sea { opacity: 0.95; }
+.locmap-geo {
+  font-size: 2.3px; font-weight: 700; letter-spacing: 0.6px;
+  fill: #8a98ad; opacity: 0.5;
+}
 
-.showrooms-map-legend {
+/* Pin overlay — real DOM markers so labels stay crisp at any map size. */
+.locmap-pins { position: absolute; inset: 0; }
+.locmap-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 16px; height: 16px;
+  z-index: 1;
+  text-decoration: none;
+}
+.locmap-pin:hover, .locmap-pin:focus-visible { z-index: 3; outline: none; }
+.locmap-marker {
+  display: block; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--brand-navy, #1B2C5E);
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--brand-navy, #1B2C5E) 14%, transparent),
+    0 3px 7px rgba(15, 23, 42, 0.32);
+  transition: background 150ms var(--ease, ease), box-shadow 150ms var(--ease, ease), transform 150ms var(--ease, ease);
+}
+.locmap-pin:hover .locmap-marker,
+.locmap-pin:focus-visible .locmap-marker {
+  background: var(--accent, #d8232a);
+  transform: scale(1.18);
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--accent, #d8232a) 20%, transparent),
+    0 5px 12px rgba(15, 23, 42, 0.4);
+}
+.locmap-chip {
+  position: absolute;
+  white-space: nowrap;
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 12px; font-weight: 600; line-height: 1.2;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
+  pointer-events: none;
+  transition: color 150ms var(--ease, ease), border-color 150ms var(--ease, ease);
+}
+.locmap-pin:hover .locmap-chip,
+.locmap-pin:focus-visible .locmap-chip {
+  color: var(--accent, #d8232a);
+  border-color: color-mix(in srgb, var(--accent, #d8232a) 45%, var(--line));
+}
+/* Label side placement (mirrors LABEL_SIDE in the component). */
+.locmap-pin--right .locmap-chip { left: calc(100% + 7px); top: 50%; transform: translateY(-50%); }
+.locmap-pin--left  .locmap-chip { right: calc(100% + 7px); top: 50%; transform: translateY(-50%); }
+.locmap-pin--above .locmap-chip { bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); }
+
+.locmap-legend {
   list-style: none; margin: 0; padding: var(--s-3);
   display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 2px;
   border-top: 1px solid var(--line);
   background: var(--surface);
 }
-.showrooms-map-legend-link {
+.locmap-legend-link {
   display: flex; align-items: flex-start; gap: var(--s-2);
   padding: var(--s-2) var(--s-3); border-radius: var(--r-2);
   text-decoration: none; color: var(--text);
   transition: background var(--d-fast, 140ms) var(--ease, ease);
 }
-.showrooms-map-legend-link:hover { background: var(--surface-2, rgba(0,0,0,0.04)); }
-.showrooms-map-legend-pin {
-  width: 10px; height: 10px; border-radius: 999px 999px 999px 2px; flex: none;
-  background: var(--brand-navy, #1B2C5E); transform: rotate(45deg); margin-top: 4px;
+.locmap-legend-link:hover { background: var(--surface-2, rgba(0,0,0,0.04)); }
+.locmap-legend-pin {
+  width: 12px; height: 12px; border-radius: 50%; flex: none; margin-top: 3px;
+  background: var(--brand-navy, #1B2C5E);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-navy, #1B2C5E) 18%, transparent);
 }
-.showrooms-map-legend-text { display: flex; flex-direction: column; line-height: 1.3; }
-.showrooms-map-legend-area { font-weight: 600; font-size: 14px; }
-.showrooms-map-legend-addr { font-size: 12.5px; }
+.locmap-legend-link:hover .locmap-legend-pin { background: var(--accent, #d8232a); }
+.locmap-legend-text { display: flex; flex-direction: column; line-height: 1.3; }
+.locmap-legend-area { font-weight: 600; font-size: 14px; }
+.locmap-legend-addr { font-size: 12.5px; }
 @media (max-width: 560px) {
-  .showrooms-map { aspect-ratio: 4 / 3; }
-  .showrooms-map-label { font-size: 3.8px; }
+  .locmap { aspect-ratio: 4 / 3; }
+  .locmap-chip { font-size: 11px; padding: 2px 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .locmap-marker, .locmap-chip { transition: none; }
 }
 
 /* ===========================================================================
