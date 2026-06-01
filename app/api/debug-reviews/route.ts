@@ -24,6 +24,14 @@ export async function GET(req: Request) {
     'judgeme:aggregate',
     'judgeme:aggregate-v2',
   ];
+  // Diagnostic: resolve names exactly as the reviews page does (same params)
+  // to see whether the data itself carries literal "Anonymous" names.
+  const { getStorefrontReviews, reviewerName } = await import('@/lib/judgeme');
+  const pageReviews = await getStorefrontReviews({ perPage: 12, minRating: 4, dedupe: true });
+  const resolvedNames = pageReviews.map((r) => reviewerName(r));
+  const rawNames = pageReviews.map((r) => r.reviewer?.name ?? null);
+  const anonCount = rawNames.filter((n) => (n ?? '').trim().toLowerCase() === 'anonymous').length;
+
   for (const t of tags) revalidateTag(t);
   // The review pages are dynamic routes (/pages/[handle]) + the static
   // homepage. A literal revalidatePath('/pages/reviews') does NOT reliably
@@ -34,7 +42,8 @@ export async function GET(req: Request) {
   revalidatePath('/', 'page');
   const paths = ['/pages/[handle] (page)', '/pages/reviews (page)', '/ (page)'];
   return NextResponse.json(
-    { ok: true, revalidatedTags: tags, revalidatedPaths: paths },
+    { ok: true, revalidatedTags: tags, revalidatedPaths: paths,
+      count: pageReviews.length, anonRawCount: anonCount, rawNames, resolvedNames },
     { headers: { 'cache-control': 'no-store' } },
   );
 }
