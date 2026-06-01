@@ -1,7 +1,6 @@
 import { ReviewsBadge } from './reviews-badge';
 import { shopifyProductIdFromGid } from '@/lib/judgeme';
 import { JudgemeWidget } from './judgeme-widget';
-import { StripInternalNofollow } from './strip-internal-nofollow';
 import { TrackReviewWidget } from './track-review-widget';
 import type { ProductReviews } from '@/lib/shopify';
 
@@ -77,12 +76,14 @@ export function PdpReviewsSection({ productGid, productHandle, reviews }: Props)
         <>
           <JudgemeWidget productId={productId} />
           <TrackReviewWidget productId={productId} />
-          {/* SEMrush 20260521_1 follow-up: Judge.me's widget injects
-              anchors with rel="nofollow" on in-page form/pagination
-              links. This client mutator strips those after the
-              widget hydrates. See lib/strip-nofollow.ts for the pure
-              decision logic. */}
-          <StripInternalNofollow />
+          {/* StripInternalNofollow removed here (#12): it ran a
+              document-wide MutationObserver over the Judge.me widget's
+              DOM and was the repo's own prime suspect for the
+              "Load more doesn't work" bug (see its Phase 306 header
+              note). Removing it eliminates the only LA-Mattress code
+              that touches the widget's runtime DOM, at the cost of the
+              widget's in-page nofollow links returning — an acceptable
+              SEO trade for a working reviews widget. */}
         </>
       ) : (
         <p className="muted">
