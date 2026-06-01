@@ -5,7 +5,7 @@ import { PRICE_MATCH_TEXT } from '@/lib/faq';
 const REASONS: { icon: 'shield' | 'home' | 'truck' | 'card' | 'star'; title: string; body: string }[] = [
   { icon: 'shield', title: 'Authorized dealer', body: 'Genuine Tempur-Pedic, Stearns & Foster, Diamond, Helix and more — never gray-market or knockoff models with mismatched warranties.' },
   { icon: 'home', title: 'Five-showroom buying power', body: 'One family-owned operation across 5 LA showrooms buys deep and prices sharp — the savings pass to you, not a national chain’s ad budget.' },
-  { icon: 'star', title: 'Salaried, never commission', body: 'Consultants are paid a salary, so there’s no incentive to upsell you past the right mattress at the right price.' },
+  { icon: 'star', title: 'Trained sleep consultants', body: 'Our consultants know every brand on the floor — they help you find the right mattress at the right price, not the most expensive one.' },
   { icon: 'card', title: 'Floor models & clearance', body: 'Discontinued and floor-sample mattresses are marked down hard — ask in any showroom what’s on clearance that week.' },
 ];
 

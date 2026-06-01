@@ -106,7 +106,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
   },
   'mattress-store-contact': {
     eyebrow: 'Real local team, no call center',
-    lede: 'Every call, email, and chat goes to a salaried sleep consultant at one of our LA showrooms — no offshored support, no scripts.',
+    lede: 'Every call, email, and chat goes to a sleep consultant at one of our LA showrooms — no offshored support, no scripts.',
     trust: [
       { icon: 'phone', title: '(800) 218-3578', sub: '10 AM – 8 PM Pacific, daily' },
       { icon: 'mail', title: 'orders.lamattress@gmail.com', sub: 'Reply within one business day' },
@@ -120,10 +120,10 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
   },
   about: {
     eyebrow: 'LA-owned · 5 showrooms · since 2012',
-    lede: 'A family-owned LA mattress store with five neighborhood showrooms, salaried sleep consultants, and free white-glove delivery across the city. The brands you know, the prices you compare, the service that makes the difference.',
+    lede: 'A family-owned LA mattress store with five neighborhood showrooms, expert sleep consultants, and free white-glove delivery across the city. The brands you know, the prices you compare, the service that makes the difference.',
     trust: [
       { icon: 'home', title: 'Family-owned in LA', sub: 'Five showrooms across the city' },
-      { icon: 'check', title: 'Salaried, never commission', sub: 'No upsell pressure — you pick what fits you' },
+      { icon: 'check', title: 'Trained on every brand', sub: 'Expert help, no upsell pressure — you pick what fits you' },
       { icon: 'shield', title: '120-night Love Your Bed exchange', sub: 'If it isn’t right, we swap it' },
     ],
     cta: {

@@ -47,7 +47,7 @@ export const LOCATIONS_FAQ: LocationsFaqItem[] = [
   },
   {
     q: 'What\'s the best mattress store in Los Angeles?',
-    a: 'We\'re biased — but family-owned since 2012, 11,000+ verified reviews at 4.9 stars, five Greater LA locations, every major brand on the floor (Tempur-Pedic, Stearns & Foster, Helix, Diamond, plus our private-label collections), free same-day delivery, 120-night exchange, and salaried (not commissioned) sleep consultants. Visit and decide for yourself.',
+    a: 'We\'re biased — but family-owned since 2012, 11,000+ verified reviews at 4.9 stars, five Greater LA locations, every major brand on the floor (Tempur-Pedic, Stearns & Foster, Helix, Diamond, plus our private-label collections), free same-day delivery, 120-night exchange, and sleep consultants trained on every brand we carry. Visit and decide for yourself.',
     link: { href: '/pages/reviews', label: 'Read customer reviews' },
   },
   {

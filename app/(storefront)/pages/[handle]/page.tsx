@@ -550,7 +550,7 @@ async function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnTy
             <h2>What every showroom has</h2>
             <ul>
               <li><strong>30+ mattresses on the floor</strong> from Tempur-Pedic, Stearns &amp; Foster, Sealy, Chattam &amp; Wells, Spring Air, Diamond, Englander, Eastman House, Helix, and Harvest — every bed in our catalog, every size.</li>
-              <li><strong>Sleep consultants, salaried not commissioned</strong> — no upsell pressure, no &ldquo;you really need the premium one.&rdquo; They&rsquo;ll narrow you down by sleep position, body weight, and back history.</li>
+              <li><strong>Sleep consultants trained on every brand</strong> — no upsell pressure, no &ldquo;you really need the premium one.&rdquo; They&rsquo;ll narrow you down by sleep position, body weight, and back history.</li>
               <li><strong>Side-by-side comparison setup</strong> — pull two or three finalists together and switch between them in a single session.</li>
               <li><strong>Adjustable bases on demo</strong> with every mattress so you can test what zero-gravity and head-up actually feel like before you buy.</li>
               <li><strong>Same-day white-glove delivery</strong> anywhere in LA when you order by 4 PM — setup and old-mattress removal included.</li>

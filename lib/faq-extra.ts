@@ -257,13 +257,13 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
     },
     {
       q: 'How do I apply for a job at LA Mattress Store?',
-      a: 'Email your resume to orders.lamattress@gmail.com with "Career" in the subject line. We hire showroom sales consultants (salaried, never commission), delivery drivers, and customer service team members. Check our Careers page for current openings.',
+      a: 'Email your resume to orders.lamattress@gmail.com with "Career" in the subject line. We hire showroom sleep consultants and warehouse + inventory team members. Check our Careers page for current openings.',
     },
   ],
   'mattress-firm-vs-la-mattress-store': [
     {
       q: 'What is the difference between LA Mattress Store and Mattress Firm?',
-      a: 'LA Mattress Store is family-owned, LA-based since 2012, with 5 local showrooms and salaried (non-commission) consultants. Mattress Firm is a national chain with commission-based sales reps and 2,200+ stores. The biggest practical differences for LA shoppers are local stock (we keep most mattresses on the floor), free same-day white-glove delivery within LA, and no upsell pressure.',
+      a: 'LA Mattress Store is family-owned, LA-based since 2012, with 5 local showrooms and sleep consultants trained on every brand we carry. Mattress Firm is a national chain with 2,200+ stores. The biggest practical differences for LA shoppers are local stock (we keep most mattresses on the floor), free same-day white-glove delivery within LA, and expert, no-pressure help in person.',
     },
     {
       q: 'Who has better prices — LA Mattress or Mattress Firm?',
