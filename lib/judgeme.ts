@@ -226,7 +226,15 @@ export async function getStorefrontReviews({
     if (!preferNamed) return process(raw).slice(0, perPage);
     // Named first (deduped on their own so they aren't lost to anonymous
     // near-duplicates), then anonymous reviews only to top up the count.
-    const named = process(raw.filter(hasRealReviewerName));
+    // Also collapse to one review per distinct reviewer so the same name
+    // doesn't repeat back-to-back when someone left several reviews.
+    const seenNames = new Set<string>();
+    const named = process(raw.filter(hasRealReviewerName)).filter((r) => {
+      const key = reviewerName(r).toLowerCase();
+      if (seenNames.has(key)) return false;
+      seenNames.add(key);
+      return true;
+    });
     if (named.length >= perPage) return named.slice(0, perPage);
     const anon = process(raw.filter((r) => !hasRealReviewerName(r)));
     return [...named, ...anon].slice(0, perPage);
