@@ -25,9 +25,14 @@ export async function GET(req: Request) {
     'judgeme:aggregate-v2',
   ];
   for (const t of tags) revalidateTag(t);
-  // Belt-and-suspenders: also bust the specific routes that render reviews.
-  const paths = ['/', '/pages/reviews'];
-  for (const p of paths) revalidatePath(p);
+  // The review pages are dynamic routes (/pages/[handle]) + the static
+  // homepage. A literal revalidatePath('/pages/reviews') does NOT reliably
+  // bust a dynamic route's persisted ISR cache — the route-pattern form
+  // ('/pages/[handle]', 'page') is the authoritative way. Bust both.
+  revalidatePath('/pages/[handle]', 'page');
+  revalidatePath('/pages/reviews', 'page');
+  revalidatePath('/', 'page');
+  const paths = ['/pages/[handle] (page)', '/pages/reviews (page)', '/ (page)'];
   return NextResponse.json(
     { ok: true, revalidatedTags: tags, revalidatedPaths: paths },
     { headers: { 'cache-control': 'no-store' } },
