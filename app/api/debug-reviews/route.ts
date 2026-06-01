@@ -1,35 +1,35 @@
+import { revalidateTag, revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
-import { getStorefrontReviews } from '@/lib/judgeme';
 
-// TEMPORARY diagnostic for #11 (reviewer "Anonymous"). Reports — without
-// leaking any PII — what the runtime actually receives from Judge.me so we
-// can tell whether the production env token returns reviewer names through
-// the page's exact query. Remove after diagnosis.
+// TEMPORARY one-shot cache flush for #11. The reviewer-name fix + correct
+// JUDGEME_API_TOKEN are confirmed live (the prod runtime fetch returns
+// reviewer.name), but the full-route ISR cache for the review-bearing pages
+// was rendered BEFORE the token swap and persists across deploys, so it
+// still serves "Anonymous". Bumping the fetch tag (v2→v3) orphaned the old
+// render's invalidation key, so we explicitly bust BOTH tags here to force
+// regeneration with current data. Guarded by a temp key; deleted right after.
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
-export async function GET() {
-  const env = {
-    vercelEnv: process.env.VERCEL_ENV ?? 'unknown',
-    tokenSet: Boolean(process.env.JUDGEME_API_TOKEN),
-    tokenLen: (process.env.JUDGEME_API_TOKEN ?? '').length,
-    tokenLast4: (process.env.JUDGEME_API_TOKEN ?? '').slice(-4),
-    shopDomain: process.env.JUDGEME_SHOP_DOMAIN ?? 'unset',
-  };
-  // Same call the /pages/reviews + homepage carousel make (dedupe off so we
-  // see the raw API order). Report only name-presence booleans + the reviewer
-  // object's KEYS — never the email/phone/ip values.
-  const reviews = await getStorefrontReviews({ perPage: 5, minRating: 4, dedupe: false });
-  const sample = reviews.map((r) => {
-    const rv = (r.reviewer ?? {}) as Record<string, unknown>;
-    return {
-      reviewerKeys: Object.keys(rv),
-      nameValuePresent: Boolean((rv.name as string)?.trim?.()),
-      firstLastPresent: Boolean((rv.first_name as string) || (rv.last_name as string)),
-      topReviewerNamePresent: Boolean((r as Record<string, unknown>).reviewer_name),
-      rating: r.rating,
-    };
-  });
-  return NextResponse.json({ env, count: reviews.length, sample }, {
-    headers: { 'cache-control': 'no-store' },
-  });
+const TEMP_KEY = 'flush-2Uq2o-20260601';
+
+export async function GET(req: Request) {
+  const key = new URL(req.url).searchParams.get('key');
+  if (key !== TEMP_KEY) {
+    return NextResponse.json({ ok: false }, { status: 401 });
+  }
+  const tags = [
+    'judgeme:reviews-v2',
+    'judgeme:reviews-v3',
+    'judgeme:aggregate',
+    'judgeme:aggregate-v2',
+  ];
+  for (const t of tags) revalidateTag(t);
+  // Belt-and-suspenders: also bust the specific routes that render reviews.
+  const paths = ['/', '/pages/reviews'];
+  for (const p of paths) revalidatePath(p);
+  return NextResponse.json(
+    { ok: true, revalidatedTags: tags, revalidatedPaths: paths },
+    { headers: { 'cache-control': 'no-store' } },
+  );
 }
