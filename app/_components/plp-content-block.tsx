@@ -63,9 +63,31 @@ export function PlpContentBlock({
   // words of structured prose targeting the flagged related terms.
   // Merchant content (when present) still wins; this is fallback-only.
   const merchantHtml = descriptionHtml ? descriptionHtml.trim() : '';
-  const longHtml = merchantHtml
+  // Word count of the merchant body's visible text — decides whether the
+  // body alone is substantial or needs the deep-content block appended.
+  const merchantWords = merchantHtml
+    ? merchantHtml.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean).length
+    : 0;
+  // Phase 308 SEO PR: when the merchant body is empty/missing, fall back
+  // to the code-side per-handle deep-content prose in lib/plp-deep-content.ts.
+  //
+  // Semrush 20260601 follow-up: some handles (bed-frames, mattress-toppers)
+  // have a merchant body that's PRESENT but short (~150-300 words), so the
+  // either/or fallback left them under the low_word_count threshold while
+  // the well-written per-category deep-content block sat unused. When the
+  // merchant body is below ~120 words, append the deep-content block after
+  // it (merchant copy still leads); above that, the merchant body stands
+  // alone unchanged (e.g. the size PLPs with ~13k-char seo_content bodies).
+  const SHORT_BODY_WORDS = 120;
+  const merchantRendered = merchantHtml
     ? autoLinkArticleBody(sanitizeShopifyHtml(merchantHtml, { demoteHeadings: true }))
-    : autoLinkArticleBody(categoryDeepContentFor(handle, title));
+    : '';
+  const deepContent = autoLinkArticleBody(categoryDeepContentFor(handle, title));
+  const longHtml = !merchantHtml
+    ? deepContent
+    : merchantWords < SHORT_BODY_WORDS
+      ? `${merchantRendered}\n${deepContent}`
+      : merchantRendered;
   return (
     <section className="plp-content" aria-labelledby={`plp-content-h-${handle}`}>
       <div className="plp-content-intro">
