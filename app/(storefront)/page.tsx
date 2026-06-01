@@ -13,6 +13,7 @@ import { Showrooms } from '../_components/sections/showrooms';
 import { FAQ } from '../_components/sections/faq';
 import { QuizLeadIn } from '../_components/sections/quiz-leadin';
 import { WaysToFindMatch } from '../_components/sections/ways-to-find-match';
+import { LifestyleBand } from '../_components/sections/lifestyle-band';
 import { HomepageSeoContent } from '../_components/sections/homepage-seo-content';
 import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd, resolveHomepageFaq } from '@/lib/faq';
@@ -140,6 +141,8 @@ export default async function Home() {
       <BrandStrip />
       <FeaturedGuides />
       <WhyUs />
+      {/* #13: full-bleed lifestyle band to break up the text-dense middle. */}
+      <LifestyleBand />
       {/* Three discovery paths: quiz / chat / showroom. Replaces the
           old QuizTeaser, which was a single-CTA repeat of what the
           QuizLeadIn already shows above the fold. */}

@@ -2264,9 +2264,32 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
 /* ───── Why us ───── */
 .why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; border-top: 1px solid var(--line); padding-top: 48px; }
 .why-item { display: flex; flex-direction: column; gap: 12px; }
-.why-n { font-size: 12px; color: var(--text-3); margin-bottom: 12px; }
+.why-item-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.why-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 12px; flex: none;
+  background: color-mix(in srgb, var(--brand-navy, #1B2C5E) 8%, transparent);
+  color: var(--brand-navy, #1B2C5E);
+}
+.why-n { font-size: 12px; color: var(--text-3); margin: 0; }
 .why-item h3 { margin: 0; }
 .why-item p { margin: 0; font-size: 14px; line-height: 1.6; }
+
+/* #13 — full-bleed lifestyle band */
+.lifestyle-band { position: relative; overflow: hidden; color: #fff; }
+.lifestyle-band-media { position: absolute; inset: 0; z-index: 0; }
+.lifestyle-band-media::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(10,15,30,0.84) 0%, rgba(10,15,30,0.55) 48%, rgba(10,15,30,0.18) 100%);
+}
+.lifestyle-band .container { position: relative; z-index: 1; }
+.lifestyle-band-copy { max-width: 520px; padding: clamp(64px, 9vw, 116px) 0; }
+.lifestyle-band-copy .eyebrow { color: rgba(255,255,255,0.82); }
+.lifestyle-band-copy h2 { color: #fff; margin: 12px 0 16px; }
+.lifestyle-band-copy p { color: rgba(255,255,255,0.86); font-size: 17px; line-height: 1.6; margin: 0 0 28px; max-width: 460px; }
+@media (max-width: 760px) {
+  .lifestyle-band-media::after { background: linear-gradient(180deg, rgba(10,15,30,0.5) 0%, rgba(10,15,30,0.82) 100%); }
+}
 
 /* ───── Three ways to find your match (tri-card discovery) ───── */
 .ways-section {
@@ -2380,6 +2403,15 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
 .faq-head { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 120px; }
 .faq-head .eyebrow { margin: 0; }
 .faq-head h2 { margin: 0; }
+.faq-head-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  margin-top: 12px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+}
 .faq-list { display: flex; flex-direction: column; }
 .faq-item { border-top: 1px solid var(--line); }
 .faq-item:last-child { border-bottom: 1px solid var(--line); }
@@ -2523,6 +2555,7 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
   .topbar-marquee span:nth-child(n+5) { display: none; }
   .faq-inner { grid-template-columns: 1fr; gap: 32px; }
   .faq-head { position: static; }
+  .faq-head-media { display: none; }
   .brand-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 768px) {

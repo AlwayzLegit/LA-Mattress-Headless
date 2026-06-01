@@ -185,6 +185,11 @@ const FALLBACK_WHY_US: { n: string; title: string; body: string }[] = [
   { n: '04', title: 'Real return policy.',         body: '120 nights to decide. If it’s not right, we’ll exchange it for free — no restocking fee.' },
 ];
 
+// Decorative icon per value-prop slot (#13). Indexed by position so it
+// stays sensible whether items come from the CMS or the fallback above:
+// local → home, advice → chat, delivery → truck, returns → shield.
+const WHY_ICONS = ['home', 'chat', 'truck', 'shield'] as const;
+
 export async function WhyUs() {
   const live = await getWhyUsItems();
   const items = live.length > 0
@@ -200,9 +205,14 @@ export async function WhyUs() {
           </div>
         </div>
         <div className="why-grid">
-          {items.map((it) => (
+          {items.map((it, i) => (
             <div key={it.n} className="why-item">
-              <div className="mono why-n">{it.n}</div>
+              <div className="why-item-top">
+                <span className="why-icon" aria-hidden="true">
+                  <Icon name={WHY_ICONS[i] ?? 'sparkle'} size={22} />
+                </span>
+                <span className="mono why-n">{it.n}</span>
+              </div>
               <h3 className="h3">{it.title}</h3>
               <p className="muted">{it.body}</p>
             </div>
