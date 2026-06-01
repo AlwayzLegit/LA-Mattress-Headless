@@ -71,14 +71,20 @@ export function PlpContentBlock({
   // Phase 308 SEO PR: when the merchant body is empty/missing, fall back
   // to the code-side per-handle deep-content prose in lib/plp-deep-content.ts.
   //
-  // Semrush 20260601 follow-up: some handles (bed-frames, mattress-toppers)
-  // have a merchant body that's PRESENT but short (~150-300 words), so the
-  // either/or fallback left them under the low_word_count threshold while
-  // the well-written per-category deep-content block sat unused. When the
-  // merchant body is below ~120 words, append the deep-content block after
-  // it (merchant copy still leads); above that, the merchant body stands
-  // alone unchanged (e.g. the size PLPs with ~13k-char seo_content bodies).
-  const SHORT_BODY_WORDS = 120;
+  // Semrush 20260601 follow-up: this `descriptionHtml` prop is the route's
+  // `seoContentHtml || collection.descriptionHtml` — i.e. the custom.
+  // seo_content metafield when present, else the merchant body. Measured
+  // across all PLPs, that prose splits cleanly into two groups: the
+  // handles with a real seo_content metafield render 1,200–1,500 words,
+  // while bed-frames (339w, no metafield) and mattress-toppers (183w,
+  // stub metafield) sit 3–4× thinner — the genuine low_word_count cases.
+  // When the body is below ~700 words, append the well-written per-
+  // category deep-content block (lib/plp-deep-content.ts) after it so the
+  // thin PLPs clear the threshold; merchant copy still leads. Above 700
+  // the body stands alone unchanged, so the rich seo_content PLPs are
+  // untouched. The 700 cut sits in the wide gap between the two groups
+  // (471 ↔ 1229), so it's robust to small content edits either side.
+  const SHORT_BODY_WORDS = 700;
   const merchantRendered = merchantHtml
     ? autoLinkArticleBody(sanitizeShopifyHtml(merchantHtml, { demoteHeadings: true }))
     : '';
