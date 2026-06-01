@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Icon } from '../icon';
+import { imgUrl } from '../images';
 import { resolveHomepageFaq } from '@/lib/faq';
 import { getFaqItems } from '@/lib/shopify';
 import { renderFaqAnswer } from '@/lib/faq-render';
@@ -41,6 +43,18 @@ export async function FAQ() {
           <Link href="/pages/mattress-store-contact" className="link-arrow">
             Ask a question <Icon name="arrow-right" size={14} />
           </Link>
+          {/* #13: supporting image so the FAQ rail isn't a bare text column
+              on desktop. Decorative (alt=""), hidden on narrow viewports. */}
+          <div className="faq-head-media" aria-hidden="true">
+            <Image
+              src={imgUrl('showroom-hancock-park')}
+              alt=""
+              fill
+              sizes="(max-width: 980px) 0px, 30vw"
+              quality={60}
+              style={{ objectFit: 'cover' }}
+            />
+          </div>
         </div>
         <div className="faq-list">
           {items.map((it, i) => (
