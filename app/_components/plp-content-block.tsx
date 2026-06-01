@@ -85,10 +85,14 @@ export function PlpContentBlock({
   // untouched. The 700 cut sits in the wide gap between the two groups
   // (471 ↔ 1229), so it's robust to small content edits either side.
   const SHORT_BODY_WORDS = 700;
+  // Pass the current collection's own path so the autolinker never links
+  // this PLP's copy back to itself — that budget goes to the *related*
+  // collections the prose also mentions (#8 in-body contextual interlinks).
+  const selfHref = `/collections/${handle}`;
   const merchantRendered = merchantHtml
-    ? autoLinkArticleBody(sanitizeShopifyHtml(merchantHtml, { demoteHeadings: true }))
+    ? autoLinkArticleBody(sanitizeShopifyHtml(merchantHtml, { demoteHeadings: true }), selfHref)
     : '';
-  const deepContent = autoLinkArticleBody(categoryDeepContentFor(handle, title));
+  const deepContent = autoLinkArticleBody(categoryDeepContentFor(handle, title), selfHref);
   const longHtml = !merchantHtml
     ? deepContent
     : merchantWords < SHORT_BODY_WORDS
