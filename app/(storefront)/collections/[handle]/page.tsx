@@ -142,6 +142,12 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
   }).catch(() => null);
   if (!collection) notFound();
 
+  // Code-side H1 override (lib/collection-seo-overrides.ts) for handles
+  // whose merchant title drops the head ranking keyword — e.g. the size
+  // PLPs titled "King Mattresses" that rank for "king size mattress".
+  // Falls back to the collection title for every other handle.
+  const h1Text = getCollectionSeoOverride(handle)?.h1 ?? collection.title;
+
   // Unfiltered total from the inventory snapshot. Shopify Storefront's
   // `products` connection doesn't return a total count, so this can drift
   // if a product is added or removed from the collection between snapshot
@@ -223,7 +229,7 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
         <div className="plp-hero-inner">
           <div className="plp-hero-copy">
             <div className="eyebrow">All mattresses</div>
-            <h1 className="h-display plp-hero-title">{collection.title}.</h1>
+            <h1 className="h-display plp-hero-title">{h1Text}.</h1>
             {/* PLP v2.1: above-the-grid hero lede is now sourced from
                 the `custom.intro_short` collection metafield (Shopify-
                 enforced 300-600 chars). When the metafield is empty (new
