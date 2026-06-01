@@ -6784,56 +6784,73 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
    real lat/long; the legend below is the crawlable, linked navigation.
    See app/_components/sections/showrooms-map.tsx.
    =========================================================================== */
-.showrooms-map-wrap {
+.locmap-section {
   border: 1px solid var(--line);
   border-radius: var(--r-3, 12px);
   overflow: hidden;
   background: var(--surface);
 }
-.showrooms-map { position: relative; width: 100%; aspect-ratio: 100 / 64; }
-.showrooms-map-svg { display: block; width: 100%; height: 100%; }
-.showrooms-map-ocean { fill: var(--sm-ocean, #cfe0ef); opacity: 0.85; }
-.showrooms-map-fwy path { stroke: var(--sm-fwy, #ffffff); stroke-width: 1.1; opacity: 0.9; stroke-linecap: round; }
-.showrooms-map-fwy path:nth-child(odd) { stroke-width: 1.4; }
-
-/* Teardrop pins — navy, lift + accent on hover/focus of the link. */
-.showrooms-map-pin { fill: var(--brand-navy, #1B2C5E); transition: fill 140ms ease; }
-.showrooms-map-pin-dot { fill: #fff; }
-.showrooms-map-label {
-  font-size: 3.1px; font-weight: 600; fill: var(--text);
-  paint-order: stroke; stroke: var(--surface); stroke-width: 0.9px; stroke-linejoin: round;
+/* Interactive Leaflet canvas. Fixed responsive height; the map itself
+   owns pan/zoom. z-index kept low so the site nav/overlays stack above. */
+.locmap-canvas {
+  width: 100%;
+  height: 420px;
+  background: #eef1f6; /* tile-load placeholder */
+  z-index: 0;
 }
-.showrooms-map-pinlink { cursor: pointer; }
-.showrooms-map-pinlink > g { transition: transform 140ms ease; transform-box: fill-box; transform-origin: center bottom; }
-.showrooms-map-pinlink:hover > g,
-.showrooms-map-pinlink:focus-visible > g { transform: translateY(-1.5px); }
-.showrooms-map-pinlink:hover .showrooms-map-pin,
-.showrooms-map-pinlink:focus-visible .showrooms-map-pin { fill: var(--accent, #d8232a); }
-.showrooms-map-pinlink:focus { outline: none; }
+@media (max-width: 760px) { .locmap-canvas { height: 340px; } }
 
-.showrooms-map-legend {
+/* Our custom DOM marker (L.divIcon) — brand navy dot with halo. */
+.locmap-pinicon-dot {
+  display: block; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--brand-navy, #1B2C5E);
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--brand-navy, #1B2C5E) 16%, transparent),
+    0 2px 6px rgba(15, 23, 42, 0.35);
+  transition: transform 140ms var(--ease, ease), background 140ms var(--ease, ease);
+}
+.locmap-pinicon:hover .locmap-pinicon-dot,
+.locmap-pinicon:focus .locmap-pinicon-dot {
+  background: var(--accent, #1428A0);
+  transform: scale(1.18);
+}
+
+/* Popup styling to match the brand (Leaflet ships utilitarian defaults). */
+.leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 6px 24px rgba(15, 23, 42, 0.18); }
+.leaflet-popup-content { margin: 12px 14px; }
+.locmap-pop { display: flex; flex-direction: column; gap: 4px; }
+.locmap-pop-area { font-size: 15px; font-weight: 700; color: var(--text); }
+.locmap-pop-addr { font-size: 13px; color: var(--muted, #555); line-height: 1.4; }
+.locmap-pop-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.locmap-pop-links a { font-size: 13px; font-weight: 600; color: var(--accent, #1428A0); text-decoration: none; }
+.locmap-pop-links a:hover { text-decoration: underline; }
+
+.locmap-legend {
   list-style: none; margin: 0; padding: var(--s-3);
   display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 2px;
   border-top: 1px solid var(--line);
   background: var(--surface);
 }
-.showrooms-map-legend-link {
+.locmap-legend-link {
   display: flex; align-items: flex-start; gap: var(--s-2);
   padding: var(--s-2) var(--s-3); border-radius: var(--r-2);
   text-decoration: none; color: var(--text);
   transition: background var(--d-fast, 140ms) var(--ease, ease);
 }
-.showrooms-map-legend-link:hover { background: var(--surface-2, rgba(0,0,0,0.04)); }
-.showrooms-map-legend-pin {
-  width: 10px; height: 10px; border-radius: 999px 999px 999px 2px; flex: none;
-  background: var(--brand-navy, #1B2C5E); transform: rotate(45deg); margin-top: 4px;
+.locmap-legend-link:hover { background: var(--surface-2, rgba(0,0,0,0.04)); }
+.locmap-legend-pin {
+  width: 12px; height: 12px; border-radius: 50%; flex: none; margin-top: 3px;
+  background: var(--brand-navy, #1B2C5E);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-navy, #1B2C5E) 18%, transparent);
 }
-.showrooms-map-legend-text { display: flex; flex-direction: column; line-height: 1.3; }
-.showrooms-map-legend-area { font-weight: 600; font-size: 14px; }
-.showrooms-map-legend-addr { font-size: 12.5px; }
-@media (max-width: 560px) {
-  .showrooms-map { aspect-ratio: 4 / 3; }
-  .showrooms-map-label { font-size: 3.8px; }
+.locmap-legend-link:hover .locmap-legend-pin { background: var(--accent, #d8232a); }
+.locmap-legend-text { display: flex; flex-direction: column; line-height: 1.3; }
+.locmap-legend-area { font-weight: 600; font-size: 14px; }
+.locmap-legend-addr { font-size: 12.5px; }
+@media (prefers-reduced-motion: reduce) {
+  .locmap-pinicon-dot { transition: none; }
 }
 
 /* ===========================================================================
