@@ -85,7 +85,7 @@ export function Showrooms() {
                   <span className="mono showroom-idx">{s.idx} / 05</span>
                   <ShowroomOpenNowBadge canonicalHandle={s.canonicalHandle} />
                 </div>
-                <h3 className="showroom-name">{s.name} Mattress Store</h3>
+                <h3 className="showroom-name">{s.name}</h3>
                 <div className="showroom-area muted">{s.area}</div>
                 <div className="showroom-line">
                   <span className="muted">{s.address}</span>
