@@ -24,7 +24,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SleepQuizPage() {
+// MUST stay `async` even though we don't await: passing an *unresolved*
+// Promise prop to the client <SleepQuiz> island only serializes correctly
+// from an async Server Component (React resolves pending promises in the
+// async render before streaming the RSC payload). A regression dropped the
+// `async` keyword (the `await` was being removed for the LCP win below),
+// which left a synchronous server render handing the client a promise it
+// couldn't serialize — the island never hydrated and the page sat on the
+// Suspense `quiz-loading` fallback forever. Keep `async`; keep the fetch
+// un-awaited.
+export default async function SleepQuizPage() {
   // Phase 255 follow-up: KICK OFF the picks fetch but DON'T await it
   // here — pass the unresolved Promise to the client SleepQuiz, which
   // awaits it lazily once the user reaches the result step. PostHog
