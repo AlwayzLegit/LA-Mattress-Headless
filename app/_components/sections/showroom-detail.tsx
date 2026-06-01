@@ -60,7 +60,7 @@ export async function ShowroomDetail({
           <h2 id="sd-brands-h" className="h2">Every brand we carry, on the {showroom.area} floor</h2>
           <p className="muted" style={{ maxWidth: '64ch' }}>
             Lie down and compare every mattress brand we sell, side by side, before
-            you decide — expert help when you want it, space to think when you don't.
+            you decide — expert help when you want it, space to think when you don&rsquo;t.
           </p>
           <ul className="showroom-chips" aria-label="Mattress brands on the showroom floor">
             {brands.map((b) => (
