@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import type { JudgemeReview } from '@/lib/judgeme';
 
 // TEMPORARY pool-composition diagnostic for #11. Reports how many of the
@@ -28,8 +29,14 @@ export async function GET(req: Request) {
   for (const r of reviews) byRating[r.rating] = (byRating[r.rating] ?? 0) + 1;
   const named = reviews.filter((r) => hasRealReviewerName(r));
   const named4plus = named.filter((r) => (r.rating ?? 0) >= 4);
+  // With correct code now deployed, force the stale ISR prerenders to
+  // regenerate so the named reviews actually surface on the live pages.
+  for (const t of ['judgeme:reviews-v3', 'judgeme:reviews-v4', 'judgeme:aggregate', 'judgeme:aggregate-v2']) revalidateTag(t);
+  revalidatePath('/pages/[handle]', 'page');
+  revalidatePath('/pages/reviews', 'page');
+  revalidatePath('/', 'page');
   return NextResponse.json({
-    ok: true, status: res.status,
+    ok: true, status: res.status, revalidated: true,
     totalFetched: reviews.length,
     countByRating: byRating,
     namedTotal: named.length,
