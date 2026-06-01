@@ -180,7 +180,7 @@ export async function FeaturedGuides() {
  */
 const FALLBACK_WHY_US: { n: string; title: string; body: string }[] = [
   { n: '01', title: 'Local for 14 years.',         body: 'Family-owned and operated since 2012. Five LA showrooms, real people on every call — no chatbots, no overseas support.' },
-  { n: '02', title: 'No pressure, no script.',     body: 'Our consultants work on salary — not commission. Lie down as long as you want, leave when you want.' },
+  { n: '02', title: 'No pressure, no script.',     body: 'Our sleep consultants know every brand on the floor — real advice, never a hard sell. Lie down as long as you want, leave when you want.' },
   { n: '03', title: 'Same-day to all of LA.',      body: 'White-glove delivery, mattress setup, and old mattress haul-away — all included on every order over $499. Order by 4pm for same-day.' },
   { n: '04', title: 'Real return policy.',         body: '120 nights to decide. If it’s not right, we’ll exchange it for free — no restocking fee.' },
 ];

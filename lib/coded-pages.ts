@@ -35,7 +35,7 @@ const META: Record<CodedPageHandle, { title: string; description: string; h1: st
   'low-price-guarantee': {
     title: 'Low Price Guarantee | LA Mattress Store',
     description:
-      'Our price-match promise — and why LA Mattress prices stay competitive: authorized dealer, five LA showrooms, salaried (never commission) staff, and a 120-night comfort exchange.',
+      'Our price-match promise — and why LA Mattress prices stay competitive: authorized dealer, five LA showrooms, expert sleep consultants, and a 120-night comfort exchange.',
     h1: 'Our low price guarantee',
   },
   reviews: {

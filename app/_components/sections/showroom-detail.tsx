@@ -60,7 +60,7 @@ export async function ShowroomDetail({
           <h2 id="sd-brands-h" className="h2">Every brand we carry, on the {showroom.area} floor</h2>
           <p className="muted" style={{ maxWidth: '64ch' }}>
             Lie down and compare every mattress brand we sell, side by side, before
-            you decide — no commission-only staff, no pressure.
+            you decide — expert help when you want it, space to think when you don&rsquo;t.
           </p>
           <ul className="showroom-chips" aria-label="Mattress brands on the showroom floor">
             {brands.map((b) => (
@@ -84,7 +84,7 @@ export async function ShowroomDetail({
           </li>
           <li>
             <Icon name="shield" size={18} />
-            <span><strong>No-pressure, salaried team.</strong> Our consultants work on salary, never commission — they help you narrow it down, then leave you to think.</span>
+            <span><strong>Expert, no-pressure help.</strong> Our sleep consultants are trained on every brand we carry — they help you narrow it down, then leave you to think.</span>
           </li>
           <li>
             <Icon name="truck" size={18} />

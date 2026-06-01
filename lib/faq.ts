@@ -139,7 +139,7 @@ export const FAQ_PAGE_SECTIONS: FaqSection[] = [
       },
       {
         q: 'Will I get a hard sell?',
-        a: 'No. Our consultants are salaried, never commission — lie down as long as you want and leave when you want. Five LA showrooms: Koreatown, West LA, La Brea / Hancock Park, Studio City, and Glendale.',
+        a: 'No. Our sleep consultants are trained on every brand we carry — real advice, not a hard sell. Lie down as long as you want and leave when you want. Five LA showrooms: Koreatown, West LA, La Brea / Hancock Park, Studio City, and Glendale.',
       },
     ],
   },

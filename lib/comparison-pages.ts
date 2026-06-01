@@ -79,12 +79,12 @@ export const COMPARISON_PAGES: Record<ComparisonPageHandle, ComparisonPageConfig
   'mattress-firm-vs-la-mattress-store': {
     eyebrow: 'Retailer comparison',
     sides: [
-      { name: 'LA Mattress Store', tagline: 'Local · salaried staff · same-day delivery' },
-      { name: 'Mattress Firm', tagline: 'National chain · commissioned sales floor' },
+      { name: 'LA Mattress Store', tagline: 'Local · expert consultants · same-day delivery' },
+      { name: 'Mattress Firm', tagline: 'National chain · 2,200+ stores' },
     ],
-    lede: 'The same brands and SKUs sell at both — the difference is everything around the bed. Here’s how a local, salaried-staff LA store compares to a national chain on price, delivery, and service.',
+    lede: 'The same brands and SKUs sell at both — the difference is everything around the bed. Here’s how a local, family-owned LA store compares to a national chain on price, delivery, and service.',
     trust: [
-      { icon: 'check', title: 'Salaried, never commission', sub: 'No upsell pressure — you pick what fits you' },
+      { icon: 'check', title: 'Trained on every brand', sub: 'Expert help, no upsell pressure — you pick what fits you' },
       { icon: 'truck', title: 'Free same-day LA delivery', sub: 'White-glove setup + old-mattress haul-away' },
       { icon: 'shield', title: '120-night Love Your Bed exchange', sub: 'Longer than the brand trial, no restocking fee' },
     ],

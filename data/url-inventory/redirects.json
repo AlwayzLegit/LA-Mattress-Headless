@@ -8675,12 +8675,6 @@
       "permanent": true
     },
     {
-      "id": "gid://shopify/UrlRedirect/435239911677",
-      "source": "/blogs",
-      "destination": "/",
-      "permanent": true
-    },
-    {
       "id": "gid://shopify/UrlRedirect/435239944445",
       "source": "/products/tempur-pedic-mattress-clearance-tempur-luxebreeze-firm-13",
       "destination": "/",
