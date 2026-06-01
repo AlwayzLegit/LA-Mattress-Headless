@@ -50,6 +50,25 @@ test('tempur-pedic-mattresses override carries all three brand spellings', () =>
   );
 });
 
+test('size-PLP h1 overrides carry the "size" head-keyword token', () => {
+  // Semrush 20260601 "Ideas": these size PLPs render H1s from the
+  // merchant title ("King Mattresses") which drops the "size" the head
+  // query carries ("king size mattress"). The h1 override restores it.
+  for (const handle of [
+    'king-size-mattresses',
+    'queen-size-mattresses',
+    'twin-size-mattresses',
+    'full-size-mattresses',
+  ]) {
+    const override = getCollectionSeoOverride(handle);
+    assert.ok(override?.h1, `expected an h1 override for "${handle}"`);
+    assert.ok(
+      /\bsize\b/i.test(override.h1),
+      `h1 override for "${handle}" should contain "size", got: "${override.h1}"`,
+    );
+  }
+});
+
 test('every override stays under SERP truncation thresholds', () => {
   for (const [handle, override] of Object.entries(COLLECTION_SEO_OVERRIDES)) {
     if (override.title) {

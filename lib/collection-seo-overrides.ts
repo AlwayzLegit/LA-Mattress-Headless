@@ -41,6 +41,15 @@ export type CollectionSeoOverride = {
   title?: string;
   /** Replaces both `collection.seo.description` and the description fallback. */
   description?: string;
+  /**
+   * Replaces the visible PLP `<h1>` (which otherwise renders the bare
+   * `collection.title`). Use ONLY when the merchant's collection title
+   * genuinely omits the page's head ranking term — e.g. the size PLPs
+   * are titled "King Mattresses" but rank for "king size mattress", so
+   * the H1 drops the "size" the query carries. Keep it human-readable
+   * (the rendered H1 appends a period via the template); don't stuff.
+   */
+  h1?: string;
 };
 
 export const COLLECTION_SEO_OVERRIDES: Record<string, CollectionSeoOverride> = {
@@ -53,6 +62,19 @@ export const COLLECTION_SEO_OVERRIDES: Record<string, CollectionSeoOverride> = {
   'tempur-pedic-mattresses': {
     title: 'Tempur-Pedic Mattress · Tempur Pedic & Tempurpedic | LA Mattress',
   },
+
+  // Semrush 20260601 "Ideas": the size-PLP H1s render the merchant
+  // collection title ("King Mattresses", "Queen Mattresses", …) which
+  // drops the "size" token the head query carries — flagged
+  // `h1_missing_kw` on the highest-volume commercial terms
+  // ("king size mattress" 110k/mo, the #25 recovery-plan target). The
+  // SEO *titles* are already fine via merchant seo.title; only the
+  // visible H1 needs the keyword-complete form. Titles intentionally
+  // left untouched here.
+  'king-size-mattresses': { h1: 'King Size Mattresses' },
+  'queen-size-mattresses': { h1: 'Queen Size Mattresses' },
+  'twin-size-mattresses': { h1: 'Twin Size Mattresses' },
+  'full-size-mattresses': { h1: 'Full Size Mattresses' },
 };
 
 /**
