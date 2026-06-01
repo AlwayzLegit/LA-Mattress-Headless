@@ -29,10 +29,17 @@ export { numericIdFromGid };
 // take effect on the next function invocation without needing a redeploy.
 // Wrapped in a helper to keep call sites tidy.
 function adminConfig(): { store: string | undefined; token: string | undefined; version: string } {
+  // .trim() + `|| undefined`: a trailing newline/space pasted into the
+  // Vercel env var is a classic cause of Admin API 401s ("Invalid API key
+  // or access token") — the header `X-Shopify-Access-Token: shpat_…\n` is
+  // rejected. Trimming defends against that; a whitespace-only value now
+  // reads as "not configured" (clean Missing-env message) instead of a
+  // confusing 401. Does NOT fix a genuinely wrong/rotated token — that
+  // still needs a fresh shpat_ value in the env.
   return {
-    store: process.env.SHOPIFY_STORE_DOMAIN,
-    token: process.env.SHOPIFY_ADMIN_TOKEN,
-    version: process.env.SHOPIFY_API_VERSION ?? '2024-10',
+    store: process.env.SHOPIFY_STORE_DOMAIN?.trim() || undefined,
+    token: process.env.SHOPIFY_ADMIN_TOKEN?.trim() || undefined,
+    version: process.env.SHOPIFY_API_VERSION?.trim() || '2024-10',
   };
 }
 
@@ -41,7 +48,7 @@ function adminConfig(): { store: string | undefined; token: string | undefined; 
 // at render time, which already gives the most-recent value per request
 // (server components re-evaluate the import on each render in dev / on
 // each cold start in prod).
-export const ADMIN_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_ADMIN_TOKEN);
+export const ADMIN_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN?.trim() && process.env.SHOPIFY_ADMIN_TOKEN?.trim());
 
 export async function adminGql<T>(query: string, variables: Record<string, unknown> = {}): Promise<T | null> {
   const { store, token, version } = adminConfig();
