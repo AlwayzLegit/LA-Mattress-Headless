@@ -1807,7 +1807,7 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
 /* ───── Hero ───── */
 .hero { position: relative; height: clamp(560px, 85vh, 880px); background: var(--brand-navy); overflow: hidden; }
 .hero-stack { position: absolute; inset: 0; }
-.hero-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 700ms var(--ease); z-index: 0; }
+.hero-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 700ms var(--ease); z-index: 0; will-change: opacity; }
 /* Active slide sits above all inactive ones so during the 700ms cross-
    fade an outgoing slide's image (or any baked-in image text) can never
    bleed visually above the incoming slide's CTAs. QA 2026-05-23 P0-3
@@ -1818,9 +1818,19 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
    as the culprit; if the bleed persists after deploy, the image asset
    itself needs cropping. */
 .hero-slide.on { opacity: 1; pointer-events: auto; z-index: 1; }
-/* Hide outgoing slide content immediately so the cross-fade only crosses
-   the bg image — text doesn't double-render mid-transition. */
-.hero-slide:not(.on) .hero-content { visibility: hidden; }
+/* Hero copy gets its own coordinated fade-up, decoupled from the slower
+   700ms bg cross-fade. Previously the outgoing copy was snapped off with
+   `visibility: hidden` while the background fade ran — the text blinked
+   out/in instantly against a smoothly fading image, which read as janky.
+   Now the outgoing copy fades out quickly (no delay) while the incoming
+   copy fades up after a short delay, so it enters once the background
+   crossfade is underway — no overlapping double-text, no snap. The off
+   state (opacity 0) keeps inactive slides' copy hidden the rest of the
+   time, same as the old visibility rule. Initial paint renders slide 0
+   already `.on` at its final state, so no fade-in runs on load (LCP-safe). */
+.hero-content { transition: opacity 450ms var(--ease), transform 450ms var(--ease); will-change: opacity, transform; }
+.hero-slide:not(.on) .hero-content { opacity: 0; transform: translateY(10px); }
+.hero-slide.on .hero-content { opacity: 1; transform: translateY(0); transition-delay: 140ms; }
 /* Belt-and-braces: keep CTAs above the slide's own gradient + image at
    any z-index battle. Solves cases where a third-party widget (PostHog
    survey, Sentry feedback) creates a stacking context that defeats the
@@ -1862,6 +1872,15 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
 .hero-dot-fill { position: absolute; inset: 0; background: #fff; transform-origin: left; transform: scaleX(0); }
 .hero-dot.on .hero-dot-fill { animation: heroFill 7s linear forwards; }
 @keyframes heroFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* Motion-sensitive visitors: snap between slides with no cross-fade or
+   copy fade-up, and freeze the progress bar (autoplay itself is also
+   halted in hero-controller.tsx so content doesn't auto-advance). */
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide { transition: none; will-change: auto; }
+  .hero-content { transition: none; transform: none; will-change: auto; }
+  .hero-slide:not(.on) .hero-content { transform: none; }
+  .hero-dot.on .hero-dot-fill { animation: none; }
+}
 .hero-meta { display: flex; align-items: center; gap: 16px; color: #fff; pointer-events: auto; }
 .hero-counter { font-size: 12px; opacity: 0.7; }
 .hero-pause {
