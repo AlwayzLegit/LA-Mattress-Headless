@@ -7,6 +7,7 @@ import { stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_EMAIL } from '@/lib/site-config';
 import type { ServicePageConfig } from '@/lib/service-pages';
 import { ServicePageToc } from './service-page-toc';
+import { ShowroomsMap } from './showrooms-map';
 
 /**
  * Dedicated template for /pages/mattress-store-contact. The contact page
@@ -149,18 +150,12 @@ export function ContactPage({
           })}
         </section>
 
-        {/* All-five-showroom map — same embed the locations index uses.
-            Brand query surfaces every GBP-verified pin; no Maps API key
-            needed. lazy + fixed height keeps it out of the CLS budget. */}
-        <section className="locations-map-wrap" aria-label="All five showroom locations on a map" style={{ marginTop: 'var(--s-6)' }}>
-          <iframe
-            title="LA Mattress Store — all five showroom locations on Google Maps"
-            src="https://www.google.com/maps?q=LA+Mattress+Store+Los+Angeles&z=10&output=embed"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            style={{ width: '100%', height: 320, border: 0, borderRadius: 'var(--r-3, 12px)' }}
-          />
-        </section>
+        {/* All-five-showroom map — custom static map (only our pins, no
+            competitors, no third-party request). Same component the
+            locations index uses. */}
+        <div style={{ marginTop: 'var(--s-6)' }}>
+          <ShowroomsMap />
+        </div>
 
         <div className="service-page-layout" style={{ marginTop: 'var(--s-7)' }}>
           <ServicePageToc bodyContainerId={BODY_ID} />
