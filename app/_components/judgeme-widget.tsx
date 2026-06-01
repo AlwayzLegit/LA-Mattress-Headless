@@ -63,6 +63,19 @@ import Script from 'next/script';
  * preloader ever runs. (Final behavior needs a real browser to
  * confirm — the widget hydrates entirely client-side and api.judge.me
  * is unreachable from CI.)
+ *
+ * RESOLVED (#12, 2026-06-01): the Write-a-Review button + Load-more
+ * pagination not working was NOT a code/token issue — confirmed via
+ * Sentry (zero widget errors) and by ruling out every account setting
+ * (Awesome plan, "Write a review button" = Everyone, correct data-id).
+ * Root cause was Judge.me's NEW review widget mis-binding its
+ * interactive handlers on a headless (non-Shopify-theme) front end.
+ * Judge.me support fixed it account-side by switching this shop to
+ * their LEGACY review widget. No code change was required here — the
+ * token-ordering hardening above is kept as good practice, and the
+ * StripInternalNofollow MutationObserver was removed from
+ * pdp-reviews-section.tsx (it had been the local suspect for the dead
+ * Load-more, but the real cause was the new-widget binding bug).
  */
 const JUDGEME_WIDGET_TOKEN = '9MsdQpWBCXmPK-berSnU7a6TUPs';
 const JUDGEME_SHOP_DOMAIN = 'la-mattress.myshopify.com';
