@@ -45,6 +45,24 @@ import Script from 'next/script';
  * (added in #334) is removed in the same rollback — Judge.me renders
  * its own Write-a-Review button inside the hydrated widget when the
  * dashboard's Write-a-Review toggle is enabled.
+ *
+ * Phase 312 (#12): the "upstream of CTA wiring" symptom above — BOTH
+ * the Write form and Load-more pagination dead at once — is the
+ * classic signature of the widget initializing WITHOUT its public
+ * token. The previous setup used two separate `afterInteractive`
+ * <Script>s: an inline one setting `jdgm.PUBLIC_TOKEN` and an external
+ * one loading the preloader. Next.js does NOT guarantee the inline
+ * script executes before the external `src` script for the same
+ * strategy — if the preloader wins the race it boots the widget with
+ * `jdgm.PUBLIC_TOKEN` still undefined, so its review fetch comes back
+ * unauthorized/empty and every control Judge.me renders is inert.
+ * Judge.me's own documented install avoids this by setting the config
+ * inline and THEN injecting the preloader in the same script. We do
+ * the same here: one inline script sets the config and appends the
+ * preloader itself, so the token is guaranteed present before the
+ * preloader ever runs. (Final behavior needs a real browser to
+ * confirm — the widget hydrates entirely client-side and api.judge.me
+ * is unreachable from CI.)
  */
 const JUDGEME_WIDGET_TOKEN = '9MsdQpWBCXmPK-berSnU7a6TUPs';
 const JUDGEME_SHOP_DOMAIN = 'la-mattress.myshopify.com';
@@ -57,17 +75,26 @@ type Props = {
 export function JudgemeWidget({ productId }: Props) {
   return (
     <>
+      {/* Single ordered init: set jdgm config, THEN inject the preloader,
+          so the public token is always defined before the widget boots.
+          The id-guard keeps the preloader to one injection across route
+          re-entry / re-renders. */}
       <Script
-        id="judgeme-config"
+        id="judgeme-init"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
-          __html: `jdgm = window.jdgm || {}; jdgm.SHOP_DOMAIN = '${JUDGEME_SHOP_DOMAIN}'; jdgm.PLATFORM = 'shopify'; jdgm.PUBLIC_TOKEN = '${JUDGEME_WIDGET_TOKEN}';`,
+          __html: `window.jdgm = window.jdgm || {};
+jdgm.SHOP_DOMAIN = '${JUDGEME_SHOP_DOMAIN}';
+jdgm.PLATFORM = 'shopify';
+jdgm.PUBLIC_TOKEN = '${JUDGEME_WIDGET_TOKEN}';
+if (!document.getElementById('judgeme-preloader-js')) {
+  var s = document.createElement('script');
+  s.id = 'judgeme-preloader-js';
+  s.async = true;
+  s.src = 'https://cdnwidget.judge.me/widget_preloader.js';
+  document.head.appendChild(s);
+}`,
         }}
-      />
-      <Script
-        id="judgeme-preloader"
-        strategy="afterInteractive"
-        src="https://cdnwidget.judge.me/widget_preloader.js"
       />
       <div
         id="judgeme-widget-mount"
