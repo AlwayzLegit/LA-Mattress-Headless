@@ -63,9 +63,37 @@ export function PlpContentBlock({
   // words of structured prose targeting the flagged related terms.
   // Merchant content (when present) still wins; this is fallback-only.
   const merchantHtml = descriptionHtml ? descriptionHtml.trim() : '';
-  const longHtml = merchantHtml
+  // Word count of the merchant body's visible text — decides whether the
+  // body alone is substantial or needs the deep-content block appended.
+  const merchantWords = merchantHtml
+    ? merchantHtml.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean).length
+    : 0;
+  // Phase 308 SEO PR: when the merchant body is empty/missing, fall back
+  // to the code-side per-handle deep-content prose in lib/plp-deep-content.ts.
+  //
+  // Semrush 20260601 follow-up: this `descriptionHtml` prop is the route's
+  // `seoContentHtml || collection.descriptionHtml` — i.e. the custom.
+  // seo_content metafield when present, else the merchant body. Measured
+  // across all PLPs, that prose splits cleanly into two groups: the
+  // handles with a real seo_content metafield render 1,200–1,500 words,
+  // while bed-frames (339w, no metafield) and mattress-toppers (183w,
+  // stub metafield) sit 3–4× thinner — the genuine low_word_count cases.
+  // When the body is below ~700 words, append the well-written per-
+  // category deep-content block (lib/plp-deep-content.ts) after it so the
+  // thin PLPs clear the threshold; merchant copy still leads. Above 700
+  // the body stands alone unchanged, so the rich seo_content PLPs are
+  // untouched. The 700 cut sits in the wide gap between the two groups
+  // (471 ↔ 1229), so it's robust to small content edits either side.
+  const SHORT_BODY_WORDS = 700;
+  const merchantRendered = merchantHtml
     ? autoLinkArticleBody(sanitizeShopifyHtml(merchantHtml, { demoteHeadings: true }))
-    : autoLinkArticleBody(categoryDeepContentFor(handle, title));
+    : '';
+  const deepContent = autoLinkArticleBody(categoryDeepContentFor(handle, title));
+  const longHtml = !merchantHtml
+    ? deepContent
+    : merchantWords < SHORT_BODY_WORDS
+      ? `${merchantRendered}\n${deepContent}`
+      : merchantRendered;
   return (
     <section className="plp-content" aria-labelledby={`plp-content-h-${handle}`}>
       <div className="plp-content-intro">
