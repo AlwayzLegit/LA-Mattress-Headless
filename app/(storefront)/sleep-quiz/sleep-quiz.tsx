@@ -53,12 +53,18 @@ export function SleepQuiz({ productPicksPromise }: { productPicksPromise: Promis
   const [productPicks, setProductPicks] = useState<Record<string, ProductSummary> | null>(null);
   useEffect(() => {
     let cancelled = false;
-    productPicksPromise
-      // Empty record matches the degraded state getQuizPicks itself
-      // returns on Shopify failure (lib/shopify/queries/quiz-picks.ts
-      // Phase 280) — SleepQuizResult falls back to the category
-      // recommendation card when a handle isn't in the map, so this
-      // is a valid recovery path rather than a user-visible error.
+    // Wrap in Promise.resolve(): `productPicksPromise` is a promise handed
+    // across the RSC boundary, and React's transported thenable's `.then()`
+    // returns undefined (it's built for the `use()` hook, not chaining) —
+    // so the previous `productPicksPromise.then(...).catch(...)` threw
+    // "Cannot read properties of undefined (reading 'catch')" and crashed
+    // the quiz into the error boundary (Sentry LA-MATTRESS-HEADLESS-1M, every
+    // load since the Phase 255 promise hand-off). Promise.resolve() adopts
+    // the thenable into a real native promise so .then().catch() is safe.
+    // Empty record on failure matches getQuizPicks's own degraded state
+    // (SleepQuizResult falls back to the category card when a handle is
+    // missing), so the catch is a valid recovery path, not a visible error.
+    Promise.resolve(productPicksPromise)
       .then((picks) => { if (!cancelled) setProductPicks(picks); })
       .catch(() => { if (!cancelled) setProductPicks({}); });
     return () => { cancelled = true; };
