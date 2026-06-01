@@ -6790,69 +6790,41 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   overflow: hidden;
   background: var(--surface);
 }
-.locmap {
-  position: relative;
+/* Interactive Leaflet canvas. Fixed responsive height; the map itself
+   owns pan/zoom. z-index kept low so the site nav/overlays stack above. */
+.locmap-canvas {
   width: 100%;
-  aspect-ratio: 100 / 64;
-  overflow: hidden;
+  height: 420px;
+  background: #eef1f6; /* tile-load placeholder */
+  z-index: 0;
 }
-.locmap-bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.locmap-mtns { fill: #d7deea; opacity: 0.7; }
-.locmap-sea { opacity: 0.95; }
-.locmap-geo {
-  font-size: 2.3px; font-weight: 700; letter-spacing: 0.6px;
-  fill: #8a98ad; opacity: 0.5;
-}
+@media (max-width: 760px) { .locmap-canvas { height: 340px; } }
 
-/* Pin overlay — real DOM markers so labels stay crisp at any map size. */
-.locmap-pins { position: absolute; inset: 0; }
-.locmap-pin {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 16px; height: 16px;
-  z-index: 1;
-  text-decoration: none;
-}
-.locmap-pin:hover, .locmap-pin:focus-visible { z-index: 3; outline: none; }
-.locmap-marker {
+/* Our custom DOM marker (L.divIcon) — brand navy dot with halo. */
+.locmap-pinicon-dot {
   display: block; width: 16px; height: 16px; border-radius: 50%;
   background: var(--brand-navy, #1B2C5E);
   border: 3px solid #fff;
   box-shadow:
-    0 0 0 5px color-mix(in srgb, var(--brand-navy, #1B2C5E) 14%, transparent),
-    0 3px 7px rgba(15, 23, 42, 0.32);
-  transition: background 150ms var(--ease, ease), box-shadow 150ms var(--ease, ease), transform 150ms var(--ease, ease);
+    0 0 0 5px color-mix(in srgb, var(--brand-navy, #1B2C5E) 16%, transparent),
+    0 2px 6px rgba(15, 23, 42, 0.35);
+  transition: transform 140ms var(--ease, ease), background 140ms var(--ease, ease);
 }
-.locmap-pin:hover .locmap-marker,
-.locmap-pin:focus-visible .locmap-marker {
-  background: var(--accent, #d8232a);
+.locmap-pinicon:hover .locmap-pinicon-dot,
+.locmap-pinicon:focus .locmap-pinicon-dot {
+  background: var(--accent, #1428A0);
   transform: scale(1.18);
-  box-shadow:
-    0 0 0 6px color-mix(in srgb, var(--accent, #d8232a) 20%, transparent),
-    0 5px 12px rgba(15, 23, 42, 0.4);
 }
-.locmap-chip {
-  position: absolute;
-  white-space: nowrap;
-  background: #fff;
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 3px 9px;
-  font-size: 12px; font-weight: 600; line-height: 1.2;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
-  pointer-events: none;
-  transition: color 150ms var(--ease, ease), border-color 150ms var(--ease, ease);
-}
-.locmap-pin:hover .locmap-chip,
-.locmap-pin:focus-visible .locmap-chip {
-  color: var(--accent, #d8232a);
-  border-color: color-mix(in srgb, var(--accent, #d8232a) 45%, var(--line));
-}
-/* Label side placement (mirrors LABEL_SIDE in the component). */
-.locmap-pin--right .locmap-chip { left: calc(100% + 7px); top: 50%; transform: translateY(-50%); }
-.locmap-pin--left  .locmap-chip { right: calc(100% + 7px); top: 50%; transform: translateY(-50%); }
-.locmap-pin--above .locmap-chip { bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); }
+
+/* Popup styling to match the brand (Leaflet ships utilitarian defaults). */
+.leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 6px 24px rgba(15, 23, 42, 0.18); }
+.leaflet-popup-content { margin: 12px 14px; }
+.locmap-pop { display: flex; flex-direction: column; gap: 4px; }
+.locmap-pop-area { font-size: 15px; font-weight: 700; color: var(--text); }
+.locmap-pop-addr { font-size: 13px; color: var(--muted, #555); line-height: 1.4; }
+.locmap-pop-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.locmap-pop-links a { font-size: 13px; font-weight: 600; color: var(--accent, #1428A0); text-decoration: none; }
+.locmap-pop-links a:hover { text-decoration: underline; }
 
 .locmap-legend {
   list-style: none; margin: 0; padding: var(--s-3);
@@ -6877,12 +6849,8 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
 .locmap-legend-text { display: flex; flex-direction: column; line-height: 1.3; }
 .locmap-legend-area { font-weight: 600; font-size: 14px; }
 .locmap-legend-addr { font-size: 12.5px; }
-@media (max-width: 560px) {
-  .locmap { aspect-ratio: 4 / 3; }
-  .locmap-chip { font-size: 11px; padding: 2px 7px; }
-}
 @media (prefers-reduced-motion: reduce) {
-  .locmap-marker, .locmap-chip { transition: none; }
+  .locmap-pinicon-dot { transition: none; }
 }
 
 /* ===========================================================================
