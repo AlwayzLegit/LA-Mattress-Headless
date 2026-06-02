@@ -207,6 +207,54 @@ export const NEIGHBORHOODS: Neighborhood[] = [
     defaultBlurb:
       'Mid-Wilshire mattress shoppers — our La Brea / Hancock Park showroom at 300 S La Brea Avenue is the closest physical store, about 5-7 minutes north via La Brea or Highland Avenue. Koreatown (201 S Western Avenue) is a close runner-up to the east. Both carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label collections on the floor. Free white-glove delivery to Mid-Wilshire, Hancock Park, Miracle Mile, Larchmont, and the surrounding 90019, 90036, and 90048 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Mid-Wilshire\'s pre-war apartments and condos often have tight elevators; our crews handle carry-up and tight-turn setups at no extra charge. 0% APR financing through Synchrony / Acima, approved in under a minute.',
   },
+  {
+    handle: 'mattress-store-venice',
+    name: 'Venice',
+    geo: { latitude: 33.9850, longitude: -118.4695 },
+    nearestShowroomHandles: ['best-mattress-store-west-la'],
+    defaultBlurb:
+      'Venice mattress shoppers — our West LA showroom at 10861 W Pico Boulevard is the closest physical store, about 12 minutes northeast via Venice Boulevard or Lincoln. We carry the full Tempur-Pedic, Stearns & Foster, Diamond, Spring Air, Helix, and private-label collections on the floor, including the marine-air-friendly natural-latex Diamond models and cooling gel memory foams that hold up to coastal humidity and warm beach nights. Free white-glove delivery to Venice, Marina del Rey, Mar Vista, and the surrounding 90291 and 90292 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Venice\'s walk-street bungalows and converted lofts often have narrow access and stairs; our crews handle tight carry-ins, and we stock bed-in-a-box options that fit through any doorway. 0% APR financing through Synchrony / Acima available.',
+  },
+  {
+    handle: 'mattress-store-highland-park',
+    name: 'Highland Park',
+    geo: { latitude: 34.1156, longitude: -118.1928 },
+    nearestShowroomHandles: ['mattress-store-in-glendale', 'koreatown-best-mattress-store'],
+    defaultBlurb:
+      'Highland Park mattress shoppers — our Glendale showroom at 201 N Central Avenue is the closest physical store, about 12 minutes north via the 2 or York Boulevard. Koreatown (201 S Western Avenue) is the runner-up to the southwest. Both carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label collections on the floor. Free white-glove delivery to Highland Park, Eagle Rock, Mount Washington, Garvanza, and the surrounding 90041 and 90042 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Highland Park\'s craftsman bungalows and hillside homes often have narrow doorways and stairs; our crews handle tight carry-ins, and we stock low-profile foundations and bunkie boards for platform beds. 0% APR financing through Synchrony / Acima, approved in under a minute.',
+  },
+  {
+    handle: 'mattress-store-van-nuys',
+    name: 'Van Nuys',
+    geo: { latitude: 34.1866, longitude: -118.4487 },
+    nearestShowroomHandles: ['mattress-store-studio-city'],
+    defaultBlurb:
+      'Van Nuys mattress shoppers — our Studio City showroom at 12306 Ventura Boulevard is the closest physical store, about 12 minutes south via Van Nuys Boulevard or the 405. We carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label catalog on the floor, with the cooling-gel and natural-latex options that hold up to the Valley\'s hot, dry summer nights. Free white-glove delivery to Van Nuys, Lake Balboa, Valley Glen, and the surrounding 91401, 91405, and 91411 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Renting a Van Nuys apartment? We stock low-profile foundations and bunkie boards that work for tight ceiling heights and platform beds, and our crews handle stair carry-up at no extra charge. 0% APR financing approved in under a minute.',
+  },
+  {
+    handle: 'mattress-store-la-canada-flintridge',
+    name: 'La Cañada Flintridge',
+    geo: { latitude: 34.1989, longitude: -118.2009 },
+    nearestShowroomHandles: ['mattress-store-in-glendale'],
+    defaultBlurb:
+      'La Cañada Flintridge mattress shoppers — our Glendale showroom at 201 N Central Avenue is the closest physical store, about 10 minutes south via the 2 Freeway or Verdugo Boulevard. We carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label catalog on the floor, including the luxury hand-tufted and natural-latex builds La Cañada shoppers tend to prefer. Free white-glove delivery to La Cañada Flintridge, La Crescenta, Montrose, and the surrounding 91011 and 91020 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Many La Cañada homes pair a King or California King with a split adjustable base; we keep both on the floor so you can try the zero-gravity and head-up presets in person. 0% APR financing through Synchrony or Acima.',
+  },
+  {
+    handle: 'mattress-store-mid-city',
+    name: 'Mid-City',
+    geo: { latitude: 34.0480, longitude: -118.3500 },
+    nearestShowroomHandles: ['best-mattress-store-la-brea', 'koreatown-best-mattress-store'],
+    defaultBlurb:
+      'Mid-City mattress shoppers — our La Brea / Hancock Park showroom at 300 S La Brea Avenue is the closest physical store, about 7 minutes north via La Brea Avenue. Koreatown (201 S Western Avenue) is a close runner-up to the east. Both carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label collections on the floor. Free white-glove delivery to Mid-City, West Adams, Arlington Heights, Pico-Robertson, and the surrounding 90016, 90019, and 90035 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Mid-City\'s 1920s duplexes and apartment courts often have narrow stairwells; our crews handle tight carry-ins, and we stock low-profile foundations for platform beds. 0% APR financing through Synchrony / Acima, approved in under a minute.',
+  },
+  {
+    handle: 'mattress-store-tarzana',
+    name: 'Tarzana',
+    geo: { latitude: 34.1739, longitude: -118.5534 },
+    nearestShowroomHandles: ['mattress-store-studio-city'],
+    defaultBlurb:
+      'Tarzana mattress shoppers — our Studio City showroom at 12306 Ventura Boulevard is the closest physical store, about 12 minutes east on Ventura Boulevard. We carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label catalog on the floor, with the cooling-gel and natural-latex options that suit the Valley\'s hot summer nights. Free white-glove delivery to Tarzana, Encino, Reseda, and the surrounding 91335 and 91356 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Tarzana\'s larger homes south of the boulevard often want a King or California King on a split adjustable base; we keep both on the floor so you can test the zero-gravity and head-up presets before you buy. 0% APR financing through Synchrony / Acima.',
+  },
 ];
 
 export function findNeighborhood(handle: string): Neighborhood | undefined {

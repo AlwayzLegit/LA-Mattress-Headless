@@ -2,7 +2,7 @@
   "$schema": "Shopify pages inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-05-27T10:00:00.000Z",
-  "$count": 141,
+  "$count": 147,
   "pages": [
     {
       "handle": "mattress-faq",
@@ -1144,6 +1144,54 @@
       "isPublished": true,
       "publishedAt": "2026-06-02T16:30:00Z",
       "updatedAt": "2026-06-02T16:30:00Z"
+    },
+    {
+      "handle": "mattress-store-venice",
+      "id": "gid://shopify/Page/137460383997",
+      "title": "Mattress Store in Venice — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T17:00:00Z",
+      "updatedAt": "2026-06-02T17:00:00Z"
+    },
+    {
+      "handle": "mattress-store-highland-park",
+      "id": "gid://shopify/Page/137460416765",
+      "title": "Mattress Store in Highland Park — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T17:00:00Z",
+      "updatedAt": "2026-06-02T17:00:00Z"
+    },
+    {
+      "handle": "mattress-store-van-nuys",
+      "id": "gid://shopify/Page/137460482301",
+      "title": "Mattress Store in Van Nuys — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T17:00:00Z",
+      "updatedAt": "2026-06-02T17:00:00Z"
+    },
+    {
+      "handle": "mattress-store-la-canada-flintridge",
+      "id": "gid://shopify/Page/137460580605",
+      "title": "Mattress Store in La Cañada Flintridge — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T17:00:00Z",
+      "updatedAt": "2026-06-02T17:00:00Z"
+    },
+    {
+      "handle": "mattress-store-mid-city",
+      "id": "gid://shopify/Page/137460613373",
+      "title": "Mattress Store in Mid-City — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T17:00:00Z",
+      "updatedAt": "2026-06-02T17:00:00Z"
+    },
+    {
+      "handle": "mattress-store-tarzana",
+      "id": "gid://shopify/Page/137460646141",
+      "title": "Mattress Store in Tarzana — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T17:00:00Z",
+      "updatedAt": "2026-06-02T17:00:00Z"
     }
   ]
 }
