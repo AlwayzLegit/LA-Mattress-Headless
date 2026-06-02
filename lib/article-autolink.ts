@@ -92,9 +92,25 @@ const PHRASE_MAP: Array<[string, string]> = [
   // posture that mentions "back pain" without "mattress for back pain").
   ['mattress for back pain', '/collections/mattresses-for-back-pain'],
   ['mattress for side sleepers', '/collections/mattresses-for-side-sleepers'],
+  ['mattress for stomach sleepers', '/collections/mattresses-for-stomach-sleepers'],
+  ['mattress for heavy people', '/collections/mattresses-for-heavy-people'],
   ['mattress for couples', '/collections/mattresses-for-couples'],
   ['back pain', '/collections/mattresses-for-back-pain'],
   ['side sleeper', '/collections/mattresses-for-side-sleepers'],
+  ['stomach sleeper', '/collections/mattresses-for-stomach-sleepers'],
+  // Body-type / weight cluster → the heavy-people PLP (53 SKUs, firm +
+  // medium-firm). "plus size mattress" and "heavy people" are the
+  // dominant search variants; both land on the same conversion page.
+  ['plus size mattress', '/collections/mattresses-for-heavy-people'],
+  ['heavy people', '/collections/mattresses-for-heavy-people'],
+
+  // Budget / price-tier cluster → the "Under $1,000" PLP (54 SKUs).
+  // Long-form first; "cheap" / "affordable" / "budget" are distinct,
+  // non-overlapping anchors that don't collide with any phrase above.
+  ['mattress under $1,000', '/collections/mattresses-under-1000'],
+  ['budget mattress', '/collections/mattresses-under-1000'],
+  ['cheap mattress', '/collections/mattresses-under-1000'],
+  ['affordable mattress', '/collections/mattresses-under-1000'],
 
   // Accessories
   ['adjustable bed', '/collections/adjustable-beds'],

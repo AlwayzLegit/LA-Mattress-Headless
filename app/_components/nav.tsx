@@ -81,7 +81,9 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         // 20260523 — each handle has 60-99 published SKUs.
         { label: 'Back pain',         href: '/collections/mattresses-for-back-pain' },
         { label: 'Side sleepers',     href: '/collections/mattresses-for-side-sleepers' },
+        { label: 'Stomach sleepers',  href: '/collections/mattresses-for-stomach-sleepers' },
         { label: 'Couples',           href: '/collections/mattresses-for-couples' },
+        { label: 'Heavy people',      href: '/collections/mattresses-for-heavy-people' },
         { label: 'Pressure relief',   href: '/collections/soft-mattresses-for-pressure-relief' },
         { label: 'Cooling',           href: '/collections/cooling-mattresses' },
         { label: 'Take the quiz →',   href: '/sleep-quiz' },
@@ -103,6 +105,7 @@ const MEGA: Record<MegaKey, { cols: MegaCol[]; tiles: MegaTile[] }> = {
         { label: 'Best sellers',           href: '/collections/best-sellers' },
         { label: 'Luxury mattresses',      href: '/collections/luxury-mattresses' },
         { label: 'Popular',                href: '/collections/popular' },
+        { label: 'Under $1,000',           href: '/collections/mattresses-under-1000' },
         { label: 'Mattress deals',         href: '/collections/on-sale' },
         { label: 'Clearance & floor models', href: '/collections/floor-model-discontinued-mattress-clearance-sale' },
       ]},
