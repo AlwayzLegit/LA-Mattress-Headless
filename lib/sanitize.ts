@@ -401,6 +401,22 @@ export function repairMojibake(html: string): string {
   return s;
 }
 
+/**
+ * Strip TinyMCE editor-only attributes (`data-mce-fragment`,
+ * `data-mce-href`, `data-mce-style`, …) that Shopify's rich-text editor
+ * bakes into saved HTML. They have zero rendering or semantic value but
+ * bloat the markup — a single imported article carries 800+ of them
+ * (~16 KB of cruft), which is a direct contributor to the Semrush
+ * "Low text-to-HTML ratio" flag (the audit's single largest issue, 1,071
+ * pages). Pure attribute removal; never touches tags or content. The
+ * leading `\s` consumes the separating space so no double-spaces remain.
+ * Exported for unit testing.
+ */
+export function stripEditorCruft(html: string): string {
+  if (!html) return html;
+  return html.replace(/\s+data-mce-[\w-]+="[^"]*"/g, '').replace(/\s+data-mce-[\w-]+='[^']*'/g, '');
+}
+
 export function sanitizeShopifyHtml(
   html: string | null | undefined,
   options: SanitizeOptions = {},
@@ -416,6 +432,8 @@ export function sanitizeShopifyHtml(
   // cleans all affected articles/pages/collection bodies in one place,
   // no per-article Shopify edits, and covers any future bad import.
   out = repairMojibake(out);
+  // Strip TinyMCE editor cruft (data-mce-*) — big text-to-HTML-ratio win.
+  out = stripEditorCruft(out);
   // Phase 262: rewrite Hydrogen-era CDN URLs FIRST, before the generic
   // host-strip below — otherwise the host gets stripped to a dead
   // root-relative path before we get a chance to redirect to cdn.shopify.com.

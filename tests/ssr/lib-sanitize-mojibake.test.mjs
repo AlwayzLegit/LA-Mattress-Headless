@@ -7,7 +7,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const { repairMojibake } = await import('../../lib/sanitize.ts');
+const repairModule = await import('../../lib/sanitize.ts');
+const { repairMojibake } = repairModule;
 const R = '�'; // �
 
 test('no-op when there is no mojibake', () => {
@@ -46,4 +47,12 @@ test('leaves all HTML markup characters intact + removes every �', () => {
   assert.equal((dirty.match(/</g) || []).length, (out.match(/</g) || []).length);
   assert.equal((dirty.match(/>/g) || []).length, (out.match(/>/g) || []).length);
   assert.match(out, /href="\/z\?q=1&a=2"/); // attributes untouched
+});
+
+test('stripEditorCruft removes data-mce-* attributes, keeps tags/content/href', () => {
+  const { stripEditorCruft } = repairModule;
+  const dirty = '<p data-mce-fragment="1">Hi <a href="/x" data-mce-href="/x" data-mce-fragment="1">link</a></p>';
+  const out = stripEditorCruft(dirty);
+  assert.equal(out, '<p>Hi <a href="/x">link</a></p>');
+  assert.equal(out.includes('data-mce'), false);
 });
