@@ -7518,6 +7518,144 @@ a.contact-action:hover {
   margin-top: auto;
 }
 
+/* ─── /pages/mattress-store-financing visual blocks ────────────────────
+   "How it works" step flow + provider option cards. Injected via the
+   ServicePage `extras` slot. See app/_components/sections/financing-extras.tsx. */
+.fin-steps-sec {
+  margin-top: var(--s-7);
+}
+.fin-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-4);
+}
+@media (max-width: 860px) {
+  .fin-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .fin-steps {
+    grid-template-columns: 1fr;
+  }
+}
+.fin-step {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--r-4);
+  background: var(--surface);
+  padding: var(--s-5) var(--s-4) var(--s-4);
+}
+.fin-step-num {
+  position: absolute;
+  top: calc(-1 * var(--s-3));
+  left: var(--s-4);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand-navy);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+.fin-step-icon {
+  display: inline-flex;
+  color: var(--accent);
+  margin: var(--s-2) 0 var(--s-3);
+}
+.fin-step-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+.fin-step-body {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-3, #444);
+}
+.fin-prov-sec {
+  margin-top: var(--s-7);
+}
+.fin-prov-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-5);
+}
+@media (max-width: 640px) {
+  .fin-prov-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.fin-prov-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-4);
+  background: var(--surface);
+  padding: var(--s-5);
+}
+.fin-prov-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: 2px;
+}
+.fin-prov-name {
+  margin: 0;
+}
+.fin-prov-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-navy);
+  background: rgba(20, 40, 160, 0.08);
+  border: 1px solid rgba(20, 40, 160, 0.14);
+  border-radius: var(--r-pill);
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.fin-prov-kind {
+  margin: 0 0 var(--s-3);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.fin-prov-who {
+  margin: 0 0 var(--s-3);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-3, #444);
+}
+.fin-prov-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.fin-prov-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.fin-prov-points svg {
+  color: var(--accent);
+  flex: none;
+  margin-top: 2px;
+}
+.fin-disclaimer {
+  margin: var(--s-4) 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 /* ─── Locations page — neighborhood directory ────────────────────────
    Phase 308 SEO PR: neighborhood index added to /pages/mattress-
    store-locations to give per-LA-area queries (Beverly Hills,

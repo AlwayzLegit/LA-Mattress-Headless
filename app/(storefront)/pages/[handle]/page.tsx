@@ -33,6 +33,7 @@ import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { LOCATIONS_FAQ } from '@/lib/locations-faq';
 import { getStorefrontReviews, reviewerName } from '@/lib/judgeme';
 import { ServicePage } from '@/app/_components/sections/service-page';
+import { FinancingExtras } from '@/app/_components/sections/financing-extras';
 import { isServicePage, SERVICE_PAGES } from '@/lib/service-pages';
 import { ComparisonPage } from '@/app/_components/sections/comparison-page';
 import { isComparisonPage, COMPARISON_PAGES } from '@/lib/comparison-pages';
@@ -278,7 +279,11 @@ export default async function ShopifyPage(props: Params) {
   // strip + sticky TOC + CTA — while their merchant-authored CMS bodies
   // stay editable in Shopify Admin. Config lives in lib/service-pages.ts.
   if (isServicePage(page.handle)) {
-    return <ServicePage page={page} config={SERVICE_PAGES[page.handle]} />;
+    // Financing gets code-controlled visual blocks (step flow + provider
+    // cards) via the ServicePage `extras` slot — the page was a text wall
+    // next to competitor financing pages. Other service pages render as-is.
+    const extras = page.handle === 'mattress-store-financing' ? <FinancingExtras /> : undefined;
+    return <ServicePage page={page} config={SERVICE_PAGES[page.handle]} extras={extras} />;
   }
   if (isSalePage(page.handle)) {
     // Storefront date gate: sale pages set `custom.available_at` to
