@@ -56,3 +56,22 @@ test('stripEditorCruft removes data-mce-* attributes, keeps tags/content/href', 
   assert.equal(out, '<p>Hi <a href="/x">link</a></p>');
   assert.equal(out.includes('data-mce'), false);
 });
+
+test('stripEditorCruft removes empty spans, Word mso styles, redundant font-weight; unwraps bare spans', () => {
+  const { stripEditorCruft } = repairModule;
+  assert.equal(stripEditorCruft('<p>a<span></span>b</p>'), '<p>ab</p>');
+  assert.equal(stripEditorCruft('<p><span>  </span>hi</p>'), '<p>hi</p>');
+  assert.equal(stripEditorCruft('<span>just text</span>'), 'just text');
+  // mso-* dropped; real declaration kept
+  assert.equal(stripEditorCruft('<p style="mso-list: l0; color: red">x</p>'), '<p style="color: red">x</p>');
+  // style becomes empty -> attribute removed
+  assert.equal(stripEditorCruft('<p style="font-weight: 400">x</p>'), '<p>x</p>');
+  // real bold weight preserved
+  assert.match(stripEditorCruft('<p style="font-weight: 700">x</p>'), /style="font-weight: 700"/);
+});
+
+test('stripEditorCruft preserves real bold text content/markup', () => {
+  const { stripEditorCruft } = repairModule;
+  const out = stripEditorCruft('<p><strong>Bold</strong> and <span>plain</span> text</p>');
+  assert.equal(out, '<p><strong>Bold</strong> and plain text</p>');
+});
