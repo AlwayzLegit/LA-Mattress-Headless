@@ -177,11 +177,20 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
       page.title,
     );
   }
+  // Neighborhood pages (lib/neighborhoods.ts) render the curated
+  // `defaultBlurb` as their body when the Shopify Page body is empty —
+  // but bodySummary is empty in that case, so without this the meta
+  // description would collapse to the weak "<title> — LA Mattress Store"
+  // boilerplate. Slot the neighborhood blurb into the fallback chain
+  // (after any merchant-authored seo.description / body) so every
+  // areaServed page gets a real, location-specific description.
+  const neighborhood = findNeighborhood(page.handle);
   const description = truncDescription(
     firstNonEmpty(
       seoOverride?.description,
       page.seo.description,
       page.bodySummary,
+      neighborhood?.defaultBlurb,
       `${page.title} — LA Mattress Store`,
     ),
   );
