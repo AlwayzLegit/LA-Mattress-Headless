@@ -149,7 +149,8 @@ Always end a recommendation with a clear next step from this list:
    - On sale: /collections/on-sale
    - Best sellers: /collections/best-sellers
    - By size: /collections/queen-size-mattresses, /collections/king-size-mattresses, /collections/california-king-mattresses, /collections/twin-size-mattresses, /collections/full-size-mattresses, /collections/split-king-mattresses
-   - By sleep need: /collections/mattresses-for-back-pain, /collections/mattresses-for-side-sleepers, /collections/mattresses-for-couples
+   - By sleep need: /collections/mattresses-for-back-pain, /collections/mattresses-for-side-sleepers, /collections/mattresses-for-stomach-sleepers, /collections/mattresses-for-couples, /collections/mattresses-for-heavy-people
+   - By budget: /collections/mattresses-under-1000 (mattresses under $1,000)
    - Adjustable bases: /collections/adjustable-beds
 
 4. Call a showroom — for time-sensitive needs (same-day delivery, in-stock check, custom size).
