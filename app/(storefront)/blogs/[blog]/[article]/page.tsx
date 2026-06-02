@@ -333,16 +333,40 @@ function estimateReadMinutes(html: string): number {
   return Math.max(1, Math.round(words / 220));
 }
 
-/** Pull up to 4 sibling articles from the same blog (excluding the current one). */
+/**
+ * Pick up to 4 sibling articles from the same blog as "related".
+ *
+ * Coverage matters for SEO: the previous version always returned the 4
+ * MOST-RECENT siblings, so every article in a blog linked to the same 4
+ * newest posts — and every older post received zero inbound related-links.
+ * That's the direct source of the Semrush 20260602 "Orphaned pages" (68)
+ * and "Pages with only one internal link" (119) flags, almost all old blog
+ * articles.
+ *
+ * Instead, sort the blog's articles stably (newest first) and take a
+ * ROTATING window of the 4 siblings that follow the current article
+ * (wrapping around). Article at index i links to i+1..i+4, so every
+ * article j is linked from j-1..j-4 — i.e. ~4 inbound related-links each,
+ * no orphans. Deterministic (stable per build), same-blog-relevant, and
+ * the rendered links (sidebar + "Related guides") are crawlable.
+ */
 function findRelatedArticles(article: Article): { handle: string; title?: string; publishedAt?: string | null }[] {
   const blog = findBlog(article.blog.handle);
   if (!blog?.articles) return [];
-  return blog.articles
-    .filter((a) => a.handle !== article.handle && a.isPublished !== false)
+  const sorted = blog.articles
+    .filter((a) => a.isPublished !== false)
     .sort((a, b) => {
       const ad = a.publishedAt ? Date.parse(a.publishedAt) : 0;
       const bd = b.publishedAt ? Date.parse(b.publishedAt) : 0;
-      return bd - ad;
-    })
-    .slice(0, 4);
+      return bd - ad || a.handle.localeCompare(b.handle); // tiebreak → fully stable order
+    });
+  const n = sorted.length;
+  if (n <= 1) return [];
+  const i = sorted.findIndex((a) => a.handle === article.handle);
+  // Current article not in the inventory list (stale snapshot / deprecated
+  // blog) — fall back to the first 4 so the section still renders.
+  if (i === -1) return sorted.slice(0, 4);
+  const out: typeof sorted = [];
+  for (let k = 1; k <= 4 && k < n; k += 1) out.push(sorted[(i + k) % n]);
+  return out;
 }
