@@ -1,6 +1,7 @@
 import { ReviewsBadge } from './reviews-badge';
 import { shopifyProductIdFromGid } from '@/lib/judgeme';
 import { JudgemeWidget } from './judgeme-widget';
+import { StripInternalNofollow } from './strip-internal-nofollow';
 import { TrackReviewWidget } from './track-review-widget';
 import type { ProductReviews } from '@/lib/shopify';
 
@@ -76,14 +77,18 @@ export function PdpReviewsSection({ productGid, productHandle, reviews }: Props)
         <>
           <JudgemeWidget productId={productId} />
           <TrackReviewWidget productId={productId} />
-          {/* StripInternalNofollow removed here (#12): it ran a
-              document-wide MutationObserver over the Judge.me widget's
-              DOM and was the repo's own prime suspect for the
-              "Load more doesn't work" bug (see its Phase 306 header
-              note). Removing it eliminates the only LA-Mattress code
-              that touches the widget's runtime DOM, at the cost of the
-              widget's in-page nofollow links returning — an acceptable
-              SEO trade for a working reviews widget. */}
+          {/* Strips rel="nofollow" off the Judge.me widget's internal
+              links (Semrush 20260602: ~240 PDPs flagged "nofollow
+              attributes in internal links"). Re-added after the #12
+              investigation: it had been removed on a hunch that it broke
+              "Load more", but Judge.me confirmed that bug was their NEW
+              widget mis-binding on headless — they switched the shop to
+              the LEGACY widget, which is what this component ran
+              alongside in production for months without issue. It only
+              mutates the `rel` attribute (no node moves) and skips
+              mutations inside the live widget, so it doesn't touch the
+              widget's pagination/form behavior. */}
+          <StripInternalNofollow />
         </>
       ) : (
         <p className="muted">
