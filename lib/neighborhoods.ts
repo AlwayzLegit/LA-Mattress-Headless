@@ -159,6 +159,54 @@ export const NEIGHBORHOODS: Neighborhood[] = [
     defaultBlurb:
       'Silver Lake and Echo Park mattress shoppers — our Koreatown showroom at 201 S Western Avenue is the closest physical store, about 10 minutes southwest via Sunset or Beverly Boulevard. The Glendale store (201 N Central Avenue) is the runner-up if you\'re up near Atwater Village. Both carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label collections on the floor. Free white-glove delivery to Silver Lake, Echo Park, Atwater Village, and the surrounding 90026, 90027, and 90039 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away. Silver Lake\'s hillside homes and vintage apartments often have steep stairs and narrow doorways; our crews handle tight carry-ins, and we stock bed-in-a-box options that fit through any entry. 0% APR financing through Synchrony / Acima.',
   },
+  {
+    handle: 'mattress-store-brentwood',
+    name: 'Brentwood',
+    geo: { latitude: 34.0522, longitude: -118.4737 },
+    nearestShowroomHandles: ['best-mattress-store-west-la'],
+    defaultBlurb:
+      'Brentwood mattress shoppers — our West LA showroom at 10861 W Pico Boulevard is the closest physical store, about 10 minutes south via the 405 or Bundy Drive. We carry the full Tempur-Pedic, Stearns & Foster, Diamond, Spring Air, Helix, and private-label collections on the floor, including the luxury hand-tufted and natural-latex builds Brentwood and Pacific Palisades shoppers tend to prefer. Free white-glove delivery to Brentwood, Pacific Palisades, and the surrounding 90049 and 90272 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Many Brentwood homes pair a King or California King with a split adjustable base; we keep both on the floor so you can try the zero-gravity and head-up presets in person. 0% APR financing through Synchrony or Acima, approved in under a minute.',
+  },
+  {
+    handle: 'mattress-store-marina-del-rey',
+    name: 'Marina del Rey',
+    geo: { latitude: 33.9803, longitude: -118.4517 },
+    nearestShowroomHandles: ['best-mattress-store-west-la'],
+    defaultBlurb:
+      'Marina del Rey mattress shoppers — our West LA showroom at 10861 W Pico Boulevard is the closest store, about 12 minutes north via Lincoln Boulevard or the 90. We carry the full Tempur-Pedic, Stearns & Foster, Diamond, Spring Air, Helix, and private-label catalog on the floor, including the natural-latex Diamond models and cooling gel memory foams that hold up well to coastal humidity and warm marina nights. Free white-glove delivery to Marina del Rey, Playa del Rey, Playa Vista, and the surrounding 90292 and 90293 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away. Marina high-rises and apartments often have elevator and loading-dock rules; we coordinate appointment-based deliveries so your move-in goes smoothly. 0% APR financing through Synchrony / Acima available.',
+  },
+  {
+    handle: 'mattress-store-los-feliz',
+    name: 'Los Feliz',
+    geo: { latitude: 34.1083, longitude: -118.2858 },
+    nearestShowroomHandles: ['koreatown-best-mattress-store', 'mattress-store-in-glendale'],
+    defaultBlurb:
+      'Los Feliz mattress shoppers — our Koreatown showroom at 201 S Western Avenue is the closest physical store, about 8-10 minutes south via Western or Vermont Avenue. The Glendale store (201 N Central Avenue) is the runner-up if you\'re up near the hills. Both carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label collections on the floor. Free white-glove delivery to Los Feliz, Franklin Hills, Los Feliz Village, and the surrounding 90027 and 90039 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Los Feliz\'s classic 1920s apartments and hillside homes often have narrow doorways and stairs; our crews handle tight carry-ins, and we stock bed-in-a-box options that fit through any entry. 0% APR financing available.',
+  },
+  {
+    handle: 'mattress-store-eagle-rock',
+    name: 'Eagle Rock',
+    geo: { latitude: 34.1397, longitude: -118.2120 },
+    nearestShowroomHandles: ['mattress-store-in-glendale'],
+    defaultBlurb:
+      'Eagle Rock mattress shoppers — our Glendale showroom at 201 N Central Avenue is the closest physical store, about 8 minutes north via the 134 or Colorado Boulevard. We carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label catalog on the floor, with cooling-gel and natural-latex options for the warm northeast-LA summers. Free white-glove delivery to Eagle Rock, Highland Park, Glassell Park, and the surrounding 90041 and 90042 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Eagle Rock\'s craftsman homes and duplexes are a great fit for a queen or king on a platform frame; we stock low-profile foundations and bunkie boards for tight slat spacing. 0% APR financing through Synchrony / Acima, approved in under a minute.',
+  },
+  {
+    handle: 'mattress-store-toluca-lake',
+    name: 'Toluca Lake',
+    geo: { latitude: 34.1517, longitude: -118.3534 },
+    nearestShowroomHandles: ['mattress-store-studio-city', 'mattress-store-in-glendale'],
+    defaultBlurb:
+      'Toluca Lake mattress shoppers — our Studio City showroom at 12306 Ventura Boulevard is the closest physical store, about 6 minutes west on Ventura Boulevard. The Glendale store (201 N Central Avenue) is a close runner-up via the 134. Both carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label lineup on the floor, including the cooling and natural-latex options that suit hot Valley nights. Free white-glove delivery to Toluca Lake, Toluca Woods, Cahuenga Pass, and the surrounding 91602 and 91505 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away. Toluca Lake\'s larger homes often want a King or California King with a split adjustable base; we keep both on the floor so you can test the presets. 0% APR financing through Synchrony or Acima.',
+  },
+  {
+    handle: 'mattress-store-mid-wilshire',
+    name: 'Mid-Wilshire',
+    geo: { latitude: 34.0622, longitude: -118.3380 },
+    nearestShowroomHandles: ['best-mattress-store-la-brea', 'koreatown-best-mattress-store'],
+    defaultBlurb:
+      'Mid-Wilshire mattress shoppers — our La Brea / Hancock Park showroom at 300 S La Brea Avenue is the closest physical store, about 5-7 minutes north via La Brea or Highland Avenue. Koreatown (201 S Western Avenue) is a close runner-up to the east. Both carry the full Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Englander, Helix, and private-label collections on the floor. Free white-glove delivery to Mid-Wilshire, Hancock Park, Miracle Mile, Larchmont, and the surrounding 90019, 90036, and 90048 zip codes on orders over $499 — same day if you order by 4pm, with setup and free haul-away of your old mattress. Mid-Wilshire\'s pre-war apartments and condos often have tight elevators; our crews handle carry-up and tight-turn setups at no extra charge. 0% APR financing through Synchrony / Acima, approved in under a minute.',
+  },
 ];
 
 export function findNeighborhood(handle: string): Neighborhood | undefined {
