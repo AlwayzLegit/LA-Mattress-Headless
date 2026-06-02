@@ -2,7 +2,7 @@
   "$schema": "Shopify pages inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-05-27T10:00:00.000Z",
-  "$count": 131,
+  "$count": 135,
   "pages": [
     {
       "handle": "mattress-faq",
@@ -655,18 +655,18 @@
     {
       "handle": "mattress-store-west-hollywood",
       "id": "gid://shopify/Page/114651103485",
-      "title": "Mattress Store West Hollywood - Mattresses & Beds Stores",
-      "isPublished": false,
-      "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:03Z"
+      "title": "Mattress Store in West Hollywood — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:00:00Z",
+      "updatedAt": "2026-06-02T16:00:00Z"
     },
     {
       "handle": "mattress-store-westwood",
       "id": "gid://shopify/Page/114651693309",
-      "title": "Mattress Store Westwood - Mattresses & Beds Stores",
-      "isPublished": false,
-      "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:04Z"
+      "title": "Mattress Store in Westwood — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:00:00Z",
+      "updatedAt": "2026-06-02T16:00:00Z"
     },
     {
       "handle": "mattress-store-beverly-hills",
@@ -1064,6 +1064,38 @@
       "publishedAt": "2026-05-27T10:00:00Z",
       "updatedAt": "2026-05-27T11:00:00Z",
       "availableAt": "2027-08-27T07:00:00Z"
+    },
+    {
+      "handle": "mattress-store-culver-city",
+      "id": "gid://shopify/Page/137458942205",
+      "title": "Mattress Store in Culver City — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:00:00Z",
+      "updatedAt": "2026-06-02T16:00:00Z"
+    },
+    {
+      "handle": "mattress-store-encino",
+      "id": "gid://shopify/Page/137458974973",
+      "title": "Mattress Store in Encino — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:00:00Z",
+      "updatedAt": "2026-06-02T16:00:00Z"
+    },
+    {
+      "handle": "mattress-store-north-hollywood",
+      "id": "gid://shopify/Page/137459007741",
+      "title": "Mattress Store in North Hollywood — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:00:00Z",
+      "updatedAt": "2026-06-02T16:00:00Z"
+    },
+    {
+      "handle": "mattress-store-silver-lake",
+      "id": "gid://shopify/Page/137459040509",
+      "title": "Mattress Store in Silver Lake — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:00:00Z",
+      "updatedAt": "2026-06-02T16:00:00Z"
     }
   ]
 }
