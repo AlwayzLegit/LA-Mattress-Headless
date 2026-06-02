@@ -40,6 +40,12 @@ export type MattressSize = {
   minRoom: string;
   /** Link target on the size's name + "Shop X" CTA. */
   collectionHref: string;
+  /** Footprint width in inches — drives the to-scale size diagram. */
+  wIn: number;
+  /** Footprint length in inches — drives the to-scale size diagram. */
+  lIn: number;
+  /** Sleeper silhouettes to draw on the bed (1 = solo, 2 = couple). */
+  sleepers: 1 | 2;
 };
 
 export const MATTRESS_SIZES: MattressSize[] = [
@@ -51,6 +57,9 @@ export const MATTRESS_SIZES: MattressSize[] = [
     bestFor: 'Kids, single adults, guest rooms',
     minRoom: '7 × 10 ft',
     collectionHref: '/collections/twin-size-mattresses',
+    wIn: 38,
+    lIn: 75,
+    sleepers: 1,
   },
   {
     name: 'Twin XL',
@@ -60,6 +69,9 @@ export const MATTRESS_SIZES: MattressSize[] = [
     bestFor: 'Tall single sleepers, college dorms',
     minRoom: '7 × 10 ft',
     collectionHref: '/collections/twin-xl-mattress-sale',
+    wIn: 38,
+    lIn: 80,
+    sleepers: 1,
   },
   {
     name: 'Full',
@@ -69,6 +81,9 @@ export const MATTRESS_SIZES: MattressSize[] = [
     bestFor: 'Solo sleepers who want space, smaller couples',
     minRoom: '9 × 10 ft',
     collectionHref: '/collections/full-size-mattresses',
+    wIn: 54,
+    lIn: 75,
+    sleepers: 1,
   },
   {
     name: 'Queen',
@@ -78,6 +93,9 @@ export const MATTRESS_SIZES: MattressSize[] = [
     bestFor: 'Most couples, single sleepers who like room',
     minRoom: '10 × 10 ft',
     collectionHref: '/collections/queen-size-mattresses',
+    wIn: 60,
+    lIn: 80,
+    sleepers: 2,
   },
   {
     name: 'King',
@@ -87,6 +105,9 @@ export const MATTRESS_SIZES: MattressSize[] = [
     bestFor: 'Couples who want shoulder-room, kids/pets in bed',
     minRoom: '12 × 12 ft',
     collectionHref: '/collections/king-size-mattresses',
+    wIn: 76,
+    lIn: 80,
+    sleepers: 2,
   },
   {
     name: 'California King',
@@ -96,6 +117,9 @@ export const MATTRESS_SIZES: MattressSize[] = [
     bestFor: 'Taller sleepers (over 6 ft), long-narrow bedrooms',
     minRoom: '12 × 14 ft',
     collectionHref: '/collections/california-king-mattresses',
+    wIn: 72,
+    lIn: 84,
+    sleepers: 2,
   },
   {
     name: 'Split King',
@@ -105,6 +129,9 @@ export const MATTRESS_SIZES: MattressSize[] = [
     bestFor: 'Adjustable-base couples, different firmness needs',
     minRoom: '12 × 12 ft',
     collectionHref: '/collections/split-king-mattresses',
+    wIn: 76,
+    lIn: 80,
+    sleepers: 2,
   },
 ];
 
