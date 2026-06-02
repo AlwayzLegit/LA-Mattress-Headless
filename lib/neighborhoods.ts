@@ -269,3 +269,13 @@ export function getNearestShowrooms(n: Neighborhood): Showroom[] {
     .map((h) => findShowroom(h))
     .filter((s): s is Showroom => Boolean(s));
 }
+
+/** Reverse lookup: all neighborhoods that list the given showroom handle
+ *  among their nearest showrooms (primary or secondary). Powers the
+ *  "Neighborhoods we serve" link list on each showroom detail page, so
+ *  every neighborhood page earns a second, topically-relevant inbound
+ *  link from the physical store that covers it — the first being the
+ *  locations-index directory grid. Returns them in NEIGHBORHOODS order. */
+export function getNeighborhoodsForShowroom(showroomHandle: string): Neighborhood[] {
+  return NEIGHBORHOODS.filter((n) => n.nearestShowroomHandles.includes(showroomHandle));
+}
