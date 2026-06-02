@@ -39,6 +39,7 @@ import { isComparisonPage, COMPARISON_PAGES } from '@/lib/comparison-pages';
 import { GuidePage } from '@/app/_components/sections/guide-page';
 import { isGuidePage, GUIDE_PAGES } from '@/lib/guide-pages';
 import { MattressSizesPage } from '@/app/_components/sections/mattress-sizes-page';
+import { MattressTypesPage } from '@/app/_components/sections/mattress-types-page';
 import { getPageSeoOverride } from '@/lib/page-seo-overrides';
 import { LegalPage } from '@/app/_components/sections/legal-page';
 import { isLegalPage, LEGAL_PAGES } from '@/lib/legal-pages';
@@ -356,6 +357,14 @@ export default async function ShopifyPage(props: Params) {
   // for the full rationale.
   if (page.handle === 'mattress-sizes') {
     return <MattressSizesPage page={page} />;
+  }
+  // `/pages/mattress-types`: dedicated visual template. Same rationale
+  // as mattress-sizes — the merchant body is strong prose but the page
+  // was nearly image-free; this renders code-controlled construction
+  // cutaway diagrams + feel-rating visuals + a comparison matrix above
+  // the editorial body. See app/_components/sections/mattress-types-page.tsx.
+  if (page.handle === 'mattress-types') {
+    return <MattressTypesPage page={page} />;
   }
   // Editorial buying-guide pages (mattress-types and any future
   // additions) share the service-page chrome but run wrapCmsTables so

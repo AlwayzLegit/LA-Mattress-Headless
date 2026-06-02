@@ -7167,6 +7167,226 @@ a.contact-action:hover {
   text-underline-offset: 2px;
 }
 
+/* ─── /pages/mattress-types dedicated visual template ──────────────────
+   Construction cutaway diagrams + feel-rating visuals + comparison
+   matrix. See app/_components/sections/mattress-types-page.tsx. All
+   graphics are inline SVG/CSS — no image assets. */
+.mt-section-h {
+  margin: var(--s-7) 0 var(--s-2);
+}
+.mt-section-lede {
+  margin: 0 0 var(--s-5);
+  font-size: 15px;
+  max-width: 62ch;
+}
+.mt-glance {
+  margin-top: var(--s-6);
+}
+.mt-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-5);
+}
+@media (max-width: 720px) {
+  .mt-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.mt-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--r-4);
+  background: var(--surface);
+  overflow: hidden;
+}
+.mt-card-figure {
+  background: linear-gradient(160deg, #F6F8FC 0%, #EEF2FA 100%);
+  border-bottom: 1px solid var(--line);
+  padding: var(--s-4) var(--s-5);
+  display: flex;
+  justify-content: center;
+}
+.mt-cutaway {
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+}
+.mt-card-body {
+  padding: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  flex: 1;
+}
+.mt-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+.mt-card-name {
+  margin: 0;
+}
+.mt-price {
+  font-weight: 700;
+  color: var(--brand-navy);
+  letter-spacing: 0.08em;
+  font-size: 15px;
+}
+.mt-tagline {
+  margin: 0;
+  color: var(--text-3, #444);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.mt-layers {
+  list-style: none;
+  margin: 0;
+  padding: var(--s-3) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 6px;
+}
+.mt-layers li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 13px;
+  color: var(--text-3, #444);
+}
+.mt-layer-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(27, 44, 94, 0.18);
+  flex: none;
+}
+.mt-ratings {
+  margin: 0;
+  display: grid;
+  gap: 7px;
+}
+.mt-rating-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--s-3);
+}
+.mt-rating-label {
+  font-size: 13px;
+  color: var(--text-3, #444);
+}
+.mt-rating-val {
+  margin: 0;
+}
+.mt-pips {
+  display: inline-flex;
+  gap: 4px;
+}
+.mt-pip {
+  width: 16px;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--line);
+}
+.mt-pip.is-on {
+  background: var(--accent);
+}
+.mt-tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mt-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-navy);
+  background: rgba(20, 40, 160, 0.07);
+  border: 1px solid rgba(20, 40, 160, 0.12);
+  border-radius: var(--r-pill);
+  padding: 3px 10px;
+}
+.mt-watch {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-3, #444);
+  line-height: 1.45;
+}
+.mt-watch svg {
+  color: var(--brand-red);
+  flex: none;
+  margin-top: 1px;
+}
+.mt-shop {
+  margin-top: auto;
+  align-self: flex-start;
+  font-weight: 600;
+}
+/* Comparison matrix */
+.mt-matrix {
+  margin-top: var(--s-6);
+}
+.mt-matrix-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--surface);
+}
+.mt-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+.mt-matrix-table th,
+.mt-matrix-table td {
+  padding: var(--s-3) var(--s-4);
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+}
+.mt-matrix-table thead th {
+  font-size: 14px;
+  background: #F6F8FC;
+}
+.mt-matrix-table thead th a {
+  color: var(--brand-navy);
+  text-decoration: none;
+}
+.mt-matrix-table thead th a:hover {
+  text-decoration: underline;
+}
+.mt-matrix-table tbody th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-3, #444);
+  white-space: nowrap;
+}
+.mt-matrix-table tbody tr:last-child th,
+.mt-matrix-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.mt-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+.mt-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+}
+.mt-dot.is-on {
+  background: var(--brand-navy);
+}
+
 /* ─── Locations page — neighborhood directory ────────────────────────
    Phase 308 SEO PR: neighborhood index added to /pages/mattress-
    store-locations to give per-LA-area queries (Beverly Hills,
