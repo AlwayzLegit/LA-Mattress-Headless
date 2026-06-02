@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { Icon } from '../icon';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
@@ -40,9 +41,17 @@ const BODY_ID = 'service-page-body';
 export function ServicePage({
   page,
   config,
+  extras,
 }: {
   page: PageLike;
   config: ServicePageConfig;
+  /**
+   * Optional code-controlled visual blocks for a specific handle,
+   * rendered between the merchant body and the CTA. Used by the
+   * financing page (step flow + provider cards); other handles pass
+   * nothing and render exactly as before.
+   */
+  extras?: ReactNode;
 }) {
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
   const updatedLabel = page.updatedAt
@@ -104,6 +113,8 @@ export function ServicePage({
             }}
           />
         </div>
+
+        {extras}
 
         <section className="service-page-cta" aria-label="Next steps">
           <p className="service-page-cta-headline">{config.cta.headline}</p>
