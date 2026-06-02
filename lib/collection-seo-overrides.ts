@@ -75,6 +75,24 @@ export const COLLECTION_SEO_OVERRIDES: Record<string, CollectionSeoOverride> = {
   'queen-size-mattresses': { h1: 'Queen Size Mattresses' },
   'twin-size-mattresses': { h1: 'Twin Size Mattresses' },
   'full-size-mattresses': { h1: 'Full Size Mattresses' },
+
+  // New sleeper/body-type commercial collections (gap analysis 20260602):
+  // extends the existing use-case cluster (back-pain / side-sleepers /
+  // couples) into two high-intent shopper segments the catalog already
+  // has products for. Titles lead with the head query, stay <70 chars,
+  // and end with the brand suffix.
+  'mattresses-for-stomach-sleepers': {
+    title: 'Best Mattress for Stomach Sleepers · Firm Support | LA Mattress',
+    description:
+      'Firmer, supportive mattresses that keep stomach sleepers’ hips from sinking and the lower back neutral. Free white-glove LA delivery + 120-night trial.',
+    h1: 'Mattresses for Stomach Sleepers',
+  },
+  'mattresses-for-heavy-people': {
+    title: 'Best Mattress for Heavy People (230+ lb) | LA Mattress',
+    description:
+      'Durable, supportive mattresses for heavier bodies: reinforced coils, dense foam, strong edge support. Free white-glove LA delivery + 120-night trial.',
+    h1: 'Mattresses for Heavy People',
+  },
 };
 
 /**
