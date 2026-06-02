@@ -2,7 +2,7 @@
   "$schema": "Shopify pages inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-05-27T10:00:00.000Z",
-  "$count": 135,
+  "$count": 141,
   "pages": [
     {
       "handle": "mattress-faq",
@@ -1096,6 +1096,54 @@
       "isPublished": true,
       "publishedAt": "2026-06-02T16:00:00Z",
       "updatedAt": "2026-06-02T16:00:00Z"
+    },
+    {
+      "handle": "mattress-store-brentwood",
+      "id": "gid://shopify/Page/137459958013",
+      "title": "Mattress Store in Brentwood — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:30:00Z",
+      "updatedAt": "2026-06-02T16:30:00Z"
+    },
+    {
+      "handle": "mattress-store-marina-del-rey",
+      "id": "gid://shopify/Page/137459990781",
+      "title": "Mattress Store in Marina del Rey — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:30:00Z",
+      "updatedAt": "2026-06-02T16:30:00Z"
+    },
+    {
+      "handle": "mattress-store-los-feliz",
+      "id": "gid://shopify/Page/137460023549",
+      "title": "Mattress Store in Los Feliz — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:30:00Z",
+      "updatedAt": "2026-06-02T16:30:00Z"
+    },
+    {
+      "handle": "mattress-store-eagle-rock",
+      "id": "gid://shopify/Page/137460056317",
+      "title": "Mattress Store in Eagle Rock — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:30:00Z",
+      "updatedAt": "2026-06-02T16:30:00Z"
+    },
+    {
+      "handle": "mattress-store-toluca-lake",
+      "id": "gid://shopify/Page/137460089085",
+      "title": "Mattress Store in Toluca Lake — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:30:00Z",
+      "updatedAt": "2026-06-02T16:30:00Z"
+    },
+    {
+      "handle": "mattress-store-mid-wilshire",
+      "id": "gid://shopify/Page/137460121853",
+      "title": "Mattress Store in Mid-Wilshire — LA Mattress",
+      "isPublished": true,
+      "publishedAt": "2026-06-02T16:30:00Z",
+      "updatedAt": "2026-06-02T16:30:00Z"
     }
   ]
 }
