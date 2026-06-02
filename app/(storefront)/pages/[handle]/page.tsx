@@ -35,6 +35,7 @@ import { getStorefrontReviews, reviewerName } from '@/lib/judgeme';
 import { ServicePage } from '@/app/_components/sections/service-page';
 import { FinancingExtras } from '@/app/_components/sections/financing-extras';
 import { DeliveryExtras } from '@/app/_components/sections/delivery-extras';
+import { GuaranteeExtras } from '@/app/_components/sections/guarantee-extras';
 import { isServicePage, SERVICE_PAGES } from '@/lib/service-pages';
 import { ComparisonPage } from '@/app/_components/sections/comparison-page';
 import { isComparisonPage, COMPARISON_PAGES } from '@/lib/comparison-pages';
@@ -283,11 +284,14 @@ export default async function ShopifyPage(props: Params) {
     // Code-controlled visual blocks via the ServicePage `extras` slot for
     // the pages that were text walls next to competitor equivalents.
     // Other service pages render as-is.
+    const GUARANTEE_FLOW_HANDLES = ['love-your-bed-guarantee', 'lowest-price-guarantee', 'warranty'];
     const extras =
       page.handle === 'mattress-store-financing' ? (
         <FinancingExtras />
       ) : page.handle === 'mattress-store-delivery' ? (
         <DeliveryExtras />
+      ) : GUARANTEE_FLOW_HANDLES.includes(page.handle) ? (
+        <GuaranteeExtras handle={page.handle} />
       ) : undefined;
     return <ServicePage page={page} config={SERVICE_PAGES[page.handle]} extras={extras} />;
   }
