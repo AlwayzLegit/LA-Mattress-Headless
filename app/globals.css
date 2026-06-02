@@ -7387,6 +7387,137 @@ a.contact-action:hover {
   background: var(--brand-navy);
 }
 
+/* ─── /pages/mattress-sizes visual blocks ──────────────────────────────
+   To-scale bed lineup + per-size cards. Inline SVG beds with sleeper
+   silhouettes. See app/_components/sections/mattress-sizes-page.tsx. */
+.sz-scale {
+  margin-top: var(--s-6);
+}
+.sz-lineup-scroll {
+  overflow-x: auto;
+  padding: var(--s-4) 0 var(--s-2);
+}
+.sz-lineup {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-5);
+  min-width: min-content;
+  padding: 0 2px var(--s-2);
+}
+.sz-lineup-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  text-decoration: none;
+  color: inherit;
+  flex: none;
+}
+.sz-lineup-item:hover .sz-bed rect {
+  stroke: var(--accent);
+}
+.sz-bed {
+  display: block;
+  height: auto;
+}
+.sz-lineup-cap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.3;
+}
+.sz-lineup-cap strong {
+  color: var(--brand-navy);
+}
+.sz-lineup-cap .muted {
+  font-size: 12px;
+}
+.sz-cards-sec {
+  margin-top: var(--s-7);
+}
+.sz-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-5);
+}
+@media (max-width: 900px) {
+  .sz-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .sz-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.sz-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--r-4);
+  background: var(--surface);
+  overflow: hidden;
+}
+.sz-card-figure {
+  background: linear-gradient(160deg, #F6F8FC 0%, #EEF2FA 100%);
+  border-bottom: 1px solid var(--line);
+  min-height: 172px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-4);
+}
+.sz-card-figure .sz-bed {
+  max-height: 150px;
+  width: auto;
+}
+.sz-card-body {
+  padding: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  flex: 1;
+}
+.sz-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+.sz-card-name {
+  margin: 0;
+}
+.sz-card-dim {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-navy);
+  white-space: nowrap;
+}
+.sz-specs {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+.sz-spec {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: var(--s-2);
+  font-size: 13px;
+}
+.sz-spec dt {
+  color: var(--ink-soft, #666);
+  font-weight: 600;
+}
+.sz-spec dd {
+  margin: 0;
+  color: var(--text-3, #444);
+}
+.sz-card .mt-shop {
+  margin-top: auto;
+}
+
 /* ─── Locations page — neighborhood directory ────────────────────────
    Phase 308 SEO PR: neighborhood index added to /pages/mattress-
    store-locations to give per-LA-area queries (Beverly Hills,

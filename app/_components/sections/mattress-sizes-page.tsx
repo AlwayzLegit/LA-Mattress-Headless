@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Icon } from '../icon';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
@@ -5,8 +6,77 @@ import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { wrapCmsTables } from '@/lib/cms-html';
 import { stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { GUIDE_PAGES } from '@/lib/guide-pages';
-import { MATTRESS_SIZES, MATTRESS_SIZES_FAQ } from '@/lib/mattress-sizes-data';
+import { MATTRESS_SIZES, MATTRESS_SIZES_FAQ, type MattressSize } from '@/lib/mattress-sizes-data';
 import { ServicePageToc } from './service-page-toc';
+
+// ── To-scale bed glyph ───────────────────────────────────────────
+// Every bed is drawn at the same px-per-inch scale so the diagrams are
+// directly comparable (a King is visibly bigger than a Twin), with
+// sleeper silhouettes conveying solo vs. couple capacity — the
+// signature graphic every competitor "mattress sizes" page leads with.
+const BED_SCALE = 1.7; // px per inch
+const BED_PAD = 6;
+
+function sleeperGlyph(ax: number, ay: number, aw: number, ah: number, key: string) {
+  const headR = Math.max(4, aw * 0.22);
+  const headCy = ay + headR + ah * 0.03;
+  const bodyW = aw * 0.52;
+  const bodyTop = headCy + headR * 0.55;
+  const bodyH = Math.max(8, ay + ah - bodyTop);
+  return (
+    <g key={key} fill="#1B2C5E" opacity={0.5}>
+      <circle cx={ax + aw / 2} cy={headCy} r={headR} />
+      <rect x={ax + aw / 2 - bodyW / 2} y={bodyTop} width={bodyW} height={bodyH} rx={bodyW / 2} />
+    </g>
+  );
+}
+
+function BedSvg({ size }: { size: MattressSize }) {
+  const pxW = size.wIn * BED_SCALE + BED_PAD * 2;
+  const pxH = size.lIn * BED_SCALE + BED_PAD * 2;
+  const matX = BED_PAD;
+  const matY = BED_PAD;
+  const matW = pxW - BED_PAD * 2;
+  const matH = pxH - BED_PAD * 2;
+  const insetX = matW * 0.1;
+  const insetY = matH * 0.07;
+  const areaX = matX + insetX;
+  const areaY = matY + insetY;
+  const areaW = matW - insetX * 2;
+  const areaH = matH - insetY * 2;
+  const sleepers: ReactNode[] =
+    size.sleepers === 1
+      ? [sleeperGlyph(areaX + areaW * 0.25, areaY, areaW * 0.5, areaH, 's1')]
+      : [
+          sleeperGlyph(areaX, areaY, areaW * 0.46, areaH, 's1'),
+          sleeperGlyph(areaX + areaW * 0.54, areaY, areaW * 0.46, areaH, 's2'),
+        ];
+  return (
+    <svg
+      className="sz-bed"
+      width={pxW}
+      height={pxH}
+      viewBox={`0 0 ${pxW} ${pxH}`}
+      role="img"
+      aria-label={`${size.name}, ${size.inches}, sleeps ${size.sleepers === 2 ? 'two' : 'one'}`}
+    >
+      <rect x={matX} y={matY} width={matW} height={matH} rx={11} fill="#EFF3FA" stroke="#1B2C5E" strokeWidth={2} />
+      {size.name === 'Split King' ? (
+        <line
+          x1={pxW / 2}
+          y1={matY}
+          x2={pxW / 2}
+          y2={matY + matH}
+          stroke="#1B2C5E"
+          strokeWidth={1.5}
+          strokeDasharray="5 4"
+          opacity={0.55}
+        />
+      ) : null}
+      {sleepers}
+    </svg>
+  );
+}
 
 /**
  * Dedicated template for `/pages/mattress-sizes`.
@@ -126,6 +196,70 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
                 </div>
               </div>
             ))}
+          </section>
+
+          {/* To-scale comparison — the lead graphic. All seven sizes
+              drawn at one px-per-inch scale, bottom-aligned, so the
+              relative footprints are obvious at a glance. */}
+          <section className="sz-scale" aria-labelledby="sizes-scale-heading">
+            <h2 id="sizes-scale-heading" className="h2 ms-section-h">Every mattress size to scale</h2>
+            <p className="muted ms-section-lede">
+              All seven standard sizes drawn to the same scale, narrowest to widest — so you can see exactly how much bed each one gives you, and whether it sleeps one or two.
+            </p>
+            <div className="sz-lineup-scroll">
+              <div className="sz-lineup">
+                {MATTRESS_SIZES.map((s) => (
+                  <Link key={s.name} href={s.collectionHref} className="sz-lineup-item">
+                    <BedSvg size={s} />
+                    <span className="sz-lineup-cap">
+                      <strong>{s.name}</strong>
+                      <span className="muted">{s.inches}</span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Per-size visual cards — a scaled bed icon with sleeper
+              silhouettes plus the at-a-glance specs and a shop link. */}
+          <section className="sz-cards-sec" aria-labelledby="sizes-cards-heading">
+            <h2 id="sizes-cards-heading" className="h2 ms-section-h">Compare every size</h2>
+            <p className="muted ms-section-lede">
+              Who each size suits, the smallest bedroom it works in, and what we stock — tap any size to shop it.
+            </p>
+            <div className="sz-grid">
+              {MATTRESS_SIZES.map((s) => (
+                <article key={s.name} className="sz-card">
+                  <div className="sz-card-figure">
+                    <BedSvg size={s} />
+                  </div>
+                  <div className="sz-card-body">
+                    <div className="sz-card-head">
+                      <h3 className="h3 sz-card-name">{s.name}</h3>
+                      <span className="sz-card-dim">{s.inches}</span>
+                    </div>
+                    <dl className="sz-specs">
+                      <div className="sz-spec">
+                        <dt>Best for</dt>
+                        <dd>{s.bestFor}</dd>
+                      </div>
+                      <div className="sz-spec">
+                        <dt>Sleeps</dt>
+                        <dd>{s.sleepers === 2 ? 'Two' : 'One'}</dd>
+                      </div>
+                      <div className="sz-spec">
+                        <dt>Min. room</dt>
+                        <dd>{s.minRoom}</dd>
+                      </div>
+                    </dl>
+                    <Link href={s.collectionHref} className="mt-shop link-arrow">
+                      Shop {s.name} mattresses <Icon name="arrow-right" size={14} />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
           </section>
 
           <div className="service-page-layout">
