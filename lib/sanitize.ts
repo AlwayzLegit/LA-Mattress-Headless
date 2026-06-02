@@ -375,12 +375,47 @@ export type SanitizeOptions = {
   demoteHeadings?: boolean;
 };
 
+/**
+ * Repair U+FFFD (�) mojibake from the old Shopify export's bad UTF-8
+ * transcode. Order matters — recover known characters before treating
+ * the rest as a lost space / stray garbage:
+ *   1. `TEMPUR-ES�`  → `TEMPUR-ES®`   (lost registered-trademark)
+ *   2. `20�C` / `�F` → `20°C` / `°F`  (lost degree sign)
+ *   3. `…>�` / `�<…`  → drop           (garbage hugging a tag boundary)
+ *   4. remaining `�+` → single space   (the char was a word/sentence gap,
+ *                                       e.g. "5 Ways�to" → "5 Ways to")
+ * Tag-structure-safe: only operates on the text payload, never on
+ * `< > = "` so HTML markup is untouched. Idempotent (no � left to match).
+ * Exported for unit testing.
+ */
+export function repairMojibake(html: string): string {
+  if (!html || html.indexOf('�') === -1) return html;
+  let s = html;
+  s = s.split('TEMPUR-ES�').join('TEMPUR-ES®');
+  s = s.replace(/(\d)\s*�\s*([CF])\b/g, '$1°$2');
+  s = s.replace(/�([CF])\b/g, '°$1');
+  s = s.replace(/>�+/g, '>');
+  s = s.replace(/�+</g, '<');
+  s = s.replace(/�+/g, ' ');
+  s = s.replace(/[ \t]{2,}/g, ' ');
+  return s;
+}
+
 export function sanitizeShopifyHtml(
   html: string | null | undefined,
   options: SanitizeOptions = {},
 ): string {
   if (!html) return '';
   let out = html;
+  // Repair mojibake FIRST so every downstream pass (and the rendered
+  // page) sees clean text. ~26% of the imported blog bodies carry U+FFFD
+  // replacement chars (�) from a bad UTF-8 transcode in the old Shopify
+  // export — "20�C", "5 Ways�to", "TEMPUR-ES�", and stray � at tag/
+  // sentence boundaries. Rendering these is unprofessional and dings the
+  // readability/quality signals Semrush flags. Fixing at render time
+  // cleans all affected articles/pages/collection bodies in one place,
+  // no per-article Shopify edits, and covers any future bad import.
+  out = repairMojibake(out);
   // Phase 262: rewrite Hydrogen-era CDN URLs FIRST, before the generic
   // host-strip below — otherwise the host gets stripped to a dead
   // root-relative path before we get a chance to redirect to cdn.shopify.com.
