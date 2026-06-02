@@ -12,6 +12,7 @@
 import Link from 'next/link';
 import { getBrands } from '@/lib/shopify';
 import { type Showroom, SHOWROOMS } from '@/lib/showrooms';
+import { getNeighborhoodsForShowroom } from '@/lib/neighborhoods';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { Icon } from '../icon';
@@ -29,6 +30,11 @@ export async function ShowroomDetail({
   // previous 0 — showrooms only got linked from the locations index
   // and nav. Helps local-SEO and reduces the 117 crawl-depth flags).
   const otherShowrooms = SHOWROOMS.filter((s) => s.handle !== showroom.handle);
+  // Hub-and-spoke internal linking: the neighborhood pages that name this
+  // showroom as their nearest store. Rendered as a link list below so each
+  // neighborhood page earns a second, topically-relevant inbound link from
+  // its covering store (the first being the locations-index directory).
+  const servedNeighborhoods = getNeighborhoodsForShowroom(showroom.handle);
   const areas = showroom.nearbyAreas;
   const areaList =
     areas.length > 1
@@ -53,6 +59,27 @@ export async function ShowroomDetail({
           ))}
         </ul>
       </section>
+
+      {servedNeighborhoods.length ? (
+        <section className="section showroom-neighborhoods" aria-labelledby="sd-nbhd-h">
+          <div className="eyebrow">Neighborhoods we serve</div>
+          <h2 id="sd-nbhd-h" className="h2">LA neighborhoods near the {showroom.area} store</h2>
+          <p className="muted" style={{ maxWidth: '64ch' }}>
+            The {showroom.area} showroom is the closest LA Mattress store for these
+            neighborhoods — open yours for local delivery details, drive directions,
+            and the brands we keep on the floor.
+          </p>
+          <ul className="showroom-chips" aria-label={`Neighborhoods served from the ${showroom.area} showroom`}>
+            {servedNeighborhoods.map((n) => (
+              <li key={n.handle}>
+                <Link href={`/pages/${n.handle}`} className="showroom-chip showroom-chip-link">
+                  {n.name} mattress store
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {brands.length ? (
         <section className="section showroom-brands" aria-labelledby="sd-brands-h">
