@@ -424,6 +424,40 @@ const COUPLES_FAQ: FaqItem[] = [
   },
 ];
 
+const STOMACH_SLEEPER_FAQ: FaqItem[] = [
+  {
+    q: 'What firmness is best for stomach sleepers?',
+    a: 'Medium-firm to firm (roughly 6.5–8 on a 10-point scale). Stomach sleeping puts your heaviest region — the hips and pelvis — in the middle of the mattress; on a soft bed those sink in, the lower back overextends into a U, and you wake with lumbar pain. A firmer surface keeps the torso level and the spine neutral. Take our sleep quiz at /sleep-quiz for a firmness match based on your weight.',
+  },
+  {
+    q: 'Is memory foam bad for stomach sleepers?',
+    a: 'Deep, plush memory foam usually is — it lets the hips sink and the back arch. If you love the foam feel, choose a firmer, denser foam or a foam-over-coil hybrid where the coils stop the midsection from bottoming out. Firmer latex and pocketed-coil hybrids are the safer categories for stomach sleeping.',
+  },
+  {
+    q: 'What pillow should stomach sleepers use?',
+    a: 'The thinnest you can find — 2 inches of loft or less, or no pillow at all. A tall pillow cranes the neck up and sideways all night. Many stomach sleepers slide a thin pillow under the hips instead, which flattens the lumbar curve and takes pressure off the lower back.',
+  },
+];
+
+const HEAVY_FAQ: FaqItem[] = [
+  {
+    q: 'What’s the best mattress for a heavier person?',
+    a: 'Look for a hybrid or innerspring with sturdy pocketed coils, a tall profile (12 inches or more), and high-density comfort foams (1.8 lb/ft³ and up). The coils provide the deep support and durability that all-foam beds lose under heavier loads, and a thicker build keeps you from feeling the support layer. Firmer feels generally suit heavier sleepers because the body compresses a mattress more.',
+  },
+  {
+    q: 'Do heavier sleepers need a firmer mattress?',
+    a: 'Usually a touch firmer than the label suggests — a "medium" feels softer to a 250 lb sleeper than to a 150 lb one because more weight compresses the comfort layers. Most heavier shoppers are happiest on medium-firm to firm. Side sleepers over ~230 lb are the exception and still need enough give at the shoulder and hip; a thicker hybrid solves both.',
+  },
+  {
+    q: 'How long will a mattress last for a heavier person?',
+    a: 'Heavier loads accelerate wear, so durability matters most. Latex and high-quality pocketed-coil hybrids hold up best (8–10+ years); cheap all-foam beds can develop body impressions within a couple of years. Edge support also matters — reinforced perimeters keep the usable surface from collapsing where you sit to get in and out.',
+  },
+  {
+    q: 'Is there a weight limit on these mattresses?',
+    a: 'Most quality mattresses support 250–350 lb per side comfortably; many hybrids are rated higher. The bigger factor is the foundation — make sure your base or adjustable frame has center support and is rated for the combined weight. Our team can confirm the per-side rating on any model; ask in-store or on chat.',
+  },
+];
+
 // ─────────────────────────────────────────────────────────────────────
 // Firmness FAQs. Each firmness category gets its own bank since the
 // shopper concerns differ (soft = "will I sink", firm = "will it
@@ -606,7 +640,11 @@ export function categoryFaqFor(handle: string): FaqItem[] {
   //    handle.
   if (h.includes('back-pain')) return [...BACK_PAIN_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('side-sleeper')) return [...SIDE_SLEEPER_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('stomach-sleeper')) return [...STOMACH_SLEEPER_FAQ, ...UNIVERSAL_FAQ];
   if (h.includes('couples')) return [...COUPLES_FAQ, ...UNIVERSAL_FAQ];
+  if (h.includes('heavy') || h.includes('plus-size') || h.includes('big-and-tall')) {
+    return [...HEAVY_FAQ, ...UNIVERSAL_FAQ];
+  }
 
   // 3. Sizes (most-specific first — split-king beats king, twin-xl
   //    beats twin, california-king beats king). Sizes win over the
@@ -710,6 +748,14 @@ export function categoryIntroFor(handle: string, title: string): string {
   }
   if (h.includes('englander')) {
     return `Englander is a fourth-generation American mattress builder — best known for the O'Conner and Allendale luxury innerspring lines. Pocketed coils and gel-infused memory foam comfort layers in heights from 14–17 inches, in firm Euro-top and plush box-top builds. Made in the USA.`;
+  }
+
+  // Use-case / sleeper-type intros (win over material/size matches).
+  if (h.includes('stomach-sleeper')) {
+    return `Stomach sleepers need a firmer surface than most — the hips and pelvis carry the weight in this position, and on a soft mattress they sink in and bend the lower back out of line. The mattresses on this page run medium-firm to firm in hybrid, latex, and denser-foam builds that keep your torso level and your spine neutral. Try them in person at any of our 5 LA showrooms; free white-glove delivery in Los Angeles and a 120-night Love Your Bed Guarantee.`;
+  }
+  if (h.includes('heavy') || h.includes('plus-size') || h.includes('big-and-tall')) {
+    return `Heavier sleepers need more from a mattress — sturdier support, denser foams, taller builds, and reinforced edges that hold up over years of higher load. The mattresses here are hybrid and innerspring constructions with high-gauge pocketed coils and high-density comfort layers (generally 12"+ tall) chosen for durability and proper support without bottoming out. Free white-glove delivery across Los Angeles, 120-night Love Your Bed Guarantee, and 0% APR financing on orders of $1,500+.`;
   }
 
   // Material-specific intros
@@ -894,6 +940,10 @@ export function categoryGuidesFor(handle: string): CategoryGuide[] {
   if (h.includes('twin') || h.includes('split')) return [G.chooseSize, G.couples];
 
   // Use-case / material.
+  if (h.includes('stomach-sleeper')) return [G.stomach, G.sideSleepers, G.chooseSize];
+  if (h.includes('heavy') || h.includes('plus-size') || h.includes('big-and-tall')) {
+    return [G.heavy, G.backPain, G.chooseSize];
+  }
   if (h.includes('extra-firm') || h.includes('firm')) return [G.heavy, G.chooseSize, G.backPain];
   if (h.includes('cooling') || h.includes('gel') || h.includes('memory-foam') || h.includes('foam')) {
     return [G.cooling, G.chooseSize];
