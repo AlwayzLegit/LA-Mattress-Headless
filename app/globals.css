@@ -7690,6 +7690,97 @@ a.contact-action:hover {
   margin-top: 2px;
 }
 
+/* ─── Comparison page visual extras (decision cards + feel ratings) ────
+   Sourced from merchant copy. See lib/comparison-extras-data.ts. */
+.cmpx-decide {
+  margin-top: var(--s-7);
+}
+.cmpx-decide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-5);
+}
+@media (max-width: 640px) {
+  .cmpx-decide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.cmpx-decide-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-4);
+  background: var(--surface);
+  padding: var(--s-5);
+}
+.cmpx-decide-name {
+  margin: 0;
+}
+.cmpx-decide-when {
+  margin: 2px 0 var(--s-3);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.cmpx-decide-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.cmpx-decide-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.cmpx-decide-points svg {
+  color: var(--accent);
+  flex: none;
+  margin-top: 2px;
+}
+.cmpx-feel {
+  margin-top: var(--s-7);
+}
+.cmpx-feel-table {
+  display: grid;
+  gap: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-4);
+  background: var(--surface);
+  padding: var(--s-5);
+}
+.cmpx-feel-row {
+  display: grid;
+  grid-template-columns: 1fr minmax(120px, auto) 1fr;
+  align-items: center;
+  gap: var(--s-3);
+}
+.cmpx-feel-head {
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--line);
+}
+.cmpx-feel-side {
+  font-weight: 700;
+  color: var(--brand-navy);
+  font-size: 14px;
+  text-align: right;
+}
+.cmpx-feel-side-r {
+  text-align: left;
+}
+.cmpx-feel-axis {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-3, #444);
+}
+.cmpx-feel-pips-l {
+  justify-content: flex-end;
+}
+.cmpx-feel-pips-r {
+  justify-content: flex-start;
+}
+
 /* ─── Locations page — neighborhood directory ────────────────────────
    Phase 308 SEO PR: neighborhood index added to /pages/mattress-
    store-locations to give per-LA-area queries (Beverly Hills,

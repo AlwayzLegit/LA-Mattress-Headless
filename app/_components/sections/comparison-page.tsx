@@ -4,7 +4,8 @@ import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { wrapCmsTables } from '@/lib/cms-html';
 import { stripBrandSuffix, toSentenceCase } from '@/lib/seo';
-import type { ComparisonPageConfig } from '@/lib/comparison-pages';
+import type { ComparisonPageConfig, ComparisonPageHandle } from '@/lib/comparison-pages';
+import { COMPARISON_EXTRAS } from '@/lib/comparison-extras-data';
 import { ServicePageToc } from './service-page-toc';
 
 /**
@@ -59,6 +60,10 @@ export function ComparisonPage({
   const bodyHtml = page.body
     ? wrapCmsTables(autoLinkArticleBody(sanitizeShopifyHtml(page.body)))
     : '';
+  // Code-controlled visual blocks (decision cards + feel ratings),
+  // sourced from the merchant's own published copy. See
+  // lib/comparison-extras-data.ts.
+  const extras = COMPARISON_EXTRAS[page.handle as ComparisonPageHandle];
 
   return (
     <main className="container">
@@ -119,6 +124,62 @@ export function ComparisonPage({
             dangerouslySetInnerHTML={{ __html: bodyHtml }}
           />
         </div>
+
+        {extras ? (
+          <>
+            <section className="cmpx-decide" aria-labelledby="cmpx-decide-h">
+              <h2 id="cmpx-decide-h" className="h2 mt-section-h">{extras.decideHeading}</h2>
+              <p className="muted mt-section-lede">
+                The short version — match yourself to the column that sounds like you. Still torn? Try both at any of our showrooms.
+              </p>
+              <div className="cmpx-decide-grid">
+                {extras.decide.map((card) => (
+                  <article key={card.name} className="cmpx-decide-card">
+                    <h3 className="h3 cmpx-decide-name">{card.name}</h3>
+                    <p className="cmpx-decide-when">{card.whenLabel}</p>
+                    <ul className="cmpx-decide-points">
+                      {card.points.map((pt) => (
+                        <li key={pt}>
+                          <Icon name="check" size={15} aria-hidden="true" />
+                          <span>{pt}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            {extras.feel ? (
+              <section className="cmpx-feel" aria-labelledby="cmpx-feel-h">
+                <h2 id="cmpx-feel-h" className="h2 mt-section-h">{extras.feel.heading}</h2>
+                <p className="muted mt-section-lede">{extras.feel.note}</p>
+                <div className="cmpx-feel-table">
+                  <div className="cmpx-feel-row cmpx-feel-head" aria-hidden="true">
+                    <span className="cmpx-feel-side">{left.name}</span>
+                    <span className="cmpx-feel-axis" />
+                    <span className="cmpx-feel-side cmpx-feel-side-r">{right.name}</span>
+                  </div>
+                  {extras.feel.axes.map((axis) => (
+                    <div key={axis.label} className="cmpx-feel-row">
+                      <span className="mt-pips cmpx-feel-pips-l" role="img" aria-label={`${left.name} ${axis.label}: ${axis.left} of 5`}>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <span key={n} className={`mt-pip${n <= axis.left ? ' is-on' : ''}`} aria-hidden="true" />
+                        ))}
+                      </span>
+                      <span className="cmpx-feel-axis">{axis.label}</span>
+                      <span className="mt-pips cmpx-feel-pips-r" role="img" aria-label={`${right.name} ${axis.label}: ${axis.right} of 5`}>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <span key={n} className={`mt-pip${n <= axis.right ? ' is-on' : ''}`} aria-hidden="true" />
+                        ))}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+          </>
+        ) : null}
 
         <section className="service-page-cta" aria-label="Next steps">
           <p className="service-page-cta-headline">{config.cta.headline}</p>
