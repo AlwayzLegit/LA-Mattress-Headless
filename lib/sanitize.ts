@@ -447,6 +447,29 @@ export function stripEditorCruft(html: string): string {
   return s;
 }
 
+/**
+ * Drop <img> tags that hotlink the former parent brand's site
+ * (restonic.com). Dozens of legacy imported blog posts embed images from
+ * `restonic.com/wp-content/uploads/...` — third-party hotlinks that have
+ * since 404'd (SEMrush 20260603 "broken external images": e.g. the
+ * memory-foam post's two 2014 NASA/sleep images, the presidential-sleep
+ * post's three 2017 portraits). They render as broken-image icons and we
+ * can't re-host what's gone, so remove the <img> entirely and collapse
+ * any paragraph it leaves empty. Scoped to the single dead host so
+ * legitimate (Shopify-CDN and other) images are untouched; fixing at
+ * render time clears every affected post in one place without per-article
+ * Shopify edits. Tag-structure-safe; exported for unit testing.
+ */
+export function stripDeadHotlinks(html: string): string {
+  if (!html) return html;
+  let s = html;
+  // Any <img …> whose attributes reference restonic.com (src or srcset).
+  s = s.replace(/<img\b[^>]*\brestonic\.com[^>]*>/gi, '');
+  // Collapse paragraphs left empty by the removal.
+  s = s.replace(/<p>\s*<\/p>/gi, '');
+  return s;
+}
+
 export function sanitizeShopifyHtml(
   html: string | null | undefined,
   options: SanitizeOptions = {},
@@ -464,6 +487,8 @@ export function sanitizeShopifyHtml(
   out = repairMojibake(out);
   // Strip TinyMCE editor cruft (data-mce-*) — big text-to-HTML-ratio win.
   out = stripEditorCruft(out);
+  // Remove dead restonic.com hotlinked images (broken-image renders).
+  out = stripDeadHotlinks(out);
   // Phase 262: rewrite Hydrogen-era CDN URLs FIRST, before the generic
   // host-strip below — otherwise the host gets stripped to a dead
   // root-relative path before we get a chance to redirect to cdn.shopify.com.
