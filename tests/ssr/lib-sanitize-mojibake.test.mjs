@@ -89,3 +89,16 @@ test('stripDeadHotlinks removes restonic.com hotlinked images, keeps other image
   const keep = '<p><img src="https://cdn.shopify.com/x.jpg">caption</p>';
   assert.equal(stripDeadHotlinks(keep), keep);
 });
+
+test('normalizeContactInfo rewrites old phone/email to current NAP', () => {
+  const { normalizeContactInfo } = repairModule;
+  // visible formatted number
+  assert.equal(normalizeContactInfo('<p>Call (800) 218-3578 today</p>'), '<p>Call (818) 247-7790 today</p>');
+  assert.equal(normalizeContactInfo('Phone: 800-218-3578'), 'Phone: (818) 247-7790');
+  // tel: href (digits preserved as RFC 3966)
+  assert.equal(normalizeContactInfo('<a href="tel:+18002183578">call</a>'), '<a href="tel:+18182477790">call</a>');
+  // email
+  assert.equal(normalizeContactInfo('email orders.lamattress@gmail.com'), 'email lamattressplus@gmail.com');
+  // unrelated numbers untouched
+  assert.equal(normalizeContactInfo('order over $499, call (213) 984-4654'), 'order over $499, call (213) 984-4654');
+});
