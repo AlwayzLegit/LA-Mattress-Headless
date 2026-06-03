@@ -470,6 +470,31 @@ export function stripDeadHotlinks(html: string): string {
   return s;
 }
 
+/**
+ * Normalize the business's OLD contact info to the current values across
+ * all merchant HTML. Many merchant-authored page bodies (notably the
+ * contact page) hardcode the prior phone (800) 218-3578 and email
+ * orders.lamattress@gmail.com in prose/tel: links. The current, canonical
+ * contact (matching Google Merchant Center + the site_config metaobject)
+ * is (818) 247-7790 / lamattressplus@gmail.com. Rewriting at render keeps
+ * NAP consistent sitewide without per-page Shopify edits and self-heals
+ * future imports. Order matters: rewrite `tel:` hrefs (need digits) before
+ * the visible formatted number (need the display form). Tag-safe — only
+ * the specific old strings are touched. Exported for unit testing.
+ */
+export function normalizeContactInfo(html: string): string {
+  if (!html) return html;
+  let s = html;
+  // Old email → new (case-insensitive).
+  s = s.replace(/orders\.lamattress@gmail\.com/gi, 'lamattressplus@gmail.com');
+  // `tel:` hrefs in any form (tel:+18002183578, tel:8002183578,
+  // tel:+1-800-218-3578, etc.) → canonical RFC 3966 of the new number.
+  s = s.replace(/tel:\+?1?[-.\s]?\(?800\)?[-.\s]?218[-.\s]?3578/gi, 'tel:+18182477790');
+  // Visible formatted number in any common separator style → new display.
+  s = s.replace(/\(?800\)?[-.\s]?218[-.\s]?3578/g, '(818) 247-7790');
+  return s;
+}
+
 export function sanitizeShopifyHtml(
   html: string | null | undefined,
   options: SanitizeOptions = {},
@@ -489,6 +514,8 @@ export function sanitizeShopifyHtml(
   out = stripEditorCruft(out);
   // Remove dead restonic.com hotlinked images (broken-image renders).
   out = stripDeadHotlinks(out);
+  // Normalize the business's old phone/email to the current contact (NAP).
+  out = normalizeContactInfo(out);
   // Phase 262: rewrite Hydrogen-era CDN URLs FIRST, before the generic
   // host-strip below — otherwise the host gets stripped to a dead
   // root-relative path before we get a chance to redirect to cdn.shopify.com.
