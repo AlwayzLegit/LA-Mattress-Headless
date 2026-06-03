@@ -63,18 +63,35 @@ export const COLLECTION_SEO_OVERRIDES: Record<string, CollectionSeoOverride> = {
     title: 'Tempur-Pedic Mattress · Tempur Pedic & Tempurpedic | LA Mattress',
   },
 
-  // Semrush 20260601 "Ideas": the size-PLP H1s render the merchant
+  // Semrush 20260601 + 20260603 "Ideas": the size PLPs render the merchant
   // collection title ("King Mattresses", "Queen Mattresses", …) which
-  // drops the "size" token the head query carries — flagged
-  // `h1_missing_kw` on the highest-volume commercial terms
-  // ("king size mattress" 110k/mo, the #25 recovery-plan target). The
-  // SEO *titles* are already fine via merchant seo.title; only the
-  // visible H1 needs the keyword-complete form. Titles intentionally
-  // left untouched here.
-  'king-size-mattresses': { h1: 'King Size Mattresses' },
-  'queen-size-mattresses': { h1: 'Queen Size Mattresses' },
-  'twin-size-mattresses': { h1: 'Twin Size Mattresses' },
-  'full-size-mattresses': { h1: 'Full Size Mattresses' },
+  // drops the "size" token the head query carries — flagged both
+  // `h1_missing_kw` AND, in the 20260603 export, `title_missing_kw` on
+  // the highest-volume commercial terms ("king size mattress" 110k/mo was
+  // the single highest-priority idea in that export at 1,247). The merchant
+  // seo.title leads with "King Mattress" / "Queen Mattress" etc. and never
+  // says "<size> size mattress", so override BOTH the title and the H1
+  // with the keyword-complete form (kept human-readable, with the price /
+  // locality hook preserved, <70 chars). California King is left alone —
+  // its merchant title already carries "California King".
+  'king-size-mattresses': {
+    title: 'King Size Mattresses · Top Brands from $499 | LA Mattress',
+    description:
+      'Shop king size mattresses from Tempur-Pedic, Stearns & Foster, Diamond & more — every firmness, from $499. Free white-glove LA delivery + 120-night trial.',
+    h1: 'King Size Mattresses',
+  },
+  'queen-size-mattresses': {
+    title: 'Queen Size Mattresses · Top Brands from $319 | LA Mattress',
+    h1: 'Queen Size Mattresses',
+  },
+  'twin-size-mattresses': {
+    title: 'Twin Size Mattresses in Los Angeles | LA Mattress Store',
+    h1: 'Twin Size Mattresses',
+  },
+  'full-size-mattresses': {
+    title: 'Full Size Mattresses in Los Angeles | LA Mattress Store',
+    h1: 'Full Size Mattresses',
+  },
 
   // New sleeper/body-type commercial collections (gap analysis 20260602):
   // extends the existing use-case cluster (back-pain / side-sleepers /
