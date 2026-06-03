@@ -76,13 +76,12 @@ function getBreadcrumb(lds) {
   return found ? found.data : null;
 }
 
-// 2026-05-24 schema fix: `Product.offers` is now a flat array of
-// [AggregateOffer, ...variant Offers]. Used to be `AggregateOffer
-// { offers: [variants] }` which violated the schema.org spec
-// (AggregateOffer has no `offers` property — SEMrush flagged it on
-// every PDP). These helpers abstract the access pattern so the
-// individual test cases don't have to re-encode "skip index 0" or
-// "find by @type" everywhere.
+// GSC 20260603 fix: `Product.offers` is a flat array of per-variant
+// Offer only. We previously prepended an AggregateOffer, but Google
+// Merchant listings flagged it "Invalid object type for field offers"
+// (an AggregateOffer can't carry hasMerchantReturnPolicy/shippingDetails,
+// so it's not a valid merchant offer). getAggregateOffer now returns null
+// (asserts the AggregateOffer is gone); getVariantOffers returns the Offers.
 function getAggregateOffer(lds) {
   const offers = getProduct(lds)?.offers;
   if (!Array.isArray(offers)) return null;
@@ -308,9 +307,9 @@ test('Product LD has the required Google rich-results fields', () => {
   const ld = getProduct(getProductJsonLd(makeProduct()));
   assert.equal(ld['@type'], 'Product');
   assert.ok(ld.name, 'Product.name is required');
-  assert.ok(Array.isArray(ld.offers), 'Product.offers is now a flat array of [AggregateOffer, ...Offer]');
-  assert.ok(ld.offers.length >= 1, 'should have at least the AggregateOffer');
-  assert.equal(ld.offers[0]['@type'], 'AggregateOffer', 'AggregateOffer first');
+  assert.ok(Array.isArray(ld.offers), 'Product.offers is a flat array of per-variant Offer');
+  assert.ok(ld.offers.length >= 1, 'at least one Offer');
+  assert.equal(ld.offers[0]['@type'], 'Offer', 'each element is an Offer (no AggregateOffer — GSC merchant-listing fix)');
   // image, brand, sku are recommended; verify when fixture has them.
   assert.ok(ld.image);
   assert.ok(ld.brand);
@@ -327,11 +326,12 @@ test('Product does NOT emit dateModified (not a valid Product property per schem
   assert.equal(ld.dateModified, undefined);
 });
 
-test('Product.offers is a flat array, no nested offers inside AggregateOffer', () => {
-  // AggregateOffer has no `offers` property in the schema.org spec —
-  // the previous shape (`offers: AggregateOffer { offers: [Offer] }`)
-  // was invalid. New shape: `offers: [AggregateOffer, ...Offer[]]`,
-  // which Google explicitly supports for multi-variant products.
+test('Product.offers is a flat array of per-variant Offer (no AggregateOffer)', () => {
+  // GSC 20260603: Google Merchant listings flagged a prepended
+  // AggregateOffer as "Invalid object type for field offers" (it can't
+  // carry hasMerchantReturnPolicy/shippingDetails, so it's not a valid
+  // merchant offer). offers is now just the per-variant Offer[]; Google
+  // derives the price range from the array.
   const lds = getProductJsonLd(makeProduct({
     variants: [
       { sku: 'V1', barcode: null, price: { amount: '999.00', currencyCode: 'USD' }, compareAtPrice: null, availableForSale: true, selectedOptions: [{ name: 'Size', value: 'Queen' }] },
@@ -339,16 +339,14 @@ test('Product.offers is a flat array, no nested offers inside AggregateOffer', (
     ],
   }));
   const ld = getProduct(lds);
-  assert.ok(Array.isArray(ld.offers), 'offers is now an array');
-  // First element: AggregateOffer (price range)
-  const agg = getAggregateOffer(lds);
-  assert.ok(agg, 'AggregateOffer present in offers array');
-  assert.equal(agg['@type'], 'AggregateOffer');
-  assert.equal(agg.offerCount, 2);
-  assert.equal(agg.offers, undefined, 'AggregateOffer.offers (nested) must not be emitted');
-  // Remaining elements: individual variant Offers
+  assert.ok(Array.isArray(ld.offers), 'offers is an array');
+  assert.equal(getAggregateOffer(lds), null, 'no AggregateOffer in offers (merchant-listing fix)');
   const variants = getVariantOffers(lds);
-  assert.equal(variants.length, 2, 'one Offer per variant, alongside the AggregateOffer');
+  assert.equal(variants.length, 2, 'one Offer per variant');
+  assert.equal(ld.offers.length, 2, 'offers contains only the per-variant Offers');
   assert.equal(variants[0].sku, 'V1');
   assert.equal(variants[1].sku, 'V2');
+  // Each offer is merchant-eligible: carries returns + shipping.
+  assert.ok(variants[0].hasMerchantReturnPolicy, 'Offer carries return policy');
+  assert.ok(variants[0].shippingDetails, 'Offer carries shipping details');
 });
