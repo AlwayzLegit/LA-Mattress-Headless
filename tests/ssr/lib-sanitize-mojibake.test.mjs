@@ -75,3 +75,17 @@ test('stripEditorCruft preserves real bold text content/markup', () => {
   const out = stripEditorCruft('<p><strong>Bold</strong> and <span>plain</span> text</p>');
   assert.equal(out, '<p><strong>Bold</strong> and plain text</p>');
 });
+
+test('stripDeadHotlinks removes restonic.com hotlinked images, keeps other images + text', () => {
+  const { stripDeadHotlinks } = repairModule;
+  // dead restonic hotlink inside a heading -> img gone, heading text kept
+  assert.equal(
+    stripDeadHotlinks('<h2><img alt="x" src="https://restonic.com/wp-content/uploads/2017/07/04-jfk.jpg" width="225">Snorers</h2>'),
+    '<h2>Snorers</h2>',
+  );
+  // standalone paragraph image -> empty <p> collapsed
+  assert.equal(stripDeadHotlinks('<p><img src="https://restonic.com/a.jpg"></p>'), '');
+  // Shopify CDN and other images are untouched
+  const keep = '<p><img src="https://cdn.shopify.com/x.jpg">caption</p>';
+  assert.equal(stripDeadHotlinks(keep), keep);
+});
