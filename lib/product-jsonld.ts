@@ -208,8 +208,6 @@ export function pickPrimaryCollection(collections: Product['collections']): Prod
 }
 
 export function getProductJsonLd(product: Product): ProductLd[] {
-  const min = product.priceRange.minVariantPrice;
-  const max = product.priceRange.maxVariantPrice;
   const firstSku = product.variants.find((v) => v.sku && v.sku.trim().length > 0)?.sku;
   const productUrl = `${SITE}/products/${product.handle}`;
 
@@ -331,29 +329,21 @@ export function getProductJsonLd(product: Product): ProductLd[] {
     // signals come from the Last-Modified HTTP header + sitemap
     // lastmod + the page's BlogPosting if any, not from this field.
     ...(additionalProperty.length > 0 ? { additionalProperty } : {}),
-    // `Product.offers` accepts Offer, AggregateOffer, or an array of
-    // either. Schema.org `AggregateOffer` does NOT have an `offers`
-    // property — nesting per-variant `Offer[]` inside it (the old
-    // shape) was non-standard and SEMrush flagged it as "unknown
-    // property" on every PDP. Flat array of AggregateOffer +
-    // per-variant Offers at the same level is the spec-correct
-    // pattern: AggregateOffer carries the price range for the
-    // top-level Shopping rich result; the per-variant Offers carry
-    // SKU / GTIN / per-variant pricing for variant-level rich
-    // results. Google explicitly supports this mixed-array shape
-    // (https://developers.google.com/search/docs/appearance/structured-data/product).
-    offers: [
-      {
-        '@type': 'AggregateOffer',
-        priceCurrency: min.currencyCode,
-        lowPrice: min.amount,
-        highPrice: max.amount,
-        offerCount: product.variants.length,
-        availability: product.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-        itemCondition: 'https://schema.org/NewCondition',
-      },
-      ...variantOffers,
-    ],
+    // `Product.offers` = a flat array of per-variant Offer. Each Offer
+    // carries price, availability, itemCondition, sku/gtin, AND the
+    // sitewide hasMerchantReturnPolicy + shippingDetails, so every offer
+    // is fully eligible for Google Merchant listings; Google derives the
+    // product-snippet price range from the array.
+    //
+    // GSC 20260603 fix: we previously PREPENDED an AggregateOffer to this
+    // array. Google Merchant listings flagged "Invalid object type for
+    // field offers" on 74 items — an AggregateOffer can't carry
+    // hasMerchantReturnPolicy / shippingDetails, so it isn't a valid
+    // merchant offer, and mixing it into the offers array made the field
+    // invalid for merchant eligibility. The per-variant Offer[] is the
+    // spec-correct, merchant-eligible shape, so the AggregateOffer is
+    // dropped. (Guarded so we never emit an empty offers array.)
+    ...(variantOffers.length > 0 ? { offers: variantOffers } : {}),
     ...(product.reviews &&
     Number.isFinite(product.reviews.rating) &&
     Number.isFinite(product.reviews.count) &&
