@@ -7781,6 +7781,25 @@ a.contact-action:hover {
   justify-content: flex-start;
 }
 
+/* ─── Blog article code-enrichment (size guides) ──────────────────────
+   Dimensions table + related links + FAQ appended to canonical size
+   articles. Reuses .ms-dims-table / .ms-faq styles. See
+   app/_components/sections/article-enrichment.tsx. */
+.art-enrich {
+  margin: var(--s-7) auto;
+  max-width: 820px;
+}
+.art-enrich-links {
+  margin: var(--s-4) 0 var(--s-6);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+  font-size: 14px;
+}
+.art-enrich-faq-h {
+  margin: var(--s-5) 0 var(--s-3);
+}
+
 /* ─── Locations page — neighborhood directory ────────────────────────
    Phase 308 SEO PR: neighborhood index added to /pages/mattress-
    store-locations to give per-LA-area queries (Beverly Hills,

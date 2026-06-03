@@ -2,7 +2,7 @@
   "$schema": "Shopify redirects inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-05-26T06:57:32.366926Z",
-  "$count": 2023,
+  "$count": 2028,
   "redirects": [
     {
       "id": "gid://shopify/UrlRedirect/31411395",
@@ -12140,6 +12140,31 @@
       "id": "gid://shopify/UrlRedirect/485024858365",
       "source": "/collections/solo-living-comfort-meets-convenience",
       "destination": "/collections/full-size-mattresses",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/full-size-mattress-measurements-room-layout-tips",
+      "destination": "/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/how-much-space-does-a-full-size-mattress-really-give-you",
+      "destination": "/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/how-bigs-a-double-bed",
+      "destination": "/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/what-is-the-size-of-a-queen-mattress",
+      "destination": "/blogs/mattress-buying-guide/queen-mattress-size-guide-inches-feet-how-to-pick-the-perfect-fit",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference",
+      "destination": "/blogs/mattress-buying-guide/king-vs-california-king",
       "permanent": true
     }
   ],

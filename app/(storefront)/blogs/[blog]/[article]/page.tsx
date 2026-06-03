@@ -12,6 +12,7 @@ import { isNoindexArticle } from '@/lib/noindex-articles';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { injectHeadingIds } from '@/lib/article-toc';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
+import { ArticleEnrichment } from '@/app/_components/sections/article-enrichment';
 import { displayAuthorName } from '@/lib/article-author';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
@@ -256,6 +257,8 @@ function ArticleView({ article }: { article: Article }) {
           </aside>
         </div>
       </div>
+
+      <ArticleEnrichment handle={article.handle} />
 
       <section className="section gd-related">
         <div className="container">
