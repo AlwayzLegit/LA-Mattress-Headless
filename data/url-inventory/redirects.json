@@ -2,7 +2,7 @@
   "$schema": "Shopify redirects inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-05-26T06:57:32.366926Z",
-  "$count": 2024,
+  "$count": 2023,
   "redirects": [
     {
       "id": "gid://shopify/UrlRedirect/31411395",
@@ -12134,6 +12134,12 @@
       "id": "gid://shopify/UrlRedirect/484788568317",
       "source": "/collections/bedroom-furniture",
       "destination": "/collections/bed-frames",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/485024858365",
+      "source": "/collections/solo-living-comfort-meets-convenience",
+      "destination": "/collections/full-size-mattresses",
       "permanent": true
     }
   ],
