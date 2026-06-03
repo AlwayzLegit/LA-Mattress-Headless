@@ -14,19 +14,19 @@
 
 import type { LiveSiteConfig } from './shopify/queries/site-config';
 
-const PHONE_DIGITS = '8002183578';
+const PHONE_DIGITS = '8182477790';
 
-/** RFC 3966 (`tel:+18002183578`) for `<a href={tel}>`. */
+/** RFC 3966 (`tel:+18182477790`) for `<a href={tel}>`. */
 export const SITE_PHONE_TEL = `+1${PHONE_DIGITS}`;
 
-/** Display-formatted (`(800) 218-3578`) for visible UI. */
+/** Display-formatted (`(818) 247-7790`) for visible UI. */
 export const SITE_PHONE_DISPLAY = `(${PHONE_DIGITS.slice(0, 3)}) ${PHONE_DIGITS.slice(3, 6)}-${PHONE_DIGITS.slice(6)}`;
 
-/** Schema.org `telephone` format (`+1-800-218-3578`) for JSON-LD. */
+/** Schema.org `telephone` format (`+1-818-247-7790`) for JSON-LD. */
 export const SITE_PHONE_SCHEMA = `+1-${PHONE_DIGITS.slice(0, 3)}-${PHONE_DIGITS.slice(3, 6)}-${PHONE_DIGITS.slice(6)}`;
 
 /** Customer-facing email. */
-export const SITE_EMAIL = 'orders.lamattress@gmail.com';
+export const SITE_EMAIL = 'lamattressplus@gmail.com';
 
 /** Brand display name. */
 export const SITE_BRAND = 'LA Mattress Store';
@@ -106,17 +106,17 @@ export const SOCIAL_PROFILES: readonly string[] = [
    truth across static + dynamic paths.
    ──────────────────────────────────────────────────────────────────── */
 
-/** `+18002183578` — RFC 3966 for `<a href={tel}>`. */
+/** `+18182477790` — RFC 3966 for `<a href={tel}>`. */
 export function phoneTelFrom(digits: string): string {
   return `+1${digits}`;
 }
 
-/** `(800) 218-3578` — visible UI form. */
+/** `(818) 247-7790` — visible UI form. */
 export function phoneDisplayFrom(digits: string): string {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
-/** `+1-800-218-3578` — Schema.org JSON-LD `telephone`. */
+/** `+1-818-247-7790` — Schema.org JSON-LD `telephone`. */
 export function phoneSchemaFrom(digits: string): string {
   return `+1-${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
