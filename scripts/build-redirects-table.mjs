@@ -70,6 +70,19 @@ let droppedDup = 0;
 // that our middleware then strips with a second 301.
 function cleanDest(destination) {
   let dest = destination;
+  // Normalize self-referential ABSOLUTE destinations to relative paths.
+  // Shopify stores ~900 redirect targets as absolute NON-www URLs
+  // (https://mattressstoreslosangeles.com/...). On the canonical www host
+  // each of those 301s a SECOND time (non-www → www) — the redirect
+  // chains SEMrush flags ("Redirect chains and loops"). Stripping our own
+  // origin makes the destination a relative path that resolves on the
+  // current host in a single hop. Bonus: a now-relative target that is
+  // itself a redirect source becomes matchable, so resolveChain() can
+  // flatten chains it previously couldn't see through the absolute URL.
+  // Only our own domain is stripped — genuine external targets are left
+  // intact.
+  dest = dest.replace(/^https?:\/\/(www\.)?mattressstoreslosangeles\.com(?=[/?#]|$)/i, '');
+  if (dest === '' || dest.startsWith('?') || dest.startsWith('#')) dest = '/' + dest;
   dest = dest.replace(/[?&]amp;_fid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
   dest = dest.replace(/[?&]_fid=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
   dest = dest.replace(/[?&]_pos=[^&]*(&|$)/g, (m, tail) => (tail ? '&' : ''));
