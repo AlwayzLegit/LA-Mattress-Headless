@@ -2,7 +2,7 @@
   "$schema": "Shopify redirects inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-05-26T06:57:32.366926Z",
-  "$count": 2028,
+  "$count": 2026,
   "redirects": [
     {
       "id": "gid://shopify/UrlRedirect/31411395",
@@ -10754,18 +10754,6 @@
       "id": "gid://shopify/UrlRedirect/469233434877",
       "source": "/pages/sale-event",
       "destination": "/collections/on-sale",
-      "permanent": true
-    },
-    {
-      "id": "gid://shopify/UrlRedirect/469233500413",
-      "source": "/pages/mattress-store-west-hollywood",
-      "destination": "/pages/mattress-store-locations",
-      "permanent": true
-    },
-    {
-      "id": "gid://shopify/UrlRedirect/469233533181",
-      "source": "/pages/mattress-store-westwood",
-      "destination": "/pages/mattress-store-locations",
       "permanent": true
     },
     {
