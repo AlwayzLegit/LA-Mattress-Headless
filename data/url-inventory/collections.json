@@ -2,7 +2,7 @@
   "$schema": "Shopify collections inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-05-25T10:17:08.174Z",
-  "$count": 65,
+  "$count": 67,
   "collections": [
     {
       "handle": "popular",
@@ -404,8 +404,8 @@
       "handle": "mattresses-under-1000",
       "id": "gid://shopify/Collection/464474439933",
       "title": "Mattresses Under $1,000",
-      "productsCount": 0,
-      "updatedAt": "2026-05-20T09:07:50Z",
+      "productsCount": 54,
+      "updatedAt": "2026-06-04T04:12:55Z",
       "seoTitle": "Mattresses Under $1,000 | Affordable Quality | LA Mattress Stores",
       "seoDescription": "Shop quality mattresses under $1,000 from top brands. Memory foam, hybrid, and innerspring options with free delivery and 120-night comfort trial in Los Angeles."
     },
@@ -588,6 +588,24 @@
       "updatedAt": "2026-05-23T15:46:12Z",
       "seoTitle": "Bedding — Sheets, Pillows, Comforters & Protectors | LA Mattress",
       "seoDescription": "Shop sheets, pillows, comforters, and mattress protectors that pair with our mattresses. Soft microfiber, cooling Tencel, allergen-safe protectors. Free LA delivery."
+    },
+    {
+      "handle": "mattresses-for-stomach-sleepers",
+      "id": "gid://shopify/Collection/468157268221",
+      "title": "Mattresses for Stomach Sleepers",
+      "productsCount": 53,
+      "updatedAt": "2026-06-04T04:58:04Z",
+      "seoTitle": "Best Mattress for Stomach Sleepers · Firm Support | LA Mattress",
+      "seoDescription": "Firmer, supportive mattresses that keep stomach sleepers’ hips from sinking and the lower back neutral. Free white-glove LA delivery + 120-night trial."
+    },
+    {
+      "handle": "mattresses-for-heavy-people",
+      "id": "gid://shopify/Collection/468157300989",
+      "title": "Mattresses for Heavy People",
+      "productsCount": 53,
+      "updatedAt": "2026-06-04T04:58:16Z",
+      "seoTitle": "Best Mattress for Heavy People (230+ lb) | LA Mattress",
+      "seoDescription": "Durable, supportive mattresses for heavier bodies: reinforced coils, dense foam, strong edge support. Free white-glove LA delivery + 120-night trial."
     }
   ]
 }
