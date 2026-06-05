@@ -21,6 +21,12 @@ name: Refresh URL inventory snapshot
 # The PR is opened against `main` via peter-evans/create-pull-request,
 # which uses the default GITHUB_TOKEN — no extra PAT needed.
 #
+# Failure alerting: if the snapshot pull fails (most often an expired
+# SHOPIFY_ADMIN_TOKEN → GraphQL 401), the "Alert on failure" step opens a
+# single rolling tracking issue labelled `inventory-sync-failure` and
+# comments on it for each subsequent failure, so the job can't die
+# silently for days the way it did before this was added.
+#
 # Cost: ~30s of Actions runtime per day, fully within the free tier
 # even with the SSR test workflow running on every PR.
 
@@ -36,6 +42,9 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # Needed by the "Alert on failure" step to file/update a tracking issue
+  # when the snapshot pull fails (e.g. an expired SHOPIFY_ADMIN_TOKEN).
+  issues: write
 
 jobs:
   refresh:
@@ -123,3 +132,57 @@ jobs:
           labels: |
             seo
             automated
+
+      # Surface failures loudly. Without this the job can fail silently for
+      # days (e.g. an expired SHOPIFY_ADMIN_TOKEN → GraphQL 401) while the
+      # stale snapshot PR sits open looking healthy. Files a single rolling
+      # tracking issue (deduped by the `inventory-sync-failure` label) and
+      # comments on it for each subsequent failure, so 10 failed days = 1
+      # issue with 10 comments, not 10 issues. Opening/commenting on the
+      # issue emails repo watchers via GitHub's normal notifications.
+      - name: Alert on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const label = 'inventory-sync-failure';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: label,
+            });
+            if (existing.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body: `Still failing as of ${new Date().toISOString()} (trigger: \`${context.eventName}\`).\nRun: ${runUrl}`,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '⚠️ URL inventory refresh is failing',
+                labels: [label, 'automated'],
+                body: [
+                  'The scheduled **Refresh URL inventory snapshot** workflow failed.',
+                  '',
+                  `- Failing run: ${runUrl}`,
+                  `- Trigger: \`${context.eventName}\``,
+                  '',
+                  'Most common cause: the `SHOPIFY_ADMIN_TOKEN` secret has expired or',
+                  'been revoked — `scripts/pull-inventory.mjs` then aborts with a',
+                  'GraphQL `HTTP 401: Invalid API key or access token`.',
+                  '',
+                  '**Fix:** rotate the token under **Settings → Secrets and variables →',
+                  'Actions** (scopes: `read_products`, `read_content`,',
+                  '`read_online_store_pages`, `read_themes`), then re-run the workflow',
+                  'via **Actions → "Refresh URL inventory snapshot" → Run workflow**.',
+                  '',
+                  'This issue auto-comments on each subsequent failure. Close it once a',
+                  'run succeeds.',
+                ].join('\n'),
+              });
+            }
