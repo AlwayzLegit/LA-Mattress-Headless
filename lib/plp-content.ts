@@ -25,6 +25,7 @@
  */
 
 import type { FaqItem } from './faq';
+import { SITE_PHONE_DISPLAY } from './site-config';
 
 /**
  * 3 universal shopping questions that apply to every category. These
@@ -233,7 +234,7 @@ const GENERIC_FAQ: FaqItem[] = [
   },
   {
     q: 'How do I know which firmness to choose?',
-    a: 'Take our 2-minute sleep quiz at /sleep-quiz — we match firmness to your sleep position, body weight, and any pain points. You can also call any showroom at (213) 984-4654 and talk to a real person who fits mattresses for a living.',
+    a: `Take our 2-minute sleep quiz at /sleep-quiz — we match firmness to your sleep position, body weight, and any pain points. You can also call us at ${SITE_PHONE_DISPLAY} and talk to a real person who fits mattresses for a living.`,
   },
   {
     q: 'What sizes are available?',

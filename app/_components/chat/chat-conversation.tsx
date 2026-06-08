@@ -9,6 +9,7 @@ import type {
   ChatProductCard as ChatProductCardData,
 } from '@/lib/chat/types';
 import { parseChatStreamChunk } from '@/lib/chat/sse-parser';
+import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 
 /**
  * The interactive body of the chat panel: message list + input form +
@@ -85,18 +86,18 @@ function friendlyChatError(rawMessage: string, status?: number): string {
     return "We're getting a lot of questions right now. Give it a moment and try again.";
   }
   if (status === 503) {
-    return "The chat assistant is briefly unavailable. Call (213) 984-4654 or try again in a minute.";
+    return `The chat assistant is briefly unavailable. Call ${SITE_PHONE_DISPLAY} or try again in a minute.`;
   }
   if (status === 504 || /timeout|timed out/i.test(rawMessage)) {
-    return "That took longer than expected. Try a shorter question, or call (213) 984-4654.";
+    return `That took longer than expected. Try a shorter question, or call ${SITE_PHONE_DISPLAY}.`;
   }
   if (typeof status === 'number' && status >= 400) {
-    return "Something went wrong on our end. Try rephrasing, or call (213) 984-4654.";
+    return `Something went wrong on our end. Try rephrasing, or call ${SITE_PHONE_DISPLAY}.`;
   }
   if (/network|fetch|failed to fetch/i.test(rawMessage)) {
     return "Looks like a connection hiccup. Check your network and try again.";
   }
-  return "I hit an error mid-response. Try again, or call (213) 984-4654.";
+  return `I hit an error mid-response. Try again, or call ${SITE_PHONE_DISPLAY}.`;
 }
 
 /**
@@ -423,7 +424,10 @@ export function ChatConversation() {
           // there). For any other thrown error (network failure,
           // unexpected exception), sanitize before showing.
           const raw = err instanceof Error ? err.message : 'Network error.';
-          const looksFriendly = /\(213\) 984-4654|try again|connection hiccup|moment/i.test(raw);
+          const looksFriendly = new RegExp(
+            `${SITE_PHONE_DISPLAY.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}|try again|connection hiccup|moment`,
+            'i',
+          ).test(raw);
           const content = looksFriendly ? raw : friendlyChatError(raw);
           setMessages((prev) => {
             const next = [...prev];
