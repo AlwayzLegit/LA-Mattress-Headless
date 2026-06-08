@@ -89,7 +89,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
     },
     {
       q: 'Do you deliver outside Los Angeles?',
-      a: 'Yes — we deliver to most of Southern California (LA County, Orange County, Ventura County, parts of San Bernardino and Riverside). Delivery is still free on orders over $499 within a 50-mile radius of our Studio City showroom. Outside that range, a flat-rate delivery fee applies — call (818) 247-7790 for a quote.',
+      a: 'Yes — we deliver to most of Southern California (LA County, Orange County, Ventura County, parts of San Bernardino and Riverside). Delivery is still free on orders over $499 within a 50-mile radius of our Studio City showroom. Outside that range, a flat-rate delivery fee applies — call (800) 218-3578 for a quote.',
     },
     {
       q: 'What does "white-glove delivery" include?',
@@ -193,7 +193,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
     },
     {
       q: 'How do I file a warranty claim?',
-      a: 'Call (818) 247-7790 or email lamattressplus@gmail.com with your invoice number and photos of the issue. We coordinate the inspection (often done at home or via photos) and submit the claim to the manufacturer on your behalf.',
+      a: 'Call (800) 218-3578 or email lamattressplus@gmail.com with your invoice number and photos of the issue. We coordinate the inspection (often done at home or via photos) and submit the claim to the manufacturer on your behalf.',
     },
     {
       q: 'Is the warranty void if I rotate or don\'t rotate the mattress?',
@@ -237,7 +237,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
   'mattress-store-contact': [
     {
       q: 'How can I contact LA Mattress Store?',
-      a: 'Three ways: call (818) 247-7790 between 10 AM and 8 PM Pacific, email lamattressplus@gmail.com (we reply within one business day), or visit any of our 5 LA showrooms during open hours. No appointment needed.',
+      a: 'Three ways: call (800) 218-3578 between 10 AM and 8 PM Pacific, email lamattressplus@gmail.com (we reply within one business day), or visit any of our 5 LA showrooms during open hours. No appointment needed.',
     },
     {
       q: 'What are your business hours?',
@@ -317,7 +317,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
     },
     {
       q: 'What if you don\'t carry the exact model I found a lower price on?',
-      a: 'The price match requires same mattress, same model number, same size. If we don\'t carry it, we can usually special-order it from the brand at the matched price. Call (818) 247-7790 with the brand + model and we\'ll confirm.',
+      a: 'The price match requires same mattress, same model number, same size. If we don\'t carry it, we can usually special-order it from the brand at the matched price. Call (800) 218-3578 with the brand + model and we\'ll confirm.',
     },
     {
       q: 'Is the price match the same as the comfort exchange?',

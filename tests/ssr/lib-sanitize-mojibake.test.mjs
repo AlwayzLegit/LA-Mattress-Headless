@@ -90,15 +90,15 @@ test('stripDeadHotlinks removes restonic.com hotlinked images, keeps other image
   assert.equal(stripDeadHotlinks(keep), keep);
 });
 
-test('normalizeContactInfo rewrites old phone/email to current NAP', () => {
+test('normalizeContactInfo rewrites stale Studio-City-as-business 818 to canonical 800', () => {
   const { normalizeContactInfo } = repairModule;
-  // visible formatted number
-  assert.equal(normalizeContactInfo('<p>Call (800) 218-3578 today</p>'), '<p>Call (818) 247-7790 today</p>');
-  assert.equal(normalizeContactInfo('Phone: 800-218-3578'), 'Phone: (818) 247-7790');
+  // visible formatted number — stale 818 → canonical 800
+  assert.equal(normalizeContactInfo('<p>Call (818) 247-7790 today</p>'), '<p>Call (800) 218-3578 today</p>');
+  assert.equal(normalizeContactInfo('Phone: 818-247-7790'), 'Phone: (800) 218-3578');
   // tel: href (digits preserved as RFC 3966)
-  assert.equal(normalizeContactInfo('<a href="tel:+18002183578">call</a>'), '<a href="tel:+18182477790">call</a>');
-  // email
+  assert.equal(normalizeContactInfo('<a href="tel:+18182477790">call</a>'), '<a href="tel:+18002183578">call</a>');
+  // legacy email redirects to canonical
   assert.equal(normalizeContactInfo('email orders.lamattress@gmail.com'), 'email lamattressplus@gmail.com');
-  // unrelated numbers untouched
+  // unrelated numbers untouched (other showroom locals, prices, etc.)
   assert.equal(normalizeContactInfo('order over $499, call (213) 984-4654'), 'order over $499, call (213) 984-4654');
 });
