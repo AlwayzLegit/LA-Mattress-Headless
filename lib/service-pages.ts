@@ -15,6 +15,7 @@
  */
 
 import type { IconName } from '@/app/_components/icon';
+import { SITE_EMAIL } from './site-config';
 
 export type ServicePageConfig = {
   /** Small uppercase label above the H1. */
@@ -108,7 +109,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
     lede: 'Every call, email, and chat goes to a salaried sleep consultant at one of our LA showrooms — no offshored support, no scripts.',
     trust: [
       { icon: 'phone', title: '(800) 218-3578', sub: '10 AM – 8 PM Pacific, daily' },
-      { icon: 'mail', title: 'orders.lamattress@gmail.com', sub: 'Reply within one business day' },
+      { icon: 'mail', title: SITE_EMAIL, sub: 'Reply within one business day' },
       { icon: 'pin', title: '5 LA showrooms', sub: 'Walk-ins welcome, no appointment needed' },
     ],
     cta: {

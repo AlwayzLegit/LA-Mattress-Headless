@@ -28,6 +28,7 @@
  */
 
 import type { FaqItem } from './faq';
+import { SITE_EMAIL } from './site-config';
 import type { Showroom } from './showrooms';
 import { SITE_PHONE_DISPLAY } from './site-config';
 
@@ -193,7 +194,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
     },
     {
       q: 'How do I file a warranty claim?',
-      a: 'Call (800) 218-3578 or email orders.lamattress@gmail.com with your invoice number and photos of the issue. We coordinate the inspection (often done at home or via photos) and submit the claim to the manufacturer on your behalf.',
+      a: `Call (800) 218-3578 or email ${SITE_EMAIL} with your invoice number and photos of the issue. We coordinate the inspection (often done at home or via photos) and submit the claim to the manufacturer on your behalf.`,
     },
     {
       q: 'Is the warranty void if I rotate or don\'t rotate the mattress?',
@@ -237,7 +238,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
   'mattress-store-contact': [
     {
       q: 'How can I contact LA Mattress Store?',
-      a: 'Three ways: call (800) 218-3578 between 10 AM and 8 PM Pacific, email orders.lamattress@gmail.com (we reply within one business day), or visit any of our 5 LA showrooms during open hours. No appointment needed.',
+      a: `Three ways: call (800) 218-3578 between 10 AM and 8 PM Pacific, email ${SITE_EMAIL} (we reply within one business day), or visit any of our 5 LA showrooms during open hours. No appointment needed.`,
     },
     {
       q: 'What are your business hours?',
@@ -257,7 +258,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
     },
     {
       q: 'How do I apply for a job at LA Mattress Store?',
-      a: 'Email your resume to orders.lamattress@gmail.com with "Career" in the subject line. We hire showroom sales consultants (salaried, never commission), delivery drivers, and customer service team members. Check our Careers page for current openings.',
+      a: `Email your resume to ${SITE_EMAIL} with "Career" in the subject line. We hire showroom sales consultants (salaried, never commission), delivery drivers, and customer service team members. Check our Careers page for current openings.`,
     },
   ],
   'mattress-firm-vs-la-mattress-store': [

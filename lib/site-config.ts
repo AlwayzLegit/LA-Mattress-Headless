@@ -26,7 +26,7 @@ export const SITE_PHONE_DISPLAY = `(${PHONE_DIGITS.slice(0, 3)}) ${PHONE_DIGITS.
 export const SITE_PHONE_SCHEMA = `+1-${PHONE_DIGITS.slice(0, 3)}-${PHONE_DIGITS.slice(3, 6)}-${PHONE_DIGITS.slice(6)}`;
 
 /** Customer-facing email. */
-export const SITE_EMAIL = 'orders.lamattress@gmail.com';
+export const SITE_EMAIL = 'lamattressplus@gmail.com';
 
 /** Brand display name. */
 export const SITE_BRAND = 'LA Mattress Store';
