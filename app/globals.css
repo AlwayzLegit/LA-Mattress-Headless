@@ -7167,6 +7167,50 @@ a.contact-action:hover {
   text-underline-offset: 2px;
 }
 
+/* Related guides — curated cross-link section that closes the
+   loop between the mattress-sizes hub and the 20-article blog
+   refresh. Three-column grid on desktop; collapses to one column
+   on mobile. Section heading reuses .ms-section-h for visual
+   consistency with the dims table and FAQ above. */
+.ms-guides {
+  margin: var(--s-7) 0 0;
+}
+.ms-guides-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--s-5) var(--s-6);
+  margin-top: var(--s-5);
+}
+.ms-guides-group-h {
+  margin: 0 0 var(--s-3);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+}
+.ms-guides-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.ms-guides-items li {
+  line-height: 1.4;
+}
+.ms-guides-items a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  font-size: 15px;
+}
+.ms-guides-items a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
 /* ─── /pages/mattress-types dedicated visual template ──────────────────
    Construction cutaway diagrams + feel-rating visuals + comparison
    matrix. See app/_components/sections/mattress-types-page.tsx. All

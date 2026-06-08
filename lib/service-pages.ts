@@ -72,7 +72,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
     ],
     cta: {
       headline: 'Have a warranty question or claim to file?',
-      primary: { label: 'Call (818) 247-7790', href: 'tel:+18182477790' },
+      primary: { label: 'Call (800) 218-3578', href: 'tel:+18002183578' },
       secondary: { label: 'See the 120-night guarantee', href: '/pages/love-your-bed-guarantee' },
     },
   },
@@ -108,14 +108,14 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
     eyebrow: 'Real local team, no call center',
     lede: 'Every call, email, and chat goes to a sleep consultant at one of our LA showrooms — no offshored support, no scripts.',
     trust: [
-      { icon: 'phone', title: '(818) 247-7790', sub: '10 AM – 8 PM Pacific, daily' },
+      { icon: 'phone', title: '(800) 218-3578', sub: '10 AM – 8 PM Pacific, daily' },
       { icon: 'mail', title: 'lamattressplus@gmail.com', sub: 'Reply within one business day' },
       { icon: 'pin', title: '5 LA showrooms', sub: 'Walk-ins welcome, no appointment needed' },
     ],
     cta: {
       headline: 'Prefer to swing by?',
       primary: { label: 'See all showroom locations', href: '/pages/mattress-store-locations' },
-      secondary: { label: 'Call (818) 247-7790', href: 'tel:+18182477790' },
+      secondary: { label: 'Call (800) 218-3578', href: 'tel:+18002183578' },
     },
   },
   about: {

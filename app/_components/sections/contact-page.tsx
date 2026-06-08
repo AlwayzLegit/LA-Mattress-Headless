@@ -4,7 +4,8 @@ import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { wrapCmsTables } from '@/lib/cms-html';
 import { stripBrandSuffix, toSentenceCase } from '@/lib/seo';
-import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_EMAIL } from '@/lib/site-config';
+import { resolveSiteConfig } from '@/lib/site-config';
+import { getSiteConfig } from '@/lib/shopify';
 import type { ServicePageConfig } from '@/lib/service-pages';
 import { ServicePageToc } from './service-page-toc';
 import { ShowroomsMap } from './showrooms-map';
@@ -47,43 +48,49 @@ type ContactAction = {
   href?: string;
 };
 
-const CONTACT_ACTIONS: ContactAction[] = [
-  {
-    icon: 'phone',
-    title: 'Call us',
-    value: SITE_PHONE_DISPLAY,
-    sub: 'Live, 10 AM–8 PM Pacific · daily',
-    href: `tel:${SITE_PHONE_TEL}`,
-  },
-  {
-    icon: 'mail',
-    title: 'Email us',
-    value: SITE_EMAIL,
-    sub: 'Reply within one business day',
-    href: `mailto:${SITE_EMAIL}`,
-  },
-  {
-    icon: 'pin',
-    title: 'Visit a showroom',
-    value: '5 LA locations',
-    sub: 'Walk in — no appointment needed',
-    href: '/pages/mattress-store-locations',
-  },
-  {
-    icon: 'chat',
-    title: 'Live chat',
-    value: 'Chat icon, lower-right',
-    sub: 'A real consultant replies in ~1 min',
-  },
-];
-
-export function ContactPage({
+export async function ContactPage({
   page,
   config,
 }: {
   page: PageLike;
   config: ServicePageConfig;
 }) {
+  // Live phone / email — merchant edits the `site_config` metaobject in
+  // Shopify Admin and these cards reflect within one ISR cycle.
+  // `getSiteConfig()` is React.cache()-memoized so the storefront
+  // layout's call (for Organization JSON-LD) and this call share a
+  // single Storefront request per render.
+  const siteConfig = resolveSiteConfig(await getSiteConfig());
+  const contactActions: ContactAction[] = [
+    {
+      icon: 'phone',
+      title: 'Call us',
+      value: siteConfig.phoneDisplay,
+      sub: 'Live, 10 AM–8 PM Pacific · daily',
+      href: `tel:${siteConfig.phoneTel}`,
+    },
+    {
+      icon: 'mail',
+      title: 'Email us',
+      value: siteConfig.email,
+      sub: 'Reply within one business day',
+      href: `mailto:${siteConfig.email}`,
+    },
+    {
+      icon: 'pin',
+      title: 'Visit a showroom',
+      value: '5 LA locations',
+      sub: 'Walk in — no appointment needed',
+      href: '/pages/mattress-store-locations',
+    },
+    {
+      icon: 'chat',
+      title: 'Live chat',
+      value: 'Chat icon, lower-right',
+      sub: 'A real consultant replies in ~1 min',
+    },
+  ];
+
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
   const updatedLabel = page.updatedAt
     ? new Date(page.updatedAt).toLocaleDateString('en-US', {
@@ -120,7 +127,7 @@ export function ContactPage({
             (tel / mailto / showrooms); the chat card points to the global
             widget. Replaces the generic trust strip for this page. */}
         <section className="contact-actions" aria-label="Ways to reach us">
-          {CONTACT_ACTIONS.map((a) => {
+          {contactActions.map((a) => {
             const inner = (
               <>
                 <span className="contact-action-icon" aria-hidden="true">

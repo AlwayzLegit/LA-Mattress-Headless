@@ -471,27 +471,33 @@ export function stripDeadHotlinks(html: string): string {
 }
 
 /**
- * Normalize the business's OLD contact info to the current values across
- * all merchant HTML. Many merchant-authored page bodies (notably the
- * contact page) hardcode the prior phone (800) 218-3578 and email
- * orders.lamattress@gmail.com in prose/tel: links. The current, canonical
- * contact (matching Google Merchant Center + the site_config metaobject)
- * is (818) 247-7790 / lamattressplus@gmail.com. Rewriting at render keeps
- * NAP consistent sitewide without per-page Shopify edits and self-heals
- * future imports. Order matters: rewrite `tel:` hrefs (need digits) before
- * the visible formatted number (need the display form). Tag-safe — only
- * the specific old strings are touched. Exported for unit testing.
+ * Normalize the business's stale contact info to the current canonical
+ * values across all merchant HTML. Many merchant-authored page bodies
+ * hardcode the Studio City showroom's local number (818) 247-7790 as if
+ * it were the generic business phone (a leftover from when the site
+ * treated the Studio City line as the catch-all). The current canonical
+ * sitewide contact (matching the merchant account + the site_config
+ * metaobject) is (800) 218-3578 / lamattressplus@gmail.com. Rewriting
+ * at render keeps NAP consistent sitewide without per-page Shopify edits
+ * and self-heals future imports. The Studio City showroom detail surfaces
+ * render their 818 number from lib/showrooms.ts (not sanitized HTML), so
+ * those are unaffected — only stale 818-as-business strings in merchant
+ * body HTML get rewritten. The legacy orders.lamattress email is also
+ * redirected to the canonical lamattressplus address. Order matters:
+ * rewrite `tel:` hrefs (need digits) before the visible formatted number
+ * (need the display form). Tag-safe — only the specific stale strings
+ * are touched. Exported for unit testing.
  */
 export function normalizeContactInfo(html: string): string {
   if (!html) return html;
   let s = html;
-  // Old email → new (case-insensitive).
+  // Legacy email → canonical (case-insensitive).
   s = s.replace(/orders\.lamattress@gmail\.com/gi, 'lamattressplus@gmail.com');
-  // `tel:` hrefs in any form (tel:+18002183578, tel:8002183578,
-  // tel:+1-800-218-3578, etc.) → canonical RFC 3966 of the new number.
-  s = s.replace(/tel:\+?1?[-.\s]?\(?800\)?[-.\s]?218[-.\s]?3578/gi, 'tel:+18182477790');
+  // `tel:` hrefs in any form (tel:+18182477790, tel:8182477790,
+  // tel:+1-818-247-7790, etc.) → canonical RFC 3966 of the 800 number.
+  s = s.replace(/tel:\+?1?[-.\s]?\(?818\)?[-.\s]?247[-.\s]?7790/gi, 'tel:+18002183578');
   // Visible formatted number in any common separator style → new display.
-  s = s.replace(/\(?800\)?[-.\s]?218[-.\s]?3578/g, '(818) 247-7790');
+  s = s.replace(/\(?818\)?[-.\s]?247[-.\s]?7790/g, '(800) 218-3578');
   return s;
 }
 
