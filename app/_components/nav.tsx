@@ -468,7 +468,7 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
                     <div className="eyebrow">{c.title}</div>
                     <ul>
                       {c.links.map((l) => (
-                        <li key={l.label}><Link href={l.href}>{l.label}</Link></li>
+                        <li key={l.label}><Link href={l.href} onClick={() => setMega(null)}>{l.label}</Link></li>
                       ))}
                     </ul>
                   </div>
@@ -476,7 +476,7 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
               </div>
               <div className="mega-tiles">
                 {MEGA[mega].tiles.map((t) => (
-                  <Link key={t.title} className="mega-tile" href={t.href}>
+                  <Link key={t.title} className="mega-tile" href={t.href} onClick={() => setMega(null)}>
                     <div className="ph mega-tile-img" {...phImg(t.img, t.fit ?? 'cover')} />
                     <div className="mega-tile-meta">
                       <div className="eyebrow">{t.eyebrow}</div>
