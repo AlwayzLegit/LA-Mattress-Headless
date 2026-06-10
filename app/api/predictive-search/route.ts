@@ -23,6 +23,14 @@ export async function GET(request: Request) {
       headers: { 'cache-control': 'public, max-age=30, s-maxage=60, stale-while-revalidate=300' },
     });
   } catch {
-    return NextResponse.json({ products: [], collections: [], pages: [], articles: [], queries: [] }, { status: 200 });
+    // Upstream (Storefront API) failure. 503 instead of 200-with-empty:
+    // the overlay treats !res.ok as an error and falls back to its
+    // pre-query state, whereas an empty 200 renders a false "No matches"
+    // for whatever the user typed. no-store so the failure can't be
+    // edge-cached for the success path's SWR window.
+    return NextResponse.json(
+      { products: [], collections: [], pages: [], articles: [], queries: [] },
+      { status: 503, headers: { 'cache-control': 'no-store' } },
+    );
   }
 }

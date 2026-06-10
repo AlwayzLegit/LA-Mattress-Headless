@@ -21,6 +21,30 @@ import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          // Storefront pages are never legitimately iframed by other
+          // origins. SAMEORIGIN (not DENY) so any future own-origin
+          // embedding keeps working.
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          // Browsers must honor declared MIME types — blocks content-
+          // sniffing a response into an executable type.
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Send full referrer same-origin only; cross-origin gets just
+          // the origin. Keeps internal analytics intact without leaking
+          // URL paths (incl. search queries) to third parties.
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // geolocation=(self): the store locator's "Use My Location"
+          // button (locations-finder.tsx) needs it on our origin.
+          // Camera/mic are unused anywhere — fully denied.
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self)' },
+        ],
+      },
+    ];
+  },
   images: {
     // Route every <Image> through lib/image-loader.ts. Avoids Vercel's
     // /_next/image optimizer (per-account quota → 402 Payment Required

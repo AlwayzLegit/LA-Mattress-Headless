@@ -97,9 +97,15 @@ export async function GET(request: Request) {
       },
     );
   } catch {
+    // Upstream (Storefront API) failure. Surface it as a 503 instead of
+    // a 200-with-empty-page: the client treats !res.ok as an error and
+    // shows its retry affordance, whereas an empty 200 reads as "no more
+    // products" and silently ends pagination mid-outage. no-store so the
+    // edge cache can't pin a transient failure for the cache-control
+    // window the success path uses.
     return NextResponse.json(
       { products: [], pageInfo: { hasNextPage: false, endCursor: null } },
-      { status: 200 },
+      { status: 503, headers: { 'cache-control': 'no-store' } },
     );
   }
 }
