@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Icon } from './icon';
 import { phImg, type PhFit } from './images';
 import { useCart } from './cart-context';
@@ -232,8 +233,21 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
   // closes so it reopens clean.
   const [mobileSub, setMobileSub] = useState<string | null>(null);
   const { count, openDrawer } = useCart();
+  const pathname = usePathname();
 
   const closeMobile = () => setMobileOpen(false);
+
+  // Close the desktop mega panel on client-side navigation. The Nav lives
+  // in the layout and doesn't unmount across route changes, so a hover-
+  // opened panel would otherwise stay open over the freshly-loaded page
+  // after the user clicks a link inside it — the mouse never leaves the
+  // header to fire onMouseLeave. Keying off the pathname covers every
+  // close path: in-panel column links, the feature tiles, and the mega
+  // triggers themselves. (The mobile drawer already closes via its own
+  // per-link onClick, so this is desktop-only by nature.)
+  useEffect(() => {
+    setMega(null);
+  }, [pathname]);
 
   const brandCols = useMemo(
     () => (brands.length ? chunkBrandCols(brands) : MEGA.brands.cols),
