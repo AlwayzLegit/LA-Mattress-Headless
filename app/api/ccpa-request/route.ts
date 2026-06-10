@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { rateLimit, getClientIp, rateLimitResponse } from '@/lib/rate-limit';
 
 export const runtime = 'edge';
 
@@ -34,6 +35,12 @@ type Body = {
 };
 
 export async function POST(request: Request) {
+  // Each accepted request creates a tagged Shopify customer record the
+  // merchant must process — throttle hard; a legitimate requester submits
+  // once, maybe twice on a typo.
+  const limit = rateLimit('ccpa', getClientIp(request), 3, 60_000);
+  if (limit.limited) return rateLimitResponse(limit.retryAfterSeconds);
+
   let body: Body;
   try {
     body = (await request.json()) as Body;

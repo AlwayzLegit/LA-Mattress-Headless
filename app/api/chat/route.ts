@@ -6,6 +6,7 @@ import { CHAT_TOOLS, executeTool } from '@/lib/chat/tools';
 import { HOSTED_MCP_TOOLS, executeHostedTool } from '@/lib/chat/shopify-mcp';
 import { captureChatTurn } from '@/lib/chat/telemetry';
 import type { ChatMessage, ChatStreamEvent } from '@/lib/chat/types';
+import { rateLimit, getClientIp, rateLimitResponse } from '@/lib/rate-limit';
 
 /**
  * Feature flag for the Shopify hosted Storefront MCP migration.
@@ -129,6 +130,13 @@ function summarizeToolUse(name: string, input: unknown): string {
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
+  // Every turn bills Anthropic tokens, so this is the one endpoint where
+  // unthrottled abuse has a direct dollar cost. 10/min per IP is ~5x a
+  // fast human conversation pace. Checked before any other work so
+  // over-limit callers cost nothing but a Map lookup.
+  const limit = rateLimit('chat', getClientIp(req), 10, 60_000);
+  if (limit.limited) return rateLimitResponse(limit.retryAfterSeconds);
+
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json(
       {

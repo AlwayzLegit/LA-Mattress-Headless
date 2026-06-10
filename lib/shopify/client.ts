@@ -62,6 +62,12 @@ export async function shopifyFetch<TData = unknown, TVars = Record<string, unkno
     body: JSON.stringify({ query, variables }),
     next: options.next ?? (options.cache ? undefined : { revalidate: 600, tags: options.tags }),
     cache: options.cache,
+    // Bound the wait on a hung Storefront response. Without this, a
+    // stalled connection holds the SSR render until the platform
+    // function timeout; with it, the AbortError propagates through the
+    // caller's existing catch paths (PLP/PDP fallbacks, API routes'
+    // 503s) within 8s. Matches the Admin API client's timeout.
+    signal: AbortSignal.timeout(8000),
   });
 
   if (!res.ok) {

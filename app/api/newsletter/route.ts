@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { rateLimit, getClientIp, rateLimitResponse } from '@/lib/rate-limit';
 
 export const runtime = 'edge';
 
@@ -22,6 +23,12 @@ export const runtime = 'edge';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
+  // Each accepted submission creates a Shopify customer record — throttle
+  // so a spam loop can't flood the merchant's customer list. 5/min per IP
+  // is generous for a human (signup is a one-shot action).
+  const limit = rateLimit('newsletter', getClientIp(request), 5, 60_000);
+  if (limit.limited) return rateLimitResponse(limit.retryAfterSeconds);
+
   let email: string | null = null;
   try {
     const ct = request.headers.get('content-type') ?? '';
