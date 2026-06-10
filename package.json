@@ -21,13 +21,15 @@
     "posthog-js": "^1.374.2",
     "posthog-node": "^5.34.6",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-dom": "^19.2.5",
+    "sanitize-html": "^2.17.5"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.21",
     "@types/node": "20.14.10",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/sanitize-html": "^2.16.1",
     "cheerio": "^1.2.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.5.15",

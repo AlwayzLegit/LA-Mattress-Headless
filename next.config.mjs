@@ -18,6 +18,54 @@ import { withSentryConfig } from '@sentry/nextjs';
  * for the codegen step (wired into `prebuild` in package.json).
  */
 
+/**
+ * Content-Security-Policy, derived from an inventory of every external
+ * origin the client actually touches (session 2026-06-10 audit):
+ *
+ *   script-src    Next hydration + GA4 bootstrap + Judge.me preloader are
+ *                 inline → 'unsafe-inline' is required (nonce-based CSP
+ *                 needs per-request middleware rewrites — a follow-up).
+ *                 External: gtag (googletagmanager), Judge.me widget
+ *                 (cdnwidget.judge.me), PostHog lazy bundles — session
+ *                 recorder etc. (us-assets.i.posthog.com), Vercel
+ *                 analytics dev loader (va.vercel-scripts.com; prod
+ *                 serves same-origin /_vercel/*). 'unsafe-eval' is
+ *                 dev-only (React Refresh needs it; prod does not).
+ *   connect-src   PostHog ingest (us.i.posthog.com), GA4 collection
+ *                 (*.google-analytics.com + doubleclick), Judge.me
+ *                 review-widget API, Sentry (tunneled same-origin via
+ *                 /monitoring, *.sentry.io kept for non-tunneled builds).
+ *   img-src       https: stays broad ON PURPOSE — merchant HTML from
+ *                 Shopify embeds arbitrary external <img> (see the
+ *                 restonic.com hotlink cleanup, #426); pinning hosts
+ *                 would break product/blog bodies on the next merchant
+ *                 paste. Images can't execute script; exfiltration is
+ *                 still bounded by the tight connect-src.
+ *   frame-src     Google Maps embeds on showroom pages, Judge.me review
+ *                 iframes, YouTube/Vimeo (merchant article embeds pass
+ *                 sanitization by design — lib/sanitize.ts only strips
+ *                 maps iframes).
+ *   media-src     Shopify-hosted product video.
+ *   worker-src    blob: — PostHog's session recorder spawns a worker.
+ *   object-src    'none', base-uri 'self', form-action 'self',
+ *                 frame-ancestors 'self' (belt+braces with XFO).
+ */
+const CSP = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://cdnwidget.judge.me https://us-assets.i.posthog.com https://va.vercel-scripts.com`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://*.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://api.judge.me https://*.sentry.io",
+  "frame-src 'self' https://maps.google.com https://www.google.com https://judge.me https://*.judge.me https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
+  "media-src 'self' blob: https://cdn.shopify.com",
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+].join('; ');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -26,6 +74,7 @@ const nextConfig = {
       {
         source: '/:path*',
         headers: [
+          { key: 'Content-Security-Policy', value: CSP },
           // Storefront pages are never legitimately iframed by other
           // origins. SAMEORIGIN (not DENY) so any future own-origin
           // embedding keeps working.

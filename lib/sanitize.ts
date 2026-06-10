@@ -33,6 +33,59 @@
 // tsconfig + webpack — both forms resolve to the same file at compile
 // time. Tests run outside Next, hence the relative path.
 import redirectsJson from '../data/url-inventory/redirects.json' with { type: 'json' };
+import sanitizeHtml from 'sanitize-html';
+
+// Parser-based XSS pass (hardening, session 2026-06-10 audit). The
+// regex passes below are content *repairs* tuned to known Shopify
+// artifacts; they were never a structural XSS guarantee — malformed
+// markup that a regex misses, a real HTML parser normalizes. This
+// allowlist runs first so everything downstream (and the page) only
+// ever sees parsed, well-formed, script-free markup.
+//
+// The allowlist is deliberately permissive about PRESENTATION (style/
+// class/id/data-* attrs, tables, figures) because the input is the
+// merchant's own TinyMCE-authored content and visual fidelity matters.
+// It is strict about EXECUTION: no script/event-handler attrs survive
+// the parse (not allowlisted), URL schemes are pinned, and iframes are
+// host-pinned to the embed providers article bodies actually use
+// (YouTube/Vimeo pass through by design — see Phase 229 note above;
+// Google Maps iframes are additionally stripped by a later pass).
+const SANITIZE_CONFIG: sanitizeHtml.IOptions = {
+  allowedTags: [
+    'a', 'abbr', 'address', 'b', 'blockquote', 'br', 'caption', 'code',
+    'col', 'colgroup', 'dd', 'del', 'details', 'div', 'dl', 'dt', 'em',
+    'figcaption', 'figure', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr',
+    'i', 'iframe', 'img', 'ins', 'li', 'mark', 'ol', 'p', 'picture',
+    'pre', 'q', 's', 'small', 'source', 'span', 'strong', 'sub',
+    'summary', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead',
+    'tr', 'u', 'ul',
+  ],
+  allowedAttributes: {
+    '*': ['class', 'id', 'style', 'title', 'dir', 'lang', 'align', 'data-*'],
+    a: ['href', 'name', 'target', 'rel'],
+    img: ['src', 'srcset', 'sizes', 'alt', 'width', 'height', 'loading', 'decoding'],
+    source: ['src', 'srcset', 'sizes', 'media', 'type'],
+    iframe: ['src', 'width', 'height', 'allow', 'allowfullscreen', 'frameborder', 'loading', 'referrerpolicy', 'title'],
+    td: ['colspan', 'rowspan'],
+    th: ['colspan', 'rowspan', 'scope'],
+    col: ['span'],
+    colgroup: ['span'],
+    details: ['open'],
+  },
+  // Relative URLs stay allowed (sanitize-html only checks scheme'd URLs).
+  allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+  allowedIframeHostnames: [
+    'www.youtube.com', 'www.youtube-nocookie.com', 'player.vimeo.com',
+    // Maps iframes survive this pass but are stripped wholesale by the
+    // GOOGLE_MAPS_IFRAME pass below (Phase 229) — listed here so the
+    // host-pinning isn't what removes them, keeping that pass's
+    // behavior (and its docstring) authoritative.
+    'maps.google.com', 'www.google.com',
+  ],
+  // Drop <script>/<style> CONTENT too, not just the tags (default keeps
+  // inner text, which would render raw JS/CSS as visible prose).
+  nonTextTags: ['script', 'style', 'textarea', 'option', 'noscript'],
+};
 
 // Phase 293: resolve internal links that 301-redirect.
 //
@@ -516,6 +569,10 @@ export function sanitizeShopifyHtml(
   // cleans all affected articles/pages/collection bodies in one place,
   // no per-article Shopify edits, and covers any future bad import.
   out = repairMojibake(out);
+  // Parser-based allowlist pass (see SANITIZE_CONFIG) — after the text-
+  // level mojibake repair, before every markup-level pass, so the regex
+  // passes below only ever operate on well-formed, script-free HTML.
+  out = sanitizeHtml(out, SANITIZE_CONFIG);
   // Strip TinyMCE editor cruft (data-mce-*) — big text-to-HTML-ratio win.
   out = stripEditorCruft(out);
   // Remove dead restonic.com hotlinked images (broken-image renders).
