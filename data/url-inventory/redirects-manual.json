@@ -1,0 +1,11 @@
+{
+  "$schema": "Manual URL redirects — merged into the redirect table alongside the Shopify Admin export (redirects.json). Use this file for redirects that must SURVIVE the daily `pull-inventory.mjs` sync, which overwrites redirects.json wholesale. Same shape as redirects.json: { source, destination }. Sources are path-only (no query/hash/regexp meta — see build-redirects-table.mjs#isValidSource). Listed first at build time so a manual entry overrides a stale Shopify one for the same source.",
+  "$source": "hand-maintained",
+  "redirects": [
+    {
+      "source": "/collections/mattress-accessories",
+      "destination": "/pages/mattress-accessories",
+      "note": "SEMrush 20260611 audit: this collections URL 404s (no such collection); the canonical content is the /pages/mattress-accessories page (same slug). Fixes the single site-wide 4xx."
+    }
+  ]
+}

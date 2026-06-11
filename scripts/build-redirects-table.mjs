@@ -43,6 +43,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const IN = resolve(ROOT, 'data/url-inventory/redirects.json');
+const MANUAL = resolve(ROOT, 'data/url-inventory/redirects-manual.json');
 const OUT = resolve(ROOT, 'lib/redirects-table.ts');
 
 const PATH_TO_REGEXP_META = /[:*+()\[\]{}]/;
@@ -56,7 +57,23 @@ function isValidSource(s) {
 
 const raw = readFileSync(IN, 'utf8');
 const data = JSON.parse(raw);
-const entries = Array.isArray(data.redirects) ? data.redirects : [];
+const shopifyEntries = Array.isArray(data.redirects) ? data.redirects : [];
+
+// Manual redirects (data/url-inventory/redirects-manual.json) are merged
+// in alongside the Shopify export. They exist because pull-inventory.mjs
+// rewrites redirects.json wholesale from Shopify Admin, so a redirect
+// added only there would vanish on the next sync. Listed FIRST so the
+// first-writer-wins dedup below lets a manual entry override a stale
+// Shopify entry for the same source. Optional file — absent = no manual
+// redirects (don't fail the build).
+let manualEntries = [];
+try {
+  const m = JSON.parse(readFileSync(MANUAL, 'utf8'));
+  manualEntries = Array.isArray(m.redirects) ? m.redirects : [];
+} catch (err) {
+  if (err.code !== 'ENOENT') throw err;
+}
+const entries = [...manualEntries, ...shopifyEntries];
 
 let kept = 0;
 let droppedShape = 0;
