@@ -51,6 +51,35 @@ import { withSentryConfig } from '@sentry/nextjs';
  *   object-src    'none', base-uri 'self', form-action 'self',
  *                 frame-ancestors 'self' (belt+braces with XFO).
  */
+
+// CSP violation telemetry (2026-06-11 incident follow-up). Both stages
+// of the Judge.me widget breakage shipped silently: the CSP blocked the
+// widget in every visitor's browser and nothing told us until a human
+// browsed a PDP. Browsers POST a JSON report to `report-uri` for every
+// violation of the enforced policy, and Sentry ingests those natively
+// at its /security/ endpoint — so any future CSP-vs-third-party
+// conflict surfaces as a Sentry issue within minutes of the deploy,
+// from real traffic. The endpoint is derived from the DSN the app
+// already uses; absent DSN (local dev without env) the directive is
+// simply omitted. Expect some background noise from browser extensions
+// injecting blocked resources — Sentry groups those into separate
+// issues which can be ignored/muted; a flood of reports naming a real
+// vendor host (judge.me, posthog, googletagmanager…) right after a
+// deploy is the signal this exists for.
+function sentryCspReportUri() {
+  const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+  if (!dsn) return '';
+  try {
+    const u = new URL(dsn);
+    const projectId = u.pathname.replace(/^\//, '');
+    if (!u.username || !projectId) return '';
+    return `https://${u.host}/api/${projectId}/security/?sentry_key=${u.username}`;
+  } catch {
+    return '';
+  }
+}
+const CSP_REPORT_URI = sentryCspReportUri();
+
 const CSP = [
   "default-src 'self'",
   // Judge.me note (2026-06-11 incident): the LEGACY review widget (this
@@ -87,6 +116,7 @@ const CSP = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'self'",
+  ...(CSP_REPORT_URI ? [`report-uri ${CSP_REPORT_URI}`] : []),
 ].join('; ');
 
 /** @type {import('next').NextConfig} */
