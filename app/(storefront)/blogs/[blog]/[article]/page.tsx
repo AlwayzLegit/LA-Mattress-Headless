@@ -9,7 +9,7 @@ import type { Article } from '@/lib/shopify';
 import { blogs as inventoryBlogs, findBlog } from '@/lib/inventory';
 import { truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase, ensureTitleDistinctFromH1 } from '@/lib/seo';
 import { isNoindexArticle } from '@/lib/noindex-articles';
-import { sanitizeShopifyHtml } from '@/lib/sanitize';
+import { sanitizeShopifyHtml, resolveRedirectPath } from '@/lib/sanitize';
 import { injectHeadingIds } from '@/lib/article-toc';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { ArticleEnrichment } from '@/app/_components/sections/article-enrichment';
@@ -358,6 +358,17 @@ function findRelatedArticles(article: Article): { handle: string; title?: string
   if (!blog?.articles) return [];
   const sorted = blog.articles
     .filter((a) => a.isPublished !== false)
+    // Drop siblings whose URL has been 301'd away (cluster consolidations:
+    // 121 of 892 published inventory articles are shadowed by an entry in
+    // redirects.json). The inventory snapshot still lists them, so the
+    // rotation would otherwise render a link that hops through a 301 with
+    // the OLD article's title pointing at a different destination —
+    // SEMrush 20260611 counted these under "Permanent redirects" on pages
+    // whose body links were already clean.
+    .filter((a) => {
+      const path = `/blogs/${blog.handle}/${a.handle}`;
+      return resolveRedirectPath(path) === path;
+    })
     .sort((a, b) => {
       const ad = a.publishedAt ? Date.parse(a.publishedAt) : 0;
       const bd = b.publishedAt ? Date.parse(b.publishedAt) : 0;
