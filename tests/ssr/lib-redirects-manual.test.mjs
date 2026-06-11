@@ -31,5 +31,7 @@ test('every manual redirect is present in the generated table', () => {
 
 test('the mattress-accessories 4xx fix (SEMrush 20260611) is wired', () => {
   // Explicit lock on the specific fix this layer was created for.
-  assert.equal(REDIRECTS.get('/collections/mattress-accessories'), '/pages/mattress-accessories');
+  // Destination is /collections/bedding (live accessories umbrella) —
+  // NOT /pages/mattress-accessories, which is unpublished and 404s.
+  assert.equal(REDIRECTS.get('/collections/mattress-accessories'), '/collections/bedding');
 });

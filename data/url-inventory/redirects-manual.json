@@ -4,8 +4,8 @@
   "redirects": [
     {
       "source": "/collections/mattress-accessories",
-      "destination": "/pages/mattress-accessories",
-      "note": "SEMrush 20260611 audit: this collections URL 404s (no such collection); the canonical content is the /pages/mattress-accessories page (same slug). Fixes the single site-wide 4xx."
+      "destination": "/collections/bedding",
+      "note": "SEMrush 20260611 audit: this collections URL 404s (no such collection). /pages/mattress-accessories looked like the natural target but that page is UNPUBLISHED in Shopify (it 404s too — verified 20260611) and its body is one thin sentence, not worth publishing. /collections/bedding is the live accessories umbrella (40 products: protectors, toppers, pillows, sheets). Fixes the single site-wide 4xx."
     }
   ]
 }
