@@ -207,3 +207,78 @@ test('buildRedirectTarget: normalizes trailing slash on source', () => {
   ]);
   assert.equal(m.get('/foo'), '/bar');
 });
+
+/* --- destination normalization (SEMrush 20260611 "Permanent redirects") --- */
+
+test('buildRedirectTarget: absolute own-domain destination becomes root-relative', () => {
+  // Shopify Admin stores ~900 destinations as absolute apex URLs. Left
+  // raw, the in-body href rewrite would emit a link that 301s apex→www.
+  const m = buildRedirectTarget([
+    { source: '/old', destination: 'https://mattressstoreslosangeles.com/new' },
+    { source: '/old-www', destination: 'https://www.mattressstoreslosangeles.com/new' },
+    { source: '/old-shop', destination: 'https://la-mattress.myshopify.com/new' },
+    { source: '/old-home', destination: 'https://mattressstoreslosangeles.com/' },
+  ]);
+  assert.equal(m.get('/old'), '/new');
+  assert.equal(m.get('/old-www'), '/new');
+  assert.equal(m.get('/old-shop'), '/new');
+  assert.equal(m.get('/old-home'), '/');
+});
+
+test('buildRedirectTarget: external destinations pass through untouched', () => {
+  const m = buildRedirectTarget([
+    { source: '/elsewhere', destination: 'https://example.com/page?_sid=keep' },
+  ]);
+  // Not our origin → host kept, query kept (not ours to rewrite).
+  assert.equal(m.get('/elsewhere'), 'https://example.com/page?_sid=keep');
+});
+
+test('buildRedirectTarget: strips tracking params, keeps legitimate ones', () => {
+  const m = buildRedirectTarget([
+    // Real shape from redirects.json: harvest-green destination carries
+    // a pasted storefront-search session string.
+    { source: '/t1', destination: 'https://mattressstoreslosangeles.com/products/x?_pos=3&_sid=c0f408454&_ss=r' },
+    // sort_by / filter.* params are functional and must survive.
+    { source: '/t2', destination: 'https://mattressstoreslosangeles.com/collections/on-sale?sort_by=best-selling&filter.p.vendor=Tempur-Pedic' },
+    { source: '/t3', destination: '/products/y?_pos=1&real=1#frag' },
+  ]);
+  assert.equal(m.get('/t1'), '/products/x');
+  assert.equal(m.get('/t2'), '/collections/on-sale?sort_by=best-selling&filter.p.vendor=Tempur-Pedic');
+  assert.equal(m.get('/t3'), '/products/y?real=1#frag');
+});
+
+test('buildRedirectTarget: chain-collapse sees through an absolute hop', () => {
+  // A→B stored absolute, B→C relative. Before destination
+  // normalization the walk could not look up the absolute B.
+  const m = buildRedirectTarget([
+    { source: '/a', destination: 'https://mattressstoreslosangeles.com/b' },
+    { source: '/b', destination: '/c' },
+  ]);
+  assert.equal(m.get('/a'), '/c');
+});
+
+test('buildRedirectTarget: drops self-redirect hidden behind absolute destination', () => {
+  const m = buildRedirectTarget([
+    { source: '/same', destination: 'https://mattressstoreslosangeles.com/same' },
+  ]);
+  assert.equal(m.has('/same'), false);
+});
+
+test('resolveRedirectPath: live glossary entry lands relative with no host', () => {
+  // /blogs/beds-mattresses/what-is-bamboo-infused is a real Shopify rule
+  // whose stored destination is the absolute apex URL. It must resolve
+  // to the relative new-blog path.
+  assert.equal(
+    resolveRedirectPath('/blogs/beds-mattresses/what-is-bamboo-infused'),
+    '/blogs/mattress-buying-guide/what-is-bamboo-infused',
+  );
+});
+
+test('resolveRedirectPath: manual layer (redirects-manual.json) is merged', () => {
+  // The 4xx fix lives in the manual layer, not the Shopify export — the
+  // render-time map must include it so in-body links resolve too.
+  assert.equal(
+    resolveRedirectPath('/collections/mattress-accessories'),
+    '/collections/bedding',
+  );
+});

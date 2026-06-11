@@ -101,3 +101,25 @@ const NOINDEX_ARTICLES: ReadonlySet<string> = new Set([
 export function isNoindexArticle(blogHandle: string, articleHandle: string): boolean {
   return NOINDEX_ARTICLES.has(`${blogHandle}/${articleHandle}`);
 }
+
+/**
+ * Blog INDEX pages intentionally kept out of the search index while
+ * their articles stay indexable.
+ *
+ * `extra-info` carries a single published article, so its index page is
+ * just a header + one card — SEMrush 20260611 flags it for "Low word
+ * count" and it offers searchers nothing the article itself doesn't.
+ * Unlike DEPRECATED_BLOG_HANDLES (app/sitemap.ts), the blog is NOT dead:
+ * the index keeps serving 200 with robots noindex,follow so link equity
+ * still flows to the article. If the blog ever grows past a couple of
+ * posts, remove it here.
+ *
+ * Consumed by the blog-index template's generateMetadata (robots
+ * noindex,follow) and app/sitemap.ts (index URL excluded; article URLs
+ * kept).
+ */
+const NOINDEX_BLOG_INDEXES: ReadonlySet<string> = new Set(['extra-info']);
+
+export function isNoindexBlogIndex(blogHandle: string): boolean {
+  return NOINDEX_BLOG_INDEXES.has(blogHandle);
+}

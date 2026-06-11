@@ -4,7 +4,7 @@ import type { BlogInv, BlogArticleInv } from '@/lib/inventory';
 import { SHOWROOMS } from '@/lib/showrooms';
 import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { SITE_URL } from '@/lib/site-config';
-import { isNoindexArticle } from '@/lib/noindex-articles';
+import { isNoindexArticle, isNoindexBlogIndex } from '@/lib/noindex-articles';
 import { CODED_PAGE_HANDLES, isCodedPage } from '@/lib/coded-pages';
 import redirectsJson from '@/data/url-inventory/redirects.json';
 
@@ -158,12 +158,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     return new Date(Math.max(...dates));
   }
 
-  const blogEntries: MetadataRoute.Sitemap = liveBlogs.map((b) => ({
-    url: u(`/blogs/${b.handle}`),
-    lastModified: latestArticleDate(b) ?? now,
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
+  const blogEntries: MetadataRoute.Sitemap = liveBlogs
+    // Skip noindexed blog-index pages (thin single-article blogs like
+    // extra-info) — their ARTICLES below stay in the sitemap.
+    .filter((b) => !isNoindexBlogIndex(b.handle))
+    .map((b) => ({
+      url: u(`/blogs/${b.handle}`),
+      lastModified: latestArticleDate(b) ?? now,
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    }));
 
   const articleEntries: MetadataRoute.Sitemap = liveBlogs.flatMap((b) =>
     (b.articles ?? [])

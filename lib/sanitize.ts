@@ -33,6 +33,7 @@
 // tsconfig + webpack — both forms resolve to the same file at compile
 // time. Tests run outside Next, hence the relative path.
 import redirectsJson from '../data/url-inventory/redirects.json' with { type: 'json' };
+import redirectsManualJson from '../data/url-inventory/redirects-manual.json' with { type: 'json' };
 import sanitizeHtml from 'sanitize-html';
 
 // Parser-based XSS pass (hardening, session 2026-06-10 audit). The
@@ -112,6 +113,47 @@ function normRedirectPath(p: string): string {
   return x.length > 1 && x.endsWith('/') ? x.slice(0, -1) : x;
 }
 
+// Shopify Admin stores ~900 of the export's redirect DESTINATIONS as
+// absolute apex-host URLs (https://mattressstoreslosangeles.com/…).
+// Left raw, the Phase 293 href rewrite replaces a relative in-body link
+// with that absolute apex URL — re-introducing the exact 301 hop
+// (apex → www) the rewrite exists to remove, and doing it AFTER the
+// host-strip pass has already run, so nothing downstream repairs it.
+// That's the SEMrush 20260611 "Permanent redirects" tail: 967 hits on
+// 375 pages, concentrated in the glossary articles' Index of Materials
+// links. Normalizing destinations to root-relative paths also lets the
+// chain-collapse below see THROUGH a hop whose stored destination was
+// absolute, and strips Shopify session/tracking params (_fid/_pos/_sid/
+// _ss/srsltid) a few stored targets carry — legitimate params (sort_by,
+// filter.*) are preserved. scripts/build-redirects-table.mjs#cleanDest
+// applies the same normalization to the middleware table; this is its
+// render-time twin.
+const OWN_ORIGIN = /^https?:\/\/(?:www\.|checkout\.)?(?:mattressstoreslosangeles\.com|la-mattress\.myshopify\.com)(?=[/?#]|$)/i;
+const TRACKING_KEY = /^(?:amp;)?(?:_fid|_pos|_sid|_ss|srsltid)=/i;
+
+function normRedirectDest(d: string): string {
+  let dest = d.trim();
+  const stripped = dest.replace(OWN_ORIGIN, '');
+  if (stripped !== dest) {
+    dest = stripped === '' || stripped.startsWith('?') || stripped.startsWith('#')
+      ? '/' + stripped
+      : stripped;
+  }
+  // Tracking params: internal destinations only — a (hypothetical)
+  // external destination's query string is not ours to rewrite.
+  if (dest.startsWith('/')) {
+    const qi = dest.indexOf('?');
+    if (qi !== -1) {
+      const hi = dest.indexOf('#', qi);
+      const query = hi === -1 ? dest.slice(qi + 1) : dest.slice(qi + 1, hi);
+      const hash = hi === -1 ? '' : dest.slice(hi);
+      const kept = query.split('&').filter((kv) => kv && !TRACKING_KEY.test(kv));
+      dest = dest.slice(0, qi) + (kept.length ? '?' + kept.join('&') : '') + hash;
+    }
+  }
+  return dest;
+}
+
 /**
  * Build a flat source → terminal-destination map from a list of
  * redirect rules, collapsing chains and tolerating cycles.
@@ -137,7 +179,8 @@ export function buildRedirectTarget(rules: ReadonlyArray<RedirectRule>): Map<str
   for (const r of rules) {
     if (typeof r?.source !== 'string' || typeof r?.destination !== 'string') continue;
     const s = normRedirectPath(r.source);
-    if (s && s !== r.destination) direct.set(s, r.destination);
+    const d = normRedirectDest(r.destination);
+    if (s && s !== d) direct.set(s, d);
   }
   // Collapse chains (A→B, B→C ⇒ A→C) so a single rewrite lands on the
   // terminal URL — no residual hop for the crawler to follow.
@@ -183,9 +226,15 @@ export function buildRedirectTarget(rules: ReadonlyArray<RedirectRule>): Map<str
 // builds went red after PR #273). buildRedirectTarget already filters
 // out malformed rules (non-string source / destination) so wrong-shape
 // data yields an empty map without crashing.
-const REDIRECT_TARGET: Map<string, string> = buildRedirectTarget(
-  ((redirectsJson as unknown) as { redirects?: RedirectRule[] }).redirects ?? [],
-);
+const REDIRECT_TARGET: Map<string, string> = buildRedirectTarget([
+  ...(((redirectsJson as unknown) as { redirects?: RedirectRule[] }).redirects ?? []),
+  // Manual layer (redirects-manual.json) LAST: buildRedirectTarget's
+  // direct-map build is last-writer-wins, so a hand-maintained entry
+  // overrides a stale Shopify rule for the same source. (Mirror of
+  // build-redirects-table.mjs, which lists manual FIRST because its
+  // dedup is first-writer-wins — same precedence, opposite mechanics.)
+  ...(((redirectsManualJson as unknown) as { redirects?: RedirectRule[] }).redirects ?? []),
+]);
 
 // Root-relative hrefs only (leading "/"; never protocol-relative "//"
 // or external http(s)). Lookbehind on whitespace so `data-href=` /

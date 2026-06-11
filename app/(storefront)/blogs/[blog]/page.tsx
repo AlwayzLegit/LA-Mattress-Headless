@@ -7,6 +7,7 @@ import { getBlogByHandle } from '@/lib/shopify';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
 import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { blogIntroFor } from '@/lib/blog-content';
+import { isNoindexBlogIndex } from '@/lib/noindex-articles';
 import { displayAuthorName } from '@/lib/article-author';
 import { Icon } from '@/app/_components/icon';
 
@@ -46,11 +47,15 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // while still letting Googlebot follow the links to articles —
   // standard Pagination SEO pattern.
   const isPaginated = Boolean(searchParams?.after);
+  // Thin single-article blog indexes (extra-info) get the same
+  // noindex,follow treatment as cursor pages — SEMrush 20260611 "Low
+  // word count". Articles inside the blog remain indexable.
+  const isThinIndex = isNoindexBlogIndex(blog.handle);
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    ...(isPaginated ? { robots: { index: false, follow: true } } : {}),
+    ...(isPaginated || isThinIndex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       type: 'website',
       url,
