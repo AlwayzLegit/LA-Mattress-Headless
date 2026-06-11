@@ -37,6 +37,11 @@ test('CSP allows the Judge.me widget pipeline end to end', async () => {
   assert.ok(d.get('script-src')?.includes('https://cdnwidget.judge.me'), 'script-src: cdnwidget.judge.me');
   assert.ok(d.get('script-src')?.includes('https://cdn.judge.me'), 'script-src: cdn.judge.me');
 
+  // The legacy widget boots its fetched payload via eval() — without
+  // 'unsafe-eval' the reviews section renders empty (EvalError in
+  // PostHog replay logs, 2026-06-11, second stage of the same incident).
+  assert.ok(d.get('script-src')?.includes("'unsafe-eval'"), "script-src: 'unsafe-eval'");
+
   // Widget content XHR — api.judge.me (write-a-review etc.) AND
   // cache.judge.me (the legacy widget's cached-contents endpoint; this
   // was the 2026-06-11 breakage).
