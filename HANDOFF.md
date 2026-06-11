@@ -1,63 +1,85 @@
 # Session Handoff — LA-Mattress-Headless
 
-**Date:** 2026-06-11
-**Working branch:** `claude/dazzling-newton-Ii0rM` (develop here; never push elsewhere without permission)
+**Date:** 2026-06-11 (second session of the day — SEMrush 20260611 mega-export triage)
+**Working branch:** `claude/vigilant-clarke-k4gmu8` (develop here; never push elsewhere without permission)
 **Repo:** `alwayzlegit/la-mattress-headless` · deploys to production via Vercel on merge to `main`
 
 ---
 
-## 🔴 DO THIS FIRST — finish the in-progress fix (uncommitted)
+## What this session shipped (branch `claude/vigilant-clarke-k4gmu8`)
 
-There is **uncommitted work on disk** implementing a Semrush-audit fix. It is complete and locally verified but **not committed, pushed, or merged**.
+Full triage + fixes for the SEMrush 20260611 mega-export
+(`www.mattressstoreslosangeles.com_mega_export_20260611.csv`, 1,764 pages).
 
-**Uncommitted changes:**
-- `data/url-inventory/redirects-manual.json` *(new)* — a durable manual-redirect layer
-- `scripts/build-redirects-table.mjs` *(modified)* — now merges manual redirects ahead of the Shopify export
-- `lib/redirects-table.ts` *(modified)* — regenerated; contains the new redirect as entry #1
+### 1. The 4xx fix — cherry-picked from `claude/dazzling-newton-Ii0rM` and CORRECTED
+The earlier session left one commit on `claude/dazzling-newton-Ii0rM` (manual-redirect
+layer + `/collections/mattress-accessories` redirect). That commit is cherry-picked
+into this branch, **with the destination changed**:
 
-**What it fixes:** the single site-wide **4xx** from the Semrush audit — `/collections/mattress-accessories` (404, no such collection) now **301 → `/pages/mattress-accessories`** (real page, same slug). Verified locally: `curl` returned `301 → /pages/mattress-accessories`. `tsc` clean.
+- Their target `/pages/mattress-accessories` is **unpublished in Shopify and 404s**
+  (verified live + via Admin API). Its body is one thin sentence — not worth publishing.
+- New destination: **`/collections/bedding`** (live accessories umbrella, 40 products).
+- `tests/ssr/lib-redirects-manual.test.mjs` updated to lock the corrected destination.
+- ⚠️ `claude/dazzling-newton-Ii0rM` still exists with the wrong-destination commit.
+  **Do not merge that branch** — this branch supersedes it.
 
-**Why a manual-redirect layer (not just editing redirects.json):** `redirects.json` is regenerated wholesale by the daily `pull-inventory.mjs` sync, so a redirect added there would be wiped. The new `redirects-manual.json` is merged at build time (in `build-redirects-table.mjs`) so manual redirects survive the sync.
+### 2. Root cause of the 967 "Permanent redirects" — fixed in `lib/sanitize.ts`
+Shopify Admin stores **906 of 2,026 redirect destinations as absolute apex URLs**
+(`https://mattressstoreslosangeles.com/...`). The Phase-293 in-body href resolver
+(`resolveRedirectHrefs`) injected those absolute URLs AFTER the host-strip pass, so
+rendered article links 301'd apex→www (concentrated in the glossary articles'
+"Index of Materials" blocks — 21-22 hits per `what-is-*` page). Fix:
+`normRedirectDest()` in `buildRedirectTarget` — strips own-domain origins, filters
+tracking params (`_fid/_pos/_sid/_ss/srsltid`) while preserving functional ones
+(`sort_by`, `filter.*`), lets chain-collapse see through absolute hops, and catches
+self-redirects hidden behind absolute URLs. Mirrors
+`scripts/build-redirects-table.mjs#cleanDest` (the middleware table was already
+clean — only the render-time map was raw). The render-time map now also merges
+`redirects-manual.json`. 8 new unit tests in `tests/ssr/lib-sanitize-redirect.test.mjs`.
 
-**Remaining steps to ship it (the plan when the session was interrupted):**
-1. *(optional, recommended)* Add a regression test, e.g. `tests/ssr/lib-redirects-manual.test.mjs`, importing `lib/redirects-table.ts` and asserting `REDIRECTS.get('/collections/mattress-accessories') === '/pages/mattress-accessories'`. Locks the fix against a future Shopify re-sync.
-2. Commit + push to `claude/dazzling-newton-Ii0rM`.
-3. Open PR → wait for `ssr-tests` + Vercel checks green → squash-merge to `main`.
-4. Confirm the production deploy reaches READY.
+### 3. Article content fixes — applied directly in Shopify via MCP `articleUpdate`
+(The "newer blog-article model isn't writable via Admin API" comment in
+`lib/article-enrichment.ts` is outdated — `articleUpdate` works.)
+Record: `data/seo-backfills/article-cleanup-2026-06-11-semrush-mega-export-applied.json`.
 
-**Note:** The second Semrush "defect" (a broken internal link on `/blogs/sleep-blog/best-cooling-mattress-for-hot-sleeper`) is **MOOT** — that article was deleted from Shopify since the crawl; the URL now correctly 404s+noindexes (verified: it 404s while a control article 200s). No action needed.
+| Article | Fix |
+|---|---|
+| sleep-blog/best-cooling-mattress-…-2026-guide | broken internal link `/collections/mattress-accessories` → `/collections/cooling-pillows` |
+| beds-mattresses/best-mattress-for-kyphosis-… | 2× "here" anchors → descriptive product anchor text |
+| beds-mattresses/best-mattress-for-eds-… | text anchor to CDN `.jpg` → `/collections/chattam-wells-mattresses` (Windsor product discontinued) |
+| mattress-buying-guide/is-a-plush-mattress-… | 2× text anchors to Hydrogen CDN `.jpg` → `/collections/medium-firm-mattresses` |
+| mattress-buying-guide/best-high-end-mattresses | dead scandinaviansleep.com link unwrapped |
+| mattress-buying-guide/best-mattress-covers-for-allergies | reviewed.usatoday.com → www.reviewed.com (subdomain retired) |
+| mattress-buying-guide/how-to-choose-the-best-allergy-… | homeofwool.com link → canonical `/blog/` path |
+| mattress-care-tips/how-long-does-a-memory-foam-… | nobullmattress.com link → canonical `/a/blog/post/` path |
+| mattress-care-tips/how-long-does-a-nectar-… | best10mattress.com unwrapped (domain parked/for-sale) |
+| sleep-blog/can-a-bad-mattress-cause-rib-pain | gobestmattress.com unwrapped (article deleted) |
+
+**Correction to the previous session's note:** the cooling-article broken link was
+NOT moot. The earlier session tested a truncated URL
+(`…/best-cooling-mattress-for-hot-sleeper`) which 404s; the real article
+(`…-for-hot-sleepers-in-los-angeles-2026-guide`) is live and is now fixed.
+
+### 4. Thin blog index — `/blogs/extra-info` (SEMrush "Low word count")
+One published article only. Now `robots: noindex,follow` via
+`isNoindexBlogIndex()` (new, in `lib/noindex-articles.ts`) + dropped from the
+sitemap (its article stays). Pattern mirrors the paginated-cursor noindex.
+
+### Not actioned (by design / informational)
+- **Low text-to-HTML ratio (1,058)** — soft nudge, prior cruft-strip passes already address; low ROI.
+- **Blocked from crawling (281)** — robots.txt disallows on `?after=` cursors, `/search`, tracking params: intentional.
+- **External 403s (27)** — outbound links to live sites that bot-block (LinkedIn, NCBI, naplab…); verified alive, no action.
+- **Crawl depth (212) / single-internal-link pages (70) / GA-orphans / "Content not optimized" (74)** — architectural/informational.
+- **"Too many URL parameters" (1)** — stale crawl artifact of a storefront-search URL; params already stripped at render + disallowed in robots.txt.
 
 ---
 
-## ⚠️ Shell gotcha that kept biting this session
-The Bash harness **aborts a chained command if any step returns non-zero** (errexit-like). `pkill`/`grep -c` return non-zero when they match nothing — which silently skipped later steps (cleanups, sanity checks). **Always guard them: `pkill ... || true`, `grep -c ... || true`.** A stray `next dev` process may still be running on the box — kill it (guarded) before booting a new dev server to avoid `EADDRINUSE`.
-
----
-
-## 🟡 OUTSTANDING — owner action required (cannot be done by the agent)
-**Rotate `SHOPIFY_ADMIN_TOKEN`** in GitHub repo → Settings → Secrets and variables → Actions. It expired ~2026-05-27 (GraphQL 401). Consequences still active:
-- The daily `refresh-inventory` workflow fails every night → the inventory snapshot is **stale** (~15 days). This is the root cause of inventory drift (e.g. the deleted article above).
-- Open automated **PR #281** ("refresh URL inventory snapshot") is stale + flagged **do-not-merge** (merging it would revert curated work incl. #433). It self-heals once the token is rotated and a fresh sync runs.
-- The failure-alerting workflow we shipped will file a tracking issue (label `inventory-sync-failure`) on the next failed run.
-Scopes the new token needs: `read_products`, `read_content`, `read_online_store_pages`, `read_themes`.
-
----
-
-## ✅ Already shipped to production this session (for context)
-- **PR #435** — desktop mega-menu stayed open after navigation; fixed by resetting `mega` on `pathname` change (`app/_components/nav.tsx`). Browser-verified.
-- **PR #436** (P0/P1 hardening) — Next.js 15.5.15→15.5.19 (13 advisories incl. middleware-bypass); in-memory rate limits on `/api/chat` (10/min), `/api/newsletter` (5/min), `/api/ccpa-request` (3/min) via `lib/rate-limit.ts`; `/api/load-more-products` + `/api/predictive-search` now return **503** (not empty 200) on Storefront outage; 8s `AbortSignal.timeout` on `shopifyFetch`; baseline security headers.
-- **PR #438** (P2) — full **CSP** in `next.config.mjs` (browser-verified, 0 violations); parser-based XSS pass (`sanitize-html`) ahead of the regex repairs in `lib/sanitize.ts`; new tests: `lib-rate-limit`, `lib-sanitize-xss`, `api-failure-modes`.
-- All three merged to `main` (latest `4b0d2f5`) and deployed READY.
-
-## 📋 Semrush audit (20260611) — full triage, for reference
-Site is in **excellent** SEO health: 0 5xx, 0 missing/dup titles, 0 missing canonicals, 0 mixed-content/cert issues. Remaining items are soft/by-design:
-- **Low text-to-HTML ratio (1,058)** — ~95% `/blogs/*`; Semrush soft nudge, low ROI.
-- **Links to permanent redirects (967, mostly `/blogs/mattress-buying-guide`)** — internal links pointing at 301s. `sanitize.ts` has a Phase-293 redirect resolver; these are slipping past it or live in a non-sanitized context. **Candidate for a future systemic pass** (the user previously deferred this).
-- **"Blocked from crawling" (281)** — by design (tracking-param URLs + intentionally noindexed articles via `lib/noindex-articles.ts`).
-- **Broken external links (6)** + **external 403s (27)** — dead/forbidden outbound links in blog articles; not yet addressed (user scoped this session to the 4xx only).
+## 🟡 OUTSTANDING — owner action required (carried over, still active)
+**Rotate `SHOPIFY_ADMIN_TOKEN`** in GitHub repo → Settings → Secrets and variables → Actions. Expired ~2026-05-27 (GraphQL 401). The nightly `refresh-inventory` workflow fails → inventory snapshot stale (~15 days). PR #281 is stale + **do-not-merge** until a fresh sync runs. Scopes: `read_products`, `read_content`, `read_online_store_pages`, `read_themes`.
+(This session verified all link/redirect targets live via the Shopify MCP instead of trusting the stale snapshot.)
 
 ## Environment notes
-- Local test suite: `npm test` (boots `next dev` on :3100, runs HTTP-level SSR tests; ~5 min; 487 tests). Shopify-gated tests skip without `SHOPIFY_*` env.
-- Sandbox **outbound network is blocked** (curl to external hosts → 403). To inspect production/preview pages, use the Vercel MCP `web_fetch_vercel_url` tool against a deployment URL.
-- Playwright browser: `/opt/pw-browsers/chromium-1194/chrome-linux/chrome` (download is blocked; use this path with `executablePath`).
-- PR-activity subscription: passive watch on merged PR #435 (nothing pending).
+- Local test suite: `npm test` (boots `next dev` on :3100; ~5 min; Shopify-gated tests skip without `SHOPIFY_*` env). Run `npm install` first on a fresh container.
+- Sandbox **outbound network is blocked** (curl AND WebFetch → 403). Use Vercel MCP `web_fetch_vercel_url` for live pages; Shopify MCP for store data; WebSearch for external-link liveness.
+- The Bash harness aborts chained commands on non-zero: guard `pkill`/`grep -c` with `|| true`.
+- Playwright browser: `/opt/pw-browsers/chromium-1194/chrome-linux/chrome` (download blocked; use `executablePath`).
