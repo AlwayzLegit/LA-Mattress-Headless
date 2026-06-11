@@ -1,0 +1,118 @@
+{
+ "mode": "apply",
+ "batch": "semrush-2026-06-11-mega-export",
+ "appliedVia": "Shopify MCP graphql_mutation (articleUpdate), session 2026-06-11",
+ "note": "Per-article content fixes from the 20260611 SEMrush mega-export: 1 broken internal link, 6 broken external links (3 retargeted to moved canonical URLs, 3 unwrapped where the destination is gone), 2 non-descriptive anchors, 3 resource-formatted-as-page links across 2 articles.",
+ "results": [
+  {
+   "handle": "best-cooling-mattress-for-hot-sleepers-in-los-angeles-2026-guide",
+   "id": "gid://shopify/Article/600579113213",
+   "fix": "broken internal link: /collections/mattress-accessories (404) -> /collections/cooling-pillows",
+   "origLen": 8384,
+   "newLen": 8379,
+   "delta": -5,
+   "origSha": "abe9825d0a7701600ca1b05d39e22bce239bb2ecc8019375a3d15ac3ae8e6093",
+   "newSha": "50dc17a1451b131fdeeb5661ae9a30591f81e7c286325c3783d27a2f05490ed9",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "handle": "best-mattress-for-kyphosis-find-your-best-options",
+   "id": "gid://shopify/Article/589186859261",
+   "fix": "non-descriptive anchors: 2x \"here\" -> descriptive product anchor text",
+   "origLen": 15867,
+   "newLen": 15923,
+   "delta": 56,
+   "origSha": "74912fb695d6441aaabdd3b8d30324fef9eac1637bc78f342a6f657a8585af86",
+   "newSha": "d2e1785ae2eceac7e07c532df0743c347915c7aca2fa9e716e7527aeaab23410",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "handle": "best-mattress-for-eds-ehlers-danlos-syndrome-patients",
+   "id": "gid://shopify/Article/589197279485",
+   "fix": "resource-as-page-link: text anchor to CDN .jpg -> /collections/chattam-wells-mattresses (Windsor product discontinued)",
+   "origLen": 19968,
+   "newLen": 19834,
+   "delta": -134,
+   "origSha": "bfda4e07a89afc48f21e62b13d48cb8b3523aa35e1c7abc3a1000856d1da5678",
+   "newSha": "b70d05b245f69a84e1dce05b37c26e587d1947275c62d95f716185d1440bb0f6",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "handle": "is-a-plush-mattress-good-for-back-pain-relief",
+   "id": "gid://shopify/Article/593902141693",
+   "fix": "resource-as-page-link: 2x text anchor to Hydrogen CDN product .jpg -> /collections/medium-firm-mattresses",
+   "origLen": 44627,
+   "newLen": 44459,
+   "delta": -168,
+   "origSha": "0232d06cdbcddd1730d5089498c2a75eaad7b77aab598451ef7ffa0b007ac297",
+   "newSha": "502b75555ee81abbab607519b6c57a3980499ee3299594957fc94d7feea6fe22",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "handle": "best-high-end-mattresses",
+   "id": "gid://shopify/Article/590137950461",
+   "fix": "broken external: scandinaviansleep.com/sandmahn unwrapped (page gone)",
+   "origLen": 33732,
+   "newLen": 33616,
+   "delta": -116,
+   "origSha": "9fe892bca6632237ebe08ea701f5e79b3c022f9ed33d5518e335601c1c099fd6",
+   "newSha": "c7e560699dc88f2592c4d297a91fdc2c08420fee259128f589102918168dda1a",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "handle": "how-long-does-a-nectar-mattress-take-to-expand",
+   "id": "gid://shopify/Article/589735198973",
+   "fix": "broken external: best10mattress.com unwrapped (domain parked/for sale)",
+   "origLen": 14404,
+   "newLen": 14315,
+   "delta": -89,
+   "origSha": "e176b0d26d7795e06c246ba641b78a9483f299d3a3ac99a4fa96c1c090c2ff46",
+   "newSha": "3632db5f436e119fbda419ddb6367bdc3b114463d90f67849ec371bc225f8e91",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "handle": "can-a-bad-mattress-cause-rib-pain",
+   "id": "gid://shopify/Article/589410894077",
+   "fix": "broken external: gobestmattress.com unwrapped (article deleted)",
+   "origLen": 16451,
+   "newLen": 16290,
+   "delta": -161,
+   "origSha": "721733e17a88423cb080ca02b050479babcc2ddec44c0ed3f999ddee0f88ca9f",
+   "newSha": "b52365f379c26804dcc181f108f11905dc280300e00f62bdb21df6ad0aafaba1",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "handle": "best-mattress-covers-for-allergies",
+   "id": "gid://shopify/Article/590296613117",
+   "fix": "broken external: reviewed.usatoday.com -> www.reviewed.com (subdomain retired, same path)",
+   "origLen": 24931,
+   "newLen": 24926,
+   "delta": -5,
+   "origSha": "779a685a8fd6e7d92465fb35e814a000666efe5007a0d6a404624f353ac37fee",
+   "newSha": "2b6ee73483ba09c746669ab81858b28259f3a685dccb9d2bec2d0be5077e4dc2",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "handle": "how-to-choose-the-best-allergy-mattress-cover-for-your-needs",
+   "id": "gid://shopify/Article/594127421693",
+   "fix": "broken external: homeofwool.com URL -> canonical /blog/ path",
+   "origLen": 38155,
+   "newLen": 38160,
+   "delta": 5,
+   "origSha": "f59f31c66affea769ab156941a272770e4d233ee390c91599bf90513a8104d55",
+   "newSha": "b2713627cfc6a6494c62b4a26370f805b0d2b6116e5b20ab21a15564a8f56120",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "handle": "how-long-does-a-memory-foam-mattress-take-to-expand",
+   "id": "gid://shopify/Article/589337395453",
+   "fix": "broken external: nobullmattress.com URL -> canonical /a/blog/post/ path",
+   "origLen": 15679,
+   "newLen": 15690,
+   "delta": 11,
+   "origSha": "87f89765391030bb7361fe3387a347c56acfcde531a360bb8667a56cae6d4b55",
+   "newSha": "fe5e5116873d003ac8afcca14ae0510a5b32be47e33c86b05b7fc0fe74b50d74",
+   "status": "APPLIED_VIA_MCP"
+  }
+ ]
+}
