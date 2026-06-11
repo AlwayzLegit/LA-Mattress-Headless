@@ -52,11 +52,21 @@ import { withSentryConfig } from '@sentry/nextjs';
  */
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://cdnwidget.judge.me https://us-assets.i.posthog.com https://va.vercel-scripts.com`,
-  "style-src 'self' 'unsafe-inline'",
+  // Judge.me note (2026-06-11 incident): the LEGACY review widget (this
+  // shop was switched to it account-side by Judge.me support on
+  // 2026-06-01, see judgeme-widget.tsx) loads its CONTENT via XHR from
+  // cache.judge.me — NOT api.judge.me. The original origin inventory
+  // missed it, so the day-one CSP blocked the fetch (status_code 0 +
+  // "Cannot load Judge.me widget contents due to caching server error"
+  // in PostHog replay console logs) and the PDP reviews widget rendered
+  // empty. cdn.judge.me serves the widget's stylesheet, star icon font,
+  // and secondary scripts. All additions below are Judge.me-owned
+  // origins — same vendor trust boundary as the preloader.
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://cdnwidget.judge.me https://cdn.judge.me https://us-assets.i.posthog.com https://va.vercel-scripts.com`,
+  "style-src 'self' 'unsafe-inline' https://cdn.judge.me https://cdnwidget.judge.me",
   "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  "connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://*.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://api.judge.me https://*.sentry.io",
+  "font-src 'self' data: https://cdn.judge.me https://cdnwidget.judge.me",
+  "connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://*.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://api.judge.me https://cache.judge.me https://cdn.judge.me https://*.sentry.io",
   "frame-src 'self' https://maps.google.com https://www.google.com https://judge.me https://*.judge.me https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
   "media-src 'self' blob: https://cdn.shopify.com",
   "worker-src 'self' blob:",
