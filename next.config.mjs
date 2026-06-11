@@ -30,7 +30,8 @@ import { withSentryConfig } from '@sentry/nextjs';
  *                 recorder etc. (us-assets.i.posthog.com), Vercel
  *                 analytics dev loader (va.vercel-scripts.com; prod
  *                 serves same-origin /_vercel/*). 'unsafe-eval' is
- *                 dev-only (React Refresh needs it; prod does not).
+ *                 needed in ALL envs: dev for React Refresh, prod for
+ *                 the Judge.me legacy widget (see inline note below).
  *   connect-src   PostHog ingest (us.i.posthog.com), GA4 collection
  *                 (*.google-analytics.com + doubleclick), Judge.me
  *                 review-widget API, Sentry (tunneled same-origin via
@@ -62,7 +63,19 @@ const CSP = [
   // empty. cdn.judge.me serves the widget's stylesheet, star icon font,
   // and secondary scripts. All additions below are Judge.me-owned
   // origins — same vendor trust boundary as the preloader.
-  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://cdnwidget.judge.me https://cdn.judge.me https://us-assets.i.posthog.com https://va.vercel-scripts.com`,
+  // 'unsafe-eval' is required IN PRODUCTION by the Judge.me legacy
+  // widget: after fetching its cached contents it boots the widget
+  // payload via eval() — with eval blocked the PDP reviews section
+  // stays empty ("EvalError: Refused to evaluate a string as
+  // JavaScript…" in PostHog replay console logs, 2026-06-11, observed
+  // right after the cache.judge.me connect-src fix unblocked the
+  // fetch). CSP cannot scope eval to a single origin, and script-src
+  // already carries the strictly weaker 'unsafe-inline' (required by
+  // the GA4 + Judge.me inline bootstraps), so this is a marginal
+  // concession to keep a revenue-relevant widget alive. Revisit if
+  // Judge.me ships an eval-free widget or the shop moves off the
+  // legacy layout.
+  `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://cdnwidget.judge.me https://cdn.judge.me https://us-assets.i.posthog.com https://va.vercel-scripts.com`,
   "style-src 'self' 'unsafe-inline' https://cdn.judge.me https://cdnwidget.judge.me",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://cdn.judge.me https://cdnwidget.judge.me",
