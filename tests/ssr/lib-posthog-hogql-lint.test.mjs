@@ -118,6 +118,13 @@ test('lib/shopify/admin.ts tags every adminGql call with "admin-dashboard"', asy
 const ALLOWED_HOGQL_FUNCTIONS = new Set([
   // Aggregates verified in current queries
   'count', 'countIf', 'sum', 'argMin',
+  // Verified 2026-06-12 against the live Query API (chat-assistant
+  // dashboard cards): avg over a toFloatOrZero'd property, and the
+  // arrayJoin(JSONExtractArrayRaw(coalesce(...))) unnest used by
+  // getChatTopTools. NOTE: JSONExtractArrayRaw REQUIRES the coalesce —
+  // bare property access compiles to Nullable(String) and ClickHouse
+  // rejects Array inside Nullable (observed 400 during verification).
+  'avg', 'replaceAll', 'arrayJoin', 'JSONExtractArrayRaw',
   // Conversion / nulls — only what's known to work. Notable absentees:
   // toIntOrNull (proven broken — see deny-list), and ALL width-suffixed
   // variants (toInt32OrNull, toFloat64OrZero, …).

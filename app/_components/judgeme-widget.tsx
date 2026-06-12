@@ -1,5 +1,7 @@
 import Script from 'next/script';
 
+import { JudgemeHealthCheck } from './judgeme-health';
+
 /**
  * Embed of Judge.me's official client-side review widget. Phase 247.
  *
@@ -105,7 +107,10 @@ if (!document.getElementById('judgeme-preloader-js')) {
   s.id = 'judgeme-preloader-js';
   s.async = true;
   s.src = 'https://cdnwidget.judge.me/widget_preloader.js';
+  s.onload = function () { window.__jdgmPreloaderLoaded = true; };
   document.head.appendChild(s);
+} else {
+  window.__jdgmPreloaderLoaded = true;
 }`,
         }}
       />
@@ -134,6 +139,10 @@ if (!document.getElementById('judgeme-preloader-js')) {
           data-id={productId}
         />
       </div>
+      {/* Real-user "did the widget actually render?" beacon → Sentry +
+          PostHog. See judgeme-health.tsx for the incident history that
+          motivates it. */}
+      <JudgemeHealthCheck productId={productId} />
     </>
   );
 }

@@ -62,8 +62,15 @@ export const DASHBOARD_SECTIONS: DashboardSection[] = [
     href: '/admin#section-funnel',
     slug: 'funnel',
     label: 'Funnel',
-    description: 'Conversion funnel, cart abandonment, quiz drop-off.',
+    description: 'Conversion funnel, cart abandonment, quiz performance.',
     glyph: '⇲',
+  },
+  {
+    href: '/admin#section-chat',
+    slug: 'chat',
+    label: 'Chat assistant',
+    description: 'AI assistant usage, tool calls, reliability, chat-to-order conversion.',
+    glyph: '✦',
   },
   {
     href: '/admin#section-acquisition',

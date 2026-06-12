@@ -56,3 +56,19 @@ test('CSP allows the Judge.me widget pipeline end to end', async () => {
   const frames = d.get('frame-src') ?? [];
   assert.ok(frames.includes('https://judge.me') || frames.includes('https://*.judge.me'), 'frame-src: judge.me');
 });
+
+test('CSP reports violations to Sentry when a DSN is configured', async (t) => {
+  // The report-uri directive is derived from NEXT_PUBLIC_SENTRY_DSN at
+  // config time (next.config.mjs#sentryCspReportUri) — it's the alarm
+  // wire that makes any future CSP-vs-vendor conflict visible in
+  // Sentry within minutes instead of waiting for a human to notice a
+  // broken widget. Skips when the env (local/CI without secrets)
+  // carries no DSN, because then the directive is intentionally absent.
+  if (!process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    t.skip('NEXT_PUBLIC_SENTRY_DSN not set — report-uri intentionally omitted');
+    return;
+  }
+  const d = await getCspDirectives();
+  const uri = d.get('report-uri')?.[0] ?? '';
+  assert.match(uri, /^https:\/\/.+\/api\/\d+\/security\/\?sentry_key=/, 'report-uri targets the Sentry security endpoint');
+});

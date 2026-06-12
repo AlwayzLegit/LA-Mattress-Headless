@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Icon } from '../icon';
+import { track } from '@/lib/analytics';
 import type { ChatProductCard as ChatProductCardData } from '@/lib/chat/types';
 
 /**
@@ -50,7 +51,20 @@ export function ChatProductCard({ card }: { card: ChatProductCardData }) {
       : null;
 
   return (
-    <Link href={card.url} className="chat-card" prefetch={false}>
+    <Link
+      href={card.url}
+      className="chat-card"
+      prefetch={false}
+      // The chat equivalent of quiz_recommendation_clicked — the
+      // assistant's recommendations had no click signal at all, so the
+      // admin dashboard's chat section couldn't say whether surfaced
+      // products get acted on. Person + $session_id scoped (client
+      // event), so it joins with order_completed for attribution.
+      onClick={() => track('chat_product_clicked', {
+        product_url: card.url,
+        vendor: card.vendor,
+      })}
+    >
       {card.imageUrl ? (
         <div className="chat-card-img">
           {/* Plain <img> intentionally — the chat panel isn't a hot
