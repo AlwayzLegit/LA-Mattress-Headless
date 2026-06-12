@@ -21,6 +21,21 @@
       "source": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide-1",
       "destination": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide",
       "note": "SEMrush 20260612 audit: duplicate title tag + 2 broken internal links. The -1 article is an accidental duplicate (created 2026-06-11, one day after the identically-titled original). Redirect-shadowing removes it from related-articles rotation, the HTML sitemap, and the XML sitemap via the shared redirect table. The Shopify article itself is left published for the merchant to delete."
+    },
+    {
+      "source": "/pages/faq/best-mattress-for-heavy-people",
+      "destination": "/collections/mattresses-for-heavy-people",
+      "note": "SEMrush 20260612 Ideas: legacy FAQ URL 404s in the headless build (no /pages/faq/* route exists - verified live) yet carries 176 priority. Route to the matching commercial PLP."
+    },
+    {
+      "source": "/pages/faq/best-soft-mattress",
+      "destination": "/collections/soft-mattresses-for-pressure-relief",
+      "note": "SEMrush 20260612 Ideas: legacy FAQ URL 404s (117 priority). Route to the soft-mattress PLP."
+    },
+    {
+      "source": "/pages/faq/best-mattress-for-couples",
+      "destination": "/collections/mattresses-for-couples",
+      "note": "SEMrush 20260612 Ideas: legacy FAQ URL 404s (117 priority). Route to the couples PLP."
     }
   ]
 }

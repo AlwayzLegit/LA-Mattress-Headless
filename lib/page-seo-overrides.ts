@@ -52,6 +52,30 @@ export const PAGE_SEO_OVERRIDES: Record<string, PageSeoOverride> = {
     description:
       'Visit any of LA Mattress Store’s 5 Los Angeles showrooms — Koreatown, West LA, La Brea, Studio City, and Glendale. Free same-day delivery, 0% APR financing.',
   },
+
+  // Semrush 20260612 "Ideas" export (full triage table in
+  // data/seo-backfills/onpage-ideas-triage-2026-06-12.json).
+  //
+  // Flagged for "types of mattresses" (54 priority) — the head query
+  // is the of-phrase word order, and the merchant title ("Guide to
+  // Mattress Types | Find Your Perfect Mattress") only carried the
+  // compound form. Lead with the query phrasing.
+  'mattress-types': {
+    title: 'Types of Mattresses · Every Mattress Type Compared | LA Mattress',
+  },
+  // Flagged for "mattress companies" (23) — merchant title ("Shop by
+  // Top Brands") never says "mattress" at all, so the page couldn't
+  // match either "mattress brands" or "mattress companies".
+  brands: {
+    title: 'Mattress Brands · Top Mattress Companies We Carry | LA Mattress',
+  },
+  // Flagged for "bed stores near me" (95) — the near-me intent belongs
+  // in the description; the merchant title (Glendale + Central Ave) is
+  // already a good local title and stays.
+  'mattress-store-in-glendale': {
+    description:
+      'LA Mattress Store Glendale on Central Ave — the bed and mattress store near you, with every major brand on the floor. Free same-day delivery, 0% APR financing.',
+  },
 };
 
 export function getPageSeoOverride(handle: string): PageSeoOverride | undefined {
