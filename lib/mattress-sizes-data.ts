@@ -135,6 +135,64 @@ export const MATTRESS_SIZES: MattressSize[] = [
   },
 ];
 
+/**
+ * Specialty, RV & camper sizes — non-standard dimensions shoppers
+ * search for constantly (SEMrush 20260612 ideas: "camper mattress",
+ * "measure your rv", "60 x 75", "custom size" all flagged as missing
+ * from /pages/mattress-sizes). Kept SEPARATE from MATTRESS_SIZES so
+ * the standard-size scale diagram, comparison cards, and the
+ * article-enrichment dimension tables don't grow odd rows — these
+ * render only in the specialty section of the sizes hub.
+ *
+ * RV dimensions vary by manufacturer more than residential sizes do;
+ * the `inches` column carries the most common spec and the section
+ * copy tells shoppers to measure their platform before ordering.
+ */
+export type SpecialtySize = {
+  name: string;
+  inches: string;
+  /** Where it's typically found / who it fits. */
+  usedIn: string;
+  /** Optional deep-dive article. */
+  guideHref?: string;
+  guideLabel?: string;
+};
+
+export const SPECIALTY_SIZES: SpecialtySize[] = [
+  {
+    name: 'Short Queen (RV Queen)',
+    inches: '60" × 74–75"',
+    usedIn: 'RVs, campers, and fifth wheels — queen width, 5–6 inches shorter',
+    guideHref: '/blogs/mattress-buying-guide/short-queen-mattresses-for-campers-how-to-measure-and-buy',
+    guideLabel: 'Short queen RV guide',
+  },
+  {
+    name: 'RV King',
+    inches: '72" × 75–80"',
+    usedIn: 'Larger RVs and fifth wheels — between a queen and a residential king',
+  },
+  {
+    name: 'RV Bunk',
+    inches: '28–35" × 75–80"',
+    usedIn: 'RV bunk areas — widths vary by floor plan, so measure before buying',
+  },
+  {
+    name: 'Full XL',
+    inches: '54" × 80"',
+    usedIn: 'Taller solo sleepers who want full width with king-length legroom',
+  },
+  {
+    name: 'Three Quarter',
+    inches: '48" × 75"',
+    usedIn: 'Antique bed frames and small guest rooms — between a twin and a full',
+  },
+  {
+    name: 'Olympic Queen',
+    inches: '66" × 80"',
+    usedIn: 'Couples who want 6 extra inches of width without king bedding',
+  },
+];
+
 export type FaqItem = {
   q: string;
   /**

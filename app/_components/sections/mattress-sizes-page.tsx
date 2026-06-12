@@ -6,7 +6,7 @@ import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { wrapCmsTables } from '@/lib/cms-html';
 import { stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { GUIDE_PAGES } from '@/lib/guide-pages';
-import { MATTRESS_SIZES, MATTRESS_SIZES_FAQ, MATTRESS_SIZES_RELATED_GUIDES, type MattressSize } from '@/lib/mattress-sizes-data';
+import { MATTRESS_SIZES, MATTRESS_SIZES_FAQ, MATTRESS_SIZES_RELATED_GUIDES, SPECIALTY_SIZES, type MattressSize } from '@/lib/mattress-sizes-data';
 import { ServicePageToc } from './service-page-toc';
 
 // ── To-scale bed glyph ───────────────────────────────────────────
@@ -306,6 +306,51 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
                       <td className="tnum">{s.cm}</td>
                       <td>{s.bestFor}</td>
                       <td className="tnum">{s.minRoom}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Specialty / RV / camper sizes. SEMrush 20260612 ideas:
+              the sizes hub ranked for "camper mattress", "measure your
+              rv", "60 x 75", and "custom size" queries it never
+              answered — shoppers landed on standard-size content and
+              bounced. Non-standard dimensions live in their own table
+              (separate SPECIALTY_SIZES list) so the to-scale diagram
+              and standard tables stay clean. */}
+          <section className="ms-dims" aria-labelledby="specialty-sizes-heading">
+            <h2 id="specialty-sizes-heading" className="h2 ms-section-h">Specialty, RV &amp; camper sizes</h2>
+            <p className="muted ms-section-lede">
+              RVs, campers, antique frames, and odd rooms use non-standard dimensions. RV specs vary by
+              manufacturer — measure your RV&rsquo;s platform (width, length, and corner cuts) before buying,
+              and ask any showroom about custom size options.
+            </p>
+            <div className="ms-dims-tablewrap">
+              <table className="ms-dims-table">
+                <caption className="sr-only">Specialty and RV mattress dimensions in inches</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Size</th>
+                    <th scope="col">Inches (W × L)</th>
+                    <th scope="col">Typically used in</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {SPECIALTY_SIZES.map((s) => (
+                    <tr key={s.name}>
+                      <th scope="row" className="ms-dims-name">{s.name}</th>
+                      <td className="tnum">{s.inches}</td>
+                      <td>
+                        {s.usedIn}
+                        {s.guideHref ? (
+                          <>
+                            {' — '}
+                            <Link href={s.guideHref}>{s.guideLabel ?? 'guide'}</Link>
+                          </>
+                        ) : null}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
