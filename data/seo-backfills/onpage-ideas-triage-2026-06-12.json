@@ -1,0 +1,44 @@
+{
+  "mode": "apply",
+  "batch": "semrush-onpage-ideas-2026-06-12",
+  "source": "SEMrush On-Page SEO Checker export ideas_www.mattressstoreslosangeles.com_20260612.xlsx (2,556 idea rows, ~250 URLs)",
+  "appliedVia": "Code overrides (this PR) + Shopify MCP articleUpdate metafield batch (global.title_tag), session 2026-06-12",
+  "staleFindings": {
+    "note": "The export's per-page data predates this week's and Phase 308's fixes. Verified-stale flag classes, no action taken:",
+    "items": [
+      "title/h1 flags on tempur-pedic / king-size / queen-size / twin-size PLPs and the homepage — Phase 308 overrides + sr-only H1 already cover the flagged variants (verified in lib/collection-seo-overrides.ts + app/(storefront)/page.tsx)",
+      "no-internal-links on 90 blog articles — post-#440 related-links rotation gives every article ~4+; live check of best-cooling-mattress-guide found 54 unique internal hrefs",
+      "aggregate-rating on collections — live PLP fetch shows AggregateRating (4.5, 11,423 reviews) already in the CollectionPage JSON-LD",
+      "mattress-sizes title/h1 — override title (chart/feet/inches) + merchant H1 (bed size chart variants) jointly cover the flagged keywords",
+      "adjustable-queen article — existing seo.title already carries 'Adjustable Queen Bed and Mattress'"
+    ]
+  },
+  "policyDecisions": [
+    "aggregate-rating on 75 blog articles: SKIPPED (user decision) — Google treats ratings on advice articles as self-serving; FAQPage/HowTo JSON-LD remains the rich-result path for articles",
+    "backlink-acquisition ideas (421 rows): descoped (user decision)",
+    "'cheap queen mattress near me' (1,244 priority, mis-assigned to /pages/mattress-store-locations): REASSIGNED — 'cheap/affordable queen' now lives on the best-affordable-queen-mattress article title and the queen PLP description; locations page untouched",
+    "'queen mattresses on sale near me' (queen PLP): REASSIGNED to /collections/on-sale title/description",
+    "'best mattress for back pain' missing from best-mattress-for-bad-back title: DELIBERATELY NOT ADDED — would cannibalize best-mattress-for-back-pain-guide and the 2026-06-10 LA back-pain article; bad-back title strengthened on its own term instead"
+  ],
+  "codeChanges": [
+    "lib/collection-seo-overrides.ts: +6 new handles (mattresses, on-sale, bed-frames, gel-foam-mattresses, spring-air-mattresses, latex-mattresses) + descriptions for queen-size/twin-size",
+    "lib/page-seo-overrides.ts: +3 (mattress-types, brands titles; mattress-store-in-glendale description)",
+    "data/url-inventory/redirects-manual.json: +3 legacy /pages/faq/* URLs that 404 live (176/117/117 priority) -> matching commercial PLPs"
+  ],
+  "articleTitleBatch": [
+    {"id": "gid://shopify/Article/594346868989", "handle": "what-is-the-standard-size-of-a-full-bed", "old": "​Standard Size of a Full Bed – Dimensions & Guide", "new": "Full Size Bed & Mattress Dimensions · Standard Double Bed Guide", "alsoRetitled": "Full Size Bed & Mattress Dimensions: Standard Double Bed Guide", "kw": "full size mattress dimensions / double bed size (638 prio)"},
+    {"id": "gid://shopify/Article/589543932157", "handle": "mattress-disposal-in-los-angeles-cost-effective-ways", "old": "Mattress Disposal in Los Angeles: Cost-effective Ways to Dispose of a Mattress in Los Angeles 2024 Guide", "new": "Mattress Removal & Disposal in LA · How to Get Rid of a Mattress", "kw": "mattress removal / how to get rid of mattress (124)"},
+    {"id": "gid://shopify/Article/590200471805", "handle": "best-mattress-for-bad-back", "old": "Best Mattress For Bad Back | LA Mattress", "new": "Best Mattress for a Bad Back · Support & Firmness Guide | LA Mattress", "kw": "strengthened own term; back-pain variants deliberately excluded (cannibalization)"},
+    {"id": "gid://shopify/Article/589585514749", "handle": "how-to-get-urine-out-of-a-mattress-topper", "old": "How to Get Urine Out of a Mattress Topper | LA Mattress", "new": "How to Get Pee (Urine) Out of a Mattress Topper | LA Mattress", "kw": "how to get pee out of a mattress (52)"},
+    {"id": "gid://shopify/Article/597060583677", "handle": "best-mattress-for-back-pain-guide", "old": "Best Mattress for Back Pain (2026 Guide) | LA Mattress Store", "new": "Best Mattress for Back Pain & Lower Back Support (2026 Guide)", "kw": "best mattress for lower back support (43)"},
+    {"id": "gid://shopify/Article/588889293053", "handle": "how-much-should-you-spend-on-a-mattress", "old": "How Much Does a Good Quality Mattress Cost?", "new": "How Much Does a Good Mattress Cost? Average Prices in 2026", "kw": "average cost of good mattress (38)"},
+    {"id": "gid://shopify/Article/594225496317", "handle": "pros-and-cons-of-using-an-air-mattress-long-term", "old": "Sleeping on an Air Mattress Long Term - Pros, Cons and Health", "new": "Are Air Mattresses Bad for You? Long-Term Pros, Cons & Health", "kw": "are air mattresses bad for you (37)"},
+    {"id": "gid://shopify/Article/588942115069", "handle": "queen-mattress-cost-2023-price-and-comparison-guide", "old": "How Much Does a Queen Mattress Cost? | LA Mattress Store", "new": "How Much Does a Queen Size Mattress Cost? 2026 Price Guide", "kw": "how much is a queen size mattress (18)"},
+    {"id": "gid://shopify/Article/588916523261", "handle": "queen-mattress-vs-full-xl-mattress", "old": "Queen vs. Full XL Mattress: Which Size Is Right for You? | LA Mattress", "new": "Queen vs Full XL Mattress: Size & Dimensions Compared | LA Mattress", "kw": "full xl mattress size (16)"},
+    {"id": "gid://shopify/Article/589991706877", "handle": "best-affordable-queen-mattress", "old": "Best Affordable Queen Mattress 2025 | LA Mattress Store", "new": "Cheap & Affordable Queen Mattresses: Best Budget Picks 2026", "kw": "cheap queen mattress (+reassigned near-me intent, 1,244)"},
+    {"id": "gid://shopify/Article/589937049853", "handle": "best-twin-mattresses-for-kids", "old": "Best Twin Mattresses for Kids in 2025 | LA Mattress Store", "new": "Best Twin Mattresses for Kids & Toddlers | LA Mattress Store", "kw": "best mattress for toddler twin (19)"},
+    {"id": "gid://shopify/Article/589724614909", "handle": "best-mattresses-for-the-morbidly-obese-in-2024", "old": "Best Mattresses for the Morbidly Obese | LA Mattress", "new": "Best Mattress for Obese People & Heavier Bodies | LA Mattress", "kw": "best mattress for obese people (7)"},
+    {"id": "gid://shopify/Article/589707477245", "handle": "best-mattress-for-murphy-bed-2024", "old": "Best Mattress for Murphy Bed | LA Mattress Store", "new": "Best Mattress for a Murphy Bed: Queen, Full & Twin | LA Mattress", "kw": "queen mattress for murphy bed (9)"}
+  ],
+  "remaining": "Phase 5 (content enrichment, top 20 by priority) tracked separately; long-tail body keywords from the export feed that phase."
+}

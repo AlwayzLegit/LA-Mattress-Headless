@@ -82,10 +82,18 @@ export const COLLECTION_SEO_OVERRIDES: Record<string, CollectionSeoOverride> = {
   },
   'queen-size-mattresses': {
     title: 'Queen Size Mattresses · Top Brands from $319 | LA Mattress',
+    // Semrush 20260612: "queen size mattress online" + "queen size bed
+    // delivery" flagged. Both belong in the description, not the title.
+    description:
+      'Shop queen size mattresses online from $319 — Tempur-Pedic, Stearns & Foster, Helix & more. Free same-day white-glove LA delivery + 120-night exchange.',
     h1: 'Queen Size Mattresses',
   },
   'twin-size-mattresses': {
     title: 'Twin Size Mattresses in Los Angeles | LA Mattress Store',
+    // Semrush 20260612: "twin mattress nearby" — the "near you" intent
+    // lives in the description via the showroom mention.
+    description:
+      'Twin size mattresses in stock at five LA showrooms near you — kids, bunk beds, and guest rooms. Free same-day Los Angeles delivery + 120-night exchange.',
     h1: 'Twin Size Mattresses',
   },
   'full-size-mattresses': {
@@ -109,6 +117,65 @@ export const COLLECTION_SEO_OVERRIDES: Record<string, CollectionSeoOverride> = {
     description:
       'Durable, supportive mattresses for heavier bodies: reinforced coils, dense foam, strong edge support. Free white-glove LA delivery + 120-night trial.',
     h1: 'Mattresses for Heavy People',
+  },
+
+  // Semrush 20260612 "Ideas" export. Each entry covers a flagged
+  // keyword variant the live title genuinely missed; flags that were
+  // singular/plural tokenization quirks or already covered by the
+  // Phase 308 overrides above were skipped per the file's
+  // anti-stuffing doctrine (see data/seo-backfills/
+  // onpage-ideas-triage-2026-06-12.json for the full keyword → action
+  // table).
+  //
+  // Catalog root: flagged for "beds and mattresses online" /
+  // "beds & mattresses" — the fallback title was just
+  // "Mattresses | LA Mattress Store" and never said "beds" or
+  // "online" anywhere on the highest-level PLP.
+  mattresses: {
+    title: 'Mattresses · Shop Beds & Mattresses Online | LA Mattress Store',
+    description:
+      'Shop beds and mattresses online or at five LA showrooms — every size, firmness, and top brand. Free same-day white-glove delivery + 120-night exchange.',
+  },
+  // Sale PLP: flagged for "beds and mattresses sale", "bed for sale",
+  // "best deal on mattresses right now". Also the reassignment target
+  // for "queen mattresses on sale near me" (Semrush mapped it to the
+  // queen PLP; the sale intent belongs here — the description carries
+  // the queen/king mention).
+  'on-sale': {
+    title: 'Mattress Sale · Beds & Mattresses on Sale | LA Mattress Store',
+    description:
+      'Today’s best mattress deals — queen, king & every size marked down, plus beds for sale from top brands. Free same-day LA delivery + 120-night exchange.',
+    h1: 'Beds & Mattresses on Sale',
+  },
+  // Flagged for "bedframe" (one word) + "mattress frames near me";
+  // also the cannibalization fix for "bed frame stores" (which was
+  // ranking via /collections/mattresses) — this title makes the
+  // bed-frames PLP the obvious destination. The merchant title
+  // ("Bed Frames - Bedding Support") kept neither variant.
+  'bed-frames': {
+    title: 'Bed Frames & Bedframes · Every Mattress Size | LA Mattress',
+    description:
+      'Sturdy bed frames and bedframes for twin through California king — platform, panel, and adjustable-ready. Five LA showrooms near you, free same-day delivery.',
+    h1: 'Bed Frames',
+  },
+  // Flagged for "gel memory foam mattress" — the catalog's gel beds ARE
+  // gel memory foam, but the merchant title dropped the "memory" token
+  // shoppers actually search with.
+  'gel-foam-mattresses': {
+    title: 'Gel Memory Foam Mattresses · Cool-Sleeping Comfort | LA Mattress',
+    h1: 'Gel Memory Foam Mattresses',
+  },
+  // Flagged for "back supporter mattress spring air" — Back Supporter
+  // is Spring Air's flagship line and the catalog carries it, so the
+  // title can honestly say so.
+  'spring-air-mattresses': {
+    title: 'Spring Air Mattresses · Back Supporter Collection | LA Mattress',
+  },
+  // Flagged for "latex queen mattress" — size-in-brand-PLP variant;
+  // covered in the description (sizes enumeration), title untouched.
+  'latex-mattresses': {
+    description:
+      'Natural latex mattresses in every size — twin through queen to California king. Breathable, durable comfort. Free same-day delivery across Los Angeles.',
   },
 };
 
