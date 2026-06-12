@@ -62,7 +62,7 @@ export const DASHBOARD_SECTIONS: DashboardSection[] = [
     href: '/admin#section-funnel',
     slug: 'funnel',
     label: 'Funnel',
-    description: 'Conversion funnel, cart abandonment, quiz drop-off.',
+    description: 'Conversion funnel, cart abandonment, quiz performance.',
     glyph: '⇲',
   },
   {

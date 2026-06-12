@@ -27,8 +27,11 @@ import {
   getConversionFunnel,
   getConversionFunnelPrev,
   getDeviceBreakdown,
+  getQuizClickTargets,
+  getQuizConversion,
   getQuizFunnel,
   getQuizFunnelPrev,
+  getQuizResultsMix,
   getQuizStepDropoff,
   getRevenueBySource,
   getSearchConversion,
@@ -178,6 +181,9 @@ export default async function DashboardPage({
     quizFunnel,
     quizFunnelPrev,
     quizStepDropoff,
+    quizResultsMix,
+    quizClickTargets,
+    quizConversion,
     revenueBySource,
     deviceBreakdown,
     showroomTraffic,
@@ -205,6 +211,9 @@ export default async function DashboardPage({
     POSTHOG_CONFIGURED ? getQuizFunnel(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizFunnelPrev(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizStepDropoff(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getQuizResultsMix(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getQuizClickTargets(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getQuizConversion(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getRevenueBySource(days, 8).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getDeviceBreakdown(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED
@@ -408,6 +417,65 @@ export default async function DashboardPage({
           the right default (the section nav becomes the first thing
           below the header). */}
       {anomalies.length > 0 ? <AnomalyStrip anomalies={anomalies} /> : null}
+
+      {/* At-a-glance KPI strip — the cross-section headline numbers in
+          one row, each tile deep-linking to the section that explains
+          it. The Overview sidebar entry promises "today's headline
+          numbers" but before this strip the merchant had to scroll into
+          three different sections to assemble them. Pure presentation
+          over data the page already fetched — zero extra queries. */}
+      <section className="dash-kpi-strip" aria-label="At a glance">
+        <a className="dash-kpi" href="#section-revenue">
+          <span className="dash-kpi-label">Revenue · {rangeShort}</span>
+          <span className="dash-kpi-value">
+            {orderSummary ? fmtMoney(orderSummary.totalRevenue, orderSummary.currency) : '—'}
+          </span>
+          {orderSummary ? (
+            <DeltaBadge current={orderSummary.totalRevenue} prev={orderSummary.prev?.totalRevenue} />
+          ) : null}
+        </a>
+        <a className="dash-kpi" href="#section-revenue">
+          <span className="dash-kpi-label">Orders · {rangeShort}</span>
+          <span className="dash-kpi-value">{orderSummary ? orderSummary.totalOrders : '—'}</span>
+          {orderSummary ? (
+            <DeltaBadge current={orderSummary.totalOrders} prev={orderSummary.prev?.totalOrders} />
+          ) : null}
+        </a>
+        <a className="dash-kpi" href="#section-revenue">
+          <span className="dash-kpi-label">Avg order</span>
+          <span className="dash-kpi-value">
+            {orderSummary ? fmtMoney(orderSummary.avgOrderValue, orderSummary.currency) : '—'}
+          </span>
+          {orderSummary ? (
+            <DeltaBadge current={orderSummary.avgOrderValue} prev={orderSummary.prev?.avgOrderValue} />
+          ) : null}
+        </a>
+        <a className="dash-kpi" href="#section-funnel">
+          <span className="dash-kpi-label">Site conversion</span>
+          <span className="dash-kpi-value">
+            {funnelConvNow !== null ? `${(funnelConvNow * 100).toFixed(2)}%` : '—'}
+          </span>
+          {funnelConvNow !== null ? <RateDelta current={funnelConvNow} prev={funnelConvPrev} /> : null}
+        </a>
+        <a className="dash-kpi" href="#section-funnel">
+          <span className="dash-kpi-label">Cart abandonment</span>
+          <span className="dash-kpi-value">
+            {abandonment ? `${(abandonment.cartAbandonment * 100).toFixed(1)}%` : '—'}
+          </span>
+          {abandonment ? (
+            <RateDelta current={abandonment.cartAbandonment} prev={abandonmentPrev?.cartAbandonment ?? null} />
+          ) : null}
+        </a>
+        <a className="dash-kpi" href="#section-funnel">
+          <span className="dash-kpi-label">Quiz completion</span>
+          <span className="dash-kpi-value">
+            {quizCompletionNow !== null ? `${(quizCompletionNow * 100).toFixed(1)}%` : '—'}
+          </span>
+          {quizCompletionNow !== null ? (
+            <RateDelta current={quizCompletionNow} prev={quizCompletionPrev} />
+          ) : null}
+        </a>
+      </section>
 
       {/* In-page section nav was replaced by the persistent left-rail
           sidebar (app/admin/_components/sidebar.tsx, rendered by the
@@ -980,34 +1048,16 @@ export default async function DashboardPage({
               </span>
             </div>
             {quizFunnel ? (
-              <ul className="dash-list">
-                <li>
-                  <span>Started</span>
-                  <strong>{quizFunnel.started}</strong>
-                </li>
-                <li>
-                  <span>Completed</span>
-                  <strong>
-                    {quizFunnel.completed}
-                    {quizFunnel.started > 0 ? (
-                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
-                        ({pct(quizFunnel.completed, quizFunnel.started)})
-                      </span>
-                    ) : null}
-                  </strong>
-                </li>
-                <li>
-                  <span>Clicked recommendation</span>
-                  <strong>
-                    {quizFunnel.clicked}
-                    {quizFunnel.completed > 0 ? (
-                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
-                        ({pct(quizFunnel.clicked, quizFunnel.completed)})
-                      </span>
-                    ) : null}
-                  </strong>
-                </li>
-              </ul>
+              // Same bar treatment as the main conversion funnel so the
+              // two funnels on this section read as one visual language
+              // (was a plain key-value list before the Phase-quiz pass).
+              <FunnelViz
+                steps={[
+                  { event: 'quiz_step', label: 'Started', persons: quizFunnel.started },
+                  { event: 'quiz_completed', label: 'Completed', persons: quizFunnel.completed },
+                  { event: 'quiz_recommendation_clicked', label: 'Clicked a pick', persons: quizFunnel.clicked },
+                ]}
+              />
             ) : POSTHOG_CONFIGURED ? (
               <p className="muted">No quiz data yet — events ship in PostHog Phase 1.</p>
             ) : (
@@ -1070,6 +1120,89 @@ export default async function DashboardPage({
               </>
             ) : POSTHOG_CONFIGURED ? (
               <p className="muted">No per-step data yet.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Quiz results mix — what the quiz recommends. The direct
+              health check on the Phase 231 scoring recalibration: the
+              original bug routed 60-70% of all paths to Hybrid, so a
+              single dominant slice here is the relapse signal. */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Quiz results mix · {rangeShort}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · unique persons</span>
+            </div>
+            {quizResultsMix ? (
+              quizResultsMix.length === 0 ? (
+                <p className="muted">No quiz completions in this window.</p>
+              ) : (
+                <QuizResultsMixCard rows={quizResultsMix} />
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Results-mix data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Quiz click targets — which result-page CTA earns the click
+              (matched collection vs best-match product vs alternates vs
+              showroom). Decides where result-page design effort goes. */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Quiz clicks by target · {rangeShort}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · result-page CTAs</span>
+            </div>
+            {quizClickTargets ? (
+              quizClickTargets.length === 0 ? (
+                <p className="muted">No recommendation clicks in this window.</p>
+              ) : (
+                <QuizClickTargetsTable rows={quizClickTargets} />
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Click-target data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Quiz → purchase — does the quiz sell mattresses? Same
+              same-session attribution as Search → purchase and
+              Top-converting articles, same caveat (see fetcher). */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Quiz → purchase · {rangeShort}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · same-session attribution</span>
+            </div>
+            {quizConversion ? (
+              quizConversion.sessions === 0 ? (
+                <p className="muted">No sessions with a completed quiz in this window.</p>
+              ) : (
+                <>
+                  <ul className="dash-list">
+                    <li>
+                      <span>Sessions with completed quiz</span>
+                      <strong>{quizConversion.sessions.toLocaleString()}</strong>
+                    </li>
+                    <li>
+                      <span>Ordered in same session</span>
+                      <strong>{quizConversion.orders.toLocaleString()}</strong>
+                    </li>
+                    <li>
+                      <span>Conversion</span>
+                      <strong>{quizConversion.conversionPct.toFixed(1)}%</strong>
+                    </li>
+                  </ul>
+                  <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-3)' }}>
+                    Same-session only — orders placed on a later visit aren&rsquo;t credited,
+                    so treat this as a floor. Mattress purchases routinely span visits.
+                  </p>
+                </>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Quiz-conversion data unavailable.</p>
             ) : (
               <PostHogConfigHint />
             )}
@@ -1811,6 +1944,121 @@ function DeviceTable({ rows }: { rows: Array<{ deviceType: string; sessions: num
 }
 
 /**
+ * Quiz results mix — donut + per-type breakdown. Reuses the traffic
+ * SourceDonut (it's slice-generic) and the same swatch palette so the
+ * two donuts on the page read as one design. Donut slices sort
+ * descending inside SourceDonut; rows arrive pre-sorted descending
+ * from the fetcher, so swatch index i matches slice color i.
+ *
+ * The dominance note fires when one type takes > 60% of completions —
+ * the symptom of the pre-Phase-231 tie-break bug (hybrid won 60-70%
+ * of all paths). Routine drift won't trip it; a scoring regression will.
+ */
+function QuizResultsMixCard({
+  rows,
+}: {
+  rows: Array<{ type: string; persons: number; skipped: number }>;
+}) {
+  const total = rows.reduce((s, r) => s + r.persons, 0);
+  const top = rows[0];
+  const dominant = total > 0 && rows.length > 1 && top.persons / total > 0.6;
+  return (
+    <>
+      <div className="dash-donut-row">
+        <SourceDonut
+          slices={rows.slice(0, 6).map((r) => ({ label: r.type, value: r.persons }))}
+          ariaLabel="Quiz recommendation mix"
+        />
+        <table className="dash-table dash-table-tight">
+          <thead>
+            <tr>
+              <th>Recommended</th>
+              <th>People</th>
+              <th>Share</th>
+              <th>Skipped</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => (
+              <tr key={r.type}>
+                <td>
+                  <span
+                    className="dash-donut-swatch"
+                    style={{ background: donutColor(i) }}
+                    aria-hidden="true"
+                  />
+                  {r.type}
+                </td>
+                <td className="tnum">{r.persons}</td>
+                <td className="tnum">{pct(r.persons, total)}</td>
+                <td className="tnum">{pct(r.skipped, r.persons)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {dominant ? (
+        <p className="dash-warn" style={{ fontSize: 12, marginTop: 'var(--s-3)', marginBottom: 0 }}>
+          {top.type} takes {pct(top.persons, total)} of completions — over the 60% dominance
+          threshold. The pre-recalibration tie-break bug looked exactly like this; worth
+          re-tracing the scoring in quiz-data.ts.
+        </p>
+      ) : (
+        <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-3)', marginBottom: 0 }}>
+          Skipped = completions via &ldquo;skip to results&rdquo;, so those recommendations rest
+          on thin answer data.
+        </p>
+      )}
+    </>
+  );
+}
+
+/**
+ * Quiz result-page click split. Raw `target` keys from the
+ * quiz_recommendation_clicked event mapped to merchant-readable labels;
+ * unknown keys (a future result-page CTA shipping before this map
+ * learns about it) fall through verbatim rather than vanishing.
+ * Share is click-based (not person-based) because one person clicking
+ * several targets is exactly the signal the split exists to show.
+ */
+const QUIZ_CLICK_TARGET_LABELS: Record<string, string> = {
+  primary_cta: 'Matched collection (primary CTA)',
+  product_hero: 'Best-match product',
+  alternate: 'Worth-comparing collection',
+  showroom: 'Find a showroom',
+};
+
+function QuizClickTargetsTable({
+  rows,
+}: {
+  rows: Array<{ target: string; persons: number; clicks: number }>;
+}) {
+  const totalClicks = rows.reduce((s, r) => s + r.clicks, 0);
+  return (
+    <table className="dash-table">
+      <thead>
+        <tr>
+          <th>Target</th>
+          <th>People</th>
+          <th>Clicks</th>
+          <th>Share</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.target}>
+            <td>{QUIZ_CLICK_TARGET_LABELS[r.target] ?? r.target}</td>
+            <td className="tnum">{r.persons}</td>
+            <td className="tnum">{r.clicks}</td>
+            <td className="tnum">{pct(r.clicks, totalClicks)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+/**
  * Showroom traffic table. One row per LA showroom (always renders all
  * 5, even when some have zero traffic in the window — easier to read
  * than a list that hides quiet branches). Pageviews + sessions per
@@ -2230,7 +2478,13 @@ function donutColor(i: number): string {
  *
  * SVG only — no charting library. Hides itself if total <= 0 (no data).
  */
-function SourceDonut({ slices }: { slices: Array<{ label: string; value: number }> }) {
+function SourceDonut({
+  slices,
+  ariaLabel = 'Traffic source breakdown',
+}: {
+  slices: Array<{ label: string; value: number }>;
+  ariaLabel?: string;
+}) {
   const total = slices.reduce((s, x) => s + x.value, 0);
   if (total <= 0) return null;
   const r = 38;
@@ -2245,7 +2499,7 @@ function SourceDonut({ slices }: { slices: Array<{ label: string; value: number 
       className="dash-donut"
       viewBox="0 0 100 100"
       role="img"
-      aria-label="Traffic source breakdown"
+      aria-label={ariaLabel}
     >
       {/* Track ring — guards against gaps from rounding */}
       <circle cx="50" cy="50" r={r} fill="none" stroke="var(--line)" strokeWidth="14" />
