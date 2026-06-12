@@ -66,6 +66,13 @@ export const DASHBOARD_SECTIONS: DashboardSection[] = [
     glyph: '⇲',
   },
   {
+    href: '/admin#section-chat',
+    slug: 'chat',
+    label: 'Chat assistant',
+    description: 'AI assistant usage, tool calls, reliability, chat-to-order conversion.',
+    glyph: '✦',
+  },
+  {
     href: '/admin#section-acquisition',
     slug: 'acquisition',
     label: 'Acquisition',

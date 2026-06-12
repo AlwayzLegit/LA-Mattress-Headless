@@ -24,6 +24,9 @@ import {
   postHogConfig,
 } from '@/lib/posthog-query';
 import {
+  getChatConversion,
+  getChatTopTools,
+  getChatUsage,
   getConversionFunnel,
   getConversionFunnelPrev,
   getDeviceBreakdown,
@@ -184,6 +187,9 @@ export default async function DashboardPage({
     quizResultsMix,
     quizClickTargets,
     quizConversion,
+    chatUsage,
+    chatTopTools,
+    chatConversion,
     revenueBySource,
     deviceBreakdown,
     showroomTraffic,
@@ -214,6 +220,9 @@ export default async function DashboardPage({
     POSTHOG_CONFIGURED ? getQuizResultsMix(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizClickTargets(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getQuizConversion(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getChatUsage(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getChatTopTools(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getChatConversion(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getRevenueBySource(days, 8).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getDeviceBreakdown(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED
@@ -1226,6 +1235,189 @@ export default async function DashboardPage({
               )
             ) : POSTHOG_CONFIGURED ? (
               <p className="muted">Device data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: Chat assistant --- */}
+      <section id="section-chat" className="dash-section">
+        <h2 className="dash-section-hd">Chat assistant</h2>
+        <div className="dash-grid">
+          {/* Usage — client events (persons) + server turn telemetry
+              (chat-session ids). The two id spaces don't join (see
+              lib/posthog-dashboard.ts), so counts sit side by side
+              rather than as a funnel. */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Chat usage · {rangeShort}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog</span>
+            </div>
+            {chatUsage ? (
+              <>
+                <ul className="dash-list">
+                  <li>
+                    <span>Opened the chat</span>
+                    <strong>{chatUsage.openedPersons.toLocaleString()}</strong>
+                  </li>
+                  <li>
+                    <span>Conversations (≥ 1 turn)</span>
+                    <strong>{chatUsage.conversations.toLocaleString()}</strong>
+                  </li>
+                  <li>
+                    <span>Assistant turns</span>
+                    <strong>
+                      {chatUsage.turns.toLocaleString()}
+                      {chatUsage.conversations > 0 ? (
+                        <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                          (~{(chatUsage.turns / chatUsage.conversations).toFixed(1)}/conv)
+                        </span>
+                      ) : null}
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Clicked a product card</span>
+                    <strong>{chatUsage.productClickPersons.toLocaleString()}</strong>
+                  </li>
+                </ul>
+                {chatUsage.productClickPersons === 0 ? (
+                  <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-3)' }}>
+                    Product-card clicks start counting on the first deploy carrying the
+                    chat_product_clicked event (shipped with this card).
+                  </p>
+                ) : null}
+              </>
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Chat usage data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Reliability — the operational view over chat_turn_completed:
+              error rate, latency, hosted-MCP fallback share, prompt-cache
+              efficiency. Thresholds are deliberately tight: a chat that
+              errors or stalls quietly burns the highest-intent shoppers. */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Chat reliability · {rangeShort}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · server turn telemetry</span>
+            </div>
+            {chatUsage ? (
+              chatUsage.turns === 0 ? (
+                <p className="muted">No assistant turns in this window.</p>
+              ) : (
+                <ul className="dash-list">
+                  <li className={chatUsage.errorTurns / chatUsage.turns > 0.02 ? 'dash-warn' : ''}>
+                    <span>Error rate</span>
+                    <strong>
+                      {pct(chatUsage.errorTurns, chatUsage.turns)}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                        ({chatUsage.errorTurns} of {chatUsage.turns})
+                      </span>
+                    </strong>
+                  </li>
+                  <li className={chatUsage.avgDurationMs > 15000 ? 'dash-warn' : ''}>
+                    <span>Avg turn time</span>
+                    <strong>{(chatUsage.avgDurationMs / 1000).toFixed(1)}s</strong>
+                  </li>
+                  <li className={chatUsage.toolCalls > 0 && chatUsage.fallbackCalls / chatUsage.toolCalls > 0.2 ? 'dash-warn' : ''}>
+                    <span>MCP → in-house fallback</span>
+                    <strong>
+                      {pct(chatUsage.fallbackCalls, chatUsage.toolCalls)}
+                      <span className="muted" style={{ fontWeight: 400, marginLeft: 6 }}>
+                        ({chatUsage.fallbackCalls} of {chatUsage.toolCalls} tool calls)
+                      </span>
+                    </strong>
+                  </li>
+                  <li>
+                    <span>Prompt-cache hit ratio</span>
+                    <strong>{(chatUsage.cacheHitRatio * 100).toFixed(0)}%</strong>
+                  </li>
+                </ul>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Chat telemetry unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Chat → purchase — same same-session attribution + caveat
+              as the quiz card, via the client-side chat_opened event. */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Chat → purchase · {rangeShort}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · same-session attribution</span>
+            </div>
+            {chatConversion ? (
+              chatConversion.sessions === 0 ? (
+                <p className="muted">No sessions opened the chat in this window.</p>
+              ) : (
+                <>
+                  <ul className="dash-list">
+                    <li>
+                      <span>Sessions that opened chat</span>
+                      <strong>{chatConversion.sessions.toLocaleString()}</strong>
+                    </li>
+                    <li>
+                      <span>Ordered in same session</span>
+                      <strong>{chatConversion.orders.toLocaleString()}</strong>
+                    </li>
+                    <li>
+                      <span>Conversion</span>
+                      <strong>{chatConversion.conversionPct.toFixed(1)}%</strong>
+                    </li>
+                  </ul>
+                  <p className="muted" style={{ fontSize: 12, marginTop: 'var(--s-3)' }}>
+                    Same-session only — like the quiz card, treat as a floor.
+                  </p>
+                </>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Chat-conversion data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
+
+          {/* Top tools — what the assistant actually does with its MCP
+              toolbox. A tool that never fires is either undiscoverable
+              from the system prompt or not worth its schema tokens. */}
+          <div className="dash-card dash-card-wide">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Chat tools used · {rangeShort}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>
+                PostHog · turns using each tool at least once
+              </span>
+            </div>
+            {chatTopTools ? (
+              chatTopTools.length === 0 ? (
+                <p className="muted">No tool calls in this window.</p>
+              ) : (
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Tool</th>
+                      <th>Turns</th>
+                      <th>Conversations</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {chatTopTools.map((t) => (
+                      <tr key={t.tool}>
+                        <td><code style={{ fontSize: 13 }}>{t.tool}</code></td>
+                        <td className="tnum">{t.turns.toLocaleString()}</td>
+                        <td className="tnum">{t.conversations.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Tool-usage data unavailable.</p>
             ) : (
               <PostHogConfigHint />
             )}

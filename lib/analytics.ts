@@ -181,6 +181,18 @@ export type AnalyticsEvent =
       };
     }
   | {
+      // Click on a product card the MCP chat assistant surfaced inside
+      // a message bubble. The chat counterpart of
+      // quiz_recommendation_clicked: without it the admin dashboard can
+      // count conversations but can't say whether the assistant's
+      // recommendations get acted on.
+      name: 'chat_product_clicked';
+      props: {
+        product_url: string;
+        vendor?: string;
+      };
+    }
+  | {
       // Newsletter (Klaviyo / Shopify customers list) signup success.
       // Fires from the inline newsletter-form post-/api/newsletter
       // 200 response. `source` distinguishes the placement so we can

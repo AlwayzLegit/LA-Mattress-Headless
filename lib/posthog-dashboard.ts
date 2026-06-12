@@ -665,6 +665,172 @@ export async function getQuizConversion(days = 30): Promise<QuizConversion | nul
 }
 
 /* ------------------------------------------------------------------------ *
+ * Chat assistant — usage + reliability, from two event families:
+ *
+ *   Client (person + $session_id scoped, lib/analytics track()):
+ *     chat_opened { pathname }, chat_dismissed { source, pathname },
+ *     chat_product_clicked { product_url, vendor }.
+ *   Server (lib/chat/telemetry.ts, distinct_id = chat-session-<uuid>):
+ *     chat_turn_completed { duration_ms, tool_calls_count, tools_called,
+ *     fallback_count, has_error, cache_hit_ratio, … }.
+ *
+ * The two families deliberately DON'T share an id space (server events
+ * use the chat-session UUID, not the storefront person), so the usage
+ * card reports them side by side rather than as a joined funnel.
+ * ------------------------------------------------------------------------ */
+
+export type ChatUsage = {
+  /** Unique storefront persons who opened the chat panel. */
+  openedPersons: number;
+  /** Unique persons who clicked a product card inside the chat. */
+  productClickPersons: number;
+  /** Distinct chat sessions with at least one completed turn. */
+  conversations: number;
+  /** Total assistant turns served. */
+  turns: number;
+  /** Turns that ended in an SSE error. */
+  errorTurns: number;
+  /** Mean wall-clock duration of a turn, ms. */
+  avgDurationMs: number;
+  /** Total tool calls across all turns. */
+  toolCalls: number;
+  /** Tool calls that fell back from hosted MCP to in-house tools. */
+  fallbackCalls: number;
+  /** Mean prompt-cache hit ratio across turns (0-1). */
+  cacheHitRatio: number;
+};
+
+export async function getChatUsage(days = 30): Promise<ChatUsage | null> {
+  // Two queries because the metrics live on different id spaces (see
+  // block comment): client events count storefront persons, server
+  // events count chat-session distinct_ids.
+  const [client, server] = await Promise.all([
+    hogQL(`
+      SELECT
+        count(DISTINCT if(event = 'chat_opened', person_id, NULL)) AS opened,
+        count(DISTINCT if(event = 'chat_product_clicked', person_id, NULL)) AS clicked
+      FROM events
+      WHERE event IN ('chat_opened', 'chat_product_clicked')
+        AND timestamp >= now() - INTERVAL ${days} DAY
+    `),
+    hogQL(`
+      SELECT
+        count(DISTINCT distinct_id) AS conversations,
+        count() AS turns,
+        countIf(toString(properties.has_error) = 'true') AS error_turns,
+        avg(toFloatOrZero(toString(properties.duration_ms))) AS avg_duration_ms,
+        sum(toFloatOrZero(toString(properties.tool_calls_count))) AS tool_calls,
+        sum(toFloatOrZero(toString(properties.fallback_count))) AS fallbacks,
+        avg(toFloatOrZero(toString(properties.cache_hit_ratio))) AS cache_hit
+      FROM events
+      WHERE event = 'chat_turn_completed'
+        AND timestamp >= now() - INTERVAL ${days} DAY
+    `),
+  ]);
+  if (!client || !server) return null;
+  const c = client.results[0] ?? [];
+  const s = server.results[0] ?? [];
+  return {
+    openedPersons: Number(c[0] ?? 0),
+    productClickPersons: Number(c[1] ?? 0),
+    conversations: Number(s[0] ?? 0),
+    turns: Number(s[1] ?? 0),
+    errorTurns: Number(s[2] ?? 0),
+    avgDurationMs: Number(s[3] ?? 0),
+    toolCalls: Number(s[4] ?? 0),
+    fallbackCalls: Number(s[5] ?? 0),
+    cacheHitRatio: Number(s[6] ?? 0),
+  };
+}
+
+/* ------------------------------------------------------------------------ *
+ * Chat top tools — which capabilities the assistant actually uses.
+ *
+ * tools_called is a JSON array of DISTINCT tool names per turn, so
+ * `turns` below reads as "turns that used this tool at least once".
+ * arrayJoin unnests the array; JSONExtractArrayRaw keeps the raw
+ * quoted elements, stripped with replaceAll (HogQL has no
+ * JSONExtractString overload for array elements). The coalesce is
+ * load-bearing: property access compiles to Nullable(String) and
+ * ClickHouse rejects Array inside Nullable ("Nested type Array(String)
+ * cannot be inside Nullable type" — observed live, 2026-06-12).
+ * ------------------------------------------------------------------------ */
+
+export type ChatToolRow = {
+  tool: string;
+  /** Turns in which the assistant called this tool at least once. */
+  turns: number;
+  /** Distinct chat sessions that used the tool. */
+  conversations: number;
+};
+
+export async function getChatTopTools(days = 30, limit = 10): Promise<ChatToolRow[] | null> {
+  const data = await hogQL(`
+    SELECT
+      replaceAll(arrayJoin(JSONExtractArrayRaw(coalesce(toString(properties.tools_called), '[]'))), '"', '') AS tool,
+      count() AS turns,
+      count(DISTINCT distinct_id) AS conversations
+    FROM events
+    WHERE event = 'chat_turn_completed'
+      AND timestamp >= now() - INTERVAL ${days} DAY
+      AND toString(properties.tools_called) NOT IN ('', '[]')
+    GROUP BY tool
+    ORDER BY turns DESC
+    LIMIT ${limit}
+  `);
+  if (!data) return null;
+  return data.results.map((r) => ({
+    tool: String(r[0] ?? ''),
+    turns: Number(r[1] ?? 0),
+    conversations: Number(r[2] ?? 0),
+  }));
+}
+
+/* ------------------------------------------------------------------------ *
+ * Chat → purchase — same-session attribution via the client-side
+ * chat_opened event (which carries $session_id; the server-side turn
+ * events don't). Same shape + caveat as getQuizConversion: only
+ * same-session client-fired orders are credited, so it's a floor.
+ * ------------------------------------------------------------------------ */
+
+export type ChatConversion = {
+  /** Sessions in the window that opened the chat. */
+  sessions: number;
+  /** Of those, sessions that also completed an order. */
+  orders: number;
+  conversionPct: number;
+};
+
+export async function getChatConversion(days = 30): Promise<ChatConversion | null> {
+  const data = await hogQL(`
+    WITH session_chat AS (
+      SELECT
+        properties.$session_id AS sid,
+        countIf(event = 'chat_opened') > 0 AS chat_open,
+        countIf(event = 'order_completed') > 0 AS converted
+      FROM events
+      WHERE timestamp >= now() - INTERVAL ${days} DAY
+        AND properties.$session_id != ''
+        AND event IN ('chat_opened', 'order_completed')
+      GROUP BY sid
+      HAVING chat_open
+    )
+    SELECT
+      count() AS sessions,
+      countIf(converted) AS orders,
+      round(100.0 * countIf(converted) / count(), 2) AS conversion_pct
+    FROM session_chat
+  `);
+  if (!data || !data.results[0]) return null;
+  const row = data.results[0];
+  return {
+    sessions: Number(row[0] ?? 0),
+    orders: Number(row[1] ?? 0),
+    conversionPct: Number(row[2] ?? 0),
+  };
+}
+
+/* ------------------------------------------------------------------------ *
  * Device breakdown — sessions + order_completed by $device_type
  *
  * Surfaces the mobile-vs-desktop conversion gap. Mobile traffic on a
