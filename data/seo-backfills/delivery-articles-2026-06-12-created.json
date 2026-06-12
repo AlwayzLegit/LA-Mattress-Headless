@@ -1,0 +1,38 @@
+{
+  "mode": "apply",
+  "batch": "delivery-content-2026-06-12",
+  "appliedVia": "Shopify MCP graphql_mutation (articleCreate / articleUpdate / articleDelete), session 2026-06-12",
+  "note": "Three new keyword-targeted delivery articles in mattress-buying-guide (same-day delivery LA / white-glove delivery / delivery-day prep checklist), cross-linked as a cluster with hero + featured images reused from existing branded CDN files. Plus two cleanups: the 2026-06-10 back-pain guide shipped with literal [LINK]...[/LINK] placeholder markers rendering as plain text (replaced with real anchors to /collections/hybrid-mattresses, /collections/cooling-mattresses, /pages/mattress-store-locations), and the accidental -1 duplicate of that article (created 2026-06-11) was deleted after its 301 redirect deployed in #443. All delivery facts sourced from existing site copy (4 PM same-day cutoff, $499 white-glove threshold, haul-away + recycling, 120-night exchange).",
+  "results": [
+    {
+      "handle": "same-day-mattress-delivery-los-angeles",
+      "id": "gid://shopify/Article/600600084733",
+      "fix": "created + published (primary keyword: same-day mattress delivery los angeles)",
+      "status": "APPLIED_VIA_MCP"
+    },
+    {
+      "handle": "white-glove-mattress-delivery-what-it-includes",
+      "id": "gid://shopify/Article/600600117501",
+      "fix": "created + published (primary keyword: white glove mattress delivery)",
+      "status": "APPLIED_VIA_MCP"
+    },
+    {
+      "handle": "how-to-prepare-for-mattress-delivery-checklist",
+      "id": "gid://shopify/Article/600600150269",
+      "fix": "created + published (primary keyword: prepare for mattress delivery)",
+      "status": "APPLIED_VIA_MCP"
+    },
+    {
+      "handle": "best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide",
+      "id": "gid://shopify/Article/600579145981",
+      "fix": "3x literal [LINK]anchor[/LINK] placeholders replaced with real <a href> internal links",
+      "status": "APPLIED_VIA_MCP"
+    },
+    {
+      "handle": "best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide-1",
+      "id": "gid://shopify/Article/600592679165",
+      "fix": "deleted (accidental duplicate; URL 301s to the original via redirects-manual.json since #443)",
+      "status": "APPLIED_VIA_MCP"
+    }
+  ]
+}
