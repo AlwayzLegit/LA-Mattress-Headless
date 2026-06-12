@@ -7,6 +7,7 @@ import { SITE_URL } from '@/lib/site-config';
 import { isNoindexArticle, isNoindexBlogIndex } from '@/lib/noindex-articles';
 import { CODED_PAGE_HANDLES, isCodedPage } from '@/lib/coded-pages';
 import redirectsJson from '@/data/url-inventory/redirects.json';
+import redirectsManualJson from '@/data/url-inventory/redirects-manual.json';
 
 // Legacy handles that 301 (same redirects.json that feeds
 // next.config + lib/sanitize). url-inventory still lists many of these
@@ -14,8 +15,15 @@ import redirectsJson from '@/data/url-inventory/redirects.json';
 // the sitemap advertises 32 URLs that permanently redirect — SEMrush
 // 20260518 "Incorrect pages found in sitemap.xml". A sitemap must only
 // list canonical 200 URLs. Path-keyed, trailing-slash-normalized.
+// The manual layer (redirects-manual.json) is included for the same
+// reason — a hand-added redirect that shadows a still-published
+// resource (e.g. the 20260612 duplicate back-pain article) must drop
+// out of the sitemap just like a Shopify-exported one.
 const REDIRECT_SOURCES: ReadonlySet<string> = new Set(
-  ((redirectsJson as { redirects?: { source?: string }[] }).redirects ?? [])
+  [
+    ...(((redirectsJson as { redirects?: { source?: string }[] }).redirects) ?? []),
+    ...(((redirectsManualJson as { redirects?: { source?: string }[] }).redirects) ?? []),
+  ]
     .map((r) => (typeof r?.source === 'string' ? r.source.replace(/\/+$/, '') || '/' : ''))
     .filter(Boolean),
 );
