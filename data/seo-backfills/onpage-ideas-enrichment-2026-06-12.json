@@ -1,0 +1,74 @@
+{
+ "mode": "apply",
+ "batch": "semrush-onpage-ideas-2026-06-12-phase5-enrichment",
+ "appliedVia": "Shopify MCP (articleUpdate body, metafieldsSet rich_text seo_content) + code (this PR), session 2026-06-12",
+ "note": "Phase 5 (content enrichment, top-N by priority) of the 20260612 On-Page ideas plan. Staleness gate first: the five size-guide articles flagged for low word count already carry the article-enrichment dimension tables/FAQ (live check: twin guide renders 1,771 words + enrichment block) and the tempur-pedic PLP already has a comprehensive seo_content -- all skipped as stale.",
+ "applied": [
+  {
+   "target": "article what-is-a-hybrid",
+   "id": "gid://shopify/Article/588942967037",
+   "fix": "FAQ +2 (pillow top vs hybrid; find-a-hybrid guidance) \u2014 covers pillow top / traditional innerspring / sleep experience",
+   "origLen": 11521,
+   "newLen": 12580,
+   "origSha": "98b09da1c9d7a0a9bf00954ac20e4a5cb0d3b716950f71e3f3bd0116b823d040",
+   "newSha": "b999077246595429bb262ae0ae383239cd07e33dd46343eb0af17e0a3511d668",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "target": "collection bed-frames custom.seo_content",
+   "id": "gid://shopify/Collection/465770447101",
+   "fix": "CREATED (was null, wc+rd flagged at 144 prio): frame-type guide, box-spring-vs-platform, size matching, FAQ -- covers platform/metal bed frame, headboard and footboard, beds storage, benefits of adjustable beds, king/queen bed frames, box spring",
+   "metafieldId": "gid://shopify/Metafield/41288923414781",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "target": "collection mattress-toppers custom.seo_content",
+   "id": "gid://shopify/Collection/401028972797",
+   "fix": "REPLACED thin boilerplate (wc+rd flagged at 270 prio): topper types incl. gel infused memory foam + latex topper, topper-vs-pad-vs-protector explainer (crib protector / safe sleeping), sizing incl. twin XL, FAQ",
+   "metafieldId": "gid://shopify/Metafield/38557852958973",
+   "status": "APPLIED_VIA_MCP"
+  },
+  {
+   "target": "/pages/mattress-sizes specialty section",
+   "id": "(code)",
+   "fix": "lib/mattress-sizes-data.ts SPECIALTY_SIZES + new section in mattress-sizes-page.tsx: short queen/RV queen, RV king, RV bunk, full XL, three quarter, Olympic queen -- covers camper mattress / measure your rv / 60 x 75 / custom size (340 prio)",
+   "status": "IN_THIS_PR"
+  }
+ ],
+ "deferredOrSkipped": [
+  {
+   "target": "size-guide articles (full-bed 638, twin 493, queen-guide 115, king-vs-cal-king 327, full-vs-queen 46)",
+   "reason": "stale flags: article-enrichment component already renders dimension tables + FAQ + cross-links; live-verified"
+  },
+  {
+   "target": "collection tempur-pedic-mattresses seo_content",
+   "reason": "stale: existing seo_content is comprehensive (collections, FAQ, locations); only lexeme-variant gaps remain"
+  },
+  {
+   "target": "articles best-mattress-for-bad-back (137) / best-cooling-mattress-guide (103) / best-hypoallergenic-pillows-and-bedsheets (84) bodies",
+   "reason": "adequate quality already (3,011 / 2,209 / 2,569 words, full FAQ structures); remaining related-word gaps are lexeme variants of concepts covered extensively. bad-back has minor cosmetic issues (mojibake chars corrected at render by repairMojibake; one 168-word paragraph) -- candidates for a future light pass, prepared edits documented in this record's prep shas",
+   "preparedShas": {
+    "best-mattress-for-bad-back": {
+     "origSha": "edc14b7d8f01742b8b9b732bded50615527c3bacb0bfac5439b66a3669c81ffb",
+     "newSha": "05868b91d801890a70d8dea0a5b32b327de42c0ecf0eda11d85e92961a0f9144"
+    },
+    "best-hypoallergenic-pillows-and-bedsheets": {
+     "origSha": "dc22856eb95bda12f7c2bb0c180881fef0c44db17ba763286a8dc904121312e3",
+     "newSha": "8aab57a14545aa88cfba7ee7c3cdf982c3764f7e5e12f056247de80a44fc22c8"
+    },
+    "best-cooling-mattress-guide": {
+     "origSha": "9f423edd0287e2bb72fb28ac1973b5b4b3adaf14b8774f80b2b70dde93aab10c",
+     "newSha": "0d638c817980ec384bd78cdac57d5daff091329e22438b13c404920ef422c002"
+    }
+   }
+  },
+  {
+   "target": "glendale CMS body",
+   "reason": "SEMrush related words for this page are a competitor's OEKO-TEX boilerplate -- junk signal"
+  },
+  {
+   "target": "readability-only flags on helix/king/stearns/cal-king/organic/innerspring PLPs + homepage + locations + melatonin + how-to-choose-a-mattress",
+   "reason": "curated content already; readability score is SEMrush's prose heuristic against listicle rivals, not a content gap"
+  }
+ ]
+}
