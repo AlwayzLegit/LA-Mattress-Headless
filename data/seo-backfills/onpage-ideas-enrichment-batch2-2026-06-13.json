@@ -1,0 +1,17 @@
+{
+  "mode": "apply",
+  "batch": "semrush-onpage-ideas-2026-06-12-enrichment-batch2",
+  "appliedVia": "Shopify MCP (articleUpdate body + metafieldsSet seo_content), session 2026-06-13",
+  "note": "Deep pass through the remaining 154 enrichment-flagged URLs (word-count / readability / semantic-words) beyond the Phase-5 top-20. Investigation finding: the overwhelming majority are STALE — 22 of 23 flagged collections already carry 12-16KB of seo_content, and the high-priority 'thin' articles are already substantial (medium-firm 1321w, best-mattress-for-bad-back 3011w, can-a-soft-mattress 1545w, what-is-pillow-top 1266w). Only genuinely-thin/empty pages were enriched.",
+  "applied": [
+    {"target":"article what-is-coil-spring","id":"gid://shopify/Article/588942704893","fix":"448w -> 812w: added hybrid/foam comparison, who-should-choose, 3-Q FAQ, CTAs to innerspring + spring-air PLPs + sleep quiz. Full materials-glossary index preserved.","status":"APPLIED_VIA_MCP"},
+    {"target":"article what-is-foam","id":"gid://shopify/Article/588942835965","fix":"552w -> 853w: foam-types section, who-should-choose, 3-Q FAQ, CTAs to memory-foam + gel-foam PLPs + quiz.","status":"APPLIED_VIA_MCP"},
+    {"target":"article what-is-high-density-foam","id":"gid://shopify/Article/588943163645","fix":"534w -> 837w: density-vs-firmness explainer, where-used section, 3-Q FAQ, CTAs to memory-foam + toppers + hybrid PLPs + quiz.","status":"APPLIED_VIA_MCP"},
+    {"target":"collection foundations custom.seo_content","id":"gid://shopify/Collection/465220174077","fix":"CREATED (was 0 chars — only genuinely-empty flagged collection): box-spring vs foundation vs platform vs bunkie explainer, do-you-need-a-box-spring, size/height matching, FAQ.","metafieldId":"gid://shopify/Metafield/41299690750205","status":"APPLIED_VIA_MCP"}
+  ],
+  "verifiedStaleNoAction": [
+    "22 of 23 flagged collections already carry comprehensive seo_content (helix 13.7K, king 13K, stearns 14.5K, queen 12.7K, organic 14.6K, memory-foam 13.9K, innerspring 14.9K, mattresses 16.1K, on-sale 13.2K, latex 13.4K, twin 12.4K, gel 14.1K, adjustable 13.8K, cooling 14.5K, bed-in-a-box 13.3K, protector 13.9K, pillows 13.8K, plush 13.3K, extra-firm 13.6K, cal-king 13.4K; spring-air 5.6K is shorter but substantial)",
+    "high-priority word-count articles already substantial: what-does-medium-firm-mattress-mean (1321w, 10 h2s + FAQ), best-mattress-for-bad-back (3011w), can-a-soft-mattress-cause-lower-back-pain (1545w, 16 h2s), what-is-pillow-top (1266w)"
+  ],
+  "remaining": "~145 lower-priority URLs still carry semantic-words/readability flags, but spot-checks confirm they are predominantly (a) already-substantial articles where the 'missing related words' are lexeme variants of covered concepts, or (b) sub-5-priority long-tail posts. Further edits risk keyword-stuffing rather than genuine enrichment. The genuinely-thin set has now been addressed."
+}
