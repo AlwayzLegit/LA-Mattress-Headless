@@ -39,6 +39,17 @@ type AllowSpec = {
 };
 
 const ROUTE_ALLOW: ReadonlyArray<readonly [RegExp, AllowSpec]> = [
+  // Homepage: no legitimate query surface at all. SEMrush 20260614
+  // flagged ~17 homepage param-variants as orphan "one internal link"
+  // pages — `/?amp;_fid=…&variant=…`, `/?_sid=…`, `/?variant=…`,
+  // `/?preview_key=…` (leaked Shopify-theme preview; the headless
+  // storefront previews via /api/preview, not a homepage query). The
+  // homepage was NOT in this list, so these passed through uncanonical
+  // and the page emitted a canonical to `/` — duplicate content instead
+  // of consolidation. Empty allow-set ⇒ any param on `/` is stripped
+  // and 301'd to the clean homepage.
+  [/^\/$/, { exact: new Set<string>() }],
+
   // PDPs: the only legitimate query is `?variant=<id>` selecting a
   // size/color combo. Anything else (utm_*, _fid, _ss, _sid, _psq,
   // _v, amp, gclid, fbclid, srsltid, etc.) is tracking noise.

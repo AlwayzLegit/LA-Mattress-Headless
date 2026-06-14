@@ -135,6 +135,35 @@ test('blog article: any param gets stripped', () => {
   assert.equal(r.clean, '');
 });
 
+/* --- / (homepage) — no query surface; all params stripped ------------- */
+
+test('homepage: bare / is canonical', () => {
+  const r = check('/', '');
+  assert.equal(r.shouldRedirect, false);
+  assert.equal(r.clean, '');
+});
+
+test('homepage: malformed `?amp;_fid=…&variant=…` strips everything → clean /', () => {
+  // SEMrush 20260614 orphan pattern: leaked Shopify-proxy homepage URL.
+  const r = check('/', 'amp&_fid=655160113&_ss=c&variant=42220959727869');
+  assert.equal(r.shouldRedirect, true);
+  assert.equal(r.clean, '');
+});
+
+test('homepage: ?variant=, ?_sid=, ?preview_key= are all noise → stripped', () => {
+  for (const qs of ['variant=4905191211037', '_sid=a5f38b4a7&_ss=r', 'preview_key=5b55ecf3']) {
+    const r = check('/', qs);
+    assert.equal(r.shouldRedirect, true, `should redirect for /?${qs}`);
+    assert.equal(r.clean, '', `should strip all for /?${qs}`);
+  }
+});
+
+test('homepage: the / entry does not over-match /products or /collections', () => {
+  // /^\/$/ is anchored, so deeper routes keep their own allow-specs.
+  assert.equal(check('/products/foo', 'variant=42').shouldRedirect, false);
+  assert.equal(check('/collections/mattresses', 'sort_by=manual').shouldRedirect, false);
+});
+
 /* --- /search ---------------------------------------------------------- */
 
 test('search: ?q=foo is canonical', () => {
