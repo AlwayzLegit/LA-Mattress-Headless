@@ -1,0 +1,25 @@
+{
+  "mode": "apply",
+  "batch": "semrush-20260614-duplicate-article-consolidation",
+  "appliedVia": "redirects-manual.json (301 redirect-shadow), session 2026-06-14",
+  "finding": "SEMrush 20260614 'pages with only one internal link' surfaced a content-cannibalization problem: near-identical localized articles auto-created in tight bursts (Jun 7-13). Three 'best mattress for back pain in Los Angeles' articles, two 'best cooling mattress in LA' articles, and a 2026 duplicate of the established king-vs-california-king guide. They were orphaned partly because they post-date the inventory snapshot AND because they compete with each other.",
+  "consolidation": [
+    {"keptCanonical": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide (id 600579145981)",
+     "reason": "already enriched in #443 (literal [LINK] placeholders replaced with real internal anchors)",
+     "redirected": [
+       "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-2026-buying-guide (id 600579080445)",
+       "/blogs/mattress-buying-guide/the-best-mattress-for-back-pain-in-los-angeles-a-local-sleep-experts-guide (id 600601559293)"
+     ]},
+    {"keptCanonical": "/blogs/sleep-blog/best-cooling-mattress-for-hot-sleepers-in-los-angeles-2026-guide (id 600579113213)",
+     "reason": "curated sleep-blog vs legacy beds-mattresses blog",
+     "redirected": ["/blogs/beds-mattresses/best-cooling-mattress-for-hot-los-angeles-summers-a-local-buyers-guide (id 600596349181)"]},
+    {"keptCanonical": "/blogs/mattress-buying-guide/king-vs-california-king (id 588913803517)",
+     "reason": "established 2023 article, covered by the ArticleEnrichment component (size-guide cluster)",
+     "redirected": ["/blogs/mattress-buying-guide/king-vs-california-king-mattress-which-size-is-right-for-you-2026-guide (id 600555159805)"]}
+  ],
+  "mechanism": "redirect-shadow via redirects-manual.json -> 301 at the edge (next.config redirects), excluded from sitemap (REDIRECT_SOURCES), and skipped in related-articles rotation. Reversible. Shopify articles left published (URLs 301); recommend deleting the 4 duplicate articles in Shopify once redirects deploy.",
+  "followups": [
+    "The 2 KEPT canonicals (back-pain local-buyers-guide, cooling sleep-blog) post-date the 2026-05-25 inventory snapshot, so they have no sibling inbound links yet. The nightly refresh-inventory workflow (04:00 UTC) will add them to the snapshot -> related-rotation links them and the 4 shadowed dupes auto-drop from sitemap.",
+    "ROOT CAUSE NOT ADDRESSED: something is auto-generating these localized duplicates (user is handling the source separately per the 20260614 consolidation decision)."
+  ]
+}

@@ -36,6 +36,26 @@
       "source": "/pages/faq/best-mattress-for-couples",
       "destination": "/collections/mattresses-for-couples",
       "note": "SEMrush 20260612 Ideas: legacy FAQ URL 404s (117 priority). Route to the couples PLP."
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-2026-buying-guide",
+      "destination": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide",
+      "note": "SEMrush 20260614 dedup: one of THREE near-identical 'back pain in LA' articles auto-created Jun 10-13. Consolidated to the enriched local-buyers-guide canonical (real internal links from #443)."
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/the-best-mattress-for-back-pain-in-los-angeles-a-local-sleep-experts-guide",
+      "destination": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide",
+      "note": "SEMrush 20260614 dedup: third near-identical 'back pain in LA' article (Jun 13). Consolidated to the local-buyers-guide canonical."
+    },
+    {
+      "source": "/blogs/beds-mattresses/best-cooling-mattress-for-hot-los-angeles-summers-a-local-buyers-guide",
+      "destination": "/blogs/sleep-blog/best-cooling-mattress-for-hot-sleepers-in-los-angeles-2026-guide",
+      "note": "SEMrush 20260614 dedup: duplicate 'cooling mattress in LA' article in the legacy beds-mattresses blog. Consolidated to the sleep-blog canonical."
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/king-vs-california-king-mattress-which-size-is-right-for-you-2026-guide",
+      "destination": "/blogs/mattress-buying-guide/king-vs-california-king",
+      "note": "SEMrush 20260614 dedup: 2026 duplicate of the established (2023) king-vs-california-king guide, which is the article-enrichment-covered canonical. Consolidated."
     }
   ]
 }
