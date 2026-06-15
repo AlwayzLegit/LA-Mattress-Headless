@@ -56,6 +56,11 @@
       "source": "/blogs/mattress-buying-guide/king-vs-california-king-mattress-which-size-is-right-for-you-2026-guide",
       "destination": "/blogs/mattress-buying-guide/king-vs-california-king",
       "note": "SEMrush 20260614 dedup: 2026 duplicate of the established (2023) king-vs-california-king guide, which is the article-enrichment-covered canonical. Consolidated."
+    },
+    {
+      "source": "/blogs/beds-mattresses/best-mattress-for-back-pain-los-angeles",
+      "destination": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide",
+      "note": "SEMrush 20260614 dedup (round 2): the duplicate generator (author 'LA Mattress Store') created TWO MORE back-pain-LA articles on Jun 14, AFTER #450 consolidated the cluster. This one (beds-mattresses, Jun 14 18:54) -> the established local-buyers-guide canonical."
     }
   ]
 }
