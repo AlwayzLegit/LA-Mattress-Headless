@@ -1,0 +1,15 @@
+{
+  "mode": "apply",
+  "batch": "semrush-20260614-duplicate-article-deletion",
+  "appliedVia": "Shopify MCP articleDelete, session 2026-06-15",
+  "note": "Deleted the 6 redirect-shadowed duplicate articles consolidated in #443/#450/#451 (user-approved). Each URL is 301'd at the edge to its canonical via redirects-manual.json (deployed), so deletion causes NO 404 window. Pre-delete safety check confirmed every target resolves to a canonical and none is itself a canonical. The redirect-manual entries are LEFT IN PLACE so the URLs keep 301-ing after deletion.",
+  "deleted": [
+    {"id": "gid://shopify/Article/600555159805", "handle": "king-vs-california-king-mattress-which-size-is-right-for-you-2026-guide", "redirectsTo": "/blogs/mattress-buying-guide/king-vs-california-king"},
+    {"id": "gid://shopify/Article/600579080445", "handle": "best-mattress-for-back-pain-in-los-angeles-a-2026-buying-guide", "redirectsTo": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide"},
+    {"id": "gid://shopify/Article/600596349181", "handle": "best-cooling-mattress-for-hot-los-angeles-summers-a-local-buyers-guide", "redirectsTo": "/blogs/sleep-blog/best-cooling-mattress-for-hot-sleepers-in-los-angeles-2026-guide"},
+    {"id": "gid://shopify/Article/600601559293", "handle": "the-best-mattress-for-back-pain-in-los-angeles-a-local-sleep-experts-guide", "redirectsTo": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide"},
+    {"id": "gid://shopify/Article/600609063165", "handle": "best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide-1", "redirectsTo": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide"},
+    {"id": "gid://shopify/Article/600609095933", "handle": "best-mattress-for-back-pain-los-angeles", "redirectsTo": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide"}
+  ],
+  "rootCauseStillLive": "The generator (author 'LA Mattress Store') will likely recreate these; the redirect-shadows persist and will catch recreations at the same handles. Permanent fix requires disabling the generator + rotating SHOPIFY_ADMIN_TOKEN (owner actions)."
+}
