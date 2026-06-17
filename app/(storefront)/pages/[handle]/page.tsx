@@ -8,7 +8,7 @@ import { getPageByHandle, getCollectionByHandle } from '@/lib/shopify';
 import type { ProductSummary } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, formatPhone, type Showroom } from '@/lib/showrooms';
-import { findNeighborhood, getNearestShowrooms, type Neighborhood } from '@/lib/neighborhoods';
+import { findNeighborhood, getNearestShowrooms, getNearbyNeighborhoods, type Neighborhood } from '@/lib/neighborhoods';
 import { truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase, ensureTitleDistinctFromH1 } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
@@ -409,6 +409,10 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
   // template was emitting none, so cms pages had no rich-result eligibility
   // beyond the generic site-wide Organization/WebSite from layout.tsx.
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
+  // Optional code-side H1 override (lib/page-seo-overrides.ts). Lets a
+  // page carry a query-aligned visible heading distinct from its SERP
+  // <title>; falls back to the case-normalized merchant title.
+  const h1 = getPageSeoOverride(page.handle)?.h1 ?? cleanTitle;
   // "Last updated" feels like clutter on most marketing copy but it's
   // load-bearing on warranty / policy / returns pages where freshness
   // matters legally and for SEO. Show it on all cms pages — it's a
@@ -427,7 +431,7 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
           <span className="sep" aria-hidden="true">/</span>
           <span>{toSentenceCase(stripBrandSuffix(page.title))}</span>
         </nav>
-        <h1 className="h1" style={{ marginTop: 'var(--s-4)' }}>{cleanTitle}</h1>
+        <h1 className="h1" style={{ marginTop: 'var(--s-4)' }}>{h1}</h1>
         {updatedLabel ? (
           <p className="muted" style={{ fontSize: 13, marginTop: 'var(--s-2)' }}>
             <time dateTime={page.updatedAt}>Last updated {updatedLabel}</time>
@@ -1181,6 +1185,10 @@ function NeighborhoodPage({
 }) {
   const nearest = getNearestShowrooms(neighborhood);
   const primaryShowroom = nearest[0]; // first listed is the "primary" CTA
+  // Sibling neighborhoods served by the same showroom(s) — cross-links
+  // that turn the 27 isolated neighborhood pages into a connected cluster
+  // (Semrush Linking score / crawl-depth fix). See getNearbyNeighborhoods.
+  const nearbyNeighborhoods = getNearbyNeighborhoods(neighborhood);
 
   return (
     <main className="container">
@@ -1253,6 +1261,34 @@ function NeighborhoodPage({
               </Link>
               .
             </p>
+          </section>
+        ) : null}
+
+        {nearbyNeighborhoods.length > 0 ? (
+          <section className="section showroom-neighborhoods" style={{ marginTop: 'var(--s-7)' }} aria-labelledby="np-nearby-h">
+            <div className="eyebrow">Nearby neighborhoods</div>
+            <h2 id="np-nearby-h" className="h2">
+              {primaryShowroom
+                ? `Other areas near the ${primaryShowroom.area} store`
+                : 'Other LA neighborhoods we serve'}
+            </h2>
+            <p className="muted" style={{ maxWidth: '60ch' }}>
+              We deliver to these nearby neighborhoods from the same showroom — open
+              one for local delivery details and the brands we keep on the floor.
+            </p>
+            <ul
+              className="showroom-chips"
+              style={{ marginTop: 'var(--s-4)' }}
+              aria-label={`Other LA neighborhoods served near ${neighborhood.name}`}
+            >
+              {nearbyNeighborhoods.map((n) => (
+                <li key={n.handle}>
+                  <Link href={`/pages/${n.handle}`} className="showroom-chip showroom-chip-link">
+                    {n.name} mattress store
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </section>
         ) : null}
 

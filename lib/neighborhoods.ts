@@ -27,7 +27,7 @@
  * page that names their neighborhood and points them to a real store.
  */
 
-import { findShowroom, type Showroom } from './showrooms';
+import { findShowroom, type Showroom } from './showrooms.ts';
 
 export type Neighborhood = {
   /** Shopify Page handle. Merchant creates the page at /pages/{handle}. */
@@ -268,6 +268,31 @@ export function getNearestShowrooms(n: Neighborhood): Showroom[] {
   return n.nearestShowroomHandles
     .map((h) => findShowroom(h))
     .filter((s): s is Showroom => Boolean(s));
+}
+
+/**
+ * Sibling neighborhoods that share at least one nearest showroom with the
+ * given neighborhood (i.e. the other areas served by the same physical
+ * store), excluding the neighborhood itself. Returned in NEIGHBORHOODS
+ * order, capped at `limit`.
+ *
+ * Why this exists: the 27 neighborhood pages were a weak internal-link
+ * hub — each earned only ~2 inbound links (the locations-index grid +
+ * its covering showroom's "Neighborhoods we serve" list) and linked out
+ * only to showrooms / the quiz, never to each other. Semrush flagged the
+ * site's lowest thematic score on Linking (84) with crawl-depth /
+ * one-internal-link / orphaned-page notices concentrated on under-linked
+ * surfaces. Cross-linking neighborhoods that share a store turns the set
+ * into a connected cluster (genuinely related: same showroom, same
+ * delivery area) so link equity and crawl priority flow between them.
+ */
+export function getNearbyNeighborhoods(n: Neighborhood, limit = 6): Neighborhood[] {
+  const showroomSet = new Set(n.nearestShowroomHandles);
+  return NEIGHBORHOODS.filter(
+    (other) =>
+      other.handle !== n.handle &&
+      other.nearestShowroomHandles.some((h) => showroomSet.has(h)),
+  ).slice(0, limit);
 }
 
 /** Reverse lookup: all neighborhoods that list the given showroom handle
