@@ -9,6 +9,7 @@ import type { ProductSummary } from '@/lib/shopify';
 import { publishedPages } from '@/lib/inventory';
 import { SHOWROOMS, findShowroom, formatPhone, type Showroom } from '@/lib/showrooms';
 import { findNeighborhood, getNearestShowrooms, getNearbyNeighborhoods, type Neighborhood } from '@/lib/neighborhoods';
+import { LOCAL_GUIDES } from '@/lib/local-guides';
 import { truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase, ensureTitleDistinctFromH1 } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
@@ -1289,6 +1290,25 @@ function NeighborhoodPage({
                 </li>
               ))}
             </ul>
+          </section>
+        ) : null}
+
+        {LOCAL_GUIDES.length > 0 ? (
+          <section className="section" style={{ marginTop: 'var(--s-7)' }} aria-labelledby="np-guides-h">
+            <div className="eyebrow">Local mattress guides</div>
+            <h2 id="np-guides-h" className="h2">Buying guides for Los Angeles sleepers</h2>
+            <p className="muted" style={{ maxWidth: '60ch' }}>
+              Local picks and advice from our sleep team — read up before you visit the showroom.
+            </p>
+            <div className="nf-grid" style={{ marginTop: 'var(--s-5)' }}>
+              {LOCAL_GUIDES.map((g) => (
+                <Link key={g.href} href={g.href} className="nf-tile">
+                  <div className="nf-tile-label">{g.title}</div>
+                  <div className="nf-tile-sub muted">{g.blurb}</div>
+                  <Icon name="arrow-right" size={16} />
+                </Link>
+              ))}
+            </div>
           </section>
         ) : null}
 
