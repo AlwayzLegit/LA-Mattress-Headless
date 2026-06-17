@@ -11,6 +11,7 @@ import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/l
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { pickPrimaryCollection } from '@/lib/product-jsonld';
+import { buildProductAboutSentences } from '@/lib/product-copy';
 import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
@@ -228,6 +229,45 @@ function SpecStrip({ specs }: { specs: Product['specs'] }) {
   );
 }
 
+/**
+ * Body fallback for PDPs with no merchant-authored Shopify description.
+ * Renders a factual paragraph derived from the product's own specs (see
+ * lib/product-copy.ts) plus the store's real delivery / financing /
+ * showroom facts — so the "About" section never silently vanishes and
+ * leaves a chrome-only, thin page (SEMrush issue 112). The store-facts
+ * paragraph also drops three topically-relevant internal links
+ * (financing, locations, primary collection) onto every otherwise
+ * link-poor PDP. Renders nothing when the product has no populated specs
+ * to describe — same as the previous `null` branch.
+ */
+function ProductAboutFallback({ product }: { product: Product }) {
+  const about = buildProductAboutSentences(product);
+  if (about.length === 0) return null;
+  const primary = pickPrimaryCollection(product.collections);
+  return (
+    <section className="pdp-description">
+      <div className="eyebrow">Details</div>
+      <h2 className="h2">About this mattress</h2>
+      <div className="rte">
+        <p>{about.join(' ')}</p>
+        <p>
+          Order it for free white-glove delivery anywhere in Los Angeles — setup and
+          old-mattress haul-away included, same-day when you order by 4&nbsp;pm.{' '}
+          <Link href="/pages/mattress-store-financing">0% APR financing</Link> is available
+          through Synchrony and Acima, and you can try it in person at any of our{' '}
+          <Link href="/pages/mattress-store-locations">5 Los Angeles showrooms</Link>.
+          {primary ? (
+            <>
+              {' '}
+              Browse more in <Link href={`/collections/${primary.handle}`}>{primary.title}</Link>.
+            </>
+          ) : null}
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function ProductView({ product, related }: { product: Product; related: ProductSummary[] }) {
   const minPrice = Number.parseFloat(product.priceRange.minVariantPrice.amount);
   const inStock = product.variants.some((v) => v.availableForSale !== false);
@@ -370,13 +410,15 @@ function ProductView({ product, related }: { product: Product; related: ProductS
           <PdpMaterials product={product} />
           <SpecTable product={product} />
 
-          {product.descriptionHtml ? (
+          {product.descriptionHtml?.trim() ? (
             <section className="pdp-description">
               <div className="eyebrow">Details</div>
               <h2 className="h2">About this mattress</h2>
               <div className="rte" dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(product.descriptionHtml)) }} />
             </section>
-          ) : null}
+          ) : (
+            <ProductAboutFallback product={product} />
+          )}
         </div>
       </div>
 
