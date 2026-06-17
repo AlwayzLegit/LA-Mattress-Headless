@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify blogs inventory snapshot",
-  "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-05-25T10:17:08.178Z",
+  "$source": "Shopify Admin GraphQL via Shopify MCP (additive refresh of post-2026-05-25 articles; nightly scripts/pull-inventory.mjs full refresh pending SHOPIFY_ADMIN_TOKEN rotation)",
+  "$pulledAt": "2026-06-17T19:47:44.995Z",
   "$count": 7,
   "blogs": [
     {
@@ -7665,6 +7665,30 @@
           "isPublished": true,
           "publishedAt": "2026-06-12T16:03:59Z",
           "updatedAt": "2026-06-12T16:04:00Z"
+        },
+        {
+          "handle": "best-mattress-for-back-pain-los-angeles",
+          "id": "gid://shopify/Article/600620466429",
+          "title": "Best Mattress for Back Pain in Los Angeles",
+          "isPublished": true,
+          "publishedAt": "2026-06-17T03:05:45Z",
+          "updatedAt": "2026-06-17T03:05:46Z"
+        },
+        {
+          "handle": "best-mattress-for-lower-back-pain-los-angeles",
+          "id": "gid://shopify/Article/600618828029",
+          "title": "Best Mattress for Lower Back Pain in Los Angeles",
+          "isPublished": true,
+          "publishedAt": "2026-06-16T19:27:00Z",
+          "updatedAt": "2026-06-16T19:27:01Z"
+        },
+        {
+          "handle": "best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide",
+          "id": "gid://shopify/Article/600579145981",
+          "title": "Best Mattress for Back Pain in Los Angeles: A Local Buyer's Guide",
+          "isPublished": true,
+          "publishedAt": "2026-06-10T15:11:47Z",
+          "updatedAt": "2026-06-12T16:04:52Z"
         }
       ]
     },
@@ -8177,6 +8201,14 @@
           "isPublished": true,
           "publishedAt": "2024-04-21T19:55:30Z",
           "updatedAt": "2026-04-05T04:03:09Z"
+        },
+        {
+          "handle": "best-cooling-mattress-for-hot-sleepers-in-los-angeles-2026-guide",
+          "id": "gid://shopify/Article/600579113213",
+          "title": "Best Cooling Mattress for Hot Sleepers in Los Angeles (2026 Guide)",
+          "isPublished": true,
+          "publishedAt": "2026-06-10T15:11:26Z",
+          "updatedAt": "2026-06-11T16:49:08Z"
         }
       ]
     },
