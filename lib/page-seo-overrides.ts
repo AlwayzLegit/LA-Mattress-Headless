@@ -27,6 +27,16 @@ export type PageSeoOverride = {
   title?: string;
   /** Replaces page.seo.description, page.bodySummary, and the description fallback. */
   description?: string;
+  /**
+   * Replaces the visible <h1> on the DefaultPage CMS template (the
+   * `toSentenceCase(stripBrandSuffix(page.title))` fallback). The <title>
+   * tag and the H1 are tuned independently — Semrush's `duplicate_h1_title`
+   * check wants them distinct — so this lets a page carry a query-aligned
+   * H1 without dragging the SERP title along (or vice-versa). Only consumed
+   * by the generic DefaultPage; specialized templates (showroom, sale,
+   * neighborhood, guide) build their own H1 from structured data.
+   */
+  h1?: string;
 };
 
 export const PAGE_SEO_OVERRIDES: Record<string, PageSeoOverride> = {
