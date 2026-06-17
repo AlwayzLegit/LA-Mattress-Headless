@@ -19,6 +19,8 @@
 import type { getPageByHandle } from '@/lib/shopify';
 import { SHOWROOMS, findShowroom } from '@/lib/showrooms';
 import { findNeighborhood, getNearestShowrooms } from '@/lib/neighborhoods';
+import { isServicePage } from '@/lib/service-pages';
+import { buildServicePageLd } from '@/lib/service-page-jsonld';
 import { getShowroomFaq, getCmsPageFaq } from '@/lib/faq-extra';
 import { faqJsonLd } from '@/lib/faq';
 import { stripBrandSuffix, toSentenceCase, firstNonEmpty } from '@/lib/seo';
@@ -422,7 +424,19 @@ export function getPageJsonLd(page: Page, aggregate?: ShopAggregate | null): Pag
     ];
   }
 
-  // 5. Default CMS page — pass the aggregate through so /pages/X CMS
+  // 5. Service pages (financing, delivery, guarantees, warranty, about,
+  //    contact) — generic WebPage + BreadcrumbList + FAQ, PLUS a domain
+  //    Service / FinancialProduct node describing the offering so the
+  //    financing + delivery URLs carry topical schema tied to the
+  //    sitewide Organization (SEO plan Phase 4). about + contact have no
+  //    distinct offering and fall through to WebPage-only.
+  if (isServicePage(page.handle)) {
+    const base = genericPageLd(page, aggregate);
+    const domain = buildServicePageLd(page.handle);
+    return domain ? [...base, { key: 'ld-service', data: domain }] : base;
+  }
+
+  // 6. Default CMS page — pass the aggregate through so /pages/X CMS
   //    pages emit aggregateRating via mainEntity → Organization. Covers
   //    the Semrush 20260528 "add aggregate rating" flag on informational
   //    pages like /pages/mattress-sizes that aren't a showroom or sale.
