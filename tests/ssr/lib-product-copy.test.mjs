@@ -11,7 +11,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const { buildProductAboutSentences } = await import('../../lib/product-copy.ts');
+const { buildProductAboutSentences, htmlTextLength, isThinDescription, THIN_DESCRIPTION_CHARS, buildProductFaq } =
+  await import('../../lib/product-copy.ts');
 
 /** Minimal Product-shaped fixture; only the fields the builder reads. */
 function makeProduct(over = {}) {
@@ -85,4 +86,41 @@ test('returns [] when there is nothing factual to say', () => {
   // specs/type at all it should still be a single safe sentence, never empty chrome.
   assert.equal(s.length, 1);
   assert.match(s[0], /is a mattress/);
+});
+
+test('htmlTextLength strips tags + entities and counts visible text', () => {
+  assert.equal(htmlTextLength(''), 0);
+  assert.equal(htmlTextLength(null), 0);
+  assert.equal(htmlTextLength(undefined), 0);
+  // "Hi there" = 8 chars after tag strip + whitespace collapse.
+  assert.equal(htmlTextLength('<p>Hi&nbsp;<strong>there</strong></p>'), 8);
+});
+
+test('isThinDescription is true below threshold, false at/above it', () => {
+  const long = `<p>${'word '.repeat(100)}</p>`; // ~500 chars
+  assert.ok(htmlTextLength(long) >= THIN_DESCRIPTION_CHARS);
+  assert.equal(isThinDescription(long), false);
+  assert.equal(isThinDescription('<p>Memory foam mattress.</p>'), true);
+  assert.equal(isThinDescription(''), true);
+});
+
+test('buildProductFaq interpolates the product name and warranty term', () => {
+  const faq = buildProductFaq(makeProduct());
+  assert.ok(faq.length >= 4);
+  // Each question names the product (distinct per PDP) or is a store-policy Q.
+  assert.ok(faq.some((f) => f.q.includes('Eclipse Glacier')));
+  const warranty = faq.find((f) => /warranty/i.test(f.q));
+  assert.match(warranty.a, /10-year manufacturer warranty/);
+  // Answers are plain prose (no inline markup) for clean FAQPage JSON-LD.
+  for (const f of faq) assert.ok(!/[<>]/.test(f.a), `answer should be markup-free: ${f.a}`);
+});
+
+test('buildProductFaq omits the warranty question when no warranty spec', () => {
+  const faq = buildProductFaq(
+    makeProduct({ specs: { heightInches: 12, firmness: 'Medium', materialType: 'Memory Foam', warrantyYears: null, trialNights: 120 } }),
+  );
+  assert.ok(!faq.some((f) => /warranty/i.test(f.q)));
+  // Comfort-exchange answer falls back to 120 nights when trial is set.
+  const exchange = faq.find((f) => /isn't comfortable/.test(f.q));
+  assert.match(exchange.a, /120-night comfort exchange/);
 });

@@ -11,7 +11,8 @@ import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/l
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { pickPrimaryCollection } from '@/lib/product-jsonld';
-import { buildProductAboutSentences } from '@/lib/product-copy';
+import { buildProductAboutSentences, isThinDescription, buildProductFaq } from '@/lib/product-copy';
+import { renderFaqAnswer } from '@/lib/faq-render';
 import { Icon } from '@/app/_components/icon';
 import { ReviewsBadge } from '@/app/_components/reviews-badge';
 import { RecordRecentlyViewed, RecentlyViewedRail } from '@/app/_components/recently-viewed';
@@ -230,39 +231,85 @@ function SpecStrip({ specs }: { specs: Product['specs'] }) {
 }
 
 /**
- * Body fallback for PDPs with no merchant-authored Shopify description.
+ * Store-facts paragraph: the store's real delivery / financing / showroom
+ * facts, plus three topically-relevant internal links (financing,
+ * locations, primary collection) onto an otherwise link-poor PDP. Shared
+ * by the empty-description fallback and the thin-description top-up so the
+ * copy stays in one place. Returns a bare <p> — callers wrap it in `.rte`.
+ */
+function PdpStoreFacts({ product }: { product: Product }) {
+  const primary = pickPrimaryCollection(product.collections);
+  return (
+    <p>
+      Order it for free white-glove delivery anywhere in Los Angeles — setup and
+      old-mattress haul-away included, same-day when you order by 4&nbsp;pm.{' '}
+      <Link href="/pages/mattress-store-financing">0% APR financing</Link> is available
+      through Synchrony and Acima, and you can try it in person at any of our{' '}
+      <Link href="/pages/mattress-store-locations">5 Los Angeles showrooms</Link>.
+      {primary ? (
+        <>
+          {' '}
+          Browse more in <Link href={`/collections/${primary.handle}`}>{primary.title}</Link>.
+        </>
+      ) : null}
+    </p>
+  );
+}
+
+/**
+ * Body fallback for PDPs with NO merchant-authored Shopify description.
  * Renders a factual paragraph derived from the product's own specs (see
- * lib/product-copy.ts) plus the store's real delivery / financing /
- * showroom facts — so the "About" section never silently vanishes and
- * leaves a chrome-only, thin page (SEMrush issue 112). The store-facts
- * paragraph also drops three topically-relevant internal links
- * (financing, locations, primary collection) onto every otherwise
- * link-poor PDP. Renders nothing when the product has no populated specs
- * to describe — same as the previous `null` branch.
+ * lib/product-copy.ts) plus the shared store-facts paragraph — so the
+ * "About" section never silently vanishes and leaves a chrome-only, thin
+ * page (SEMrush issue 112). Renders nothing when the product has no
+ * populated specs to describe (same as the previous `null` branch).
  */
 function ProductAboutFallback({ product }: { product: Product }) {
   const about = buildProductAboutSentences(product);
   if (about.length === 0) return null;
-  const primary = pickPrimaryCollection(product.collections);
   return (
     <section className="pdp-description">
       <div className="eyebrow">Details</div>
       <h2 className="h2">About this mattress</h2>
       <div className="rte">
         <p>{about.join(' ')}</p>
-        <p>
-          Order it for free white-glove delivery anywhere in Los Angeles — setup and
-          old-mattress haul-away included, same-day when you order by 4&nbsp;pm.{' '}
-          <Link href="/pages/mattress-store-financing">0% APR financing</Link> is available
-          through Synchrony and Acima, and you can try it in person at any of our{' '}
-          <Link href="/pages/mattress-store-locations">5 Los Angeles showrooms</Link>.
-          {primary ? (
-            <>
-              {' '}
-              Browse more in <Link href={`/collections/${primary.handle}`}>{primary.title}</Link>.
-            </>
-          ) : null}
-        </p>
+        <PdpStoreFacts product={product} />
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Per-product FAQ block (SEMrush 20260616 audit). Adds visible body text
+ * + a FAQPage structured-data block (emitted in product-jsonld.ts) to
+ * every PDP. Store-policy + warranty Q&A with the product name
+ * interpolated so each block is distinct. Reuses the sitewide
+ * <details>-based FAQ markup + styling (app/_components/sections/faq.tsx).
+ */
+function PdpFaq({ product }: { product: Product }) {
+  const items = buildProductFaq(product);
+  if (items.length === 0) return null;
+  return (
+    <section className="pdp-section pdp-faq">
+      <div className="pdp-section-head">
+        <div>
+          <div className="eyebrow">FAQ</div>
+          <h2 className="h2">Common questions</h2>
+        </div>
+      </div>
+      <div className="faq-list">
+        {items.map((it, i) => (
+          <details key={it.q} className="faq-item" open={i === 0}>
+            <summary className="faq-q">
+              <span>{it.q}</span>
+              <span className="faq-icon faq-icon-closed"><Icon name="plus" size={18} /></span>
+              <span className="faq-icon faq-icon-open"><Icon name="minus" size={18} /></span>
+            </summary>
+            <div className="faq-a">
+              <p>{renderFaqAnswer(it.a)}</p>
+            </div>
+          </details>
+        ))}
       </div>
     </section>
   );
@@ -415,10 +462,20 @@ function ProductView({ product, related }: { product: Product; related: ProductS
               <div className="eyebrow">Details</div>
               <h2 className="h2">About this mattress</h2>
               <div className="rte" dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(product.descriptionHtml)) }} />
+              {/* Short merchant copy still leaves the page thin (SEMrush
+                  issue 112) — top it up with the store-facts paragraph +
+                  internal links rather than overriding the merchant prose. */}
+              {isThinDescription(product.descriptionHtml) ? (
+                <div className="rte" style={{ marginTop: 'var(--s-4)' }}>
+                  <PdpStoreFacts product={product} />
+                </div>
+              ) : null}
             </section>
           ) : (
             <ProductAboutFallback product={product} />
           )}
+
+          <PdpFaq product={product} />
         </div>
       </div>
 
