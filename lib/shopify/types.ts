@@ -181,6 +181,13 @@ export type Collection = {
    * the storefront falls back to descriptionHtml.
    */
   seoContentJson: string | null;
+  /**
+   * Custom on-page H1 (`custom.seo_h1` metafield), merchant-editable in
+   * Admin. When null/empty the PLP renders the bare `title`. Shopify is
+   * the source of truth for this — Phase 2 of the SEO-ownership migration
+   * retired the old lib/collection-seo-overrides.ts code layer.
+   */
+  seoH1: string | null;
 };
 
 export type AvailableFilterValue = {
@@ -234,6 +241,13 @@ export type Page = {
   // the metafields, in which case the SaleEvent LD is omitted).
   saleStartsAt: string | null;
   saleEndsAt: string | null;
+  /**
+   * Custom on-page H1 (`custom.seo_h1` metafield), merchant-editable in
+   * Admin. When null/empty the DefaultPage template renders the
+   * case-normalized page title. Shopify source of truth (Phase 2 of the
+   * SEO-ownership migration; retired lib/page-seo-overrides.ts).
+   */
+  seoH1: string | null;
 };
 
 export type ArticleAuthor = { name: string; bio: string | null };

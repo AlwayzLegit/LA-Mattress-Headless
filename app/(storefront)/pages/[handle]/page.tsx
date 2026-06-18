@@ -44,7 +44,6 @@ import { GuidePage } from '@/app/_components/sections/guide-page';
 import { isGuidePage, GUIDE_PAGES } from '@/lib/guide-pages';
 import { MattressSizesPage } from '@/app/_components/sections/mattress-sizes-page';
 import { MattressTypesPage } from '@/app/_components/sections/mattress-types-page';
-import { getPageSeoOverride } from '@/lib/page-seo-overrides';
 import { LegalPage } from '@/app/_components/sections/legal-page';
 import { isLegalPage, LEGAL_PAGES } from '@/lib/legal-pages';
 import { ContactPage } from '@/app/_components/sections/contact-page';
@@ -153,21 +152,12 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // seo.title to the headline; ensureTitleDistinctFromH1 appends the
   // keyword-bearing brand suffix only when it would otherwise collapse.
   // Caps to TITLE_MAX internally (replaces the prior capTitle call).
+  // SEO is Shopify-owned: page.seo.title comes from the merchant's
+  // Admin SEO field (global.title_tag) — the SEMrush-tuned values were
+  // migrated there in the Phase 2 SEO-ownership migration that retired
+  // lib/page-seo-overrides.ts. ensureTitleDistinctFromH1 stays as
+  // render-time normalization (keeps <title> distinct from the H1).
   let title = ensureTitleDistinctFromH1(firstNonEmpty(page.seo.title, titleFallback), page.title);
-  // Phase 308 SEO overrides: per-handle title / description hard-codes
-  // win over both `page.seo.*` (which the merchant authored) and the
-  // fallbacks above. Lives in lib/page-seo-overrides.ts so the
-  // override table is a single edit point rather than scattered
-  // conditionals. Same pattern as lib/collection-seo-overrides.ts for
-  // collections + the hard-coded TITLE / DESCRIPTION on the homepage
-  // (page.tsx in this segment). Title override is applied first so
-  // the sale-year-graft below still gets to run on year-stamped sale
-  // pages even when an override is present (none of the current
-  // overrides target sale pages, but the contract is forward-safe).
-  const seoOverride = getPageSeoOverride(page.handle);
-  if (seoOverride?.title) {
-    title = seoOverride.title;
-  }
   // SEMrush 20260521_1: `/pages/memorial-day-sale-2026` and
   // `/collections/memorial-day-sale` both rendered "Memorial Day Sale |
   // LA Mattress Store" — the merchant authored both with the same
@@ -192,7 +182,6 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   const neighborhood = findNeighborhood(page.handle);
   const description = truncDescription(
     firstNonEmpty(
-      seoOverride?.description,
       page.seo.description,
       page.bodySummary,
       neighborhood?.defaultBlurb,
@@ -410,10 +399,10 @@ function DefaultPage({ page }: { page: Awaited<ReturnType<typeof getPageByHandle
   // template was emitting none, so cms pages had no rich-result eligibility
   // beyond the generic site-wide Organization/WebSite from layout.tsx.
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
-  // Optional code-side H1 override (lib/page-seo-overrides.ts). Lets a
-  // page carry a query-aligned visible heading distinct from its SERP
-  // <title>; falls back to the case-normalized merchant title.
-  const h1 = getPageSeoOverride(page.handle)?.h1 ?? cleanTitle;
+  // Optional custom H1 from the `custom.seo_h1` metafield (merchant-editable
+  // in Admin); falls back to the case-normalized page title. Shopify source
+  // of truth (retired lib/page-seo-overrides.ts).
+  const h1 = page.seoH1 ?? cleanTitle;
   // "Last updated" feels like clutter on most marketing copy but it's
   // load-bearing on warranty / policy / returns pages where freshness
   // matters legally and for SEO. Show it on all cms pages — it's a

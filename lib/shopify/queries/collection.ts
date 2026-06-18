@@ -49,6 +49,9 @@ const GET_COLLECTION = /* GraphQL */ `
       # the storefront falls back to collection.descriptionHtml (the
       # legacy built-in field still populated on ~25 collections).
       seoContent: metafield(namespace: "custom", key: "seo_content") { value }
+      # Custom on-page H1 (Phase 2 SEO-ownership migration). Replaces the
+      # retired lib/collection-seo-overrides.ts h1 layer.
+      seoH1: metafield(namespace: "custom", key: "seo_h1") { value }
       products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse, filters: $filters) {
         nodes { ...ProductSummaryFields }
         pageInfo { hasNextPage endCursor }
@@ -76,9 +79,10 @@ type RawSummary = Omit<ProductSummary, 'reviews'> & {
 
 type Raw = {
   collection:
-    | (Omit<CollectionWithProducts, 'products' | 'introShort' | 'seoContentJson'> & {
+    | (Omit<CollectionWithProducts, 'products' | 'introShort' | 'seoContentJson' | 'seoH1'> & {
         introShort?: { value: string } | null;
         seoContent?: { value: string } | null;
+        seoH1?: { value: string } | null;
         products: {
           nodes: RawSummary[];
           pageInfo: { hasNextPage: boolean; endCursor: string | null };
@@ -133,11 +137,12 @@ export async function getCollectionByHandle({
     { tags: [`collection:${handle}`] },
   );
   if (!data.collection) return null;
-  const { introShort: rawIntro, seoContent: rawSeo, ...rest } = data.collection;
+  const { introShort: rawIntro, seoContent: rawSeo, seoH1: rawH1, ...rest } = data.collection;
   return {
     ...rest,
     introShort: rawIntro?.value?.trim() || null,
     seoContentJson: rawSeo?.value?.trim() || null,
+    seoH1: rawH1?.value?.trim() || null,
     products: {
       ...data.collection.products,
       nodes: data.collection.products.nodes.map(liftSummarySpecs),
