@@ -21,9 +21,10 @@
  *             og_image (file reference, optional)
  *   Content → Metaobjects → Homepage SEO → the single entry.
  *
- * Caching: 1-hour revalidate (matches the homepage ISR window), tagged
- * `metaobject:homepage_seo` so an /api/revalidate-tag webhook can drop
- * edit-to-live lag to seconds later.
+ * Caching: 5-minute revalidate (matches the homepage ISR window in
+ * app/(storefront)/page.tsx), tagged `metaobject:homepage_seo`. Metaobject
+ * topics aren't available in Shopify's Notifications webhook UI, so this
+ * short window — not a webhook — is what bounds edit-to-live lag at ~5 min.
  */
 
 import { shopifyFetch } from '../client';
@@ -67,7 +68,7 @@ export async function getHomepageSeo(): Promise<HomepageSeo | null> {
   let data: Raw;
   try {
     data = await shopifyFetch<Raw>(QUERY, {}, {
-      next: { revalidate: 3600, tags: ['metaobject:homepage_seo'] },
+      next: { revalidate: 300, tags: ['metaobject:homepage_seo'] },
     });
   } catch {
     return null;
