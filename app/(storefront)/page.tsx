@@ -80,13 +80,23 @@ export async function generateMetadata(): Promise<Metadata> {
 // and emits on every page. Per-template structured data (Product, CollectionPage,
 // BlogPosting, etc.) is emitted by each route's page.tsx.
 
-// Hourly ISR. The homepage had no page-level revalidate, so its static HTML
+// 5-minute ISR. The homepage had no page-level revalidate, so its static HTML
 // only regenerated on a rebuild or an explicit revalidatePath('/') — which
 // meant content/section changes (hero, brands, reviews, why-us, etc.) didn't
-// surface without a manual flush. An hourly window lets edits appear on their
-// own; Shopify content edits still bust it immediately via the /api/revalidate
-// webhook (which now also revalidates '/').
-export const revalidate = 3600;
+// surface without a manual flush.
+//
+// Window is 5 min (was 1h) so homepage SEO edits — the title/description in
+// the `homepage_seo` metaobject, read by generateMetadata() above — go live
+// within ~5 min. That metaobject can't be webhook-busted: Shopify's
+// Settings → Notifications UI exposes no metaobject topics, and creating the
+// subscription via a managed connector's API yields a non-retrievable signing
+// secret (see app/api/revalidate/route.ts). The short ISR window is the
+// no-webhook path to fast propagation. Each homepage section fetch sets its
+// own revalidate in the query layer, so this only affects regen cadence of
+// the static HTML, not per-section Shopify API call volume. Collection/product
+// edits still bust instantly via the /api/revalidate webhook (which also
+// revalidates '/').
+export const revalidate = 300;
 
 export default async function Home() {
   // Phase 267: hero slides come from `hero_slide` Shopify metaobjects
