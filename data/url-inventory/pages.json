@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify pages inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-05-27T10:00:00.000Z",
+  "$pulledAt": "2026-06-18T12:08:13.940Z",
   "$count": 147,
   "pages": [
     {
@@ -10,7 +10,8 @@
       "title": "Mattress FAQ | Common Questions Answered",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-satisfaction-assurance",
@@ -18,7 +19,8 @@
       "title": "Mattress Satisfaction Assurance",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:15:39Z"
+      "updatedAt": "2026-04-06T05:15:39Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-delivery",
@@ -26,7 +28,8 @@
       "title": "Mattress Delivery Service | Fast & Reliable",
       "isPublished": true,
       "publishedAt": "2026-05-11T21:19:04Z",
-      "updatedAt": "2026-05-15T07:27:12Z"
+      "updatedAt": "2026-06-08T18:58:51Z",
+      "availableAt": null
     },
     {
       "handle": "about-us_old",
@@ -34,7 +37,8 @@
       "title": "About Us",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:01Z"
+      "updatedAt": "2026-03-26T08:12:01Z",
+      "availableAt": null
     },
     {
       "handle": "sale-event",
@@ -42,7 +46,8 @@
       "title": "Sale Event",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:15:39Z"
+      "updatedAt": "2026-04-06T05:15:39Z",
+      "availableAt": null
     },
     {
       "handle": "labor-day-mattress-sales",
@@ -50,7 +55,8 @@
       "title": "Top Labor Day Mattress Sales Near You - Best Deals of 2023",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:17:39Z"
+      "updatedAt": "2026-04-06T05:17:39Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-contact",
@@ -58,7 +64,8 @@
       "title": "Contact LA Mattress Store | We're Here to Help",
       "isPublished": true,
       "publishedAt": "2016-02-19T00:23:00Z",
-      "updatedAt": "2026-05-20T16:00:44Z"
+      "updatedAt": "2026-06-08T19:20:03Z",
+      "availableAt": null
     },
     {
       "handle": "best-mattress-store-west-la",
@@ -66,7 +73,8 @@
       "title": "Best Mattress Store in West LA on Pico Blvd",
       "isPublished": true,
       "publishedAt": "2016-03-02T00:24:00Z",
-      "updatedAt": "2026-05-17T04:13:37Z"
+      "updatedAt": "2026-05-17T04:13:37Z",
+      "availableAt": null
     },
     {
       "handle": "best-mattress-store-la-brea",
@@ -74,7 +82,8 @@
       "title": "Best Mattress Store in Hancock Park on La Brea Ave",
       "isPublished": true,
       "publishedAt": "2016-03-02T06:18:00Z",
-      "updatedAt": "2026-05-17T04:13:37Z"
+      "updatedAt": "2026-05-17T04:13:37Z",
+      "availableAt": null
     },
     {
       "handle": "santa-monica-mattress-store",
@@ -82,7 +91,8 @@
       "title": "LA Mattresses Store near Santa Monica, CA",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:05Z"
+      "updatedAt": "2026-03-26T08:13:05Z",
+      "availableAt": null
     },
     {
       "handle": "koreatown-best-mattress-store",
@@ -90,7 +100,8 @@
       "title": "Best Mattress Store in Koreatown on Western Ave",
       "isPublished": true,
       "publishedAt": "2016-03-02T07:05:00Z",
-      "updatedAt": "2026-05-17T04:13:37Z"
+      "updatedAt": "2026-05-28T11:23:44Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-studio-city",
@@ -98,7 +109,8 @@
       "title": "Best Mattress Store in Studio City on Ventura Blvd",
       "isPublished": true,
       "publishedAt": "2016-03-02T07:29:00Z",
-      "updatedAt": "2026-05-17T13:43:02Z"
+      "updatedAt": "2026-05-17T13:43:02Z",
+      "availableAt": null
     },
     {
       "handle": "popular-searches",
@@ -106,7 +118,8 @@
       "title": "Popular Searches",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-recycling-fee",
@@ -114,7 +127,8 @@
       "title": "About Mattress Recycling Fee",
       "isPublished": true,
       "publishedAt": "2016-05-06T02:25:00Z",
-      "updatedAt": "2026-05-22T13:37:12Z"
+      "updatedAt": "2026-06-08T19:00:03Z",
+      "availableAt": null
     },
     {
       "handle": "terms-conditions",
@@ -122,7 +136,8 @@
       "title": "Terms & Conditions",
       "isPublished": true,
       "publishedAt": "2016-07-19T04:49:00Z",
-      "updatedAt": "2026-05-22T13:37:21Z"
+      "updatedAt": "2026-06-08T19:00:49Z",
+      "availableAt": null
     },
     {
       "handle": "free-120-night-comfort-guarantee",
@@ -130,7 +145,8 @@
       "title": "Free 120 Night Comfort Guarantee",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2025-01-04T11:13:06Z"
+      "updatedAt": "2025-01-04T11:13:06Z",
+      "availableAt": null
     },
     {
       "handle": "privacy-policy",
@@ -138,7 +154,8 @@
       "title": "Privacy Policy",
       "isPublished": true,
       "publishedAt": "2016-07-19T05:01:00Z",
-      "updatedAt": "2026-05-22T13:37:29Z"
+      "updatedAt": "2026-05-22T13:37:29Z",
+      "availableAt": null
     },
     {
       "handle": "low-price-guarantee",
@@ -146,7 +163,8 @@
       "title": "Experience Peace of Mind with LA Mattress Store's 1-Year Price Guarantee",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:02Z"
+      "updatedAt": "2026-03-26T08:13:02Z",
+      "availableAt": null
     },
     {
       "handle": "returns",
@@ -154,7 +172,8 @@
       "title": "Returns",
       "isPublished": true,
       "publishedAt": "2016-07-19T05:20:00Z",
-      "updatedAt": "2026-05-22T13:37:38Z"
+      "updatedAt": "2026-05-22T13:37:38Z",
+      "availableAt": null
     },
     {
       "handle": "policies",
@@ -162,7 +181,8 @@
       "title": "LA Mattress Store Policies | Returns, Exchanges & Delivery Information",
       "isPublished": true,
       "publishedAt": "2016-07-19T05:31:00Z",
-      "updatedAt": "2026-05-14T07:00:18Z"
+      "updatedAt": "2026-05-14T07:00:18Z",
+      "availableAt": null
     },
     {
       "handle": "terms-of-use",
@@ -170,7 +190,8 @@
       "title": "LA Mattress Store Terms of Use | Website & Service Agreement",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:03Z"
+      "updatedAt": "2026-03-26T08:13:03Z",
+      "availableAt": null
     },
     {
       "handle": "lowest-price-guarantee",
@@ -178,7 +199,8 @@
       "title": "Lowest Price Guarantee",
       "isPublished": true,
       "publishedAt": "2016-10-29T21:04:00Z",
-      "updatedAt": "2026-05-22T13:37:47Z"
+      "updatedAt": "2026-06-08T18:57:57Z",
+      "availableAt": null
     },
     {
       "handle": "year-end-mattress-sales-big-mattress-deals",
@@ -186,7 +208,8 @@
       "title": "Year End Mattress Sales & Big Mattress Deals!",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:15:39Z"
+      "updatedAt": "2026-04-06T05:15:39Z",
+      "availableAt": null
     },
     {
       "handle": "yelp-review-santa-monica",
@@ -194,7 +217,8 @@
       "title": "LA Mattress Santa Monica Yelp Reviews",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:57Z"
+      "updatedAt": "2026-03-26T08:12:57Z",
+      "availableAt": null
     },
     {
       "handle": "yelp-review-west-la-pico-blvd",
@@ -202,7 +226,8 @@
       "title": "Mattress Store West LA Pico Blvd Yelp Reviews",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:57Z"
+      "updatedAt": "2026-03-26T08:12:57Z",
+      "availableAt": null
     },
     {
       "handle": "yelp-review-hancock-park-la-brea",
@@ -210,7 +235,8 @@
       "title": "LA Mattress Hancock Park Yelp Reviews",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:56Z"
+      "updatedAt": "2026-03-26T08:12:56Z",
+      "availableAt": null
     },
     {
       "handle": "yelp-review-koreatown-western",
@@ -218,7 +244,8 @@
       "title": "LA Mattress Koreatown, Western 201 Yelp Reviews",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:56Z"
+      "updatedAt": "2026-03-26T08:12:56Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-in-glendale",
@@ -226,7 +253,8 @@
       "title": "Best Mattress Store in Glendale on Central Ave",
       "isPublished": true,
       "publishedAt": "2017-05-26T04:10:00Z",
-      "updatedAt": "2026-05-17T13:43:02Z"
+      "updatedAt": "2026-05-28T11:23:55Z",
+      "availableAt": null
     },
     {
       "handle": "welcome-to-the-community",
@@ -234,7 +262,8 @@
       "title": "WELCOME TO THE COMMUNITY",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:15:39Z"
+      "updatedAt": "2026-04-06T05:15:39Z",
+      "availableAt": null
     },
     {
       "handle": "choose-a-career-with-la-mattress",
@@ -242,7 +271,8 @@
       "title": "LA Mattress Stores Career",
       "isPublished": true,
       "publishedAt": "2017-11-30T02:13:00Z",
-      "updatedAt": "2026-05-14T06:59:10Z"
+      "updatedAt": "2026-06-08T18:57:16Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-locations",
@@ -250,7 +280,8 @@
       "title": "Find a Mattress Store Near You | LA Mattress Stores Locations",
       "isPublished": true,
       "publishedAt": "2023-06-19T22:35:11Z",
-      "updatedAt": "2026-05-23T13:10:16Z"
+      "updatedAt": "2026-06-08T19:43:26Z",
+      "availableAt": null
     },
     {
       "handle": "spring-air-limited-warranty-and-mattress-care-guidelines-ensuring-your-sleep-experience",
@@ -258,7 +289,8 @@
       "title": "Spring Air Limited Warranty and Mattress Care Guidelines: Ensuring Your Sleep Experience",
       "isPublished": true,
       "publishedAt": "2023-06-28T21:24:35Z",
-      "updatedAt": "2023-07-02T03:36:13Z"
+      "updatedAt": "2023-07-02T03:36:13Z",
+      "availableAt": null
     },
     {
       "handle": "guidelines-stearns-foster-mattress-limited-warranty-information",
@@ -266,7 +298,8 @@
       "title": "Guidelines Stearns & Foster Mattress Limited Warranty Information",
       "isPublished": true,
       "publishedAt": "2023-06-29T05:55:31Z",
-      "updatedAt": "2023-07-02T03:35:12Z"
+      "updatedAt": "2023-07-02T03:35:12Z",
+      "availableAt": null
     },
     {
       "handle": "tempur-pedic-warranty",
@@ -274,7 +307,8 @@
       "title": "Tempur-Pedic Warranty Information",
       "isPublished": true,
       "publishedAt": "2023-07-01T18:42:04Z",
-      "updatedAt": "2023-08-10T20:52:26Z"
+      "updatedAt": "2023-08-10T20:52:26Z",
+      "availableAt": null
     },
     {
       "handle": "chattam-wells-10-year-non-prorated-limited-warranty-information",
@@ -282,7 +316,8 @@
       "title": "Chattam & Wells 10-Year Non-Prorated Limited Warranty Information",
       "isPublished": true,
       "publishedAt": "2023-07-01T18:54:48Z",
-      "updatedAt": "2023-07-02T03:33:44Z"
+      "updatedAt": "2023-07-02T03:33:44Z",
+      "availableAt": null
     },
     {
       "handle": "20-year-diamond-mattress-and-foundation-limited-warranty",
@@ -290,7 +325,8 @@
       "title": "20-Year Diamond Mattress and Foundation Limited Warranty",
       "isPublished": true,
       "publishedAt": "2023-07-02T22:33:28Z",
-      "updatedAt": "2026-05-22T13:37:56Z"
+      "updatedAt": "2026-05-22T13:37:56Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-stores-near-me-west-los-angeles",
@@ -298,7 +334,8 @@
       "title": "Mattress Stores Near Me - West Los Angeles",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:15:39Z"
+      "updatedAt": "2026-04-06T05:15:39Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-stores-near-me-studio-city-ca",
@@ -306,7 +343,8 @@
       "title": "Mattress Stores Near Me - Studio City, CA",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:15:39Z"
+      "updatedAt": "2026-04-06T05:15:39Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-sale",
@@ -314,7 +352,8 @@
       "title": "Mattress Sale | Exclusive Discounts & Offers",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-sizes",
@@ -322,7 +361,8 @@
       "title": "Mattress Sizes & Bed Size Chart: Twin to Cal King Dimensions",
       "isPublished": true,
       "publishedAt": "2023-08-06T03:21:33Z",
-      "updatedAt": "2026-05-23T14:00:27Z"
+      "updatedAt": "2026-05-28T11:24:34Z",
+      "availableAt": null
     },
     {
       "handle": "love-your-bed-guarantee",
@@ -330,7 +370,8 @@
       "title": "Love Your Bed Guarantee",
       "isPublished": true,
       "publishedAt": "2023-08-07T21:31:41Z",
-      "updatedAt": "2026-05-20T15:31:38Z"
+      "updatedAt": "2026-06-08T19:01:32Z",
+      "availableAt": null
     },
     {
       "handle": "about",
@@ -338,7 +379,8 @@
       "title": "Welcome to LA Mattress Store – Your Trusted Los Angeles Mattress Destination",
       "isPublished": true,
       "publishedAt": "2023-08-08T19:35:23Z",
-      "updatedAt": "2026-05-12T06:48:48Z"
+      "updatedAt": "2026-05-12T06:48:48Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-types",
@@ -346,7 +388,8 @@
       "title": "Guide to Mattress Types | Find Your Perfect Mattress",
       "isPublished": true,
       "publishedAt": "2023-08-09T21:19:19Z",
-      "updatedAt": "2026-05-11T21:17:51Z"
+      "updatedAt": "2026-05-11T21:17:51Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-brands",
@@ -354,7 +397,8 @@
       "title": "Best Mattress Brands | Quality & Comfort",
       "isPublished": true,
       "publishedAt": "2023-08-09T21:23:53Z",
-      "updatedAt": "2026-05-16T19:17:44Z"
+      "updatedAt": "2026-05-16T19:17:44Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-guides",
@@ -362,7 +406,8 @@
       "title": "Mattress Buying Guides | Expert Advice",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:17:39Z"
+      "updatedAt": "2026-04-06T05:17:39Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-accessories",
@@ -370,7 +415,8 @@
       "title": "Mattress Accessories | Bed Frames, Pillows & More",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-blog",
@@ -378,7 +424,8 @@
       "title": "LA Mattress Blog | Sleep Tips, Mattress Buying Guide & More",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:17:39Z"
+      "updatedAt": "2026-04-06T05:17:39Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-sale",
@@ -386,7 +433,8 @@
       "title": "Mattress Store Sale | Exclusive Deals",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:11:58Z"
+      "updatedAt": "2026-03-26T08:11:58Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-reviews",
@@ -394,7 +442,8 @@
       "title": "Customer Reviews | LA Mattress Store",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-blog",
@@ -402,7 +451,8 @@
       "title": "Mattress Store Blog | Sleep Tips & Trends",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:02Z"
+      "updatedAt": "2026-03-26T08:12:02Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-financing",
@@ -410,7 +460,8 @@
       "title": "Mattress Financing Options | Affordable Sleep",
       "isPublished": true,
       "publishedAt": "2023-08-09T22:56:21Z",
-      "updatedAt": "2026-05-20T15:34:32Z"
+      "updatedAt": "2026-05-20T15:34:32Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-reviews",
@@ -418,7 +469,8 @@
       "title": "Customer Mattress Reviews | Real Opinions",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:11:59Z"
+      "updatedAt": "2026-03-26T08:11:59Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-near-me",
@@ -426,7 +478,8 @@
       "title": "Find a Mattress Store Near You",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:11:56Z"
+      "updatedAt": "2026-03-26T08:11:56Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-local-offers",
@@ -434,7 +487,8 @@
       "title": "Local Offers at LA Mattress Store Near You",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-in-store-services",
@@ -442,7 +496,8 @@
       "title": "In-Store Services at LA Mattress Store Near Me",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-community-events",
@@ -450,7 +505,8 @@
       "title": "Community Events",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-same-day-delivery",
@@ -458,7 +514,8 @@
       "title": "Same-Day Delivery | LA Mattress Store Near You",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-find-your-store",
@@ -466,7 +523,8 @@
       "title": "Find Your LA Mattress Store Near You",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:11:55Z"
+      "updatedAt": "2026-03-26T08:11:55Z",
+      "availableAt": null
     },
     {
       "handle": "tempur-pedic-faq",
@@ -474,7 +532,8 @@
       "title": "Tempur-Pedic FAQs | Answers to Your Questions",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "tempur-pedic-sleep-technology",
@@ -482,7 +541,8 @@
       "title": "Tempur-Pedic Sleep Technology | Innovation & Comfort",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "tempur-pedic-store-locator",
@@ -490,7 +550,8 @@
       "title": "Tempur-Pedic Store Locator | Find Us Near You",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "tempur-pedic-customer-reviews",
@@ -498,7 +559,8 @@
       "title": "Tempur-Pedic Customer Reviews | Real Feedback",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "tempur-pedic-buying-guide",
@@ -506,7 +568,8 @@
       "title": "Tempur-Pedic Buying Guide | Choose Wisely",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:16:47Z"
+      "updatedAt": "2026-04-06T05:16:47Z",
+      "availableAt": null
     },
     {
       "handle": "warranty",
@@ -514,7 +577,8 @@
       "title": "Warranty Information and Coverage For All Brands",
       "isPublished": true,
       "publishedAt": "2023-08-11T23:05:43Z",
-      "updatedAt": "2026-05-20T15:55:08Z"
+      "updatedAt": "2026-06-08T19:02:22Z",
+      "availableAt": null
     },
     {
       "handle": "harvest-mattress-warranty",
@@ -522,7 +586,8 @@
       "title": "25-YEAR Harvest Mattress Limited Warranty",
       "isPublished": true,
       "publishedAt": "2023-08-11T23:47:59Z",
-      "updatedAt": "2026-05-22T16:12:22Z"
+      "updatedAt": "2026-05-22T16:12:22Z",
+      "availableAt": null
     },
     {
       "handle": "faq",
@@ -530,7 +595,8 @@
       "title": "Frequently Asked Questions",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:08Z"
+      "updatedAt": "2026-03-26T08:12:08Z",
+      "availableAt": null
     },
     {
       "handle": "best-organic-mattresses",
@@ -538,7 +604,8 @@
       "title": "Best Organic Mattresses",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "review-submission",
@@ -546,7 +613,8 @@
       "title": "Review Submission",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:02Z"
+      "updatedAt": "2026-03-26T08:13:02Z",
+      "availableAt": null
     },
     {
       "handle": "black-friday-sale",
@@ -554,7 +622,8 @@
       "title": "Black Friday Deals on Mattresses & Adjustable Beds",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:17:39Z"
+      "updatedAt": "2026-04-06T05:17:39Z",
+      "availableAt": null
     },
     {
       "handle": "tempur-pedic-mattresses",
@@ -562,7 +631,8 @@
       "title": "Shop Tempur-Pedic Mattresses, Beds, Foundations",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:17:39Z"
+      "updatedAt": "2026-04-06T05:17:39Z",
+      "availableAt": null
     },
     {
       "handle": "chattam-and-wells-mattresses",
@@ -570,7 +640,8 @@
       "title": "Shop Chattam & Wells Mattresses & Beds",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:17:40Z"
+      "updatedAt": "2026-04-06T05:17:40Z",
+      "availableAt": null
     },
     {
       "handle": "brands",
@@ -578,7 +649,8 @@
       "title": "Shop by Top Brands",
       "isPublished": true,
       "publishedAt": "2024-01-10T18:47:06Z",
-      "updatedAt": "2026-05-14T06:59:45Z"
+      "updatedAt": "2026-05-14T06:59:45Z",
+      "availableAt": null
     },
     {
       "handle": "presidents-day-mattress-sale-2024",
@@ -586,7 +658,8 @@
       "title": "2024: Top Presidents Day Mattress Sales - Best Deals",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:05Z"
+      "updatedAt": "2026-03-26T08:13:05Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-warehouse-clearance-sale",
@@ -594,7 +667,8 @@
       "title": "Mattress Warehouse Clearance Sale at LA Mattress Store",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:17:40Z"
+      "updatedAt": "2026-04-06T05:17:40Z",
+      "availableAt": null
     },
     {
       "handle": "bedded",
@@ -602,7 +676,8 @@
       "title": "Bedded",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:58Z"
+      "updatedAt": "2026-03-26T08:12:58Z",
+      "availableAt": null
     },
     {
       "handle": "beded-size",
@@ -610,7 +685,8 @@
       "title": "beded size",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:00Z"
+      "updatedAt": "2026-03-26T08:13:00Z",
+      "availableAt": null
     },
     {
       "handle": "beded-preferences",
@@ -618,7 +694,8 @@
       "title": "beded preferences",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:00Z"
+      "updatedAt": "2026-03-26T08:13:00Z",
+      "availableAt": null
     },
     {
       "handle": "beded-brands",
@@ -626,7 +703,8 @@
       "title": "Beded Brands",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:58Z"
+      "updatedAt": "2026-03-26T08:12:58Z",
+      "availableAt": null
     },
     {
       "handle": "beded-mattress-types",
@@ -634,7 +712,8 @@
       "title": "Beded Mattress Types",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:59Z"
+      "updatedAt": "2026-03-26T08:12:59Z",
+      "availableAt": null
     },
     {
       "handle": "beded-features",
@@ -642,7 +721,8 @@
       "title": "Beded Features",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:59Z"
+      "updatedAt": "2026-03-26T08:12:59Z",
+      "availableAt": null
     },
     {
       "handle": "memorial-day-mattress-sale",
@@ -650,23 +730,26 @@
       "title": "Memorial Day Mattress Sale",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:01Z"
+      "updatedAt": "2026-03-26T08:13:01Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-west-hollywood",
       "id": "gid://shopify/Page/114651103485",
       "title": "Mattress Store in West Hollywood — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:00:00Z",
-      "updatedAt": "2026-06-02T16:00:00Z"
+      "publishedAt": "2026-06-02T16:25:28Z",
+      "updatedAt": "2026-06-05T15:38:11Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-westwood",
       "id": "gid://shopify/Page/114651693309",
       "title": "Mattress Store in Westwood — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:00:00Z",
-      "updatedAt": "2026-06-02T16:00:00Z"
+      "publishedAt": "2026-06-02T16:25:33Z",
+      "updatedAt": "2026-06-05T15:38:11Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-beverly-hills",
@@ -674,7 +757,8 @@
       "title": "Mattress Store in Beverly Hills — LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:11:04Z",
-      "updatedAt": "2026-05-20T06:15:07Z"
+      "updatedAt": "2026-05-20T06:15:07Z",
+      "availableAt": null
     },
     {
       "handle": "mattresses",
@@ -682,7 +766,8 @@
       "title": "Mattresses",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:17:40Z"
+      "updatedAt": "2026-04-06T05:17:40Z",
+      "availableAt": null
     },
     {
       "handle": "bedroom-furniture",
@@ -690,7 +775,8 @@
       "title": "Bedroom Furniture",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:13:01Z"
+      "updatedAt": "2026-03-26T08:13:01Z",
+      "availableAt": null
     },
     {
       "handle": "stearns-and-foster-mattresses",
@@ -698,7 +784,8 @@
       "title": "Stearns and Foster Mattresses",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "cheap-mattress-store-near-me",
@@ -706,7 +793,8 @@
       "title": "Cheap Mattress Store Near Me | Affordable Quality Mattresses – LA Mattress Stores",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:06Z"
+      "updatedAt": "2026-03-26T08:12:06Z",
+      "availableAt": null
     },
     {
       "handle": "best-mattress-store-near-me",
@@ -714,7 +802,8 @@
       "title": "Best Mattress Store Near Me | Top-Rated Mattresses & Service – LA Mattress Stores",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-26T08:12:05Z"
+      "updatedAt": "2026-03-26T08:12:05Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-firm-vs-la-mattress-store",
@@ -722,7 +811,8 @@
       "title": "LA Mattress Store vs Mattress Firm",
       "isPublished": true,
       "publishedAt": "2024-12-11T17:15:48Z",
-      "updatedAt": "2026-05-20T16:02:44Z"
+      "updatedAt": "2026-05-20T16:02:44Z",
+      "availableAt": null
     },
     {
       "handle": "quiz",
@@ -730,7 +820,8 @@
       "title": "quiz",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2025-01-26T17:15:54Z"
+      "updatedAt": "2025-01-26T17:15:54Z",
+      "availableAt": null
     },
     {
       "handle": "glendale-eagle-rock",
@@ -738,7 +829,8 @@
       "title": "Mattress Store Near Eagle Rock – Premium Comfort Just Minutes Away!",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-25T19:01:07Z"
+      "updatedAt": "2026-03-25T19:01:07Z",
+      "availableAt": null
     },
     {
       "handle": "purple-mattress-vs-tempur-pedic",
@@ -746,7 +838,8 @@
       "title": "Purple Mattress vs. Tempur-Pedic – Which One is Better?",
       "isPublished": true,
       "publishedAt": "2025-03-15T02:24:39Z",
-      "updatedAt": "2026-05-22T16:12:29Z"
+      "updatedAt": "2026-05-22T16:12:29Z",
+      "availableAt": null
     },
     {
       "handle": "collection-bundle",
@@ -754,7 +847,8 @@
       "title": "Mix and Match",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "trade-sleep",
@@ -762,7 +856,8 @@
       "title": "Trade Your Mattress",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "sleep-elite-suscription",
@@ -770,7 +865,8 @@
       "title": "Exclusive Membership",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "la-mattress-store-subscription-terms-of-services",
@@ -778,7 +874,8 @@
       "title": "LA Mattress Store - Subscription, Terms Of Services",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-06-08T19:46:41Z",
+      "availableAt": null
     },
     {
       "handle": "carloselitesleep",
@@ -786,7 +883,8 @@
       "title": "CarlosElitesleep+",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "geoffreyelitesleep",
@@ -794,7 +892,8 @@
       "title": "GeoffreyElitesleep+",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "elyseelitesleep",
@@ -802,7 +901,8 @@
       "title": "ElyseElitesleep+",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "julioelitesleep",
@@ -810,7 +910,8 @@
       "title": "JulioElitesleep+",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "ronyelitesleep",
@@ -818,7 +919,8 @@
       "title": "RonyElitesleep+",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "wayneelitesleep",
@@ -826,7 +928,8 @@
       "title": "WayneElitesleep+",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "kevinelitesleep",
@@ -834,7 +937,8 @@
       "title": "KevinElitesleep+",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:13:54Z"
+      "updatedAt": "2026-04-06T05:13:54Z",
+      "availableAt": null
     },
     {
       "handle": "data-sharing-opt-out",
@@ -842,7 +946,8 @@
       "title": "Your Privacy Choices",
       "isPublished": true,
       "publishedAt": "2025-07-28T17:17:16Z",
-      "updatedAt": "2026-01-28T15:25:12Z"
+      "updatedAt": "2026-01-28T15:25:12Z",
+      "availableAt": null
     },
     {
       "handle": "test",
@@ -850,7 +955,8 @@
       "title": "Test",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2025-10-09T19:15:00Z"
+      "updatedAt": "2025-10-09T19:15:00Z",
+      "availableAt": null
     },
     {
       "handle": "queen-mattress-near-sylmar-la-mattress-store",
@@ -858,7 +964,8 @@
       "title": "Queen Mattress Near Sylmar – LA Mattress Store",
       "isPublished": true,
       "publishedAt": "2025-10-31T01:44:09Z",
-      "updatedAt": "2025-10-31T02:32:36Z"
+      "updatedAt": "2025-10-31T02:32:36Z",
+      "availableAt": null
     },
     {
       "handle": "black-friday-2025-mattress-sale-60-off-no-tax",
@@ -866,7 +973,8 @@
       "title": "Black Friday 2025 Mattress Sale - 60% Off & No Tax",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-04-06T05:10:00Z"
+      "updatedAt": "2026-04-06T05:10:00Z",
+      "availableAt": null
     },
     {
       "handle": "shop-helix-mattresses-beds-foundations",
@@ -874,7 +982,8 @@
       "title": "Shop Helix Sleep Mattresses, Beds, Foundations",
       "isPublished": false,
       "publishedAt": null,
-      "updatedAt": "2026-03-04T19:43:26Z"
+      "updatedAt": "2026-03-04T19:43:26Z",
+      "availableAt": null
     },
     {
       "handle": "reviews",
@@ -882,7 +991,8 @@
       "title": "Mattress Store Reviews",
       "isPublished": true,
       "publishedAt": "2026-05-01T18:46:42Z",
-      "updatedAt": "2026-05-01T20:25:44Z"
+      "updatedAt": "2026-05-01T20:25:44Z",
+      "availableAt": null
     },
     {
       "handle": "memorial-day-sale-2026",
@@ -890,7 +1000,8 @@
       "title": "Memorial Day Mattress Sale 2026 — Up to 60% Off at LA Mattress Store",
       "isPublished": true,
       "publishedAt": "2026-05-14T08:52:30Z",
-      "updatedAt": "2026-05-14T08:52:30Z"
+      "updatedAt": "2026-05-26T11:15:42Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-santa-monica",
@@ -898,7 +1009,8 @@
       "title": "Mattress Store in Santa Monica — LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:42Z",
-      "updatedAt": "2026-05-14T22:55:17Z"
+      "updatedAt": "2026-05-14T22:55:17Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-downtown-la",
@@ -906,7 +1018,8 @@
       "title": "Mattress Store in Downtown LA — LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
-      "updatedAt": "2026-05-14T22:55:21Z"
+      "updatedAt": "2026-05-14T22:55:21Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-pasadena",
@@ -914,7 +1027,8 @@
       "title": "Mattress Store in Pasadena — LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
-      "updatedAt": "2026-05-14T22:55:25Z"
+      "updatedAt": "2026-05-14T22:55:25Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-burbank",
@@ -922,7 +1036,8 @@
       "title": "Mattress Store in Burbank — LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
-      "updatedAt": "2026-05-14T22:55:29Z"
+      "updatedAt": "2026-05-14T22:55:29Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-sherman-oaks",
@@ -930,7 +1045,8 @@
       "title": "Mattress Store in Sherman Oaks — LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
-      "updatedAt": "2026-05-14T22:55:33Z"
+      "updatedAt": "2026-05-14T22:55:33Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-hollywood",
@@ -938,7 +1054,8 @@
       "title": "Mattress Store in Hollywood — LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
-      "updatedAt": "2026-05-14T22:55:37Z"
+      "updatedAt": "2026-05-14T22:55:37Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-long-beach",
@@ -946,15 +1063,16 @@
       "title": "Mattress Store in Long Beach — LA Mattress",
       "isPublished": true,
       "publishedAt": "2026-05-14T22:10:56Z",
-      "updatedAt": "2026-05-14T22:55:40Z"
+      "updatedAt": "2026-05-14T22:55:40Z",
+      "availableAt": null
     },
     {
       "handle": "independence-day-sale-2026",
       "id": "gid://shopify/Page/137263350013",
       "title": "Independence Day Mattress Sale 2026 — Up to 70% Off in LA",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:17:29Z",
+      "updatedAt": "2026-06-08T19:39:07Z",
       "availableAt": "2026-06-24T07:00:00Z"
     },
     {
@@ -962,8 +1080,8 @@
       "id": "gid://shopify/Page/137263382781",
       "title": "Labor Day Mattress Sale 2026 — Up to 70% Off in LA",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:17:47Z",
+      "updatedAt": "2026-06-08T19:39:19Z",
       "availableAt": "2026-08-21T07:00:00Z"
     },
     {
@@ -971,8 +1089,8 @@
       "id": "gid://shopify/Page/137263415549",
       "title": "Veterans Day Mattress Sale 2026 — Honoring Service Members",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:18:04Z",
+      "updatedAt": "2026-06-08T19:39:30Z",
       "availableAt": "2026-10-30T07:00:00Z"
     },
     {
@@ -980,8 +1098,8 @@
       "id": "gid://shopify/Page/137263448317",
       "title": "Black Friday + Cyber Monday Mattress Sale 2026 — Up to 70% Off in LA",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:18:32Z",
+      "updatedAt": "2026-06-08T19:39:42Z",
       "availableAt": "2026-11-16T08:00:00Z"
     },
     {
@@ -989,8 +1107,8 @@
       "id": "gid://shopify/Page/137263481085",
       "title": "Holiday Mattress Sale 2026 — Up to 70% Off Through Christmas",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:18:51Z",
+      "updatedAt": "2026-06-08T19:39:56Z",
       "availableAt": "2026-12-04T08:00:00Z"
     },
     {
@@ -998,8 +1116,8 @@
       "id": "gid://shopify/Page/137263579389",
       "title": "New Year's Mattress Sale 2027 — Up to 70% Off for a Better Year of Sleep",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:19:11Z",
+      "updatedAt": "2026-05-27T11:25:18Z",
       "availableAt": "2026-12-20T08:00:00Z"
     },
     {
@@ -1007,8 +1125,8 @@
       "id": "gid://shopify/Page/137263612157",
       "title": "MLK Day Mattress Sale 2027 — Up to 70% Off Every Mattress",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:19:23Z",
+      "updatedAt": "2026-05-27T11:25:18Z",
       "availableAt": "2027-01-08T08:00:00Z"
     },
     {
@@ -1016,8 +1134,8 @@
       "id": "gid://shopify/Page/137263644925",
       "title": "Presidents Day Mattress Sale 2027 — Up to 70% Off at LA Mattress Store",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:19:46Z",
+      "updatedAt": "2026-05-27T11:25:18Z",
       "availableAt": "2027-02-05T08:00:00Z"
     },
     {
@@ -1025,8 +1143,8 @@
       "id": "gid://shopify/Page/137263677693",
       "title": "Mother's Day Mattress Sale 2027 — Up to 70% Off + Gift-Ready Delivery",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:20:03Z",
+      "updatedAt": "2026-06-08T19:40:10Z",
       "availableAt": "2027-04-24T07:00:00Z"
     },
     {
@@ -1034,8 +1152,8 @@
       "id": "gid://shopify/Page/137263710461",
       "title": "Memorial Day Mattress Sale 2027 — Up to 70% Off in LA",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:20:20Z",
+      "updatedAt": "2026-05-27T11:25:18Z",
       "availableAt": "2027-05-14T07:00:00Z"
     },
     {
@@ -1043,8 +1161,8 @@
       "id": "gid://shopify/Page/137263775997",
       "title": "Father's Day Mattress Sale 2027 — Up to 70% Off the Brands He'll Love",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:20:44Z",
+      "updatedAt": "2026-05-27T11:25:18Z",
       "availableAt": "2027-06-05T07:00:00Z"
     },
     {
@@ -1052,8 +1170,8 @@
       "id": "gid://shopify/Page/137263841533",
       "title": "Independence Day Mattress Sale 2027 — Up to 70% Off in LA",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:21:00Z",
+      "updatedAt": "2026-05-27T11:25:18Z",
       "availableAt": "2027-06-25T07:00:00Z"
     },
     {
@@ -1061,8 +1179,8 @@
       "id": "gid://shopify/Page/137263874301",
       "title": "Labor Day Mattress Sale 2027 — Up to 70% Off at LA Mattress Store",
       "isPublished": true,
-      "publishedAt": "2026-05-27T10:00:00Z",
-      "updatedAt": "2026-05-27T11:00:00Z",
+      "publishedAt": "2026-05-27T10:21:15Z",
+      "updatedAt": "2026-05-27T11:25:18Z",
       "availableAt": "2027-08-27T07:00:00Z"
     },
     {
@@ -1070,128 +1188,144 @@
       "id": "gid://shopify/Page/137458942205",
       "title": "Mattress Store in Culver City — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:00:00Z",
-      "updatedAt": "2026-06-02T16:00:00Z"
+      "publishedAt": "2026-06-02T16:25:37Z",
+      "updatedAt": "2026-06-02T16:25:37Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-encino",
       "id": "gid://shopify/Page/137458974973",
       "title": "Mattress Store in Encino — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:00:00Z",
-      "updatedAt": "2026-06-02T16:00:00Z"
+      "publishedAt": "2026-06-02T16:25:41Z",
+      "updatedAt": "2026-06-02T16:25:41Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-north-hollywood",
       "id": "gid://shopify/Page/137459007741",
       "title": "Mattress Store in North Hollywood — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:00:00Z",
-      "updatedAt": "2026-06-02T16:00:00Z"
+      "publishedAt": "2026-06-02T16:25:44Z",
+      "updatedAt": "2026-06-02T16:25:44Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-silver-lake",
       "id": "gid://shopify/Page/137459040509",
       "title": "Mattress Store in Silver Lake — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:00:00Z",
-      "updatedAt": "2026-06-02T16:00:00Z"
+      "publishedAt": "2026-06-02T16:25:48Z",
+      "updatedAt": "2026-06-02T16:25:48Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-brentwood",
       "id": "gid://shopify/Page/137459958013",
       "title": "Mattress Store in Brentwood — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:30:00Z",
-      "updatedAt": "2026-06-02T16:30:00Z"
+      "publishedAt": "2026-06-02T16:58:23Z",
+      "updatedAt": "2026-06-02T16:58:23Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-marina-del-rey",
       "id": "gid://shopify/Page/137459990781",
       "title": "Mattress Store in Marina del Rey — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:30:00Z",
-      "updatedAt": "2026-06-02T16:30:00Z"
+      "publishedAt": "2026-06-02T16:58:28Z",
+      "updatedAt": "2026-06-02T16:58:28Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-los-feliz",
       "id": "gid://shopify/Page/137460023549",
       "title": "Mattress Store in Los Feliz — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:30:00Z",
-      "updatedAt": "2026-06-02T16:30:00Z"
+      "publishedAt": "2026-06-02T16:58:31Z",
+      "updatedAt": "2026-06-02T16:58:31Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-eagle-rock",
       "id": "gid://shopify/Page/137460056317",
       "title": "Mattress Store in Eagle Rock — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:30:00Z",
-      "updatedAt": "2026-06-02T16:30:00Z"
+      "publishedAt": "2026-06-02T16:58:35Z",
+      "updatedAt": "2026-06-02T16:58:35Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-toluca-lake",
       "id": "gid://shopify/Page/137460089085",
       "title": "Mattress Store in Toluca Lake — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:30:00Z",
-      "updatedAt": "2026-06-02T16:30:00Z"
+      "publishedAt": "2026-06-02T16:58:38Z",
+      "updatedAt": "2026-06-02T16:58:38Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-mid-wilshire",
       "id": "gid://shopify/Page/137460121853",
       "title": "Mattress Store in Mid-Wilshire — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T16:30:00Z",
-      "updatedAt": "2026-06-02T16:30:00Z"
+      "publishedAt": "2026-06-02T16:58:42Z",
+      "updatedAt": "2026-06-02T16:58:42Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-venice",
       "id": "gid://shopify/Page/137460383997",
       "title": "Mattress Store in Venice — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T17:00:00Z",
-      "updatedAt": "2026-06-02T17:00:00Z"
+      "publishedAt": "2026-06-02T17:10:25Z",
+      "updatedAt": "2026-06-02T17:10:25Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-highland-park",
       "id": "gid://shopify/Page/137460416765",
       "title": "Mattress Store in Highland Park — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T17:00:00Z",
-      "updatedAt": "2026-06-02T17:00:00Z"
+      "publishedAt": "2026-06-02T17:10:29Z",
+      "updatedAt": "2026-06-02T17:10:29Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-van-nuys",
       "id": "gid://shopify/Page/137460482301",
       "title": "Mattress Store in Van Nuys — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T17:00:00Z",
-      "updatedAt": "2026-06-02T17:00:00Z"
+      "publishedAt": "2026-06-02T17:10:33Z",
+      "updatedAt": "2026-06-02T17:10:33Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-la-canada-flintridge",
       "id": "gid://shopify/Page/137460580605",
       "title": "Mattress Store in La Cañada Flintridge — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T17:00:00Z",
-      "updatedAt": "2026-06-02T17:00:00Z"
+      "publishedAt": "2026-06-02T17:10:37Z",
+      "updatedAt": "2026-06-02T17:10:37Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-mid-city",
       "id": "gid://shopify/Page/137460613373",
       "title": "Mattress Store in Mid-City — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T17:00:00Z",
-      "updatedAt": "2026-06-02T17:00:00Z"
+      "publishedAt": "2026-06-02T17:10:40Z",
+      "updatedAt": "2026-06-02T17:10:40Z",
+      "availableAt": null
     },
     {
       "handle": "mattress-store-tarzana",
       "id": "gid://shopify/Page/137460646141",
       "title": "Mattress Store in Tarzana — LA Mattress",
       "isPublished": true,
-      "publishedAt": "2026-06-02T17:00:00Z",
-      "updatedAt": "2026-06-02T17:00:00Z"
+      "publishedAt": "2026-06-02T17:10:44Z",
+      "updatedAt": "2026-06-02T17:10:44Z",
+      "availableAt": null
     }
   ]
 }
