@@ -18,6 +18,8 @@ export { getShopBrand }                       from './queries/shop';
 export type { ShopBrand }                     from './queries/shop';
 export { getActiveAnnouncement }              from './queries/announcement';
 export type { Announcement, AnnouncementStyle } from './queries/announcement';
+export { getHomepageSeo }                     from './queries/homepage-seo';
+export type { HomepageSeo }                   from './queries/homepage-seo';
 export { getHeroSlides }                      from './queries/hero-slides';
 export type { HeroSlideData }                 from './queries/hero-slides';
 export { getBrands }                          from './queries/brands';
