@@ -8,17 +8,31 @@
  * tag — without waiting for the 10-minute TTL.
  *
  * Setup (one-time):
- *   1. Generate a webhook secret. Anything random; keep it long.
- *   2. Add `SHOPIFY_WEBHOOK_SECRET=<that secret>` to Vercel project env vars.
- *   3. In Shopify Admin → Settings → Notifications → Webhooks, register
- *      these topics, all pointing to https://YOURDOMAIN/api/revalidate :
+ *   1. In Shopify Admin → Settings → Notifications → Webhooks, register
+ *      these topics, all pointing to https://YOURDOMAIN/api/revalidate
+ *      (Format: JSON, current API version):
  *        products/create, products/update, products/delete
  *        collections/create, collections/update, collections/delete
- *        articles/create, articles/update, articles/delete
- *        pages/update
  *        metaobjects/create, metaobjects/update, metaobjects/delete  (Phase 269)
  *        shop/update                                                 (Phase 269)
- *      Use Format: JSON, API version 2024-10, and paste the same secret.
+ *   2. Copy the webhook **signing secret** Shopify auto-generates and
+ *      displays at the bottom of that Notifications page ("Your webhooks
+ *      will be signed with …"). Do NOT invent your own — webhooks created
+ *      through the Admin UI are signed with that shop-level secret, so a
+ *      self-generated value makes every delivery fail HMAC (401).
+ *   3. Add `SHOPIFY_WEBHOOK_SECRET=<that signing secret>` to the Vercel
+ *      project env vars (all environments) and redeploy.
+ *
+ * NOTE — topics that do NOT exist: Shopify has no `pages/*` or `articles/*`
+ * webhook topics (verified against the WebhookSubscriptionTopic enum). The
+ * `pages/` and `articles/` branches in tagsFor() below are kept as
+ * defensive no-ops, but Online Store pages and blog articles can't be
+ * webhook-busted — they fall back to their fetch-level revalidate window.
+ *
+ * NOTE — do not create these subscriptions via the Admin GraphQL API using
+ * a managed connector/OAuth app: API-created webhooks are HMAC-signed with
+ * that app's client secret, which is not retrievable for the Vercel env.
+ * The Admin-UI flow above (shop-level signing secret) is the supported path.
  *
  * The Shopify Admin UI auto-includes an `X-Shopify-Hmac-Sha256` header on every
  * webhook; we verify it before doing anything.
