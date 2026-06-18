@@ -29,6 +29,10 @@ export type LocationsFaqItem = {
 
 export const LOCATIONS_FAQ: LocationsFaqItem[] = [
   {
+    q: 'Is there an LA Mattress store near me?',
+    a: 'Most likely yes — we have five mattress stores across Los Angeles, so there\'s usually one within a 15-minute drive: Koreatown, West LA, La Brea / Hancock Park, Studio City, and Glendale. Share your ZIP in the directory above to sort every location by distance, or check the map for the nearest pin. Can\'t make it in? Free white-glove delivery covers all of LA County.',
+  },
+  {
     q: 'Which LA Mattress store is closest to my neighborhood?',
     a: 'We have five Los Angeles showrooms across the city: Koreatown (Mid-City / DTLA), West LA (Santa Monica / Beverly Hills / Venice), La Brea (Hollywood / Hancock Park), Studio City (San Fernando Valley / Sherman Oaks), and Glendale (Burbank / Pasadena). The directory above sorts by distance once you share your ZIP — or scroll the map for the visual layout.',
   },
