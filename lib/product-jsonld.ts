@@ -17,6 +17,8 @@
  * entity tree per page rather than disjoint blocks.
  */
 import type { getProductByHandle } from '@/lib/shopify';
+import { faqJsonLd } from './faq.ts';
+import { buildProductFaq } from './product-copy.ts';
 
 type Product = NonNullable<Awaited<ReturnType<typeof getProductByHandle>>>;
 export type ProductLd = { key: string; data: unknown };
@@ -399,5 +401,10 @@ export function getProductJsonLd(product: Product): ProductLd[] {
   return [
     { key: 'ld-product', data: productLd },
     { key: 'ld-breadcrumb-product', data: breadcrumbLd },
+    // Per-product FAQPage — store-policy + warranty Q&A, product name
+    // interpolated so each PDP's block is distinct. Matches the visible
+    // FAQ rendered on the page (app/products/[handle]/page.tsx PdpFaq);
+    // SEMrush 20260616 audit, structured-data coverage on PDPs.
+    { key: 'ld-faq-product', data: faqJsonLd(buildProductFaq(product)) },
   ];
 }

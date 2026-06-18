@@ -21,7 +21,6 @@ import { test } from 'node:test';
 import { strict as assert } from 'node:assert';
 import { fetchHtml, expect200, parseJsonLd, SHOPIFY_SKIP } from './_helpers.mjs';
 import { LOCATIONS_FAQ } from '../../lib/locations-faq.ts';
-import { getPageSeoOverride } from '../../lib/page-seo-overrides.ts';
 
 // Inline subset of NEIGHBORHOODS handles — importing the full lib
 // would pull in lib/showrooms via a bare-relative import that Node's
@@ -34,25 +33,14 @@ const KNOWN_NEIGHBORHOOD_HANDLES = [
   'mattress-store-downtown-la',
 ];
 
-test('locations meta-description override is registered + size-bounded', () => {
-  const override = getPageSeoOverride('mattress-store-locations');
-  assert.ok(override?.description, 'expected mattress-store-locations description override');
-  assert.ok(
-    override.description.length <= 158,
-    `description override is ${override.description.length} chars (>158 SERP truncation)`,
-  );
-  // Single "mattress store" mention (the kw_stuffing_meta fix is the
-  // whole point of this override).
-  const occurrences = (override.description.match(/mattress stor/gi) ?? []).length;
-  assert.equal(
-    occurrences,
-    1,
-    `description override should mention "mattress stor*" exactly once (kw_stuffing fix), got ${occurrences}`,
-  );
-});
+// Note: the meta description for this page is now Shopify-owned
+// (collection/page seo fields, Phase 2 SEO-ownership migration retired the
+// code override). The size-bound / kw-stuffing checks moved to a
+// Shopify-content concern; the live-render assertion below still guards
+// that a real, SERP-bounded description ships.
 
-test('locations FAQ: 10 questions, every answer in 40-500 char band', () => {
-  assert.equal(LOCATIONS_FAQ.length, 10, `expected 10 FAQ items, got ${LOCATIONS_FAQ.length}`);
+test('locations FAQ: 11 questions, every answer in 40-500 char band', () => {
+  assert.equal(LOCATIONS_FAQ.length, 11, `expected 11 FAQ items, got ${LOCATIONS_FAQ.length}`);
   for (const item of LOCATIONS_FAQ) {
     assert.ok(item.q.endsWith('?'), `FAQ "${item.q}" should end with question mark`);
     assert.ok(item.a.length >= 40, `FAQ answer too short for "${item.q}" (${item.a.length} chars)`);
@@ -60,16 +48,14 @@ test('locations FAQ: 10 questions, every answer in 40-500 char band', () => {
   }
 });
 
-test('/pages/mattress-store-locations 200 + override description applied', { skip: SHOPIFY_SKIP }, async () => {
+test('/pages/mattress-store-locations 200 + ships a SERP-bounded description', { skip: SHOPIFY_SKIP }, async () => {
   const res = await fetchHtml('/pages/mattress-store-locations');
   expect200(res, '/pages/mattress-store-locations');
-  const desc = res.$('meta[name="description"]').attr('content');
-  const override = getPageSeoOverride('mattress-store-locations');
-  assert.equal(
-    desc,
-    override?.description,
-    `expected override description on locations page, got: "${desc}"`,
-  );
+  const desc = res.$('meta[name="description"]').attr('content') ?? '';
+  // Description is now Shopify-owned; assert a real one renders and stays
+  // within the SERP truncation bound (truncDescription caps it).
+  assert.ok(desc.length > 0, 'expected a non-empty meta description');
+  assert.ok(desc.length <= 160, `meta description ${desc.length} chars (>160)`);
 });
 
 test('/pages/mattress-store-locations renders the neighborhood directory', { skip: SHOPIFY_SKIP }, async () => {

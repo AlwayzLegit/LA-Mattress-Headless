@@ -18,6 +18,7 @@ import { HomepageSeoContent } from '../_components/sections/homepage-seo-content
 import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd, resolveHomepageFaq } from '@/lib/faq';
 import { buildLocalBusinessLd } from '@/lib/structured-data';
+import { getHomepageSeo } from '@/lib/shopify';
 import { getSitewideReviewsExtension } from '@/lib/judgeme';
 import { getHeroSlides, getShowrooms, getFaqItems } from '@/lib/shopify';
 import { FALLBACK_SHOWROOMS } from '@/lib/showrooms';
@@ -46,19 +47,32 @@ const LOCAL_BUSINESS_ID = 'https://www.mattressstoreslosangeles.com/#localbusine
 //           four keyword phrases plus "Tempur-Pedic / Stearns & Foster
 //           / Helix" brand cues + the trust-building "free LA delivery"
 //           differentiator that lifts CTR for local searches.
-const TITLE =
+// Last-resort fallbacks ONLY. Homepage SEO is now merchant-owned in
+// Shopify Admin → Content → Metaobjects → Homepage SEO (read via
+// getHomepageSeo). These constants render only if that metaobject is
+// missing/empty or the Storefront fetch fails, so the homepage never
+// ships blank metadata. Keep them keyword-tuned as a safe default.
+const FALLBACK_TITLE =
   'Mattress Store Los Angeles · Shop Mattresses & Sales | LA Mattress';
-const DESCRIPTION =
+const FALLBACK_DESCRIPTION =
   'Shop mattresses at LA Mattress — family-owned Los Angeles mattress store. ' +
   'Mattress sales on Tempur-Pedic, Stearns & Foster, Helix. Free LA delivery.';
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  // Source of truth: the homepage_seo metaobject (merchant-editable in
+  // Admin). Falls back to the constants above on miss/error.
+  const seo = await getHomepageSeo();
+  const title = seo?.title || FALLBACK_TITLE;
+  const description = seo?.description || FALLBACK_DESCRIPTION;
   return {
     // `absolute` so the root layout's "%s · LA Mattress Store" template
     // can't re-append the brand a third time (cowork LOW#12).
-    title: { absolute: TITLE },
-    description: DESCRIPTION,
+    title: { absolute: title },
+    description,
     alternates: { canonical: 'https://www.mattressstoreslosangeles.com/' },
+    // Only override the layout's OG image when the merchant set one on the
+    // metaobject; otherwise inherit the sitewide brand cover image.
+    ...(seo?.ogImage ? { openGraph: { images: [{ url: seo.ogImage }] } } : {}),
   };
 }
 
