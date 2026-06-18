@@ -502,7 +502,7 @@ async function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnTy
           <div className="eyebrow">Five LA showrooms</div>
           <h1 className="h1">{toSentenceCase(stripBrandSuffix(page.title))}</h1>
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
-            Try every mattress in person at any of our five showrooms across Los Angeles. Open daily — no appointment needed. Free white-glove delivery, 120-night comfort exchange, and 0% APR financing at every location.
+            Looking for a mattress store near you? We have five across Los Angeles — try every mattress in person at any showroom, open daily, no appointment needed. Free white-glove delivery, 120-night comfort exchange, and 0% APR financing at every location.
           </p>
         </header>
 
@@ -808,7 +808,7 @@ function ShowroomPage({
           <h1 className="h1">{toSentenceCase(stripBrandSuffix(page.title))}</h1>
           <ShowroomOpenStatus showroom={showroom} />
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
-            Visit our {showroom.area} showroom — try every mattress, talk with our local team, and walk out the same day with free white-glove delivery on most beds.
+            Looking for a mattress store near you in {showroom.area}? Visit our showroom to try every mattress, talk with our local team, and walk out the same day with free white-glove delivery on most beds.
           </p>
         </header>
 
