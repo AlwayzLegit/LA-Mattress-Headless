@@ -100,6 +100,18 @@ export const COLLECTION_SEO_OVERRIDES: Record<string, CollectionSeoOverride> = {
     title: 'Full Size Mattresses in Los Angeles | LA Mattress Store',
     h1: 'Full Size Mattresses',
   },
+  // Semrush 20260618 Ideas: california-king was the only high-traffic size
+  // collection with no merchant SEO AND no code override (running purely on
+  // the default-computed title). Flagged for the "cal king" abbreviation +
+  // semantic variants the bare "California King Mattresses" title missed.
+  // No price in the title — the cal-king floor price isn't verifiable from
+  // the committed inventory, and a wrong "from $X" is worse than none.
+  'california-king-mattresses': {
+    title: 'California King Mattresses · Cal King Beds, Top Brands | LA Mattress',
+    description:
+      'Shop California King (Cal King) mattresses — Tempur-Pedic, Stearns & Foster, Diamond & more, every firmness. Free white-glove LA delivery + 120-night trial.',
+    h1: 'California King Mattresses',
+  },
 
   // New sleeper/body-type commercial collections (gap analysis 20260602):
   // extends the existing use-case cluster (back-pain / side-sleepers /
