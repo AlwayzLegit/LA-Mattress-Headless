@@ -51,8 +51,8 @@ test('locations meta-description override is registered + size-bounded', () => {
   );
 });
 
-test('locations FAQ: 10 questions, every answer in 40-500 char band', () => {
-  assert.equal(LOCATIONS_FAQ.length, 10, `expected 10 FAQ items, got ${LOCATIONS_FAQ.length}`);
+test('locations FAQ: 11 questions, every answer in 40-500 char band', () => {
+  assert.equal(LOCATIONS_FAQ.length, 11, `expected 11 FAQ items, got ${LOCATIONS_FAQ.length}`);
   for (const item of LOCATIONS_FAQ) {
     assert.ok(item.q.endsWith('?'), `FAQ "${item.q}" should end with question mark`);
     assert.ok(item.a.length >= 40, `FAQ answer too short for "${item.q}" (${item.a.length} chars)`);
