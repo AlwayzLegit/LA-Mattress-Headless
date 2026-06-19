@@ -163,7 +163,7 @@ export const SPECIALTY_SIZES: SpecialtySize[] = [
     name: 'Short Queen (RV Queen)',
     inches: '60" × 74–75"',
     usedIn: 'RVs, campers, and fifth wheels — queen width, 5–6 inches shorter',
-    guideHref: '/blogs/mattress-buying-guide/short-queen-mattresses-for-campers-how-to-measure-and-buy',
+    guideHref: '/blogs/mattress-buying-guide/short-queen-mattresses-for-campers-how-to-measure-and-buy-right',
     guideLabel: 'Short queen RV guide',
   },
   {
