@@ -18,6 +18,7 @@ import { getShopAggregate } from '@/lib/judgeme';
 import { AnnouncementBar } from '../_components/announcement-bar';
 import { AnalyticsGa4 } from '../_components/analytics-ga4';
 import { AnalyticsPostHog } from '../_components/analytics-posthog';
+import { AnalyticsShopify } from '../_components/analytics-shopify';
 
 /**
  * Storefront layout — wraps everything customer-facing.
@@ -152,6 +153,11 @@ export default async function StorefrontLayout({ children }: { children: React.R
       <Analytics />
       <SpeedInsights />
       <AnalyticsGa4 />
+      {/* Shopify-native page-view beacon so Admin → Analytics session
+          reports (sessions, traffic source, landing pages, conversion,
+          Live View) populate for the headless storefront. Uses usePathname
+          only, so no Suspense boundary needed. */}
+      <AnalyticsShopify />
       {/* AnalyticsPostHog reads useSearchParams() to fire $pageview
           on every route change. Next.js 15 requires that hook to live
           inside a <Suspense> boundary so static-generated pages
