@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify pages inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-06-18T12:08:13.940Z",
+  "$pulledAt": "2026-06-19T09:03:33.287Z",
   "$count": 147,
   "pages": [
     {
@@ -253,7 +253,7 @@
       "title": "Best Mattress Store in Glendale on Central Ave",
       "isPublished": true,
       "publishedAt": "2017-05-26T04:10:00Z",
-      "updatedAt": "2026-05-28T11:23:55Z",
+      "updatedAt": "2026-06-18T17:39:37Z",
       "availableAt": null
     },
     {
@@ -280,7 +280,7 @@
       "title": "Find a Mattress Store Near You | LA Mattress Stores Locations",
       "isPublished": true,
       "publishedAt": "2023-06-19T22:35:11Z",
-      "updatedAt": "2026-06-08T19:43:26Z",
+      "updatedAt": "2026-06-18T17:39:37Z",
       "availableAt": null
     },
     {
@@ -361,7 +361,7 @@
       "title": "Mattress Sizes & Bed Size Chart: Twin to Cal King Dimensions",
       "isPublished": true,
       "publishedAt": "2023-08-06T03:21:33Z",
-      "updatedAt": "2026-05-28T11:24:34Z",
+      "updatedAt": "2026-06-18T17:39:37Z",
       "availableAt": null
     },
     {
@@ -388,7 +388,7 @@
       "title": "Guide to Mattress Types | Find Your Perfect Mattress",
       "isPublished": true,
       "publishedAt": "2023-08-09T21:19:19Z",
-      "updatedAt": "2026-05-11T21:17:51Z",
+      "updatedAt": "2026-06-18T17:39:37Z",
       "availableAt": null
     },
     {
@@ -649,7 +649,7 @@
       "title": "Shop by Top Brands",
       "isPublished": true,
       "publishedAt": "2024-01-10T18:47:06Z",
-      "updatedAt": "2026-05-14T06:59:45Z",
+      "updatedAt": "2026-06-18T17:39:37Z",
       "availableAt": null
     },
     {
