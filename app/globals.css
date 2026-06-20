@@ -2919,6 +2919,21 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
   padding-top: var(--s-3);
   border-top: 1px solid var(--line);
 }
+
+/* Variant-aware financing breakdown rendered immediately under the price
+   (analytics: 94% PDP→ATC drop). One-line "From $X/mo with Affirm · Or 4
+   payments of $Y with Shop Pay". Quiet styling — informational, not a
+   CTA (the existing .pdp-financing-line link below the buy box is the
+   actionable surface). */
+.pdp-financing {
+  margin: var(--s-2) 0 0;
+  font-size: 13px;
+  color: var(--text-2);
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.pdp-financing strong { color: var(--text); font-weight: 600; }
+.pdp-financing-sep { color: var(--text-3); }
+
 .pdp-was { font-size: 16px; color: var(--text-3); text-decoration: line-through; }
 .pdp-now { font-size: 32px; font-weight: 600; letter-spacing: -0.02em; }
 .pdp-save {
