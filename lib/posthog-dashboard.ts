@@ -874,6 +874,68 @@ export async function getDeviceBreakdown(days = 30): Promise<DeviceRow[] | null>
 }
 
 /* ------------------------------------------------------------------------ *
+ * Device CONVERSION — client-side intent funnel by $device_type
+ *
+ * Why a separate metric from getDeviceBreakdown's order column: the
+ * `order_completed` event is fired SERVER-SIDE from the Shopify
+ * orders/paid webhook, so it carries no `$device_type` (there's no
+ * browser on a webhook). That's why order-based device conversion was
+ * always 0% and the column was dropped.
+ *
+ * The deepest funnel step we CAN attribute to a device is
+ * `checkout_started` — it fires client-side (browser autocapture stamps
+ * `$device_type`) right before the handoff to Shopify's hosted checkout.
+ * So this measures device-level *purchase intent*: of the people who
+ * viewed a PDP on a given device, what share reached checkout. It's the
+ * honest, attributable answer to "does mobile convert worse than
+ * desktop?" given the headless + Shopify-checkout architecture.
+ *
+ * Person-distinct counts per step (mirrors getConversionFunnel), grouped
+ * by the device the event happened on. Each event attributes to its own
+ * device, so a rare cross-device journey splits across rows — acceptable
+ * for a rate comparison.
+ * ------------------------------------------------------------------------ */
+
+export type DeviceConversionRow = {
+  deviceType: string;
+  pdpViewers: number;
+  addToCart: number;
+  checkoutStarted: number;
+  /** checkout_started ÷ pdp_view, as a %. Device-attributable intent rate. */
+  conversionPct: number;
+};
+
+export async function getDeviceConversion(days = 30): Promise<DeviceConversionRow[] | null> {
+  const data = await hogQL(`
+    SELECT
+      coalesce(nullif(toString(properties.$device_type), ''), '(unknown)') AS device,
+      count(DISTINCT if(event = 'pdp_view', person_id, NULL)) AS pdp,
+      count(DISTINCT if(event = 'add_to_cart', person_id, NULL)) AS atc,
+      count(DISTINCT if(event = 'checkout_started', person_id, NULL)) AS checkout
+    FROM events
+    WHERE event IN ('pdp_view', 'add_to_cart', 'checkout_started')
+      AND timestamp >= now() - INTERVAL ${days} DAY
+    GROUP BY device
+    ORDER BY pdp DESC
+    LIMIT 6
+  `);
+  if (!data) return null;
+  return data.results.map((row) => {
+    const deviceType = String(row[0] ?? '(unknown)');
+    const pdpViewers = Number(row[1] ?? 0);
+    const addToCart = Number(row[2] ?? 0);
+    const checkoutStarted = Number(row[3] ?? 0);
+    return {
+      deviceType,
+      pdpViewers,
+      addToCart,
+      checkoutStarted,
+      conversionPct: pdpViewers > 0 ? (checkoutStarted / pdpViewers) * 100 : 0,
+    };
+  });
+}
+
+/* ------------------------------------------------------------------------ *
  * Revenue by acquisition source — uses initial_utm_source person prop
  * + order_completed value, last N days
  *
