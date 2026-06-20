@@ -30,6 +30,7 @@ import {
   getConversionFunnel,
   getConversionFunnelPrev,
   getDeviceBreakdown,
+  getDeviceConversion,
   getQuizClickTargets,
   getQuizConversion,
   getQuizFunnel,
@@ -192,6 +193,7 @@ export default async function DashboardPage({
     chatConversion,
     revenueBySource,
     deviceBreakdown,
+    deviceConversion,
     showroomTraffic,
     convertingArticles,
     webVitals,
@@ -225,6 +227,7 @@ export default async function DashboardPage({
     POSTHOG_CONFIGURED ? getChatConversion(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getRevenueBySource(days, 8).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED ? getDeviceBreakdown(days).catch(() => null) : Promise.resolve(null),
+    POSTHOG_CONFIGURED ? getDeviceConversion(days).catch(() => null) : Promise.resolve(null),
     POSTHOG_CONFIGURED
       ? getShowroomTraffic(days, SHOWROOMS.map((s) => ({ handle: s.handle, name: s.name }))).catch(() => null)
       : Promise.resolve(null),
@@ -1239,6 +1242,29 @@ export default async function DashboardPage({
               <PostHogConfigHint />
             )}
           </div>
+
+          {/* Conversion intent by device — the device-attributable answer
+              to "does mobile convert worse?" Order_completed is server-fired
+              (no $device_type), so the deepest device-attributable step is
+              checkout_started; this shows checkout-start rate per device off
+              the PDP-viewer base. */}
+          <div className="dash-card">
+            <div className="dash-card-hd">
+              <h2 className="h3" style={{ margin: 0 }}>Checkout intent by device · {rangeShort}</h2>
+              <span className="muted" style={{ fontSize: 12 }}>PostHog · checkout-started ÷ PDP viewers</span>
+            </div>
+            {deviceConversion ? (
+              deviceConversion.length === 0 ? (
+                <p className="muted">No device-conversion data yet.</p>
+              ) : (
+                <DeviceConversionTable rows={deviceConversion} />
+              )
+            ) : POSTHOG_CONFIGURED ? (
+              <p className="muted">Device-conversion data unavailable.</p>
+            ) : (
+              <PostHogConfigHint />
+            )}
+          </div>
         </div>
       </section>
 
@@ -2128,6 +2154,42 @@ function DeviceTable({ rows }: { rows: Array<{ deviceType: string; sessions: num
             <td>{d.deviceType}</td>
             <td className="tnum">{d.sessions.toLocaleString()}</td>
             <td className="tnum">{total > 0 ? `${((d.sessions / total) * 100).toFixed(1)}%` : '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+/**
+ * Checkout-intent-by-device table. Pairs with DeviceTable: that one shows
+ * traffic share, this one shows the device-attributable conversion rate
+ * (checkout_started ÷ pdp_view). order_completed can't be split by device
+ * — it's server-fired without $device_type — so checkout_started is the
+ * deepest honest signal of mobile-vs-desktop purchase intent.
+ */
+function DeviceConversionTable({
+  rows,
+}: {
+  rows: Array<{ deviceType: string; pdpViewers: number; checkoutStarted: number; conversionPct: number }>;
+}) {
+  return (
+    <table className="dash-table">
+      <thead>
+        <tr>
+          <th>Device</th>
+          <th>PDP viewers</th>
+          <th>Checkout</th>
+          <th>Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((d) => (
+          <tr key={d.deviceType}>
+            <td>{d.deviceType}</td>
+            <td className="tnum">{d.pdpViewers.toLocaleString()}</td>
+            <td className="tnum">{d.checkoutStarted.toLocaleString()}</td>
+            <td className="tnum">{d.pdpViewers > 0 ? `${d.conversionPct.toFixed(1)}%` : '—'}</td>
           </tr>
         ))}
       </tbody>
