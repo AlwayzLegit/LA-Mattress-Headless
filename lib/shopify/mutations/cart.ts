@@ -31,8 +31,10 @@ const CART_FRAGMENT = /* GraphQL */ `
           ... on ProductVariant {
             ...VariantFields
             product {
+              id
               handle
               title
+              vendor
               featuredImage { ...ImageFields }
             }
           }

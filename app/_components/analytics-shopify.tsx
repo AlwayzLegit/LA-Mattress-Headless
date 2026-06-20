@@ -10,6 +10,7 @@ import {
   sendShopifyAnalytics,
   useShopifyCookies,
 } from '@shopify/hydrogen-react';
+import type { ShopifyAnalyticsProduct } from '@shopify/hydrogen-react';
 
 /**
  * Shopify-native storefront analytics for the headless build.
@@ -116,4 +117,54 @@ export function AnalyticsShopify() {
   }, [pathname, isAdmin]);
 
   return null;
+}
+
+/**
+ * Imperative companion to the PAGE_VIEW beacon: re-emits Shopify's
+ * ADD_TO_CART analytics event from the headless storefront.
+ *
+ * Why: the PAGE_VIEW beacon restores Shopify Admin's "Online store
+ * sessions" reports (sessions, traffic sources, landing pages — the
+ * denominator of the conversion funnel). But Admin's "Online store
+ * conversion rate" funnel also breaks out an "Added to cart" stage, which
+ * is fed by a separate trekkie event the Liquid theme used to fire. On a
+ * headless build that event never loads, so the "Added to cart" stage
+ * reads zero even when sessions populate. Firing it here closes that gap.
+ *
+ * Called from the cart context's successful-add path (where the post-add
+ * cart line already carries the product/variant ids, price and the cart
+ * gid Shopify keys this event on), NOT from a route effect — so it guards
+ * the window/host checks itself rather than relying on the component's
+ * render gate. Same preview/local exclusion as the page-view beacon so we
+ * don't pollute Shopify's funnel with non-customer traffic.
+ *
+ * Safe to call unconditionally: bails silently on the server, on
+ * preview/local hosts, and on any SDK error (never blocks the add-to-cart
+ * UX).
+ */
+export function sendShopifyAddToCart(input: {
+  /** Cart gid: `gid://shopify/Cart/<id>`. */
+  cartId: string;
+  /** Value of the line(s) added (price × quantity). */
+  totalValue: number;
+  product: ShopifyAnalyticsProduct;
+}): void {
+  if (typeof window === 'undefined' || isPreviewOrLocalHost(window.location.hostname)) return;
+  try {
+    sendShopifyAnalytics({
+      eventName: AnalyticsEventName.ADD_TO_CART,
+      payload: {
+        ...getClientBrowserParameters(),
+        hasUserConsent: true,
+        shopifySalesChannel: ShopifySalesChannel.headless,
+        shopId: SHOP_ID,
+        currency: CURRENCY,
+        cartId: input.cartId,
+        totalValue: input.totalValue,
+        products: [input.product],
+      },
+    });
+  } catch {
+    // Analytics must never break the cart. Swallow silently.
+  }
 }

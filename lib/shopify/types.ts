@@ -306,7 +306,9 @@ export type CartLine = {
   quantity: number;
   cost: { totalAmount: Money; subtotalAmount: Money };
   discountAllocations: CartDiscountAllocation[];
-  merchandise: ProductVariant & { product: { handle: string; title: string; featuredImage: Image | null } };
+  merchandise: ProductVariant & {
+    product: { id: string; handle: string; title: string; vendor: string; featuredImage: Image | null };
+  };
 };
 
 export type Cart = {

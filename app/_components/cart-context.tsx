@@ -16,6 +16,7 @@ import {
 } from '@/app/_actions/cart';
 import { announce, announceAssertive } from './announcer';
 import { track } from '@/lib/analytics';
+import { sendShopifyAddToCart } from './analytics-shopify';
 
 type CartContextValue = {
   cart: Cart | null;
@@ -69,14 +70,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // line so the price and product handle reflect what Shopify
       // actually accepted (variant-level price, not the PDP min).
       if (addedLine) {
+        const unitPrice = Number.parseFloat(addedLine.merchandise.price.amount) || 0;
         track('add_to_cart', {
           product_handle: addedLine.merchandise.product.handle,
           variant_id: addedLine.merchandise.id,
           product_title: title,
           quantity,
-          price: Number.parseFloat(addedLine.merchandise.price.amount) || 0,
+          price: unitPrice,
           currency: addedLine.merchandise.price.currencyCode,
         });
+        // Mirror to Shopify's analytics so Admin's conversion funnel shows
+        // the "Added to cart" stage (the PostHog/GA4 mirrors above don't
+        // feed Shopify Admin). Production storefront only — the helper
+        // self-gates on host. The cart gid keys the event to the session.
+        if (res.cart) {
+          sendShopifyAddToCart({
+            cartId: res.cart.id,
+            totalValue: unitPrice * quantity,
+            product: {
+              productGid: addedLine.merchandise.product.id,
+              variantGid: addedLine.merchandise.id,
+              name: addedLine.merchandise.product.title,
+              brand: addedLine.merchandise.product.vendor,
+              price: addedLine.merchandise.price.amount,
+              quantity,
+            },
+          });
+        }
       }
       announce(
         title
