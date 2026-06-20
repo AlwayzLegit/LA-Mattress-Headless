@@ -13,6 +13,7 @@ import { sanitizeShopifyHtml, resolveRedirectPath } from '@/lib/sanitize';
 import { injectHeadingIds } from '@/lib/article-toc';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { ArticleEnrichment } from '@/app/_components/sections/article-enrichment';
+import { ArticleShopRail } from '@/app/_components/sections/article-shop-rail';
 import { displayAuthorName } from '@/lib/article-author';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
@@ -257,6 +258,8 @@ function ArticleView({ article }: { article: Article }) {
           </aside>
         </div>
       </div>
+
+      <ArticleShopRail />
 
       <ArticleEnrichment handle={article.handle} />
 
