@@ -4864,6 +4864,19 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   display: grid; gap: var(--s-3); max-width: 60ch;
 }
 
+/* End-of-article shop module — quiz CTA + best-sellers rail. Inserted
+   between the article body and the related-guides rail to convert reading
+   intent into purchase intent (article conversion was 0% on the prior
+   reading-only CTAs). */
+.gd-shop { padding: var(--s-7) 0; border-top: 1px solid var(--line); }
+.gd-shop-grid { max-width: 720px; }
+.gd-shop-cta .eyebrow { margin-bottom: var(--s-2); }
+.gd-shop-cta h2 { margin: 0 0 var(--s-3); }
+.gd-shop-cta p { margin: 0 0 var(--s-5); color: var(--text-3); max-width: 60ch; }
+.gd-shop-cta-actions {
+  display: flex; flex-wrap: wrap; gap: var(--s-3);
+}
+
 /* Footer CTA band */
 .gd-cta-band {
   padding: var(--s-7) 0;
