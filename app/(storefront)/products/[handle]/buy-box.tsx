@@ -12,6 +12,7 @@ import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { SIZE_DIMENSIONS } from './pdp-data';
 import { PdpStickyAtcBar } from './pdp-sticky-atc-bar';
 import { StickyVariantSheet } from './sticky-variant-sheet';
+import { PdpFinancingLine } from './pdp-financing-line';
 
 type Props = {
   options: ProductOption[];
@@ -195,6 +196,13 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
         )}
       </div>
 
+      {/* Sticker-shock relief next to the price (analytics: 94% PDP→ATC drop).
+          Reflects the matched-variant price when known, otherwise the
+          collection min. Hidden below $50 (Shop Pay/Affirm floor). */}
+      <PdpFinancingLine
+        price={matchingVariant?.price ?? priceRange.minVariantPrice ?? null}
+      />
+
       {options.filter((o) => o.values.length > 1).length > 0 ? (
         <div className="pdp-options">
           {options.filter((o) => o.values.length > 1).map((opt) => {
@@ -289,6 +297,16 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
           This combination is currently out of stock. Call {SITE_PHONE_DISPLAY} for availability.
         </p>
       ) : null}
+
+      {/* Trust strip — inline with the ATC, not at the top of the page,
+          so the reassurance lands at the decision moment (analytics: 94%
+          PDP→ATC drop). Phrasings match the canonical site claims
+          (cart-drawer, footer trust strip). */}
+      <ul className="pdp-trust">
+        <li><Icon name="check" size={14} /> Free same-day LA delivery</li>
+        <li><Icon name="shield" size={14} /> 120-night comfort exchange</li>
+        <li><Icon name="lock" size={14} /> 10-year warranty</li>
+      </ul>
 
       <PdpStickyAtcBar
         show={showSticky}
