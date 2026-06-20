@@ -38,10 +38,12 @@ import {
  * resource ids are already in hand.
  *
  * Gating:
- *   - Production host only. Never fires from Vercel preview deploys or
- *     localhost, so Shopify's session data isn't polluted with
- *     non-customer traffic. (The PostHog/GA4 components gate on env vars;
- *     a host check is the equivalent here and needs no new env var.)
+ *   - Real storefront only. Never fires from Vercel preview deploys
+ *     (*.vercel.app) or localhost, so Shopify's session data isn't
+ *     polluted with non-customer traffic. The production storefront is
+ *     served on BOTH the apex (mattressstoreslosangeles.com) and www
+ *     hosts, so we allow any non-preview/non-local host rather than a
+ *     single literal — otherwise apex visitors are silently dropped.
  *   - Skips /admin/* — same rationale as the other analytics components
  *     (internal staff traffic shouldn't land in the storefront funnel).
  *
@@ -55,11 +57,14 @@ import {
 const SHOP_ID = 'gid://shopify/Shop/6841759';
 const CURRENCY = 'USD';
 
-// Hardcoded production storefront host: guarantees events only ever fire
-// from real customer traffic regardless of how NEXT_PUBLIC_* envs are set
-// per Vercel environment. (Apex redirects to www, so www is the only host
-// customers land on.)
-const PROD_HOST = 'www.mattressstoreslosangeles.com';
+/** True for Vercel preview deploys and local dev — the only hosts we must
+ * NOT emit from. Any other host is a real production storefront domain
+ * (apex or www), so the beacon fires there. Keeping this an exclusion list
+ * (rather than a single allowed host) means apex visitors aren't dropped
+ * and future domain changes don't silently break tracking. */
+function isPreviewOrLocalHost(host: string): boolean {
+  return host.endsWith('.vercel.app') || host === 'localhost' || host === '127.0.0.1';
+}
 
 /** Maps a storefront path to the Shopify analytics page type so the Admin
  * reports can break sessions down by page kind. Unknown routes fall back
@@ -95,7 +100,7 @@ export function AnalyticsShopify() {
 
   useEffect(() => {
     if (isAdmin) return;
-    if (typeof window === 'undefined' || window.location.hostname !== PROD_HOST) return;
+    if (typeof window === 'undefined' || isPreviewOrLocalHost(window.location.hostname)) return;
 
     sendShopifyAnalytics({
       eventName: AnalyticsEventName.PAGE_VIEW,
