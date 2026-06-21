@@ -199,6 +199,28 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
             ))}
           </section>
 
+          {/* Answer-first summary. The 20260621 Semrush audit found the
+              size/dimension informational cluster lost rankings to
+              Google's AI Overviews — those queries now get answered in
+              the SERP, so the click never arrives. This concise,
+              extractable "at a glance" block high on the page gives AI
+              Overviews + featured snippets a clean source to cite (and
+              links straight into each size collection). */}
+          <section className="qa-box" aria-labelledby="ms-tldr-h">
+            <h2 id="ms-tldr-h" className="qa-box-h">Mattress sizes at a glance</h2>
+            <p className="qa-box-lede">The seven standard US mattress sizes, narrowest to widest:</p>
+            <ul className="qa-list">
+              {MATTRESS_SIZES.map((s) => (
+                <li key={s.name}>
+                  <Link href={s.collectionHref}>{s.name}</Link> <span className="tnum">{s.inches}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="muted">
+              Queen is the most popular size in the US; King is the widest and California King the longest. Split King — two Twin XL halves — is used on adjustable bases. Full dimensions in inches, feet, and centimeters are in the table below.
+            </p>
+          </section>
+
           {/* To-scale comparison — the lead graphic. All seven sizes
               drawn at one px-per-inch scale, bottom-aligned, so the
               relative footprints are obvious at a glance. */}

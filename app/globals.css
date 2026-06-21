@@ -7154,6 +7154,35 @@ a.contact-action:hover {
   margin: 0 0 var(--s-4);
   font-size: 15px;
 }
+/* Answer-first "quick answer" callout. Used high on
+   /pages/mattress-sizes and /pages/mattress-store-locations so AI
+   Overviews + featured snippets have a concise, extractable answer to
+   cite (the 20260621 audit showed informational/near-me queries lost
+   to AI Overviews — this makes the page the citable source). */
+.qa-box {
+  margin: var(--s-6) 0;
+  padding: var(--s-5) var(--s-6);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--r-3);
+  background: var(--surface);
+}
+.qa-box-h { margin: 0 0 var(--s-3); font-size: 18px; }
+.qa-box p { margin: 0; }
+.qa-box p + p { margin-top: var(--s-3); }
+.qa-box-lede { font-size: 15px; }
+.qa-list {
+  list-style: none;
+  margin: 0 0 var(--s-3);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--s-2) var(--s-5);
+}
+.qa-list li { font-size: 15px; }
+.qa-list a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--accent); }
+.qa-list a:hover { color: var(--accent); }
+.qa-list .tnum { color: var(--text-3); }
 .ms-dims {
   margin-top: var(--s-6);
 }
