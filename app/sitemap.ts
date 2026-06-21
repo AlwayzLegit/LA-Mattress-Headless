@@ -200,11 +200,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
       }),
   );
 
+  // Neighborhood local-landing pages are code-driven (lib/neighborhoods.ts)
+  // and each backed by a published Shopify page. Emit them directly from
+  // NEIGHBORHOODS so newly-added areas appear in the sitemap immediately,
+  // without waiting for the daily url-inventory snapshot to pick up the new
+  // Shopify pages. Deduped against pageEntries (the snapshot already lists
+  // the older neighborhoods).
+  const pageUrls = new Set(pageEntries.map((e) => e.url));
+  const neighborhoodEntries: MetadataRoute.Sitemap = NEIGHBORHOODS.map((n) =>
+    u(`/pages/${n.handle}`),
+  )
+    .filter((url) => !pageUrls.has(url))
+    .map((url) => ({
+      url,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.85,
+    }));
+
   const all = [
     ...home,
     ...productEntries,
     ...collectionEntries,
     ...pageEntries,
+    ...neighborhoodEntries,
     ...codedPageEntries,
     ...blogEntries,
     ...articleEntries,

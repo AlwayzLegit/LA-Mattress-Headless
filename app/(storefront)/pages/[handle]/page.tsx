@@ -88,10 +88,15 @@ export function generateStaticParams() {
   // `reviews` / `data-sharing-opt-out` are isPublished CMS pages AND
   // coded handles — filter coded handles out of the published-pages map
   // so each param is emitted exactly once (no duplicate static params).
-  return [
-    ...publishedPages.filter((p) => !isCodedPage(p.handle)).map((p) => ({ handle: p.handle })),
-    ...CODED_PAGE_HANDLES.map((handle) => ({ handle })),
-  ];
+  // Dedupe across published CMS pages, coded handles, and the code-driven
+  // neighborhood landing pages (lib/neighborhoods.ts). Neighborhoods are
+  // added explicitly so newly-created areas prerender even before the daily
+  // url-inventory snapshot picks up their Shopify page.
+  const handles = new Set<string>();
+  for (const p of publishedPages) if (!isCodedPage(p.handle)) handles.add(p.handle);
+  for (const h of CODED_PAGE_HANDLES) handles.add(h);
+  for (const n of NEIGHBORHOODS) handles.add(n.handle);
+  return [...handles].map((handle) => ({ handle }));
 }
 
 export async function generateMetadata(props: Params): Promise<Metadata> {
@@ -1190,7 +1195,7 @@ function SalePage({
  * listing the nearest physical showrooms so Google can still see the
  * real stores behind this landing page.
  */
-function NeighborhoodPage({
+async function NeighborhoodPage({
   page,
   neighborhood,
 }: {
@@ -1203,6 +1208,16 @@ function NeighborhoodPage({
   // that turn the 27 isolated neighborhood pages into a connected cluster
   // (Semrush Linking score / crawl-depth fix). See getNearbyNeighborhoods.
   const nearbyNeighborhoods = getNearbyNeighborhoods(neighborhood);
+  // Real shop surface: best-selling mattresses so the page isn't a wall
+  // of text — gives the local landing page actual product cards + a
+  // commercial signal, with same ISR caching as every other PLP fetch.
+  // Falls back gracefully (empty grid hidden) if the collection errors.
+  const bestSellers = await getCollectionByHandle({
+    handle: 'mattresses',
+    first: 8,
+    sortKey: 'BEST_SELLING',
+  }).catch(() => null);
+  const featured = bestSellers?.products.nodes ?? [];
 
   return (
     <main className="container">
@@ -1235,7 +1250,49 @@ function NeighborhoodPage({
               ? `Visit our ${primaryShowroom.area} showroom to try every mattress in person.`
               : 'Visit any of our 5 LA showrooms to try every mattress in person.'}
           </p>
+          <div
+            style={{ display: 'flex', gap: 'var(--s-3)', flexWrap: 'wrap', marginTop: 'var(--s-5)' }}
+          >
+            <Link href="/collections/mattresses" className="btn btn-primary">
+              Shop mattresses <Icon name="arrow-right" size={14} />
+            </Link>
+            {primaryShowroom ? (
+              <a href={`tel:${primaryShowroom.phone.replace(/[^+\d]/g, '')}`} className="btn btn-ghost">
+                <Icon name="phone" size={14} /> {formatPhone(primaryShowroom.phone)}
+              </a>
+            ) : null}
+            <Link
+              href={primaryShowroom ? `/pages/${primaryShowroom.handle}` : '/pages/mattress-store-locations'}
+              className="btn btn-ghost"
+            >
+              Find your showroom
+            </Link>
+          </div>
         </header>
+
+        <section className="locations-trust" aria-label="What every order includes" style={{ marginTop: 'var(--s-6)' }}>
+          <div className="locations-trust-item">
+            <Icon name="truck" size={18} />
+            <div>
+              <div className="locations-trust-title">Free {neighborhood.name} delivery</div>
+              <div className="locations-trust-sub">White-glove, same-day if ordered by 4 PM</div>
+            </div>
+          </div>
+          <div className="locations-trust-item">
+            <Icon name="shield" size={18} />
+            <div>
+              <div className="locations-trust-title">120-night exchange</div>
+              <div className="locations-trust-sub">Sleep on it, swap if it isn&rsquo;t right</div>
+            </div>
+          </div>
+          <div className="locations-trust-item">
+            <Icon name="card" size={18} />
+            <div>
+              <div className="locations-trust-title">0% APR financing</div>
+              <div className="locations-trust-sub">Synchrony &amp; Acima — instant approval</div>
+            </div>
+          </div>
+        </section>
 
         {page.body ? (
           <div
@@ -1248,6 +1305,37 @@ function NeighborhoodPage({
             <p>{neighborhood.defaultBlurb}</p>
           </div>
         )}
+
+        {featured.length > 0 ? (
+          <section className="section" style={{ marginTop: 'var(--s-7)' }} aria-labelledby="np-shop-h">
+            <div className="eyebrow">Shop now</div>
+            <h2 id="np-shop-h" className="h2">Best-selling mattresses we deliver to {neighborhood.name}</h2>
+            <p className="muted" style={{ maxWidth: '60ch' }}>
+              Every model below ships free to {neighborhood.name} with white-glove setup and old-mattress haul-away
+              {primaryShowroom ? ` — or come test them in person at our ${primaryShowroom.area} showroom.` : '.'}
+            </p>
+            <nav className="sale-page-chips" aria-label="Shop mattresses by type" style={{ marginTop: 'var(--s-4)' }}>
+              {SALE_CATEGORY_CHIPS.map((chip) => (
+                <Link key={chip.href} href={chip.href} className="sale-page-chip">
+                  {chip.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="plp-grid" style={{ marginTop: 'var(--s-5)' }}>
+              {featured.map((p, i) => (
+                <PlpCard key={p.id} product={p} priority={i < 2} />
+              ))}
+            </div>
+            <div style={{ marginTop: 'var(--s-5)' }}>
+              <Link href="/collections/mattresses" className="btn btn-primary btn-lg">
+                Shop all mattresses <Icon name="arrow-right" size={16} />
+              </Link>
+              <Link href="/collections/on-sale" className="btn btn-ghost btn-lg" style={{ marginLeft: 'var(--s-3)' }}>
+                See current deals
+              </Link>
+            </div>
+          </section>
+        ) : null}
 
         {nearest.length > 0 ? (
           <section className="section" style={{ marginTop: 'var(--s-7)' }}>
