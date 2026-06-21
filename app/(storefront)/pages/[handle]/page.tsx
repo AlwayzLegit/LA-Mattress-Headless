@@ -1221,7 +1221,11 @@ async function NeighborhoodPage({
 
   return (
     <main className="container">
-      <article className="cms-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
+      {/* Full-width wrapper (NOT .cms-page — that pins content to a 760px
+          left column, which left the product grid / trust strip / showroom
+          tiles crammed left with the right half of the desktop page empty).
+          Prose blocks below carry their own readable max-width. */}
+      <article className="neighborhood-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
         <nav className="lp-breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="sep" aria-hidden="true">/</span>
@@ -1302,11 +1306,11 @@ async function NeighborhoodPage({
         {page.body ? (
           <div
             className="rte cms-body"
-            style={{ marginTop: 'var(--s-5)' }}
+            style={{ marginTop: 'var(--s-5)', maxWidth: '72ch' }}
             dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(page.body)) }}
           />
         ) : (
-          <div className="rte cms-body" style={{ marginTop: 'var(--s-5)' }}>
+          <div className="rte cms-body" style={{ marginTop: 'var(--s-5)', maxWidth: '72ch' }}>
             <p>{neighborhood.defaultBlurb}</p>
           </div>
         )}
