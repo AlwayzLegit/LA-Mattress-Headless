@@ -1241,8 +1241,13 @@ async function NeighborhoodPage({
               Angeles". Still differs from <title> case-normalized
               ("… | LA Mattress"), so no duplicate-H1/title regression. */}
           <h1 className="h1">
-            {`Mattress store in ${neighborhood.name}`}
-            {/\bLA\b/.test(neighborhood.name) ? '' : ', Los Angeles'}
+            {/* High-value areas (Pasadena, Santa Monica, etc.) override the
+                H1 toward the higher-volume plural "mattress stores [area]"
+                pattern via the custom.seo_h1 metafield (SEMrush 20260621:
+                "mattress stores pasadena" 110 vs singular 70). Everything
+                else uses the default singular H1. */}
+            {page.seoH1 ??
+              `Mattress store in ${neighborhood.name}${/\bLA\b/.test(neighborhood.name) ? '' : ', Los Angeles'}`}
           </h1>
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
             Free white-glove delivery to {neighborhood.name} on orders over $499 — same-day if you order by 4pm.{' '}
