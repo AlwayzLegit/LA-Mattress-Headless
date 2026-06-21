@@ -478,6 +478,15 @@ async function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnTy
   // back to an empty array when Judge.me isn't configured / errors.
   const recentReviews = await getStorefrontReviews({ perPage: 3, minRating: 5 });
 
+  // Human-readable list of the five showroom areas ("A, B, C, D, and E")
+  // for the answer-first summary block. Built from SHOWROOMS so it stays
+  // in sync if a location is added or removed.
+  const showroomAreas = SHOWROOMS.map((s) => s.area);
+  const areaList =
+    showroomAreas.length > 1
+      ? `${showroomAreas.slice(0, -1).join(', ')}, and ${showroomAreas[showroomAreas.length - 1]}`
+      : showroomAreas[0];
+
   return (
     <main className="container">
       <article className="locations-page" style={{ padding: 'var(--s-7) 0 var(--s-9)' }}>
@@ -494,6 +503,21 @@ async function LocationsIndexPage({ page }: { page: NonNullable<Awaited<ReturnTy
             Looking for a mattress store near you? We have five across Los Angeles — try every mattress in person at any showroom, open daily, no appointment needed. Free white-glove delivery, 120-night comfort exchange, and 0% APR financing at every location.
           </p>
         </header>
+
+        {/* Answer-first summary. The 20260621 keyword audit found
+            "mattress store near me" (110K vol) had dropped out of the
+            top 100, split across two competing URLs. This consolidates
+            the canonical, extractable answer on the locations hub so AI
+            Overviews + featured snippets cite this page for the
+            "how many / where are your stores" intent. */}
+        <section className="qa-box" aria-labelledby="loc-tldr-h">
+          <h2 id="loc-tldr-h" className="qa-box-h">Where are LA Mattress Store&rsquo;s showrooms?</h2>
+          <p>
+            LA Mattress Store has <strong>five mattress stores across Los Angeles</strong> — in {areaList}.
+            Every showroom is open daily with no appointment needed, carries 30+ mattresses from Tempur-Pedic
+            to Helix in every size, and includes free same-day white-glove delivery across LA County.
+          </p>
+        </section>
 
         <section className="locations-trust" aria-label="What every showroom offers">
           <div className="locations-trust-item">
