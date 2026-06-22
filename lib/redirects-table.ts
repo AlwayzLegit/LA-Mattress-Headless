@@ -25,3 +25,20 @@ export const REDIRECTS: ReadonlyMap<string, string> = (() => {
 })();
 
 export const REDIRECTS_COUNT = 2038;
+
+/**
+ * True when `/products/<handle>` is a permanent-redirect source — i.e. the
+ * product still exists in the Shopify Storefront API (so `productRecommendations`,
+ * collection grids, and quiz picks can surface it) but its canonical URL
+ * 301-redirects elsewhere (often to the homepage after a discontinuation/merge).
+ *
+ * Internal links must never point at a redirecting URL (SEMrush "Permanent
+ * redirects" notice 214 — ~1,098 PDP-rail links). Callers building
+ * ProductSummary lists for any internal-link surface filter these out so the
+ * rail links straight to live 200 URLs. Trailing-slash-free, matching the
+ * keys packed into REDIRECTS.
+ */
+export function isRedirectedProductHandle(handle: string): boolean {
+  if (!handle) return false;
+  return REDIRECTS.has(`/products/${handle}`);
+}

@@ -2,6 +2,7 @@ import { shopifyFetch } from '../client';
 import type { ProductSummary } from '../types';
 import { IMAGE_FRAGMENT, MONEY_FRAGMENT, PRODUCT_SUMMARY_FRAGMENT } from './fragments';
 import { parseReviewsMetafields } from './product';
+import { isRedirectedProductHandle } from '../../redirects-table';
 
 const QUERY = /* GraphQL */ `
   ${IMAGE_FRAGMENT}
@@ -78,5 +79,12 @@ export async function getProductRecommendations(
     nodes = related.productRecommendations ?? [];
   }
 
-  return nodes.filter((p) => p.handle !== handle).slice(0, limit).map(liftSummary);
+  // Drop the source product (Shopify occasionally includes self in RELATED)
+  // and any product whose canonical URL 301-redirects — Shopify still returns
+  // discontinued/merged products here, and linking to a redirecting handle
+  // trips SEMrush's "Permanent redirects" notice (214) on every PDP rail.
+  return nodes
+    .filter((p) => p.handle !== handle && !isRedirectedProductHandle(p.handle))
+    .slice(0, limit)
+    .map(liftSummary);
 }

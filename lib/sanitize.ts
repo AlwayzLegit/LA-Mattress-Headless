@@ -573,6 +573,33 @@ export function stripDeadHotlinks(html: string): string {
 }
 
 /**
+ * Confirmed-dead external links — anchors whose href permanently 404s.
+ * SEMrush "Broken external links" warning (12) flags links in merchant
+ * article bodies; these are the genuinely-dead ones (a competitor blog
+ * URL that no longer exists), distinct from transient 429/503 rate-limit
+ * responses on live research citations (which we keep — removing valid
+ * sources would weaken E-E-A-T). Unwraps the anchor, preserving its
+ * visible text so the sentence still reads. Tag-safe; exported for tests.
+ */
+const DEAD_EXTERNAL_LINK_HREFS: ReadonlyArray<RegExp> = [
+  // mattressland.com/blog/allergy-symptoms → permanent 404.
+  /mattressland\.com\/blog\/allergy-symptoms/i,
+];
+
+export function unwrapDeadExternalLinks(html: string): string {
+  if (!html) return html;
+  let s = html;
+  for (const pat of DEAD_EXTERNAL_LINK_HREFS) {
+    const re = new RegExp(
+      `<a\\b[^>]*\\bhref=["'][^"']*(?:${pat.source})[^"']*["'][^>]*>([\\s\\S]*?)<\\/a>`,
+      'gi',
+    );
+    s = s.replace(re, '$1');
+  }
+  return s;
+}
+
+/**
  * Normalize the business's stale contact info to the current canonical
  * values across all merchant HTML. Many merchant-authored page bodies
  * hardcode the Studio City showroom's local number (818) 247-7790 as if
@@ -626,6 +653,9 @@ export function sanitizeShopifyHtml(
   out = stripEditorCruft(out);
   // Remove dead restonic.com hotlinked images (broken-image renders).
   out = stripDeadHotlinks(out);
+  // Unwrap confirmed-dead external anchors (permanent 404s) — keeps the
+  // text, drops the broken link (SEMrush broken-external-links warning 12).
+  out = unwrapDeadExternalLinks(out);
   // Normalize the business's old phone/email to the current contact (NAP).
   out = normalizeContactInfo(out);
   // Phase 262: rewrite Hydrogen-era CDN URLs FIRST, before the generic
