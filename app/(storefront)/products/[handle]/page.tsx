@@ -450,8 +450,13 @@ function ProductView({ product, related }: { product: Product; related: ProductS
             </div>
           </div>
         </aside>
+      </div>
 
-        <div className="pdp-details-area">
+      {/* Lower content lives BELOW the gallery/buy-box grid (not in the
+          grid's left column) so it spans a centered, balanced width instead
+          of being pinned to ~60% with the 440px buy-box gutter empty to its
+          right. See .pdp-details-area in globals.css. */}
+      <div className="pdp-details-area">
           <PdpOverview product={product} />
           <PdpFirmness product={product} />
           <PdpMaterials product={product} />
@@ -477,7 +482,6 @@ function ProductView({ product, related }: { product: Product; related: ProductS
 
           <PdpFaq product={product} />
         </div>
-      </div>
 
       <PdpReviewsSection
         productGid={product.id}

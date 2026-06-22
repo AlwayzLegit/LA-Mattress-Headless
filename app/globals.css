@@ -2648,32 +2648,34 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
 .pdp-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 440px;
-  grid-template-areas:
-    "gallery rail"
-    "details rail";
+  grid-template-areas: "gallery rail";
   column-gap: var(--s-8);
-  row-gap: var(--s-7);
   align-items: start;
-  padding-bottom: var(--s-9);
+  padding-bottom: var(--s-7);
 }
 @media (max-width: 1024px) {
   .pdp-grid {
     grid-template-columns: 1fr;
     grid-template-areas:
       "gallery"
-      "rail"
-      "details";
+      "rail";
     gap: var(--s-6);
   }
 }
 
 .pdp-gallery-area { grid-area: gallery; min-width: 0; }
+/* Lower content renders below the gallery/buy-box grid as a centered
+   column (no longer grid-area:details in the left column) — balanced
+   reading width instead of pinned left with the 440px buy-box gutter
+   empty to its right. */
 .pdp-details-area {
-  grid-area: details;
   display: flex;
   flex-direction: column;
   gap: var(--s-7);
   min-width: 0;
+  max-width: 960px;
+  margin: 0 auto;
+  padding-bottom: var(--s-9);
 }
 @media (max-width: 1024px) { .pdp-details-area { gap: var(--s-5); } }
 
