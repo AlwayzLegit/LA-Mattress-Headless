@@ -1029,7 +1029,19 @@ function SalePage({
         isPreview={isPreview}
         featuredProductCount={featuredProducts.length}
       />
-      <header className="sale-page-hero">
+      <header className={`sale-page-hero${page.coverImage ? ' sale-page-hero--image' : ''}`}>
+        {page.coverImage ? (
+          <Image
+            src={page.coverImage.url}
+            alt=""
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            quality={60}
+            className="sale-page-hero-bg"
+          />
+        ) : null}
         <div className="container sale-page-hero-inner">
           <nav className="lp-breadcrumbs sale-page-breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>

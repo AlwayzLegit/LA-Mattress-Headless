@@ -5594,10 +5594,46 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
      thumbnail grid in the body. */
   content: '';
   position: absolute; inset: 0;
+  z-index: 1;
   background: radial-gradient(ellipse at top right, rgb(255 255 255 / 8%) 0%, transparent 60%);
   pointer-events: none;
 }
-.sale-page-hero-inner { position: relative; z-index: 1; max-width: 900px; }
+
+/* Image-backed hero (custom.cover_image metafield set). The navy gradient
+   above stays as the base layer (instant paint + fallback if the photo is
+   slow), the optimized <Image> fills on top of it, and ::before becomes a
+   dark scrim so the white headline/CTAs keep WCAG-AA contrast over the
+   photo. z-index stack: image 0 → scrim 1 → content 2. */
+.sale-page-hero-bg {
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+.sale-page-hero--image::before {
+  /* Heavier scrim on the left where the copy sits, lighter at right so the
+     photo still reads; plus a bottom-up fade for the lede/CTAs. */
+  background:
+    linear-gradient(100deg,
+      rgb(11 20 51 / 92%) 0%,
+      rgb(11 20 51 / 82%) 38%,
+      rgb(11 20 51 / 48%) 72%,
+      rgb(11 20 51 / 30%) 100%),
+    linear-gradient(0deg, rgb(11 20 51 / 60%) 0%, transparent 42%);
+}
+.sale-page-hero--image .sale-page-title { text-shadow: 0 2px 28px rgb(0 0 0 / 38%); }
+.sale-page-hero--image .sale-page-lede { text-shadow: 0 1px 16px rgb(0 0 0 / 32%); }
+.sale-page-hero-inner { position: relative; z-index: 2; max-width: 900px; }
+/* Eyebrow reads as a small pill badge — adds a touch of polish on both the
+   gradient and image variants without competing with the headline. */
+.sale-page-eyebrow {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 14%);
+  border: 1px solid rgb(255 255 255 / 22%);
+  backdrop-filter: blur(4px);
+  font-weight: 600;
+}
 .sale-page-breadcrumbs { color: rgb(255 255 255 / 70%); margin-bottom: var(--s-5); }
 .sale-page-breadcrumbs a { color: inherit; }
 .sale-page-breadcrumbs a:hover { color: #fff; }
