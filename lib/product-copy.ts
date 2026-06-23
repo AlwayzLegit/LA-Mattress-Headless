@@ -27,6 +27,13 @@
 import type { Product } from './shopify/types.ts';
 import type { FaqItem } from './faq.ts';
 
+/** Oxford-comma join: ["a"] → "a", ["a","b"] → "a and b", ["a","b","c"] → "a, b, and c". */
+function joinList(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? '';
+  if (items.length === 2) return `${items[0]} and ${items[1]}`;
+  return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+}
+
 export function buildProductAboutSentences(product: Product): string[] {
   const { specs, editorial } = product;
   const sentences: string[] = [];
@@ -46,6 +53,17 @@ export function buildProductAboutSentences(product: Product): string[] {
       : '';
   sentences.push(`The ${product.title} is a ${noun}${vendorClause}.`);
 
+  // Construction — name the build layers top-to-bottom when the editorial
+  // layer metafield is populated. Each layer name is real product data;
+  // we list up to four so the sentence stays readable on deep builds.
+  const layerNames = (editorial.layers ?? [])
+    .map((l) => l.name?.trim())
+    .filter((n): n is string => Boolean(n));
+  if (layerNames.length >= 2) {
+    const shown = layerNames.slice(0, 4).map((n) => n.toLowerCase());
+    sentences.push(`Its construction layers ${joinList(shown)} from top to bottom.`);
+  }
+
   // Feel — firmness label, plus the 1–10 score when the editorial
   // metafield carries one.
   if (specs.firmness) {
@@ -54,6 +72,36 @@ export function buildProductAboutSentences(product: Product): string[] {
         ? ` (${editorial.firmnessScore} out of 10 on our firmness scale)`
         : '';
     sentences.push(`It has a ${specs.firmness.toLowerCase()} feel${score}.`);
+  }
+
+  // Sleeper fit — derived from the per-position fit ratings. Positions
+  // rated "great" or "good" are the ones we name as a good match; this is
+  // structured product data, not an invented claim.
+  if (editorial.positionFit) {
+    const labels: Record<string, string> = { back: 'back', side: 'side', stomach: 'stomach' };
+    const good = (['back', 'side', 'stomach'] as const)
+      .filter((pos) => {
+        const fit = editorial.positionFit?.[pos];
+        return fit === 'great' || fit === 'good';
+      })
+      .map((pos) => labels[pos]);
+    if (good.length) {
+      const sleepers = good.length === 1 ? `${good[0]} sleepers` : `${joinList(good)} sleepers`;
+      sentences.push(`It's a good match for ${sleepers}.`);
+    }
+  } else if (editorial.bestFor?.length) {
+    // Fallback to the editorial best-for list when no structured position
+    // grid exists.
+    const shown = editorial.bestFor.slice(0, 3).map((b) => b.toLowerCase());
+    sentences.push(`It's well suited to ${joinList(shown)}.`);
+  }
+
+  // Size availability — pulled straight from the product's Size option so
+  // shoppers (and crawlers) see the real range of sizes carried.
+  const sizeOption = (product.options ?? []).find((o) => /size/i.test(o.name));
+  const sizeValues = sizeOption?.values.filter((v) => v?.trim()) ?? [];
+  if (sizeValues.length >= 2) {
+    sentences.push(`It's available in ${joinList(sizeValues)}.`);
   }
 
   // Coverage — manufacturer warranty + our comfort exchange.

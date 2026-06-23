@@ -280,6 +280,24 @@ function ProductAboutFallback({ product }: { product: Product }) {
 }
 
 /**
+ * Top-up appended under a thin (but non-empty) merchant description. The
+ * spec-derived sentences are distinct structured facts (build, feel, sizes,
+ * coverage) that enrich the page without overriding the merchant's prose;
+ * the store-facts paragraph then adds delivery/financing/showroom context
+ * plus the internal links. Together they lift a one-liner PDP over the
+ * thin-content threshold (SEMrush issue 112 / 223) with real data.
+ */
+function ThinDescriptionTopUp({ product }: { product: Product }) {
+  const about = buildProductAboutSentences(product);
+  return (
+    <div className="rte" style={{ marginTop: 'var(--s-4)' }}>
+      {about.length ? <p>{about.join(' ')}</p> : null}
+      <PdpStoreFacts product={product} />
+    </div>
+  );
+}
+
+/**
  * Per-product FAQ block (SEMrush 20260616 audit). Adds visible body text
  * + a FAQPage structured-data block (emitted in product-jsonld.ts) to
  * every PDP. Store-policy + warranty Q&A with the product name
@@ -468,12 +486,13 @@ function ProductView({ product, related }: { product: Product; related: ProductS
               <h2 className="h2">About this mattress</h2>
               <div className="rte" dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(product.descriptionHtml)) }} />
               {/* Short merchant copy still leaves the page thin (SEMrush
-                  issue 112) — top it up with the store-facts paragraph +
-                  internal links rather than overriding the merchant prose. */}
+                  issue 112) — top it up with the spec-derived paragraph +
+                  the store-facts paragraph + internal links rather than
+                  overriding the merchant prose. The spec sentences are
+                  distinct structured facts (height, build, feel, sizes,
+                  coverage), so they enrich rather than duplicate. */}
               {isThinDescription(product.descriptionHtml) ? (
-                <div className="rte" style={{ marginTop: 'var(--s-4)' }}>
-                  <PdpStoreFacts product={product} />
-                </div>
+                <ThinDescriptionTopUp product={product} />
               ) : null}
             </section>
           ) : (

@@ -88,6 +88,65 @@ test('returns [] when there is nothing factual to say', () => {
   assert.match(s[0], /is a mattress/);
 });
 
+test('adds a construction sentence from editorial layers', () => {
+  const s = buildProductAboutSentences(
+    makeProduct({
+      editorial: {
+        firmnessScore: 8,
+        layers: [{ name: 'Gel Memory Foam' }, { name: 'Transition Foam' }, { name: 'Pocketed Coils' }],
+      },
+    }),
+  );
+  const build = s.find((x) => x.startsWith('Its construction layers'));
+  assert.ok(build, `expected a construction sentence: ${JSON.stringify(s)}`);
+  assert.match(build, /gel memory foam, transition foam, and pocketed coils from top to bottom/);
+});
+
+test('names good-fit sleepers from the position grid', () => {
+  const s = buildProductAboutSentences(
+    makeProduct({
+      editorial: { firmnessScore: 8, positionFit: { back: 'great', side: 'good', stomach: 'poor' } },
+    }),
+  );
+  const fit = s.find((x) => x.startsWith("It's a good match for"));
+  assert.equal(fit, "It's a good match for back and side sleepers.");
+});
+
+test('falls back to editorial bestFor when no position grid', () => {
+  const s = buildProductAboutSentences(
+    makeProduct({ editorial: { firmnessScore: 8, bestFor: ['Hot sleepers', 'Couples'] } }),
+  );
+  const fit = s.find((x) => x.startsWith("It's well suited to"));
+  assert.equal(fit, "It's well suited to hot sleepers and couples.");
+});
+
+test('lists available sizes from the Size option', () => {
+  const s = buildProductAboutSentences(
+    makeProduct({
+      options: [{ name: 'Size', values: ['Twin', 'Full', 'Queen', 'King', 'California King'] }],
+    }),
+  );
+  const sizes = s.find((x) => x.startsWith("It's available in"));
+  assert.equal(sizes, "It's available in Twin, Full, Queen, King, and California King.");
+});
+
+test('a thin one-spec product now clears the thin-content threshold', () => {
+  // A near-empty merchant description on a product that nevertheless has
+  // full structured data should now generate enough prose to read as
+  // substantive (the point of issue 223).
+  const s = buildProductAboutSentences(
+    makeProduct({
+      editorial: {
+        firmnessScore: 7,
+        layers: [{ name: 'Cooling Cover' }, { name: 'Memory Foam' }, { name: 'Support Core' }],
+        positionFit: { back: 'good', side: 'great', stomach: 'good' },
+      },
+      options: [{ name: 'Size', values: ['Twin', 'Twin XL', 'Full', 'Queen', 'King', 'Cal King'] }],
+    }),
+  );
+  assert.ok(s.join(' ').length >= THIN_DESCRIPTION_CHARS - 100, `copy should be substantive: ${s.join(' ').length} chars`);
+});
+
 test('htmlTextLength strips tags + entities and counts visible text', () => {
   assert.equal(htmlTextLength(''), 0);
   assert.equal(htmlTextLength(null), 0);
