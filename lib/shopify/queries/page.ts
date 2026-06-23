@@ -20,15 +20,21 @@ const GET_PAGE_BY_HANDLE = /* GraphQL */ `
       saleStartsAt: metafield(namespace: "custom", key: "sale_starts_at") { value }
       saleEndsAt:   metafield(namespace: "custom", key: "sale_ends_at")   { value }
       seoH1:        metafield(namespace: "custom", key: "seo_h1")         { value }
+      coverImage:   metafield(namespace: "custom", key: "cover_image") {
+        reference {
+          ... on MediaImage { image { url altText } }
+        }
+      }
     }
   }
 `;
 
-type RawPage = Omit<Page, 'availableAt' | 'saleStartsAt' | 'saleEndsAt' | 'seoH1'> & {
+type RawPage = Omit<Page, 'availableAt' | 'saleStartsAt' | 'saleEndsAt' | 'seoH1' | 'coverImage'> & {
   availableAt:  { value: string | null } | null;
   saleStartsAt: { value: string | null } | null;
   saleEndsAt:   { value: string | null } | null;
   seoH1:        { value: string | null } | null;
+  coverImage:   { reference: { image: { url: string; altText: string | null } | null } | null } | null;
 };
 type Raw = { page: RawPage | null };
 
@@ -57,5 +63,8 @@ export const getPageByHandle = cache(async (handle: string): Promise<Page | null
     saleStartsAt: p.saleStartsAt?.value ?? null,
     saleEndsAt:   p.saleEndsAt?.value   ?? null,
     seoH1:        p.seoH1?.value?.trim() || null,
+    coverImage:   p.coverImage?.reference?.image
+      ? { url: p.coverImage.reference.image.url, altText: p.coverImage.reference.image.altText }
+      : null,
   };
 });

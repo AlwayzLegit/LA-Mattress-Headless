@@ -248,6 +248,14 @@ export type Page = {
    * SEO-ownership migration; retired lib/page-seo-overrides.ts).
    */
   seoH1: string | null;
+  /**
+   * Optional hero background image (`custom.cover_image` file_reference
+   * metafield, resolved to its MediaImage). When set, the SalePage hero
+   * renders it full-bleed behind a dark legibility scrim instead of the
+   * flat navy gradient. Null when unset — the template falls back to the
+   * gradient, so this is purely additive.
+   */
+  coverImage: { url: string; altText: string | null } | null;
 };
 
 export type ArticleAuthor = { name: string; bio: string | null };
