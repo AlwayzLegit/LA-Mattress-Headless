@@ -10,7 +10,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const { isRedirectedProductHandle } = await import('../../lib/redirects-table.ts');
+const { isRedirectedProductHandle } = await import('../../lib/product-redirect-guard.ts');
 
 test('true for a known redirecting product handle', () => {
   // /products/tempur-pedic-tempur-ergo-power-base 301s to the homepage.

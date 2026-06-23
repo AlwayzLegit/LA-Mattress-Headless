@@ -61,6 +61,11 @@
       "source": "/blogs/beds-mattresses/best-mattress-for-back-pain-los-angeles",
       "destination": "/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide",
       "note": "SEMrush 20260614 dedup (round 2): the duplicate generator (author 'LA Mattress Store') created TWO MORE back-pain-LA articles on Jun 14, AFTER #450 consolidated the cluster. This one (beds-mattresses, Jun 14 18:54) -> the established local-buyers-guide canonical."
+    },
+    {
+      "source": "/blogs/la-mattress-stores-blog/signs-time-new-mattress",
+      "destination": "/blogs/mattress-buying-guide/7-signs-that-you-need-a-new-mattress",
+      "note": "SEMrush 20260623 audit: NEW 4xx error (issue 2) + broken internal link (issue 8). The how-to-clean-a-mattress-complete-guide article body links to this URL, but the 'signs-time-new-mattress' article ('5 Signs it's Time for a New Mattress') is UNPUBLISHED in Shopify (isPublished:false) so the storefront 404s it, and its blog 'la-mattress-stores-blog' itself redirects to /blogs/mattress-buying-guide. Route to the closest live equivalent, the published '7 Signs That You Need A New Mattress'. resolveRedirectHrefs rewrites the body link at render (clears issue 8); the URL 301s via middleware (clears issue 2)."
     }
   ]
 }

@@ -2,7 +2,7 @@ import { shopifyFetch } from '../client';
 import type { ProductSummary } from '../types';
 import { IMAGE_FRAGMENT, MONEY_FRAGMENT, PRODUCT_SUMMARY_FRAGMENT } from './fragments';
 import { parseReviewsMetafields } from './product';
-import { isRedirectedProductHandle } from '../../redirects-table';
+import { isRedirectedProductHandle } from '../../product-redirect-guard';
 
 const QUERY = /* GraphQL */ `
   ${IMAGE_FRAGMENT}
