@@ -5662,6 +5662,67 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   .sale-page-hero { padding: 60px 0 80px; }
 }
 
+/* Shop-by-category cards + guides rail (supporting collections + buying
+   guides linked from every sale page). */
+.sale-page-shopby { padding: var(--s-7) 0 var(--s-5); }
+.sale-page-shopby-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-4);
+}
+.sale-page-shopby-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg, 14px);
+  background: var(--bg-1, #fff);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.sale-page-shopby-card:hover {
+  border-color: var(--brand-navy);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 8%);
+  transform: translateY(-2px);
+}
+.sale-page-shopby-label { font-weight: 700; font-size: 17px; }
+.sale-page-shopby-sub { color: var(--muted, #5a5f6b); font-size: 14px; line-height: 1.4; }
+.sale-page-shopby-arrow { margin-top: var(--s-3); color: var(--brand-navy); }
+.sale-page-guides { padding: var(--s-5) 0 var(--s-7); }
+.sale-page-guides-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+  max-width: 760px;
+}
+.sale-page-guide-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 10px);
+  background: var(--bg-1, #fff);
+  text-decoration: none;
+  color: inherit;
+  font-weight: 600;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.sale-page-guide-link:hover { border-color: var(--brand-navy); background: var(--bg-2); }
+.sale-page-guide-link svg { flex: none; color: var(--brand-navy); }
+@media (max-width: 900px) {
+  .sale-page-shopby-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .sale-page-shopby-grid { grid-template-columns: 1fr; }
+}
+
 /* Phase 278 — Sale-page extended sections (trust strip, product grid, chips, foot CTA). */
 .sale-page-trust {
   background: var(--bg-2);

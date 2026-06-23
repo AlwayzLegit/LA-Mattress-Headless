@@ -953,6 +953,32 @@ const SALE_CATEGORY_CHIPS = [
   { label: 'Adjustable bases', href: '/collections/adjustable-beds' },
 ];
 
+/**
+ * High-intent "shop the sale by …" cards surfaced on every sale page.
+ * Points at the evergreen category collections (queen/king/firm/memory-foam)
+ * that own the real search demand — "queen mattress sale" (~14.8k/mo) +
+ * "king mattress sale" (~9.9k/mo) dwarf any holiday-specific phrasing — so
+ * the holiday hub funnels shoppers into pages that rank year-round, and the
+ * internal links reinforce those collections' SEO.
+ */
+const SALE_SHOP_BY = [
+  { label: 'Queen Mattress Sale', href: '/collections/queen-size-mattresses', sub: "America's most popular size, from $319" },
+  { label: 'King Mattress Sale', href: '/collections/king-size-mattresses', sub: 'Maximum space for couples, from $499' },
+  { label: 'Firm Mattress Sale', href: '/collections/firm-mattress', sub: 'Solid support for back & stomach sleepers' },
+  { label: 'Memory Foam Sale', href: '/collections/memory-foam-mattresses', sub: 'Contouring pressure relief' },
+];
+
+/**
+ * "Read more" guides linked from the sale page so shoppers can research
+ * before buying (and so the hub passes link equity to the supporting
+ * Mattress Buying Guide articles). Evergreen — relevant on every sale page.
+ */
+const SALE_GUIDES = [
+  { title: '4th of July Mattress Sale in LA: Best Deals & Buyer’s Guide', href: '/blogs/mattress-buying-guide/4th-of-july-mattress-sale-los-angeles' },
+  { title: 'Best Queen & King Mattress Deals: How to Save', href: '/blogs/mattress-buying-guide/best-queen-and-king-mattress-deals' },
+  { title: 'When Is the Best Time to Buy a Mattress?', href: '/blogs/mattress-buying-guide/best-time-to-buy-a-mattress-holiday-sales' },
+];
+
 // buildSaleEventLd lives in lib/sale-event-ld.ts for unit-testability
 // (tests/ssr/lib-sale-event-ld.test.mjs). Single source of truth for
 // the SaleEvent + AggregateOffer JSON-LD shape the page emits.
@@ -1148,6 +1174,28 @@ function SalePage({
         </section>
       ) : null}
 
+      {/* Shop-by-category cards — the high-intent evergreen collections
+          (queen/king/firm/memory-foam) the holiday hub supports. Gives
+          shoppers a fast path into the catalog and reinforces those
+          collections' "[x] mattress sale" rankings via internal links. */}
+      <section className="sale-page-shopby" aria-labelledby="sale-shopby-h">
+        <div className="container">
+          <header className="sale-page-grid-head">
+            <h2 id="sale-shopby-h" className="h2">Shop the sale by size &amp; feel</h2>
+            <p className="muted">Jump to the most-shopped categories — every one is included in the sale.</p>
+          </header>
+          <div className="sale-page-shopby-grid">
+            {SALE_SHOP_BY.map((c) => (
+              <Link key={c.href} href={c.href} className="sale-page-shopby-card">
+                <span className="sale-page-shopby-label">{c.label}</span>
+                <span className="sale-page-shopby-sub">{c.sub}</span>
+                <span className="sale-page-shopby-arrow" aria-hidden="true"><Icon name="arrow-right" size={16} /></span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Merchant-authored long-form body. Sale terms, brand callouts,
           showroom hours, etc. — anything they type into the Shopify
           page body renders here. */}
@@ -1156,6 +1204,28 @@ function SalePage({
           <div className="rte cms-body" dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(page.body)) }} />
         </article>
       ) : null}
+
+      {/* "Read more" guides — links to the supporting Mattress Buying
+          Guide articles so undecided shoppers can research, and so the
+          hub passes link equity to that cluster. */}
+      <section className="sale-page-guides" aria-labelledby="sale-guides-h">
+        <div className="container">
+          <header className="sale-page-grid-head">
+            <h2 id="sale-guides-h" className="h2">Mattress sale guides</h2>
+            <p className="muted">New to mattress shopping? These quick reads help you buy smart.</p>
+          </header>
+          <ul className="sale-page-guides-list">
+            {SALE_GUIDES.map((g) => (
+              <li key={g.href}>
+                <Link href={g.href} className="sale-page-guide-link">
+                  <span>{g.title}</span>
+                  <Icon name="arrow-right" size={16} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
       {/* Footer CTA — repeat the primary action at the end of the page
           so a shopper who scrolled all the way down doesn't have to
