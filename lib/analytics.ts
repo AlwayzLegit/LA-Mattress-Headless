@@ -217,7 +217,7 @@ export type AnalyticsEvent =
       // Sale-page impression — fires once per /pages/<event>-sale-<year>
       // view. Lets us measure the lift each seasonal hero slide drives
       // into the corresponding sale page, vs. organic SEO landings.
-      // `handle` is the page handle (e.g. `independence-day-sale-2026`);
+      // `handle` is the page handle (e.g. `4th-of-july-mattress-sale-2026`);
       // `is_pre_launch` marks views during the 7-day pre-launch window
       // (page live but slide hidden — these come from direct links,
       // search, or email). `is_preview` marks merchant QA views via

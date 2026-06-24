@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 const { isSalePage } = await import('../../lib/sale-handles.ts');
 
 test('matches the canonical "-sale-" handle pattern', () => {
-  assert.equal(isSalePage('independence-day-sale-2026'), true);
+  assert.equal(isSalePage('4th-of-july-mattress-sale-2026'), true);
   assert.equal(isSalePage('labor-day-sale-2026'), true);
   assert.equal(isSalePage('mattress-sale'), true);
   assert.equal(isSalePage('sale-event'), true);
@@ -32,6 +32,8 @@ test('matches the holiday-name patterns even without "sale" in handle', () => {
   assert.equal(isSalePage('july-4-savings'), true);
   assert.equal(isSalePage('july4-savings'), true);
   assert.equal(isSalePage('fourth-of-july-2026'), true);
+  assert.equal(isSalePage('4th-of-july-2026'), true);
+  assert.equal(isSalePage('4th-of-july-mattress-sale-2027'), true);
   assert.equal(isSalePage('independence-day-2026'), true);
   assert.equal(isSalePage('black-friday-2026'), true);
   assert.equal(isSalePage('cyber-monday-deals'), true);
