@@ -40,23 +40,26 @@ const LOCAL_BUSINESS_ID = 'https://www.mattressstoreslosangeles.com/#localbusine
 // LocalBusiness JSON-LD), so this only overrides the homepage tag
 // strings, not the brand identity itself.
 //
-// Title:    66 chars (under the ~70 SERP truncation threshold). Covers
-//           "mattress store"/"mattress stores", "shop mattresses",
-//           "mattress sales", and the "los angeles" location signal.
-// Meta:    148 chars (under the ~155 SERP truncation threshold). Same
-//           four keyword phrases plus "Tempur-Pedic / Stearns & Foster
-//           / Helix" brand cues + the trust-building "free LA delivery"
-//           differentiator that lifts CTR for local searches.
+// Keyword targets (Semrush 20260624): "mattress store" (49.5k),
+// "mattress sale" (22.2k), "same day mattress delivery" (2.4k),
+// "mattress los angeles" (1k), "mattress store los angeles" (320).
+// Title:    67 chars (under the ~70 SERP truncation threshold). Leads
+//           with "Mattress Store Los Angeles", then "Sales" +
+//           "Same-Day Delivery", then the "LA Mattress" brand.
+// Meta:    ~142 chars (under the ~155 SERP truncation threshold). Opens
+//           with the "LA Mattress Store" brand, then "mattress sales" +
+//           "Los Angeles" + the "same-day LA delivery" differentiator
+//           and "120-night exchange" trust cue that lift local CTR.
 // Last-resort fallbacks ONLY. Homepage SEO is now merchant-owned in
 // Shopify Admin → Content → Metaobjects → Homepage SEO (read via
 // getHomepageSeo). These constants render only if that metaobject is
 // missing/empty or the Storefront fetch fails, so the homepage never
 // ships blank metadata. Keep them keyword-tuned as a safe default.
 const FALLBACK_TITLE =
-  'Mattress Store Los Angeles · Shop Mattresses & Sales | LA Mattress';
+  'Mattress Store Los Angeles — Sales & Same-Day Delivery | LA Mattress';
 const FALLBACK_DESCRIPTION =
-  'Shop mattresses at LA Mattress — family-owned Los Angeles mattress store. ' +
-  'Mattress sales on Tempur-Pedic, Stearns & Foster, Helix. Free LA delivery.';
+  'LA Mattress Store — shop mattress sales in Los Angeles on Tempur-Pedic, ' +
+  'Stearns & Foster, Helix & more. Free same-day LA delivery + 120-night exchange.';
 
 export async function generateMetadata(): Promise<Metadata> {
   // Source of truth: the homepage_seo metaobject (merchant-editable in
@@ -142,7 +145,7 @@ export default async function Home() {
           (mattress store, los angeles, shop mattresses, mattress sales).
           Keep this string in sync with the canonical <title> + meta
           description in generateMetadata() above. */}
-      <h1 className="sr-only">Mattress Store Los Angeles &mdash; Shop Mattresses &amp; Mattress Sales</h1>
+      <h1 className="sr-only">Mattress Store Los Angeles &mdash; Shop Mattresses, Mattress Sales &amp; Same-Day Delivery</h1>
       <Hero slides={slides} />
       {/* Quiz lead-in sits directly under the hero so the first
           interactive surface on the homepage is the "find your match"
