@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify collections inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-06-18T12:08:13.937Z",
+  "$pulledAt": "2026-06-19T09:03:33.284Z",
   "$count": 77,
   "collections": [
     {
@@ -18,72 +18,72 @@
       "id": "gid://shopify/Collection/232154947",
       "title": "Mattresses",
       "productsCount": 148,
-      "updatedAt": "2026-06-15T11:00:52Z",
-      "seoTitle": "Mattresses | All Brands & Comfort Levels | LA Mattress Store",
-      "seoDescription": "Browse 169+ mattresses from Tempur-Pedic, Stearns & Foster, Diamond, and Helix. Memory foam, hybrid, latex, and innerspring in every size. Free LA delivery."
+      "updatedAt": "2026-06-18T17:39:17Z",
+      "seoTitle": "Mattresses · Shop Beds & Mattresses Online | LA Mattress Store",
+      "seoDescription": "Shop beds and mattresses online or at five LA showrooms — every size, firmness, and top brand. Free same-day white-glove delivery + 120-night exchange."
     },
     {
       "handle": "queen-size-mattresses",
       "id": "gid://shopify/Collection/261336131",
       "title": "Queen Mattresses",
       "productsCount": 127,
-      "updatedAt": "2026-06-15T11:00:52Z",
-      "seoTitle": "Queen Mattresses - Top Brands from $319 | LA Mattress",
-      "seoDescription": "Shop queen mattresses from Tempur-Pedic, Diamond, Helix and more. Starting at $319. Free delivery in LA, 120-night comfort exchange. Compare in 5 showrooms."
+      "updatedAt": "2026-06-18T17:38:56Z",
+      "seoTitle": "Queen Size Mattresses · Top Brands from $319 | LA Mattress",
+      "seoDescription": "Shop queen size mattresses online from $319 — Tempur-Pedic, Stearns & Foster, Helix & more. Free same-day white-glove LA delivery + 120-night exchange."
     },
     {
       "handle": "king-size-mattresses",
       "id": "gid://shopify/Collection/267486147",
       "title": "King Mattresses",
       "productsCount": 122,
-      "updatedAt": "2026-06-15T11:00:52Z",
-      "seoTitle": "King Mattress Collection - Top Brands from $499 | LA Mattress",
-      "seoDescription": "Shop king mattress options from Tempur-Pedic, Stearns and Foster, Diamond, and more. Every firmness, every brand, starting at $499. Free white-glove delivery and 120-night trial."
+      "updatedAt": "2026-06-18T17:38:56Z",
+      "seoTitle": "King Size Mattresses · Top Brands from $499 | LA Mattress",
+      "seoDescription": "Shop king size mattresses from Tempur-Pedic, Stearns & Foster, Diamond & more — every firmness, from $499. Free white-glove LA delivery + 120-night trial."
     },
     {
       "handle": "california-king-mattresses",
       "id": "gid://shopify/Collection/267509571",
       "title": "California King Mattresses",
       "productsCount": 127,
-      "updatedAt": "2026-06-15T11:00:52Z",
-      "seoTitle": "California King Mattresses | Cal King Beds | LA Mattress Store",
-      "seoDescription": "Shop California king mattresses (72 x 84 inches) - longer than a standard king, perfect for tall sleepers. All types and comfort levels available. Free white glove delivery and 120-night trial."
+      "updatedAt": "2026-06-18T17:38:56Z",
+      "seoTitle": "California King Mattresses · Cal King Beds, Top Brands | LA Mattress",
+      "seoDescription": "Shop California King (Cal King) mattresses — Tempur-Pedic, Stearns & Foster, Diamond & more, every firmness. Free white-glove LA delivery + 120-night trial."
     },
     {
       "handle": "twin-size-mattresses",
       "id": "gid://shopify/Collection/267512835",
       "title": "Twin Mattresses",
       "productsCount": 97,
-      "updatedAt": "2026-06-10T11:00:36Z",
-      "seoTitle": "Twin Mattresses in Los Angeles | LA Mattress Store",
-      "seoDescription": "Shop twin size mattresses in Los Angeles. Ideal for kids, teens, and guest rooms. Free delivery & setup. Visit LA Mattress Store or buy online."
+      "updatedAt": "2026-06-18T17:38:56Z",
+      "seoTitle": "Twin Size Mattresses in Los Angeles | LA Mattress Store",
+      "seoDescription": "Twin size mattresses in stock at five LA showrooms near you — kids, bunk beds, and guest rooms. Free same-day Los Angeles delivery + 120-night exchange."
     },
     {
       "handle": "full-size-mattresses",
       "id": "gid://shopify/Collection/267513411",
       "title": "Full Mattresses",
       "productsCount": 95,
-      "updatedAt": "2026-06-10T11:00:36Z",
-      "seoTitle": "Full Mattresses in Los Angeles | LA Mattress Store",
-      "seoDescription": "Shop full size mattresses in Los Angeles at LA Mattress Store. Ideal for teens, kids, and guest rooms. Free delivery, setup & 0% financing available."
+      "updatedAt": "2026-06-18T17:38:56Z",
+      "seoTitle": "Full Size Mattresses in Los Angeles | LA Mattress Store",
+      "seoDescription": null
     },
     {
       "handle": "gel-foam-mattresses",
       "id": "gid://shopify/Collection/296456579",
       "title": "Gel Foam Mattresses",
       "productsCount": 46,
-      "updatedAt": "2026-06-09T11:00:33Z",
-      "seoTitle": "Gel Foam Mattresses | Memory Foam with Cooling Gel | LA Mattress Store",
-      "seoDescription": "Shop gel-infused memory foam mattresses combining pressure relief with cooling gel technology to sleep cooler than standard memory foam. Multiple brands and comfort levels. Free delivery."
+      "updatedAt": "2026-06-18T17:39:17Z",
+      "seoTitle": "Gel Memory Foam Mattresses · Cool-Sleeping Comfort | LA Mattress",
+      "seoDescription": null
     },
     {
       "handle": "latex-mattresses",
       "id": "gid://shopify/Collection/296458755",
       "title": "Latex Mattresses",
       "productsCount": 38,
-      "updatedAt": "2026-06-03T17:06:05Z",
-      "seoTitle": "Latex Mattresses | Natural, Organic & Responsive | LA Mattress Store",
-      "seoDescription": "Shop natural and organic latex mattresses - responsive support, excellent cooling, and long-lasting durability without chemicals. GOLS and GOTS certified options available. Free white glove delivery."
+      "updatedAt": "2026-06-18T17:39:17Z",
+      "seoTitle": null,
+      "seoDescription": "Natural latex mattresses in every size — twin through queen to California king. Breathable, durable comfort. Free same-day delivery across Los Angeles."
     },
     {
       "handle": "memory-foam-mattresses",
@@ -99,9 +99,9 @@
       "id": "gid://shopify/Collection/300952131",
       "title": "Mattress Sale",
       "productsCount": 123,
-      "updatedAt": "2026-06-15T11:00:52Z",
-      "seoTitle": "Mattress Sales: Up to 60% Off Top Brands | LA Mattress Store",
-      "seoDescription": "Shop mattress sales from top brands like Tempur-Pedic, Stearns and Foster, and Diamond. Floor models, clearance, and seasonal mattress sales. Free LA delivery and 0% APR financing."
+      "updatedAt": "2026-06-18T17:39:17Z",
+      "seoTitle": "Mattress Sale · Beds & Mattresses on Sale | LA Mattress Store",
+      "seoDescription": "Today’s best mattress deals — queen, king & every size marked down, plus beds for sale from top brands. Free same-day LA delivery + 120-night exchange."
     },
     {
       "handle": "firm-mattress",
@@ -279,18 +279,18 @@
       "id": "gid://shopify/Collection/411644657917",
       "title": "Spring Air Mattresses",
       "productsCount": 15,
-      "updatedAt": "2026-06-09T11:00:33Z",
-      "seoTitle": "Spring Air Mattresses in Los Angeles · LA Mattress Store",
-      "seoDescription": "Shop Spring Air mattresses in Los Angeles — Back Supporter hybrids, Tradition pillow tops, Value Collection innersprings. American brand since 1926. Free white-glove delivery, same-day in LA."
+      "updatedAt": "2026-06-18T17:39:17Z",
+      "seoTitle": "Spring Air Mattresses · Back Supporter Collection | LA Mattress",
+      "seoDescription": null
     },
     {
       "handle": "tempur-pedic-mattresses",
       "id": "gid://shopify/Collection/411644821757",
       "title": "Tempur-Pedic Mattresses",
       "productsCount": 12,
-      "updatedAt": "2026-06-03T20:01:11Z",
-      "seoTitle": "Tempurpedic Mattress (Tempur-Pedic) | Same-Day LA Delivery",
-      "seoDescription": "Shop Tempur-Pedic mattresses — also known as tempurpedic — locally at LA Mattress Store. Premium memory foam, deep rest, same-day white-glove delivery across Los Angeles."
+      "updatedAt": "2026-06-18T17:38:56Z",
+      "seoTitle": "Tempur-Pedic Mattress · Tempur Pedic & Tempurpedic | LA Mattress",
+      "seoDescription": null
     },
     {
       "handle": "hybrid-mattresses",
@@ -522,9 +522,9 @@
       "id": "gid://shopify/Collection/465770447101",
       "title": "Bed Frames - Bedding Support",
       "productsCount": 8,
-      "updatedAt": "2026-06-12T20:40:40Z",
-      "seoTitle": "Bed Frames — Platform, Metal & Adjustable | LA Mattress",
-      "seoDescription": "Shop platform, metal, upholstered, and adjustable-base-compatible bed frames in twin–Cal King. Free white-glove delivery + assembly across Los Angeles."
+      "updatedAt": "2026-06-18T17:39:17Z",
+      "seoTitle": "Bed Frames & Bedframes · Every Mattress Size | LA Mattress",
+      "seoDescription": "Sturdy bed frames and bedframes for twin through California king — platform, panel, and adjustable-ready. Five LA showrooms near you, free same-day delivery."
     },
     {
       "handle": "rize-pillows",
@@ -684,18 +684,18 @@
       "id": "gid://shopify/Collection/468157268221",
       "title": "Mattresses for Stomach Sleepers",
       "productsCount": 53,
-      "updatedAt": "2026-06-09T11:00:33Z",
+      "updatedAt": "2026-06-18T17:38:56Z",
       "seoTitle": "Best Mattress for Stomach Sleepers · Firm Support | LA Mattress",
-      "seoDescription": "Firmer, supportive mattresses that keep stomach sleepers' hips from sinking. Free white-glove LA delivery, 120-night trial."
+      "seoDescription": "Firmer, supportive mattresses that keep stomach sleepers’ hips from sinking and the lower back neutral. Free white-glove LA delivery + 120-night trial."
     },
     {
       "handle": "mattresses-for-heavy-people",
       "id": "gid://shopify/Collection/468157300989",
       "title": "Mattresses for Heavy People",
       "productsCount": 53,
-      "updatedAt": "2026-06-09T11:00:33Z",
+      "updatedAt": "2026-06-18T17:39:17Z",
       "seoTitle": "Best Mattress for Heavy People (230+ lb) | LA Mattress",
-      "seoDescription": "Durable, supportive mattresses for heavier bodies — reinforced coils, high-density foam, strong edge support. Free white-glove LA delivery + 120-night trial."
+      "seoDescription": "Durable, supportive mattresses for heavier bodies: reinforced coils, dense foam, strong edge support. Free white-glove LA delivery + 120-night trial."
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify products inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-06-18T12:08:13.938Z",
+  "$pulledAt": "2026-06-19T09:03:33.285Z",
   "$count": 218,
   "products": [
     {
@@ -851,7 +851,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-06-03T01:56:16Z",
-      "updatedAt": "2026-06-10T13:14:57Z",
+      "updatedAt": "2026-06-18T23:35:28Z",
       "seoTitle": "Spring Air Olive Firm 8\" Mattress - Quality Comfort",
       "seoDescription": "Spring Air Olive Firm 8\" mattress in Los Angeles includes free delivery. Queen from $449 offers firm innerspring support from the brand that invented the pillow top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Spring_Air_Value_Collection_Olive_Firm_8_Mattress_974cfaf5-f78d-4d8d-a263-9fcc4e0beb0d.png?v=1775395335"
@@ -1499,7 +1499,7 @@
       "vendor": "Southerland",
       "productType": "Adjustable Beds",
       "publishedAt": "2026-04-06T03:21:46Z",
-      "updatedAt": "2026-05-26T16:24:43Z",
+      "updatedAt": "2026-06-18T23:35:27Z",
       "seoTitle": "Southerland InMotion B26 Adjustable Bed Base",
       "seoDescription": "Experience customizable comfort with the Southerland InMotion B26. Visit LA Mattress Store for optimal relaxation and sleep quality.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/b26-photo.jpg?v=1739806147"

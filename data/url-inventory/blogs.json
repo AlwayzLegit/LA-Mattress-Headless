@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify blogs inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-06-18T12:08:13.941Z",
+  "$pulledAt": "2026-06-19T09:03:33.287Z",
   "$count": 7,
   "blogs": [
     {
