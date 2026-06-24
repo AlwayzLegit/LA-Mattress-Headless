@@ -323,17 +323,21 @@ export default async function ShopifyPage(props: Params) {
             sortKey: 'BEST_SELLING',
           }).catch(() => null)
         : null;
-    const saleCollection =
-      curated && curated.products.nodes.length > 0
-        ? curated
-        : await getCollectionByHandle({
-            handle: 'on-sale',
-            first: 12,
-            sortKey: 'BEST_SELLING',
-          }).catch(() => null);
+    const usedCurated = Boolean(curated && curated.products.nodes.length > 0);
+    const saleCollection = usedCurated
+      ? curated
+      : await getCollectionByHandle({
+          handle: 'on-sale',
+          first: 12,
+          sortKey: 'BEST_SELLING',
+        }).catch(() => null);
     const featuredProducts = saleCollection?.products.nodes ?? [];
     const onSaleCount = saleCollection?.products.nodes.length ?? 0;
-    return <SalePage page={page} featuredProducts={featuredProducts} onSaleCount={onSaleCount} isPreview={isPreview} />;
+    // Primary CTAs link to the same collection the grid is drawn from, so
+    // "Shop the Sale" lands on the event's curated collection when it
+    // exists (and is published + non-empty), else the broad on-sale set.
+    const saleCollectionHref = usedCurated ? `/collections/${curatedHandle}` : '/collections/on-sale';
+    return <SalePage page={page} featuredProducts={featuredProducts} onSaleCount={onSaleCount} saleCollectionHref={saleCollectionHref} isPreview={isPreview} />;
   }
   // Phase 277e: neighborhood pages (mattress-store-beverly-hills, etc.)
   // render the NeighborhoodPage template — physically distinct from a
@@ -987,11 +991,18 @@ function SalePage({
   page,
   featuredProducts,
   onSaleCount,
+  saleCollectionHref = '/collections/on-sale',
   isPreview = false,
 }: {
   page: NonNullable<Awaited<ReturnType<typeof getPageByHandle>>>;
   featuredProducts: ProductSummary[];
   onSaleCount: number;
+  // Destination for the primary "Shop the Sale" CTAs — the event's own
+  // curated collection when one exists (e.g. /collections/4th-of-july-
+  // mattress-sale), else the broad /collections/on-sale. Resolved in the
+  // page handler alongside featuredProducts so the CTA and the product
+  // grid always point at the same collection.
+  saleCollectionHref?: string;
   isPreview?: boolean;
 }) {
   const cleanTitle = toSentenceCase(stripBrandSuffix(page.title));
@@ -1006,6 +1017,10 @@ function SalePage({
   // sent during the sale keep working as archive links.
   const saleEndedAt = page.saleEndsAt ? Date.parse(page.saleEndsAt) : NaN;
   const saleHasEnded = Number.isFinite(saleEndedAt) && Date.now() > saleEndedAt;
+  // Primary CTA target. While the sale is live, send shoppers to the
+  // event's own collection. Once it's ended, the curated collection is
+  // stale, so point "See current offers" at the always-fresh on-sale set.
+  const primarySaleHref = saleHasEnded ? '/collections/on-sale' : saleCollectionHref;
   const saleEventLd = buildSaleEventLd(page, featuredProducts, onSaleCount);
 
   return (
@@ -1089,7 +1104,7 @@ function SalePage({
           ) : null}
           <div className="sale-page-ctas">
             <Link
-              href="/collections/on-sale"
+              href={primarySaleHref}
               className="btn btn-lg btn-on-dark"
               data-cta="shop_the_sale"
               data-cta-position="hero"
@@ -1236,7 +1251,7 @@ function SalePage({
           <p className="muted">Free LA delivery, 0% APR financing, 120-night exchange. Every mattress on the floor at all 5 showrooms.</p>
           <div className="sale-page-ctas">
             <Link
-              href="/collections/on-sale"
+              href={primarySaleHref}
               className="btn btn-primary btn-lg"
               data-cta="shop_the_sale"
               data-cta-position="footer"
