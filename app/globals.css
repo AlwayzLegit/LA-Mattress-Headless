@@ -5634,14 +5634,21 @@ a.showroom-chip-link:hover { border-color: var(--accent); color: var(--accent); 
   backdrop-filter: blur(4px);
   font-weight: 600;
 }
-.sale-page-breadcrumbs { color: rgb(255 255 255 / 70%); margin-bottom: var(--s-5); }
+/* The hero is a photo, so (a) recolor every crumb white — the base
+   `.lp-breadcrumbs > :last-child` (var(--text-2)) and `.sep`
+   (var(--text-4)) are dark and render invisibly here — and (b) add a
+   text-shadow (an inherited property, so it covers all crumbs) so the
+   small breadcrumb text stays legible over light areas of the image,
+   the same way the large white H1 already does. The :last-child / .sep
+   overrides match the base specificity (0,2,0) but win on source order. */
+.sale-page-breadcrumbs {
+  color: rgb(255 255 255 / 85%);
+  margin-bottom: var(--s-5);
+  text-shadow: 0 1px 3px rgb(0 0 0 / 55%);
+}
 .sale-page-breadcrumbs a { color: inherit; }
 .sale-page-breadcrumbs a:hover { color: #fff; }
-/* The hero is a dark image, so override the light-theme breadcrumb
-   colors: the base `.lp-breadcrumbs > :last-child` (var(--text-2)) and
-   `.sep` (var(--text-4)) are dark and render invisibly here. Same
-   specificity (0,2,0) but later in source, so these win. */
-.sale-page-breadcrumbs .sep { color: rgb(255 255 255 / 45%); }
+.sale-page-breadcrumbs .sep { color: rgb(255 255 255 / 55%); }
 .sale-page-breadcrumbs > :last-child { color: #fff; }
 .sale-page-eyebrow { color: rgb(255 255 255 / 85%); margin-bottom: var(--s-3); }
 .sale-page-title {
