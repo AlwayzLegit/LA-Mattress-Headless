@@ -4,7 +4,7 @@
  *
  * Usage (merchant QA workflow):
  *   1. Visit POST /api/preview/enable with body {"token":"<token>",
- *      "redirect":"/pages/independence-day-sale-2026"}
+ *      "redirect":"/pages/4th-of-july-mattress-sale-2026"}
  *      (or use the GET form below for quick clicks from a bookmark)
  *   2. The handler verifies the token (constant-time) against
  *      `SALE_PAGE_PREVIEW_TOKEN` env var, calls draftMode().enable(),

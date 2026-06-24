@@ -3,6 +3,21 @@
   "$source": "hand-maintained",
   "redirects": [
     {
+      "source": "/pages/independence-day-sale-2026",
+      "destination": "/pages/4th-of-july-mattress-sale-2026",
+      "note": "Slug rebrand 2026-06-24: the 4th of July sale page was renamed from 'independence-day-sale-2026' to match the customer-facing '4th of July' branding and the target search phrase ('4th of july mattress sale', 880/mo). 301 the old handle so existing links + SEO carry over."
+    },
+    {
+      "source": "/pages/independence-day-sale-2027",
+      "destination": "/pages/4th-of-july-mattress-sale-2027",
+      "note": "Slug rebrand 2026-06-24: 2027 sale page renamed to match (see independence-day-sale-2026 note)."
+    },
+    {
+      "source": "/collections/independence-day-sale",
+      "destination": "/collections/4th-of-july-mattress-sale",
+      "note": "Slug rebrand 2026-06-24: curated 4th of July sale collection renamed from 'independence-day-sale'. Was also unpublished (published to zero channels -> 404); now published to the storefront channels. 301 the old handle."
+    },
+    {
       "source": "/collections/mattress-accessories",
       "destination": "/collections/bedding",
       "note": "SEMrush 20260611 audit: this collections URL 404s (no such collection). /pages/mattress-accessories looked like the natural target but that page is UNPUBLISHED in Shopify (it 404s too — verified 20260611) and its body is one thin sentence, not worth publishing. /collections/bedding is the live accessories umbrella (40 products: protectors, toppers, pillows, sheets). Fixes the single site-wide 4xx."

@@ -19,11 +19,11 @@
 
 const { buildSaleEventLd } = await import('../lib/sale-event-ld.ts');
 
-// Representative Independence Day 2026 sale page + featured products.
+// Representative 4th of July 2026 sale page + featured products.
 const page = {
-  handle: 'independence-day-sale-2026',
-  title: 'Independence Day Mattress Sale 2026 — Up to 70% Off in LA',
-  bodySummary: 'Independence Day weekend at LA Mattress. Every mattress on the floor at all 5 LA showrooms is currently on sale.',
+  handle: '4th-of-july-mattress-sale-2026',
+  title: '4th of July Mattress Sale 2026 — Up to 70% Off in LA',
+  bodySummary: '4th of July weekend at LA Mattress. Every mattress on the floor at all 5 LA showrooms is currently on sale.',
   seo: { title: null, description: null },
   saleStartsAt: '2026-07-01T07:00:00Z',
   saleEndsAt: '2026-07-06T06:59:59Z',

@@ -18,7 +18,7 @@
  *   node scripts/audit-sale-pages.mjs \
  *     --site https://www.mattressstoreslosangeles.com \
  *     --preview-token "$SALE_PAGE_PREVIEW_TOKEN" \
- *     --sale-handle independence-day-sale-2026
+ *     --sale-handle 4th-of-july-mattress-sale-2026
  *
  *   # with a PSI API key (avoids the strict rate limit on unauth'd
  *   # requests — get one at https://console.cloud.google.com/apis/credentials)
@@ -48,7 +48,7 @@ import { argv, env, exit } from 'node:process';
 const args = parseArgs(argv.slice(2));
 const SITE = args.site ?? 'https://www.mattressstoreslosangeles.com';
 const TOKEN = args['preview-token'] ?? env.SALE_PAGE_PREVIEW_TOKEN ?? null;
-const SALE_HANDLE = args['sale-handle'] ?? 'independence-day-sale-2026';
+const SALE_HANDLE = args['sale-handle'] ?? '4th-of-july-mattress-sale-2026';
 const PSI_KEY = env.PSI_KEY ?? null;
 
 function parseArgs(arr) {

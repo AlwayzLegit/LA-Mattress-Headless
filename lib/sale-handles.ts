@@ -16,7 +16,7 @@ export const SALE_HANDLE_PATTERNS = [
   /labor-day/i,
   /presidents-?day/i,
   /mlk-?day/i,
-  /july-?4|fourth-of-july|independence-day/i,
+  /july-?4|4th-of-july|fourth-of-july|independence-day/i,
   /black-friday/i,
   /cyber-monday/i,
   /christmas/i,

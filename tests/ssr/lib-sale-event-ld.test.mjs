@@ -17,9 +17,9 @@ const { buildSaleEventLd } = await import('../../lib/sale-event-ld.ts');
 
 function makePage(overrides = {}) {
   return {
-    handle: 'independence-day-sale-2026',
-    title: 'Independence Day Mattress Sale 2026 — Up to 70% Off in LA',
-    bodySummary: 'Independence Day weekend at LA Mattress. Every mattress on the floor at all 5 LA showrooms is currently on sale.',
+    handle: '4th-of-july-mattress-sale-2026',
+    title: '4th of July Mattress Sale 2026 — Up to 70% Off in LA',
+    bodySummary: '4th of July weekend at LA Mattress. Every mattress on the floor at all 5 LA showrooms is currently on sale.',
     seo: { title: null, description: null },
     saleStartsAt: '2026-07-01T07:00:00Z',
     saleEndsAt: '2026-07-06T06:59:59Z',
@@ -48,8 +48,8 @@ test('Schema.org context + SaleEvent type', () => {
 
 test('emits canonical absolute URL + matching @id', () => {
   const ld = buildSaleEventLd(makePage(), makeFeaturedProducts(), 123);
-  assert.equal(ld.url, 'https://www.mattressstoreslosangeles.com/pages/independence-day-sale-2026');
-  assert.equal(ld['@id'], 'https://www.mattressstoreslosangeles.com/pages/independence-day-sale-2026#sale-event');
+  assert.equal(ld.url, 'https://www.mattressstoreslosangeles.com/pages/4th-of-july-mattress-sale-2026');
+  assert.equal(ld['@id'], 'https://www.mattressstoreslosangeles.com/pages/4th-of-july-mattress-sale-2026#sale-event');
 });
 
 test('startDate + endDate carry through unchanged (storefront date gate handles "active" semantics)', () => {
