@@ -19,7 +19,7 @@ export function LifestyleBand() {
           fill
           sizes="100vw"
           quality={70}
-          style={{ objectFit: 'cover', objectPosition: 'center 35%' }}
+          style={{ objectFit: 'cover', objectPosition: 'center 28%' }}
         />
       </div>
       <div className="container">
