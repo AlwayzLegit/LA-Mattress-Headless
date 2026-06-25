@@ -3,6 +3,11 @@
   "$source": "hand-maintained",
   "redirects": [
     {
+      "source": "/blogs/beds-mattresses/best-mattress-for-lower-back-pain-los-angeles",
+      "destination": "/blogs/mattress-buying-guide/best-mattress-for-lower-back-pain-los-angeles",
+      "note": "SEMrush audit 20260625 (duplicate title tag, error id 6): the daily-blog automation published a near-duplicate 'Best Mattress for Lower Back Pain in Los Angeles' in the legacy beds-mattresses blog (2026-06-24), duplicating the established mattress-buying-guide article (2026-06-16). Consolidate to the primary-blog canonical."
+    },
+    {
       "source": "/pages/independence-day-sale-2026",
       "destination": "/pages/4th-of-july-mattress-sale-2026",
       "note": "Slug rebrand 2026-06-24: the 4th of July sale page was renamed from 'independence-day-sale-2026' to match the customer-facing '4th of July' branding and the target search phrase ('4th of july mattress sale', 880/mo). 301 the old handle so existing links + SEO carry over."
