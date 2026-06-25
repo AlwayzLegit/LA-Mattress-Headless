@@ -3,7 +3,7 @@
   "blog": "mattress-buying-guide",
   "blogId": "gid://shopify/Blog/89331695869",
   "topics": [
-    { "keyword": "best mattress for kids", "title": "Best Mattress for Kids: A Parent's Buying Guide", "monthlyVolume": 5400, "internalLinks": ["/collections/twin-size-mattresses", "/collections/full-size-mattresses"], "status": "pending", "publishedHandle": null },
+    { "keyword": "best mattress for kids", "title": "Best Mattress for Kids: A Parent's Buying Guide", "monthlyVolume": 5400, "internalLinks": ["/collections/twin-size-mattresses", "/collections/full-size-mattresses"], "status": "published", "publishedHandle": "best-mattress-for-kids" },
     { "keyword": "how to dispose of a mattress", "title": "How to Dispose of a Mattress in Los Angeles (Free Recycling Options)", "monthlyVolume": 4400, "internalLinks": ["/pages/mattress-recycling-fee", "/pages/mattress-store-delivery"], "status": "pending", "publishedHandle": null },
     { "keyword": "best mattress for arthritis", "title": "Best Mattress for Arthritis: Pressure Relief Without Sacrificing Support", "monthlyVolume": 2900, "internalLinks": ["/collections/soft-mattresses-for-pressure-relief", "/collections/memory-foam-mattresses", "/collections/medium-firm-mattresses"], "status": "pending", "publishedHandle": null },
     { "keyword": "mattress for hip pain", "title": "Best Mattress for Hip Pain: How to Relieve Pressure at the Hips", "monthlyVolume": 2400, "internalLinks": ["/collections/mattresses-for-side-sleepers", "/collections/soft-mattresses-for-pressure-relief", "/collections/memory-foam-mattresses"], "status": "pending", "publishedHandle": null },
