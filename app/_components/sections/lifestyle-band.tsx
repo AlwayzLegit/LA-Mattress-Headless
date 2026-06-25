@@ -14,12 +14,12 @@ export function LifestyleBand() {
     <section className="lifestyle-band">
       <div className="lifestyle-band-media">
         <Image
-          src={imgUrl('lifestyle-bedroom')}
-          alt=""
+          src={imgUrl('lifestyle-lie-down')}
+          alt="A couple lying on a mattress while an LA Mattress Store consultant helps them choose, inside a Los Angeles showroom"
           fill
           sizes="100vw"
-          quality={60}
-          style={{ objectFit: 'cover' }}
+          quality={70}
+          style={{ objectFit: 'cover', objectPosition: 'center 35%' }}
         />
       </div>
       <div className="container">

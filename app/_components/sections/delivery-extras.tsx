@@ -1,4 +1,6 @@
+import Image from 'next/image';
 import { Icon, type IconName } from '../icon';
+import { imgUrl } from '../images';
 
 /**
  * Visual blocks for `/pages/mattress-store-delivery`, injected into the
@@ -53,6 +55,18 @@ const INCLUDED: string[] = [
 export function DeliveryExtras() {
   return (
     <>
+      <figure className="del-photo" style={{ margin: '0 0 var(--s-7)' }}>
+        <Image
+          src={imgUrl('delivery-in-home')}
+          alt="LA Mattress Store delivery team placing a Tempur-Pedic mattress on a bed during white-glove delivery in a Los Angeles home"
+          width={1600}
+          height={606}
+          sizes="(max-width: 1100px) 100vw, 1100px"
+          style={{ width: '100%', height: 'auto', borderRadius: 'var(--r-3)', objectFit: 'cover' }}
+          priority
+        />
+      </figure>
+
       <section className="fin-steps-sec" aria-labelledby="del-steps-h">
         <h2 id="del-steps-h" className="h2 mt-section-h">How white-glove delivery works</h2>
         <p className="muted mt-section-lede">
@@ -71,6 +85,17 @@ export function DeliveryExtras() {
           ))}
         </ol>
       </section>
+
+      <figure className="del-photo" style={{ margin: 'var(--s-7) 0' }}>
+        <Image
+          src={imgUrl('delivery-truck')}
+          alt="LA Mattress Store delivery crew unloading a wrapped Tempur-Pedic mattress from the delivery truck in Los Angeles"
+          width={1000}
+          height={806}
+          sizes="(max-width: 720px) 100vw, 720px"
+          style={{ width: '100%', maxWidth: 720, height: 'auto', display: 'block', margin: '0 auto', borderRadius: 'var(--r-3)', objectFit: 'cover' }}
+        />
+      </figure>
 
       <section className="svc-included-sec" aria-labelledby="del-incl-h">
         <h2 id="del-incl-h" className="h2 mt-section-h">What’s included — every delivery</h2>

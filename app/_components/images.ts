@@ -18,7 +18,7 @@ const FALLBACK_PRODUCT =
 
 export const IMAGES: Record<string, string> = {
   // Hero
-  'hero-showroom':     'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=1280&q=65&auto=format&fit=crop',
+  'hero-showroom':     '/brand/showroom-customer.webp',
   'hero-engineered':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1280&q=65&auto=format&fit=crop',
   'hero-sale':         'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=1280&q=65&auto=format&fit=crop',
 
@@ -54,12 +54,16 @@ export const IMAGES: Record<string, string> = {
   'showroom-studio-city':  'https://cdn.shopify.com/s/files/1/0684/1759/files/Studio_City.jpg?v=1734378534',
   'showroom-glendale':     'https://cdn.shopify.com/s/files/1/0684/1759/files/Glendale.jpg?v=1734092279',
 
-  // Lifestyle
-  // Original photo-1616627781901-92f81a36c4d6 was 404'd by Unsplash; reusing
-  // the lifestyle-bedroom photo here until a real brand asset is supplied.
-  // Confirmed 200 OK at time of Phase 22 commit.
-  'lifestyle-couple':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1280&q=65&auto=format&fit=crop',
-  'lifestyle-bedroom':  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1280&q=65&auto=format&fit=crop',
+  // Lifestyle / brand — real LA Mattress photos (showroom, customers,
+  // delivery), supplied by the merchant. Served from public/brand/*.webp,
+  // resized + compressed (replaces the prior generic Unsplash stock that
+  // was flagged "until a real brand asset is supplied").
+  'lifestyle-couple':   '/brand/showroom-couple.webp',
+  'lifestyle-bedroom':  '/brand/showroom-consultation.webp',
+  'lifestyle-lie-down': '/brand/showroom-lie-down.webp',
+  // White-glove delivery — /pages/mattress-store-delivery
+  'delivery-in-home':   '/brand/delivery-in-home.webp',
+  'delivery-truck':     '/brand/delivery-truck.webp',
 };
 
 export function imgUrl(name: string, fallbackKind: 'product' | 'bedroom' = 'bedroom'): string {
