@@ -1,5 +1,5 @@
 {
-  "$schema": "Curated keyword backlog for the daily-blog automation. The task reads this file, takes the first item with status:\"pending\", runs a duplicate check against existing Shopify articles, writes + publishes ONE article to the Mattress Buying Guide blog, then sets that item's status to \"published\" (with publishedHandle) or \"skipped-duplicate\" (with existing). Topics are Semrush-researched (20260625, us db) and chosen to be likely-uncovered gaps. monthlyVolume is for prioritization only.",
+  "$schema": "HUMAN-MAINTAINED MASTER list of daily-blog topics (Semrush-researched 20260625, us db). NOTE: the automated Cowork run does NOT have the repo connected and cannot read this file — the queue must be embedded in the task prompt itself (see docs/blog-automation-prompt.md). This file is the canonical source to copy from when refilling that queue. The automation has no state file; it relies on a duplicate check against existing Shopify articles for progression, so the per-item status fields here are reference only. monthlyVolume is for prioritization.",
   "blog": "mattress-buying-guide",
   "blogId": "gid://shopify/Blog/89331695869",
   "topics": [
