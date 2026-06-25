@@ -2296,7 +2296,7 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
   background: linear-gradient(90deg, rgba(10,15,30,0.84) 0%, rgba(10,15,30,0.55) 48%, rgba(10,15,30,0.18) 100%);
 }
 .lifestyle-band .container { position: relative; z-index: 1; }
-.lifestyle-band-copy { max-width: 520px; padding: clamp(64px, 9vw, 116px) 0; }
+.lifestyle-band-copy { max-width: 520px; padding: clamp(96px, 13vw, 172px) 0; }
 .lifestyle-band-copy .eyebrow { color: rgba(255,255,255,0.82); }
 .lifestyle-band-copy h2 { color: #fff; margin: 12px 0 16px; }
 .lifestyle-band-copy p { color: rgba(255,255,255,0.86); font-size: 17px; line-height: 1.6; margin: 0 0 28px; max-width: 460px; }
