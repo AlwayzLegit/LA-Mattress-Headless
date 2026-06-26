@@ -584,6 +584,10 @@ export function stripDeadHotlinks(html: string): string {
 const DEAD_EXTERNAL_LINK_HREFS: ReadonlyArray<RegExp> = [
   // mattressland.com/blog/allergy-symptoms → permanent 404.
   /mattressland\.com\/blog\/allergy-symptoms/i,
+  // melbourneherniasurgery.com.au/after-hernia-repair.html → permanent 404
+  // (SEMrush audit 20260626, broken external links id 12). Linked from the
+  // can-i-sleep-on-my-side-after-hernia-repair-surgery article.
+  /melbourneherniasurgery\.com\.au\/after-hernia-repair/i,
 ];
 
 export function unwrapDeadExternalLinks(html: string): string {
