@@ -9,7 +9,38 @@ import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix, toSentence
 import { blogIntroFor } from '@/lib/blog-content';
 import { isNoindexBlogIndex } from '@/lib/noindex-articles';
 import { displayAuthorName } from '@/lib/article-author';
+import { resolveRedirectPath } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
+
+/**
+ * Every published, non-redirected article in this blog, sorted A–Z, as a
+ * flat list of `{ handle, title }`. Sourced from the committed inventory
+ * snapshot (static — no Shopify fetch), so it renders on the very first
+ * paint regardless of the live `?after=` cursor slice.
+ *
+ * Why this lives on the blog index: the card grid is paginated 12-at-a-
+ * time via `?after=` cursors (which are noindex), so older articles sit
+ * 4+ "Load more" clicks deep — SEMrush "Page crawl depth" (>3 clicks)
+ * flagged ~30 buyer's-guide posts at depth 40+. The mega HTML sitemap
+ * (/pages/sitemap) lists everything but carries ~2,000 links on one page,
+ * so crawlers don't traverse all of them. Rendering each blog's complete
+ * archive HERE gives every article a clean depth-3 path
+ * (home → /blogs → /blogs/[blog] → article) with a far smaller, topically
+ * focused link set per page. Redirected siblings are dropped so the list
+ * never links through a 301 (same guard the related-articles rail uses).
+ */
+function fullArchiveFor(blogHandle: string): { handle: string; title: string }[] {
+  const inv = inventoryBlogs.find((b) => b.handle === blogHandle);
+  if (!inv?.articles) return [];
+  return inv.articles
+    .filter((a) => a.isPublished !== false)
+    .filter((a) => {
+      const path = `/blogs/${blogHandle}/${a.handle}`;
+      return resolveRedirectPath(path) === path;
+    })
+    .map((a) => ({ handle: a.handle, title: a.title ?? a.handle.replace(/-/g, ' ') }))
+    .sort((a, b) => a.title.localeCompare(b.title));
+}
 
 type Params = {
   params: Promise<{ blog: string }>;
@@ -87,6 +118,7 @@ export default async function BlogIndexPage(props: Params) {
   if (!blog) notFound();
 
   const articles = blog.articles.nodes;
+  const archive = fullArchiveFor(params.blog);
   const displayTitle = toSentenceCase(stripBrandSuffix(blog.title));
   const nextHref =
     blog.articles.pageInfo.hasNextPage && blog.articles.pageInfo.endCursor
@@ -213,6 +245,24 @@ export default async function BlogIndexPage(props: Params) {
           )}
         </div>
       </section>
+
+      {archive.length > articles.length ? (
+        <section className="section" aria-labelledby="blog-archive">
+          <div className="container">
+            <h2 id="blog-archive" className="h2">All {displayTitle} articles</h2>
+            <p className="muted" style={{ maxWidth: '64ch', marginTop: 'var(--s-2)' }}>
+              The complete archive — every article in {displayTitle}, A to Z.
+            </p>
+            <ul className="html-sitemap-list" style={{ marginTop: 'var(--s-5)' }}>
+              {archive.map((a) => (
+                <li key={a.handle}>
+                  <Link href={`/blogs/${blog.handle}/${a.handle}`}>{a.title}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
 
       <script id="ld-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogLd) }} />
       <script id="ld-breadcrumb-blog" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
