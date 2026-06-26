@@ -6,6 +6,17 @@ duplicate articles flagged by the 2026-06-25 SEMrush audit — and (b) tried to 
 file (`data/blog-backlog.json`) that the **automated run can't reach** (the scheduled
 session has no repo/folder connected, only this prompt + Shopify access).
 
+> **⚠️ KNOWN DEPLOYMENT GAP (2026-06-26).** As of this date the *deployed* Cowork task is
+> **NOT** running the prompt below. Evidence: the live store shows daily articles published
+> with off-queue, hyper-localized titles (`Best Mattress for Hip Pain in Los Angeles`,
+> `Mattress Stores Los Angeles: Your 2026 Shopping Guide`, etc.) — none in the queue here —
+> and several went to the **deprecated `beds-mattresses` blog**, which is excluded from every
+> sitemap and the `/blogs` hub, so they render live but are fully orphaned (and duplicate
+> topics already covered elsewhere). Three were 301'd to canonical on 2026-06-26. **Action
+> required:** replace the deployed task's prompt with the PROMPT below so it (1) only ever
+> publishes to `mattress-buying-guide`, and (2) works the fixed queue with a real duplicate
+> check. Until that swap happens, the orphaning/duplication will keep recurring.
+
 **Key design:** the prompt is self-contained — the topic queue is embedded below. There is
 **no state file**. Progression is driven by the duplicate check: the published articles in
 Shopify ARE the state, so each run publishes the next topic that doesn't exist yet. Stateless,
