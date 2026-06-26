@@ -52,6 +52,11 @@ const COLS: Col[] = [
     { label: 'Studio City',         href: '/pages/mattress-store-studio-city' },
     { label: 'Glendale',            href: '/pages/mattress-store-in-glendale' },
     { label: 'All locations',       href: '/pages/mattress-store-locations' },
+    // "Near me" intent surface — duplicates the all-locations target but
+    // with the exact keyword phrase visitors search ("mattress store
+    // near you / near me"), so the footer carries a crawlable on-page
+    // signal for the 33k-vol query competitors rank for.
+    { label: 'Find a store near you', href: '/pages/mattress-store-locations' },
   ]},
   { title: 'About', links: [
     { label: 'About LA Mattress',   href: '/pages/about' },

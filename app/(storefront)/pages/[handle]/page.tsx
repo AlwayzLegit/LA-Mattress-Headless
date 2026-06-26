@@ -1400,6 +1400,25 @@ async function NeighborhoodPage({
           </div>
         </section>
 
+        {/* Audit fix: crawlable NAP (name/address/phone) for the
+            nearest physical showroom. Previously NAP only lived in
+            JSON-LD; local pack ranking weighs visible text NAP too. */}
+        {primaryShowroom ? (
+          <aside className="neighborhood-nap-card" aria-label={`${primaryShowroom.name} showroom contact`}>
+            <div>
+              <div className="neighborhood-nap-eyebrow">Nearest showroom</div>
+              <div className="neighborhood-nap-name">{primaryShowroom.name}</div>
+            </div>
+            <address className="neighborhood-nap-addr">
+              <div>{primaryShowroom.street}</div>
+              <div>{primaryShowroom.city}, {primaryShowroom.region} {primaryShowroom.postalCode}</div>
+            </address>
+            <a href={`tel:${primaryShowroom.phone.replace(/[^+\d]/g, '')}`} className="neighborhood-nap-phone">
+              <Icon name="phone" size={14} /> {formatPhone(primaryShowroom.phone)}
+            </a>
+          </aside>
+        ) : null}
+
         {page.body ? (
           <div
             className="rte cms-body"

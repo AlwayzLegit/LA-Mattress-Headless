@@ -14,6 +14,7 @@ import { FAQ } from '../_components/sections/faq';
 import { QuizLeadIn } from '../_components/sections/quiz-leadin';
 import { WaysToFindMatch } from '../_components/sections/ways-to-find-match';
 import { LifestyleBand } from '../_components/sections/lifestyle-band';
+import { ShopByNeighborhood } from '../_components/sections/shop-by-neighborhood';
 import { HomepageSeoContent } from '../_components/sections/homepage-seo-content';
 import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd, resolveHomepageFaq } from '@/lib/faq';
@@ -173,6 +174,10 @@ export default async function Home() {
       <RecentlyViewedRail heading="Welcome back" eyebrow="Pick up where you left off" />
       <ShopByCategory />
       <Showrooms />
+      {/* Audit fix: 12 high-intent neighborhoods at homepage depth -1 so
+          the local-landing cluster gets direct link equity from the
+          highest-authority page (was depth 3 via /pages/mattress-store-locations). */}
+      <ShopByNeighborhood />
       <BrandStrip />
       <FeaturedGuides />
       <WhyUs />

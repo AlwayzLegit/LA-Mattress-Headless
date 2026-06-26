@@ -45,7 +45,7 @@ export function Showrooms() {
       <div className="container showrooms-head">
         <div>
           <div className="eyebrow eyebrow-on-dark">Try before you buy</div>
-          <h2 className="h2">Five mattress showrooms<br />across Los Angeles.</h2>
+          <h2 className="h2">Five mattress showrooms near you<br />across Los Angeles.</h2>
         </div>
         <div className="showrooms-head-right">
           <p className="muted showrooms-lede">
