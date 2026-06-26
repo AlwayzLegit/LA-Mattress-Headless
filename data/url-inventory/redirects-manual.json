@@ -86,6 +86,21 @@
       "source": "/blogs/la-mattress-stores-blog/signs-time-new-mattress",
       "destination": "/blogs/mattress-buying-guide/7-signs-that-you-need-a-new-mattress",
       "note": "SEMrush 20260623 audit: NEW 4xx error (issue 2) + broken internal link (issue 8). The how-to-clean-a-mattress-complete-guide article body links to this URL, but the 'signs-time-new-mattress' article ('5 Signs it's Time for a New Mattress') is UNPUBLISHED in Shopify (isPublished:false) so the storefront 404s it, and its blog 'la-mattress-stores-blog' itself redirects to /blogs/mattress-buying-guide. Route to the closest live equivalent, the published '7 Signs That You Need A New Mattress'. resolveRedirectHrefs rewrites the body link at render (clears issue 8); the URL 301s via middleware (clears issue 2)."
+    },
+    {
+      "source": "/blogs/beds-mattresses/how-to-dispose-of-a-mattress-los-angeles",
+      "destination": "/blogs/mattress-care-tips/mattress-disposal-in-los-angeles-cost-effective-ways",
+      "note": "20260626 cleanup: the daily-blog automation published this article to the DEPRECATED beds-mattresses blog (2026-06-23), which is excluded from the XML sitemap, HTML sitemap, and /blogs hub — so it rendered live (200) but was fully orphaned. The LA mattress-disposal intent is already covered by the canonical, sitemap-included mattress-care-tips article. Consolidate to it instead of recreating a duplicate."
+    },
+    {
+      "source": "/blogs/beds-mattresses/mattress-stores-los-angeles-guide",
+      "destination": "/blogs/mattress-buying-guide/where-to-buy-a-mattress-in-los-angeles",
+      "note": "20260626 cleanup: automation published this 'mattress stores LA' guide to the deprecated beds-mattresses blog (2026-06-26) — orphaned (not in any sitemap/hub). Intent already covered by the curated mattress-buying-guide 'Where to Buy a Mattress in Los Angeles' pillar. Consolidate."
+    },
+    {
+      "source": "/blogs/beds-mattresses/mattress-stores-in-los-angeles-buying-guide",
+      "destination": "/blogs/mattress-buying-guide/where-to-buy-a-mattress-in-los-angeles",
+      "note": "20260626 cleanup: second near-duplicate 'mattress stores in LA' guide auto-published to the deprecated beds-mattresses blog (2026-06-20) — orphaned. Consolidate to the same mattress-buying-guide pillar."
     }
   ]
 }
