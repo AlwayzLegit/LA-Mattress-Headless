@@ -17,7 +17,7 @@
  * many SEMrush phases.
  */
 import type { getPageByHandle } from '@/lib/shopify';
-import { SHOWROOMS, findShowroom } from '@/lib/showrooms';
+import { SHOWROOMS, findShowroom, type Showroom } from '@/lib/showrooms';
 import { findNeighborhood, getNearestShowrooms } from '@/lib/neighborhoods';
 import { isServicePage } from '@/lib/service-pages';
 import { buildServicePageLd } from '@/lib/service-page-jsonld';
@@ -80,6 +80,33 @@ function aggregateRatingFor(
       worstRating: '1',
     },
   };
+}
+
+/**
+ * Build the `openingHoursSpecification` array for a showroom's hours.
+ * Extracted so the neighborhood FurnitureStore (whose "store" is its
+ * nearest physical showroom) can emit the same hours the showroom page
+ * does — required for Google's "Open now / Closes at X" local rich
+ * result on "mattress store near me" queries.
+ */
+function openingHoursSpecFor(hours: Showroom['hours']) {
+  return hours.map((h) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek:
+      h.day === 'Mon-Fri'
+        ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+        : h.day === 'Sat-Sun'
+          ? ['Saturday', 'Sunday']
+          : h.day === 'Mon-Sat'
+            ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+            : h.day === 'Sun'
+              ? 'Sunday'
+              : h.day === 'Sat'
+                ? 'Saturday'
+                : h.day,
+    opens: h.open,
+    closes: h.close,
+  }));
 }
 
 // isSalePage / SALE_HANDLE_PATTERNS now live in lib/sale-handles.ts so
@@ -189,23 +216,7 @@ export function getPageJsonLd(page: Page, aggregate?: ShopAggregate | null): Pag
         : {}),
       ...(showroom.gbpUrl ? { sameAs: [showroom.gbpUrl] } : {}),
       ...aggregateRatingFor(url, aggregate),
-      openingHoursSpecification: showroom.hours.map((h) => ({
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek:
-          h.day === 'Mon-Fri'
-            ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-            : h.day === 'Sat-Sun'
-              ? ['Saturday', 'Sunday']
-              : h.day === 'Mon-Sat'
-                ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-                : h.day === 'Sun'
-                  ? 'Sunday'
-                  : h.day === 'Sat'
-                    ? 'Saturday'
-                    : h.day,
-        opens: h.open,
-        closes: h.close,
-      })),
+      openingHoursSpecification: openingHoursSpecFor(showroom.hours),
       areaServed: ['Los Angeles', showroom.area],
       parentOrganization: { '@id': `${SITE}/#organization` },
     };
@@ -290,6 +301,7 @@ export function getPageJsonLd(page: Page, aggregate?: ShopAggregate | null): Pag
           addressCountry: 'US',
         },
         ...(s.geo ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } } : {}),
+        ...(s.gbpUrl ? { sameAs: [s.gbpUrl] } : {}),
       })),
     };
     const breadcrumbLd = {
@@ -390,6 +402,12 @@ export function getPageJsonLd(page: Page, aggregate?: ShopAggregate | null): Pag
           : {}),
       },
       ...aggregateRatingFor(url, aggregate),
+      // The "store" serving this neighborhood is its nearest physical
+      // showroom, so emit that showroom's hours — gives the neighborhood
+      // page "Open now / Closes at X" eligibility on local SERPs.
+      ...(primaryShowroom
+        ? { openingHoursSpecification: openingHoursSpecFor(primaryShowroom.hours) }
+        : {}),
       department: nearest.map((s) => ({
         '@type': 'FurnitureStore',
         name: s.name,
@@ -406,6 +424,7 @@ export function getPageJsonLd(page: Page, aggregate?: ShopAggregate | null): Pag
         ...(s.geo
           ? { geo: { '@type': 'GeoCoordinates', latitude: s.geo.latitude, longitude: s.geo.longitude } }
           : {}),
+        ...(s.gbpUrl ? { sameAs: [s.gbpUrl] } : {}),
       })),
       parentOrganization: { '@id': `${SITE}/#organization` },
     };
