@@ -2,7 +2,7 @@
   "$schema": "Shopify redirects inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-06-18T12:08:13.944Z",
-  "$count": 2025,
+  "$count": 2023,
   "redirects": [
     {
       "id": "gid://shopify/UrlRedirect/31411395",
@@ -3233,12 +3233,6 @@
       "permanent": true
     },
     {
-      "id": "gid://shopify/UrlRedirect/411774091517",
-      "source": "/products/tempur-pedic-tempur-ergo-power-base",
-      "destination": "https://mattressstoreslosangeles.com/",
-      "permanent": true
-    },
-    {
       "id": "gid://shopify/UrlRedirect/411774222589",
       "source": "/collections/bedroom-furniture/products/copy-of-louis-philippe-cherry-dresser",
       "destination": "https://mattressstoreslosangeles.com/",
@@ -3319,12 +3313,6 @@
     {
       "id": "gid://shopify/UrlRedirect/411775107325",
       "source": "/products/diana-metal-bed-frame",
-      "destination": "https://mattressstoreslosangeles.com/",
-      "permanent": true
-    },
-    {
-      "id": "gid://shopify/UrlRedirect/411775140093",
-      "source": "/products/tempur-pedic-tempur-adapt-medium-mattress",
       "destination": "https://mattressstoreslosangeles.com/",
       "permanent": true
     },

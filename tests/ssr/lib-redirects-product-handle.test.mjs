@@ -13,9 +13,14 @@ import assert from 'node:assert/strict';
 const { isRedirectedProductHandle } = await import('../../lib/product-redirect-guard.ts');
 
 test('true for a known redirecting product handle', () => {
-  // /products/tempur-pedic-tempur-ergo-power-base 301s to the homepage.
-  assert.equal(isRedirectedProductHandle('tempur-pedic-tempur-ergo-power-base'), true);
-  assert.equal(isRedirectedProductHandle('tempur-pedic-tempur-adapt-medium-mattress'), true);
+  // Both handles are discontinued products whose canonical URL 301s to the
+  // homepage. (Earlier fixtures here — tempur-pedic-tempur-ergo-power-base and
+  // tempur-pedic-tempur-adapt-medium-mattress — turned out to be LIVE, ACTIVE,
+  // in-stock products that were being merchandised yet redirected to `/`; those
+  // erroneous redirects were deleted so the products are reachable again, so
+  // they are no longer valid fixtures for this test.)
+  assert.equal(isRedirectedProductHandle('tempur-pro-ergo'), true);
+  assert.equal(isRedirectedProductHandle('tempur-pedic-tempur-luxebreeze-soft-mattress'), true);
 });
 
 test('false for a live (non-redirecting) product handle', () => {
