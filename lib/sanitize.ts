@@ -588,6 +588,14 @@ const DEAD_EXTERNAL_LINK_HREFS: ReadonlyArray<RegExp> = [
   // (SEMrush audit 20260626, broken external links id 12). Linked from the
   // can-i-sleep-on-my-side-after-hernia-repair-surgery article.
   /melbourneherniasurgery\.com\.au\/after-hernia-repair/i,
+  // aditicorporation.in/blog/sleep-joint-replacement-surgery/ → HTTP 500
+  // (SEMrush audit 20260627, broken external links id 12). Linked from the
+  // when-can-you-sleep-on-your-back-after-hip-replacement article.
+  /aditicorporation\.in\/blog\/sleep-joint-replacement-surgery/i,
+  // zimlin.com/how-to-pack-a-mattress-in-a-box/ → HTTP 500
+  // (SEMrush audit 20260627, broken external links id 12). Linked from the
+  // how-to-price-a-used-purple-mattress article.
+  /zimlin\.com\/how-to-pack-a-mattress-in-a-box/i,
 ];
 
 export function unwrapDeadExternalLinks(html: string): string {
