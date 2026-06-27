@@ -702,5 +702,51 @@ export function sanitizeShopifyHtml(
   // U+FFFD (the � replacement char). Drop them — they only ever render as
   // visible glyphs that look broken.
   out = out.replace(/�/g, '');
+  // Performance pass — defer to lazy-loading + Shopify-CDN width hints.
+  // Body images are always below the fold (the hero/cover image is
+  // rendered separately by the article page template via next/image with
+  // priority). SEMrush audit 20260627 flagged best-black-bedroom-sets at
+  // 5,274ms — an old auto-published article serving full-resolution
+  // Shopify CDN images. This pass applies to every Shopify-content body
+  // (articles, pages, collection descriptions), so the win is site-wide.
+  out = optimizeBodyImages(out);
   return out;
+}
+
+/**
+ * Defer body images and constrain Shopify-CDN payload size at render
+ * time. Two cheap, idempotent rewrites:
+ *
+ *   1. Add `loading="lazy" decoding="async"` to every `<img>` that
+ *      doesn't already have those attributes. Safe because body images
+ *      are always below the fold here (page templates render the cover/
+ *      hero via next/image separately).
+ *
+ *   2. For Shopify-CDN `<img src>` URLs (cdn.shopify.com / cdn.shopifycdn.com)
+ *      that have NO `srcset` (so they're not already responsive) and NO
+ *      explicit `width` URL parameter, append `?width=1200` (or `&width=…`
+ *      if the URL already carries a query string). Shopify's CDN honors
+ *      this and re-encodes the image at that width on the fly — typical
+ *      savings on a full-res hero image are 70–90% of payload.
+ *
+ * Tag-safe: only matches `<img …>` open tags, leaves quoted attribute
+ * values alone, and short-circuits when the attribute is already present.
+ */
+function optimizeBodyImages(html: string): string {
+  if (!html) return html;
+  const SHOPIFY_CDN_HOST = /(?:cdn\.shopify\.com|cdn\.shopifycdn\.com)/i;
+  return html.replace(/<img\b([^>]*)>/gi, (full, attrs: string) => {
+    let next = attrs;
+    if (!/\bloading\s*=/i.test(next)) next += ' loading="lazy"';
+    if (!/\bdecoding\s*=/i.test(next)) next += ' decoding="async"';
+    if (!/\bsrcset\s*=/i.test(next)) {
+      next = next.replace(/\bsrc\s*=\s*("|')([^"']+)\1/i, (m: string, q: string, src: string) => {
+        if (!SHOPIFY_CDN_HOST.test(src)) return m;
+        if (/[?&]width=\d+/i.test(src)) return m;
+        const sep = src.includes('?') ? '&' : '?';
+        return `src=${q}${src}${sep}width=1200${q}`;
+      });
+    }
+    return `<img${next}>`;
+  });
 }
