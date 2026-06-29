@@ -563,3 +563,77 @@ test('HowTo step body terminates correctly across mixed heading levels', () => {
   assert.match(howTo.step[0].text, /Intro/);
   assert.match(howTo.step[0].text, /Detail/);
 });
+
+// ──────────────────────────────────────────────────────────────────
+// AI-search optimization: abstract + articleBody + speakable
+// (SEMrush 20260628 "Content not optimized" insight, issue 223)
+// ──────────────────────────────────────────────────────────────────
+
+function getBlogPosting(lds) {
+  const ld = lds.find((x) => x.key === 'ld-article');
+  return ld?.data;
+}
+
+test('emits speakable spec on every BlogPosting', () => {
+  const lds = getArticleJsonLd(makeArticle());
+  const bp = getBlogPosting(lds);
+  assert.equal(bp.speakable?.['@type'], 'SpeakableSpecification');
+  assert.deepEqual(bp.speakable.cssSelector, ['.gd-head-lede', '.gd-body h2', '.gd-body p']);
+});
+
+test('uses the article excerpt as abstract when present', () => {
+  const lds = getArticleJsonLd(makeArticle({ excerpt: 'Short, punchy summary that AI engines can lift.' }));
+  const bp = getBlogPosting(lds);
+  assert.equal(bp.abstract, 'Short, punchy summary that AI engines can lift.');
+});
+
+test('falls back to first paragraph when excerpt is empty', () => {
+  const lds = getArticleJsonLd(makeArticle({
+    excerpt: '',
+    contentHtml: '<p>First-paragraph lede that should be cited by AI.</p><p>Second paragraph.</p>',
+  }));
+  const bp = getBlogPosting(lds);
+  assert.match(bp.abstract, /^First-paragraph lede/);
+});
+
+test('truncates a long abstract to <=250 chars at a sentence boundary', () => {
+  const long =
+    'This is sentence one. This is sentence two with some additional content. ' +
+    'This is sentence three that adds more length so the total goes past two hundred and fifty characters in the abstract field. ' +
+    'This is sentence four that pushes it well past the cap, ensuring we exercise the truncation logic.';
+  const lds = getArticleJsonLd(makeArticle({ excerpt: long }));
+  const bp = getBlogPosting(lds);
+  assert.ok(bp.abstract.length <= 250, `abstract was ${bp.abstract.length} chars: ${bp.abstract}`);
+  // Should end at a sentence boundary (period + space normalized), not mid-word
+  assert.match(bp.abstract, /[.?!](\s|$)|…$/);
+});
+
+test('omits abstract when neither excerpt nor body has any text', () => {
+  const lds = getArticleJsonLd(makeArticle({ excerpt: '', contentHtml: '' }));
+  const bp = getBlogPosting(lds);
+  assert.equal(bp.abstract, undefined);
+});
+
+test('emits articleBody as plain stripped text', () => {
+  const lds = getArticleJsonLd(makeArticle({
+    contentHtml: '<h2>Heading</h2><p>Body <strong>with</strong> tags & entities.</p>',
+  }));
+  const bp = getBlogPosting(lds);
+  assert.equal(typeof bp.articleBody, 'string');
+  assert.match(bp.articleBody, /Heading Body with tags & entities\./);
+  // No HTML left
+  assert.doesNotMatch(bp.articleBody, /<[^>]+>/);
+});
+
+test('caps articleBody at 12,000 chars', () => {
+  const longPara = 'word '.repeat(5000);
+  const lds = getArticleJsonLd(makeArticle({ contentHtml: `<p>${longPara}</p>` }));
+  const bp = getBlogPosting(lds);
+  assert.ok(bp.articleBody.length <= 12000, `articleBody was ${bp.articleBody.length} chars`);
+});
+
+test('omits articleBody when contentHtml is empty', () => {
+  const lds = getArticleJsonLd(makeArticle({ contentHtml: '' }));
+  const bp = getBlogPosting(lds);
+  assert.equal(bp.articleBody, undefined);
+});
