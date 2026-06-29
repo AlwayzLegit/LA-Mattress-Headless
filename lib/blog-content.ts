@@ -28,6 +28,20 @@ const INTROS: Record<string, string> = {
   // place for sleep-health, sleep-blog, mattress-buying-guide.
   'extra-info':
     "Mattress shopping touches every part of a household — bed frames, headboards, foundations, sheets, encasements, recycling, financing, delivery zones, return windows. The articles below collect the practical context that doesn't fit cleanly inside a buying guide: how to dispose of an old mattress in LA, what a foundation actually does (vs a box spring), how recycling fees work in California, headboard attachment for adjustable bases, and the housekeeping topics shoppers ask about at the showroom. None of it is the headline decision — that's what the buying guides cover — but all of it shows up at delivery, and reading it ahead of time saves a phone call.",
+  // The original "LA Mattress Stores Blog" from the Hydrogen-era site,
+  // kept online as an archive. Most evergreen mattress-buying topics
+  // here have been rewritten and expanded in mattress-buying-guide /
+  // sleep-blog / sleep-health / mattress-care-tips — the old URLs
+  // 301-redirect to the updated versions. What remains live is the
+  // archive of older sleep-lifestyle posts without a direct canonical
+  // replacement. Including this intro lets the blog index ship as a
+  // proper, indexable, clearly-labeled archive page now that it's been
+  // restored to /blogs hub (see app/(storefront)/blogs/page.tsx — was
+  // previously excluded on the false assumption that every URL under it
+  // redirected; SEMrush 20260628 showed 72 of 184 published articles
+  // were still live and navigation-orphaned).
+  'beds-mattresses':
+    "The original LA Mattress Stores blog, kept online as an archive of older sleep-lifestyle posts. Most of the evergreen mattress-buying topics here have been rewritten and expanded in our newer Mattress Buying Guide, Sleep Blog, and Sleep Health sections — the old URLs redirect to the updated versions. What remains is the back catalog of sleep-science notes, seasonal sleep tips, and cultural curiosities about how and why we sleep. If you're shopping for a mattress, start with the Mattress Buying Guide for current advice; browse here if you want the deeper archive.",
 };
 
 const FALLBACK_INTRO =

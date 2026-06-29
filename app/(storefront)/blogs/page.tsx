@@ -21,13 +21,24 @@ import { Icon } from '@/app/_components/icon';
  * inventory snapshot, no Shopify fetch — so it renders fast and works
  * even when Shopify env isn't configured.
  *
- * Excludes the deprecated `beds-mattresses` blog (same filter as
- * sitemap.ts / the HTML sitemap — every URL under it 301/308-redirects)
- * and the thin non-editorial `sales` / `extra-info` blogs.
+ * Excludes the thin non-editorial `sales` / `extra-info` blogs.
+ *
+ * `beds-mattresses` was previously excluded too on the assumption that
+ * "every URL under it 301-redirects" — but a SEMrush 20260628 audit
+ * showed that's not actually true: of 184 published articles, 162 are
+ * 301'd to canonical equivalents (the per-article redirects live in
+ * lib/redirects-table.ts) but ~72 still render 200. With the legacy
+ * blog hidden from /blogs hub, those 72 articles were live but
+ * navigation-orphaned (SEMrush "Page crawl depth" notice flagged them
+ * at depth 5-20). Including the blog here makes its index reachable
+ * at depth 2; the per-blog A-Z archive section on that index then
+ * gives each surviving article a clean depth-3 path. The 162 redirected
+ * URLs continue to 301 untouched — they don't appear in the archive
+ * because fullArchiveFor filters them out via resolveRedirectPath.
  */
 const SITE = 'https://www.mattressstoreslosangeles.com';
 
-const EXCLUDED_BLOG_HANDLES = new Set(['beds-mattresses', 'sales', 'extra-info']);
+const EXCLUDED_BLOG_HANDLES = new Set(['sales', 'extra-info']);
 
 /**
  * Curated featured guides — the pillar cluster, in deliberate reading
