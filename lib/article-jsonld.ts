@@ -31,6 +31,85 @@ function countWordsFromHtml(html: string): number {
   return text.split(' ').length;
 }
 
+/**
+ * Plain-text strip of article HTML for schema.org `articleBody`.
+ *
+ * AI engines (ChatGPT, Perplexity, Gemini, Google AI Overviews) prefer
+ * articles that expose their text content directly in structured data —
+ * it lets them parse the citable content without HTML-rendering. This
+ * gives a content fingerprint that engines can confidently lift from.
+ *
+ * Capped at 12,000 chars (well below schema's practical 15k limit) and
+ * collapsed-whitespace, so the JSON-LD payload stays bounded even on
+ * very long pillar articles (~4k-word ones).
+ */
+function plainTextFromHtml(html: string, max: number = 12000): string {
+  if (!html) return '';
+  const text = html
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&rsquo;/g, '’')
+    .replace(/&lsquo;/g, '‘')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return text.length > max ? text.slice(0, max) : text;
+}
+
+/**
+ * Extract a short summary (≤ ~250 chars) from the article for the
+ * schema.org `abstract` property — what AI engines lift as a citation.
+ *
+ * Preference order:
+ *   1. The article's explicit excerpt (merchant-authored summary).
+ *   2. The first <p>'s text, capped at the last sentence boundary that
+ *      keeps the total ≤ 250 chars (engines penalize abrupt cuts).
+ *
+ * Returns an empty string if neither yields a meaningful summary; the
+ * caller then omits `abstract` entirely (better than emitting empty).
+ */
+function extractAbstract(html: string, excerpt: string | null | undefined): string {
+  const HARD_CAP = 250;
+  const cleanExcerpt =
+    typeof excerpt === 'string' ? excerpt.replace(/\s+/g, ' ').trim() : '';
+  if (cleanExcerpt) {
+    if (cleanExcerpt.length <= HARD_CAP) return cleanExcerpt;
+    return truncateToSentence(cleanExcerpt, HARD_CAP);
+  }
+  if (!html) return '';
+  // Pull text from the first <p>. Skip empty paragraphs that some
+  // imported WYSIWYG bodies start with.
+  const re = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
+    const text = plainTextFromHtml(m[1], HARD_CAP * 2);
+    if (text.length < 20) continue;
+    return truncateToSentence(text, HARD_CAP);
+  }
+  return '';
+}
+
+function truncateToSentence(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const slice = text.slice(0, max);
+  // Last sentence-ending punctuation in the window
+  const lastBoundary = Math.max(
+    slice.lastIndexOf('. '),
+    slice.lastIndexOf('? '),
+    slice.lastIndexOf('! '),
+  );
+  if (lastBoundary > max * 0.5) return slice.slice(0, lastBoundary + 1);
+  // Fall back to last whitespace + ellipsis so the citation reads cleanly.
+  const lastSpace = slice.lastIndexOf(' ');
+  if (lastSpace > max * 0.7) return slice.slice(0, lastSpace) + '…';
+  return slice + '…';
+}
+
 // Inlined from lib/seo.ts so Node 22's experimental-strip-types test
 // runner can import this file without the `@/` alias. Identical
 // semantics — picks the first string in the list with non-empty content.
@@ -272,6 +351,32 @@ export function getArticleJsonLd(article: Article): ArticleLd[] {
     articleSection: article.blog.title,
     ...(wordCount ? { wordCount } : {}),
     ...(article.tags.length ? { keywords: article.tags.join(', ') } : {}),
+    // SEMrush 20260628 "Content not optimized" insight (AI Search):
+    // expose the article's content to AI engines (ChatGPT, Perplexity,
+    // Gemini, Google AI Overviews) so they can cite it confidently.
+    // Three additions, all schema.org-valid on BlogPosting / Article:
+    //
+    //   - abstract: short ≤250-char citable summary (excerpt or lede).
+    //   - articleBody: full text content (HTML stripped), capped at 12k
+    //     chars so the JSON payload stays bounded on long pillars.
+    //   - speakable: CSS selectors pointing engines at the most-citable
+    //     surfaces (title, lede, body) for voice-readout features.
+    //
+    // All additive — no existing properties moved or reshaped. Each
+    // omitted when its source is empty so the JSON-LD stays compact for
+    // very thin pages.
+    ...(function () {
+      const abstract = extractAbstract(article.contentHtml, article.excerpt);
+      const articleBody = plainTextFromHtml(article.contentHtml);
+      const out: Record<string, unknown> = {};
+      if (abstract) out.abstract = abstract;
+      if (articleBody) out.articleBody = articleBody;
+      out.speakable = {
+        '@type': 'SpeakableSpecification',
+        cssSelector: ['.gd-head-lede', '.gd-body h2', '.gd-body p'],
+      };
+      return out;
+    })(),
   };
 
   const breadcrumbLd = {
