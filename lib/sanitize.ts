@@ -596,6 +596,17 @@ const DEAD_EXTERNAL_LINK_HREFS: ReadonlyArray<RegExp> = [
   // (SEMrush audit 20260627, broken external links id 12). Linked from the
   // how-to-price-a-used-purple-mattress article.
   /zimlin\.com\/how-to-pack-a-mattress-in-a-box/i,
+  // healthline.com/health/healthy-sleep/memory-foam-vs-hybrid → HTTP 502
+  // (SEMrush audit 20260630, broken external links id 12). Linked from the
+  // what-is-the-best-mattress-for-fibromyalgia-pain-relief article. Healthline
+  // removed the article without setting up a 301 — likely consolidated.
+  /healthline\.com\/health\/healthy-sleep\/memory-foam-vs-hybrid/i,
+  // ariaprene.com/blog/what-is-foam-core/ → HTTP 503
+  // (SEMrush audit 20260630, broken external links id 12). Linked from the
+  // best-mattress-for-sacroiliac-joint-pain article. Ariaprene's blog has
+  // been intermittent — flagged as broken here regardless of whether
+  // it later recovers; the link is replaceable, the article isn't.
+  /ariaprene\.com\/blog\/what-is-foam-core/i,
 ];
 
 export function unwrapDeadExternalLinks(html: string): string {
