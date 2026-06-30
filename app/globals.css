@@ -505,6 +505,9 @@ summary:focus-visible,
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--s-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 .quiz-leadin-card {
   position: relative;
@@ -2321,6 +2324,9 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--s-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 .ways-card {
   appearance: none;

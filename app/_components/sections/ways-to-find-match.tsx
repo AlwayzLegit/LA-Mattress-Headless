@@ -87,7 +87,7 @@ export function WaysToFindMatch() {
           </p>
         </header>
 
-        <div className="ways-grid" role="list">
+        <ul className="ways-grid">
           {WAYS.map((w) => {
             const body = (
               <>
@@ -106,30 +106,27 @@ export function WaysToFindMatch() {
             );
             if (w.kind === 'chat') {
               return (
-                <button
-                  key={w.title}
-                  role="listitem"
-                  type="button"
-                  className="ways-card ways-card-button"
-                  onClick={onChatClick}
-                  aria-label={`${w.title} — opens the AI shopping assistant`}
-                >
-                  {body}
-                </button>
+                <li key={w.title}>
+                  <button
+                    type="button"
+                    className="ways-card ways-card-button"
+                    onClick={onChatClick}
+                    aria-label={`${w.title} — opens the AI shopping assistant`}
+                  >
+                    {body}
+                  </button>
+                </li>
               );
             }
             return (
-              <Link
-                key={w.title}
-                role="listitem"
-                href={w.href}
-                className="ways-card"
-              >
-                {body}
-              </Link>
+              <li key={w.title}>
+                <Link href={w.href} className="ways-card">
+                  {body}
+                </Link>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </section>
   );

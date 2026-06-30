@@ -29,9 +29,15 @@ import { ReviewsBadge } from './reviews-badge';
 export function PlpCard({
   product,
   priority = false,
+  imageSizes,
 }: {
   product: ProductSummary;
   priority?: boolean;
+  /** Override the default PLP-grid `sizes` for callers where the card
+   *  renders at a known fixed width (horizontal rails). Lighthouse
+   *  "Properly size images" flagged the homepage Popular rail serving
+   *  640w into a 286×286 slot — the grid-tuned default is wrong there. */
+  imageSizes?: string;
 }) {
   const minPrice = Number.parseFloat(product.priceRange.minVariantPrice.amount);
   const minCompare = Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount);
@@ -66,7 +72,7 @@ export function PlpCard({
               alt={product.featuredImage.altText ?? product.title}
               width={600}
               height={600}
-              sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes={imageSizes ?? "(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"}
               style={{ objectFit: 'contain', width: '100%', height: '100%' }}
               priority={priority}
               // Explicit fetchPriority on LCP-candidate cards. priority

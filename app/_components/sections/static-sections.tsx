@@ -284,7 +284,7 @@ export async function Reviews() {
         <ul className="reviews-home-grid" aria-label="Recent customer reviews">
           {reviews.slice(0, 6).map((r) => (
             <li key={r.id} className="reviews-home-card">
-              <div className="reviews-home-card-rating" aria-label={`${r.rating} out of 5`}>
+              <div className="reviews-home-card-rating" role="img" aria-label={`${r.rating} out of 5`}>
                 {Array.from({ length: 5 }, (_, i) => (
                   <span key={i} className={i < r.rating ? 'review-star-on' : 'review-star-off'}>
                     <Icon name="star" size={14} />

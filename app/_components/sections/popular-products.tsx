@@ -52,7 +52,18 @@ export async function PopularProducts() {
       <div className="pcard-scroll-wrap">
         <div id={RAIL_ID} className="pcard-scroll no-scrollbar">
           {products.map((p, i) => (
-            <PlpCard key={p.id} product={p} priority={i < 3} />
+            // Only the first card is an LCP candidate; preloading cards
+            // 2-3 in a horizontal rail wastes bytes the browser would
+            // pick up lazily as the user scrolls. `imageSizes` matches
+            // the fixed 320px card width (image slot ~288px) so the
+            // Shopify CDN serves ~384w instead of the 640w the
+            // grid-tuned default selects on desktop.
+            <PlpCard
+              key={p.id}
+              product={p}
+              priority={i === 0}
+              imageSizes="(max-width: 640px) 78vw, 288px"
+            />
           ))}
         </div>
       </div>

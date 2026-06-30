@@ -108,7 +108,10 @@ const CSP = [
   "style-src 'self' 'unsafe-inline' https://cdn.judge.me https://cdnwidget.judge.me",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://cdn.judge.me https://cdnwidget.judge.me",
-  "connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://*.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://api.judge.me https://cache.judge.me https://cdn.judge.me https://*.sentry.io",
+  // monorail-edge.shopifysvc.com is Shopify Hydrogen's analytics ingest;
+  // sendShopifyAnalytics POSTs to it. Console showed 2 CSP violations
+  // per pageview before this entry was added.
+  "connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://*.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://api.judge.me https://cache.judge.me https://cdn.judge.me https://*.sentry.io https://monorail-edge.shopifysvc.com",
   "frame-src 'self' https://maps.google.com https://www.google.com https://judge.me https://*.judge.me https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
   "media-src 'self' blob: https://cdn.shopify.com",
   "worker-src 'self' blob:",

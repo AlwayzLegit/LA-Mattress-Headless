@@ -46,23 +46,23 @@ export function QuizLeadIn() {
             in 7 more quick questions. No email required.
           </p>
         </div>
-        <div className="quiz-leadin-grid" role="list">
+        <ul className="quiz-leadin-grid">
           {POSITIONS.map((p) => (
-            <Link
-              key={p.id}
-              role="listitem"
-              href={`/sleep-quiz?position=${p.id}`}
-              className="quiz-leadin-card"
-              aria-label={`Start the sleep quiz — ${p.label.toLowerCase()} sleeper`}
-            >
-              <span className="quiz-leadin-card-label">{p.label}</span>
-              <span className="quiz-leadin-card-sub muted">{p.sublabel}</span>
-              <span className="quiz-leadin-card-arrow" aria-hidden="true">
-                <Icon name="arrow-right" size={14} />
-              </span>
-            </Link>
+            <li key={p.id}>
+              <Link
+                href={`/sleep-quiz?position=${p.id}`}
+                className="quiz-leadin-card"
+                aria-label={`Start the sleep quiz — ${p.label.toLowerCase()} sleeper`}
+              >
+                <span className="quiz-leadin-card-label">{p.label}</span>
+                <span className="quiz-leadin-card-sub muted">{p.sublabel}</span>
+                <span className="quiz-leadin-card-arrow" aria-hidden="true">
+                  <Icon name="arrow-right" size={14} />
+                </span>
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
         <div className="quiz-leadin-foot">
           <Link href="/sleep-quiz" className="link-arrow">
             Or start the full quiz <Icon name="arrow-right" size={14} />

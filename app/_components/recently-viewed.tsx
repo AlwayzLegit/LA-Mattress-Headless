@@ -113,7 +113,7 @@ export function RecentlyViewedRail({
             <h2 id="recently-viewed-heading" className="h2">{heading}</h2>
           </div>
           <div className="section-head-right">
-            <button type="button" className="recently-viewed-clear" onClick={onClear} aria-label="Clear recently viewed history">
+            <button type="button" className="recently-viewed-clear" onClick={onClear} aria-label="Clear history of recently viewed products">
               <Icon name="close" size={12} aria-hidden /> Clear history
             </button>
             <RailScrollButtons
