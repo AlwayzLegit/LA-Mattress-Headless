@@ -12,7 +12,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const { resolveRedirectPath, buildRedirectTarget } = await import('../../lib/sanitize.ts');
+const { resolveRedirectPath, buildRedirectTarget, sanitizeShopifyHtml } = await import('../../lib/sanitize.ts');
 
 test('returns the input unchanged for a non-redirect path', () => {
   // /collections/mattresses is a live PLP, NOT a redirect source.
@@ -281,4 +281,33 @@ test('resolveRedirectPath: manual layer (redirects-manual.json) is merged', () =
     resolveRedirectPath('/collections/mattress-accessories'),
     '/collections/bedding',
   );
+});
+
+// SEMrush 20260630 audit issue #214 — internal hrefs in article bodies
+// arrive carrying Shopify URL-decoration query params that 301 through
+// the edge canonicalizer. Pre-stripping them in sanitize means the
+// crawled href is already canonical, no 301 hop.
+test('sanitizeShopifyHtml: strips Shopify noise params on a PDP href', () => {
+  const out = sanitizeShopifyHtml(
+    '<p><a href="/products/spruce-firm-innerspring-by-eclipse-mattress?amp;_fid=bc02da6db&_ss=c&variant=42600842592509">Spruce</a></p>',
+  );
+  assert.match(out, /href="\/products\/spruce-firm-innerspring-by-eclipse-mattress\?variant=42600842592509"/);
+  assert.doesNotMatch(out, /_fid|_ss=|amp;/);
+});
+
+test('sanitizeShopifyHtml: strips _sid + repairs ?amp; on a collection href', () => {
+  const out = sanitizeShopifyHtml(
+    '<p><a href="/collections/bed-frames?amp;_sid=89c613616&_ss=r">Bed frames</a></p>',
+  );
+  assert.match(out, /href="\/collections\/bed-frames"/);
+});
+
+test('sanitizeShopifyHtml: preserves a legitimate filter param on a PLP href', () => {
+  // ?filter.v.option.size=King is a real PLP filter, not noise — must
+  // survive the canonicalize pass so the deep-linked filtered view
+  // continues to work for shoppers and crawlers.
+  const out = sanitizeShopifyHtml(
+    '<p><a href="/collections/king-size-mattresses?filter.v.option.size=King&_ss=c">King</a></p>',
+  );
+  assert.match(out, /href="\/collections\/king-size-mattresses\?filter\.v\.option\.size=King"/);
 });

@@ -34,6 +34,7 @@
 // time. Tests run outside Next, hence the relative path.
 import redirectsJson from '../data/url-inventory/redirects.json' with { type: 'json' };
 import redirectsManualJson from '../data/url-inventory/redirects-manual.json' with { type: 'json' };
+import { canonicalizeRouteParams } from './route-canonicalization.ts';
 import sanitizeHtml from 'sanitize-html';
 
 // Parser-based XSS pass (hardening, session 2026-06-10 audit). The
@@ -248,6 +249,36 @@ function resolveRedirectHrefs(html: string): string {
     if (path.startsWith('//')) return full;
     const dest = REDIRECT_TARGET.get(normRedirectPath(path));
     return dest ? `href=${q}${dest}${suffix}${q}` : full;
+  });
+}
+
+// SEMrush 20260630 audit: ~85% of issue #214 ("Permanent redirects",
+// 212 instances) are decorated query params baked into article body
+// hrefs (e.g. `?amp;_fid=…&_ss=c&variant=…`, `?_psq=…`, `?_sid=…` —
+// Shopify URL-decoration artifacts from copy-pasting from the legacy
+// storefront). Each one passes `canonicalizeRouteParams` in the edge
+// middleware and 301s to the clean canonical, costing an extra hop.
+// Pre-stripping the same params at render time means crawlers and
+// internal-link followers land on the canonical URL directly.
+// Mirrors the middleware allow-list so the two stay in lock-step.
+function stripNoiseParams(html: string): string {
+  return html.replace(HREF_INTERNAL, (full, q: string, path: string, suffix: string) => {
+    if (path.startsWith('//')) return full;
+    if (!suffix) return full;
+    const search = suffix.startsWith('?') ? suffix.slice(1).split('#')[0] : '';
+    const hashIdx = suffix.indexOf('#');
+    const hash = hashIdx >= 0 ? suffix.slice(hashIdx) : '';
+    if (!search) return full;
+    // Repair `?amp;foo=bar` → `?foo=bar` first (Shopify HTML-entity
+    // encoding artifact: `&amp;` between params survives a copy-paste
+    // and pollutes the first param name as `amp;<name>`).
+    const repaired = search.replace(/(^|&)amp;/g, '$1');
+    const params = new URLSearchParams(repaired);
+    const { shouldRedirect, cleanSearch } = canonicalizeRouteParams(path, params);
+    if (!shouldRedirect) return full;
+    const qs = cleanSearch.toString();
+    const cleanSuffix = (qs ? `?${qs}` : '') + hash;
+    return `href=${q}${path}${cleanSuffix}${q}`;
   });
 }
 
@@ -697,6 +728,11 @@ export function sanitizeShopifyHtml(
   // still keys off the original /pages/mattress-warranty href; this
   // pass then also collapses that href to its terminal /pages/warranty.
   out = resolveRedirectHrefs(out);
+  // After path-level redirects collapse, also strip Shopify URL-
+  // decoration query params (?amp;_fid=, ?_ss=, ?_sid=, ?_psq=, etc.)
+  // so internal hrefs land on the middleware's canonical form without
+  // the 301 hop. SEMrush 20260630.
+  out = stripNoiseParams(out);
   // Phase 295: AFTER redirect resolution so a valid (even redirecting)
   // href is never misjudged as malformed — only genuine non-URL hrefs
   // (phrases, bare domain text) get unwrapped.

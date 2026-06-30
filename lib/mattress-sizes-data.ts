@@ -321,8 +321,6 @@ export const MATTRESS_SIZES_RELATED_GUIDES: RelatedGuideGroup[] = [
     guides: [
       { title: 'Twin mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-twin-mattress' },
       { title: 'Full mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-full-mattress' },
-      { title: 'How big is a double bed?', href: '/blogs/mattress-buying-guide/how-bigs-a-double-bed' },
-      { title: 'Queen mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-queen-mattress' },
       { title: 'Queen size guide — inches, feet, cm', href: '/blogs/mattress-buying-guide/queen-mattress-size-guide-inches-feet-how-to-pick-the-perfect-fit' },
       { title: 'King mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-king-mattress' },
       { title: 'King size guide — types & how to choose', href: '/blogs/mattress-buying-guide/king-size-mattress-guide-what-are-the-dimensions-and-benefits' },
@@ -334,7 +332,6 @@ export const MATTRESS_SIZES_RELATED_GUIDES: RelatedGuideGroup[] = [
     guides: [
       { title: 'Queen vs King', href: '/blogs/mattress-buying-guide/queen-mattress-vs-king-mattress' },
       { title: 'King vs California King', href: '/blogs/mattress-buying-guide/king-vs-california-king' },
-      { title: 'California King vs King', href: '/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference' },
       { title: 'Full vs Queen', href: '/blogs/mattress-buying-guide/full-vs-queen-mattress' },
       { title: 'Queen vs California Queen', href: '/blogs/mattress-buying-guide/queen-vs-california-queen-which-size-fits-your-needs' },
       { title: 'Twin, Full, Queen & King — full chart', href: '/blogs/mattress-buying-guide/mattress-size-comparison-chart-twin-full-queen-king-explained' },
@@ -345,8 +342,6 @@ export const MATTRESS_SIZES_RELATED_GUIDES: RelatedGuideGroup[] = [
     guides: [
       { title: 'Complete mattress size guide', href: '/blogs/mattress-buying-guide/how-to-choose-the-best-mattress-size' },
       { title: 'How to choose the right size for your lifestyle', href: '/blogs/mattress-buying-guide/how-to-choose-the-right-mattress-size-for-your-lifestyle' },
-      { title: 'Full bed room-layout tips', href: '/blogs/mattress-buying-guide/full-size-mattress-measurements-room-layout-tips' },
-      { title: 'How much space a Full mattress gives you', href: '/blogs/mattress-buying-guide/how-much-space-does-a-full-size-mattress-really-give-you' },
       { title: 'Will a Queen frame fit a Full mattress?', href: '/blogs/mattress-buying-guide/will-a-queen-bed-frame-fit-a-full-size-mattress' },
     ],
   },
