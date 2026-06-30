@@ -1,0 +1,85 @@
+{
+  "_meta": {
+    "source": "Diamond Mattress price list 06-18-26 (rep Michael Hyman, LOSINC)",
+    "vendor_sku_base": "DMALQP-10",
+    "vendor_line": "Dreamstage 2.0",
+    "vendor_model": "Arise Luxe Quilted Plush",
+    "compare_at_multiplier": 1.30
+  },
+
+  "title": "Diamond Dreamstage 2.0 Arise Luxe Plush Quilted Hybrid 15\" Mattress",
+  "handle": "diamond-dreamstage-2-0-arise-luxe-plush-hybrid-15",
+  "vendor": "Diamond Mattress",
+  "productType": "Mattress",
+  "status": "ACTIVE",
+  "tags": [
+    "Diamond", "Dreamstage 2.0", "Arise Luxe", "Hybrid", "Plush",
+    "15-inch", "Cooling Copper", "Pocketed Coil", "Quilted",
+    "20-year warranty", "Made in USA"
+  ],
+
+  "seo": {
+    "title": "Diamond Dreamstage 2.0 Arise Luxe Plush 15\" Hybrid Mattress | LA Mattress",
+    "description": "Diamond Dreamstage 2.0 Arise Luxe — 15\" plush hybrid with Cooling Copper memory foam + 7-Series pocketed coils. 20-year warranty. Queen $1,599 with free same-day LA delivery + 120-night exchange."
+  },
+
+  "metafields": {
+    "custom.firmness": "Plush",
+    "custom.height_inches": 15,
+    "custom.material_type": "Hybrid",
+    "custom.warranty_years": 20,
+    "custom.trial_nights": 120,
+
+    "custom.tagline": "Cooling-copper plush hybrid — the pressure-relief pick for side sleepers.",
+    "custom.lede": "Diamond's Dreamstage 2.0 Arise Luxe Plush builds a soft-feel hybrid around copper-infused memory foam and a 7-Series individually pocketed coil unit, with HD foam-encased edges that hold the perimeter under real load. A cool-temperature quilted top keeps the surface from running hot. 15 inches tall, plush feel, 20-year warranty.",
+    "custom.best_for": [
+      "Side sleepers who need pressure relief at the shoulder and hip",
+      "Hot sleepers — copper-infused foam moves heat off the body",
+      "Couples — pocketed coils isolate motion transfer",
+      "Anyone trading up from a worn-out plush pillow-top"
+    ],
+    "custom.not_ideal_for": [
+      "Strict stomach sleepers — too soft to keep the spine flat",
+      "Heavier shoppers (300+ lbs) who'd want the Medium or Firm build instead"
+    ],
+    "custom.firmness_score": 4,
+    "custom.position_fit": { "back": "good", "side": "great", "stomach": "poor" },
+
+    "custom.highlights": [
+      { "icon": "snowflake", "title": "Cooling copper memory foam", "body": "Copper conducts heat away from the body — keeps the contour layer from heat-soaking." },
+      { "icon": "spring",    "title": "7-Series pocketed coils",    "body": "Each coil moves independently — supports the spine without amplifying partner movement." },
+      { "icon": "shield",    "title": "HD foam-encased edge",       "body": "Reinforced perimeter so the bed feels usable corner-to-corner, even when sitting on the side." },
+      { "icon": "ruler",     "title": "15-inch luxury build",       "body": "Quilted Euro-style top + transition foam + coil unit + base — engineered to outlast a typical plush." }
+    ],
+
+    "custom.layers": [
+      { "name": "Cool-temperature regulating quilt", "desc": "Phase-change cover keeps the sleep surface neutral." },
+      { "name": "Air Response Foam",                 "desc": "Open-cell top layer that breathes and rebounds." },
+      { "name": "Cooling Copper Memory Foam",        "desc": "Pressure-relief contour layer with copper-infused conductivity." },
+      { "name": "CertiPUR-US HD comfort foams",      "desc": "Transition stack between the soft top and the coil unit." },
+      { "name": "7-Series Individually Pocketed Coils", "desc": "Independent steel coil unit for spinal support + motion isolation." },
+      { "name": "HD Foam Encased Edge Support",      "desc": "Reinforces the perimeter for full-surface use." }
+    ]
+  },
+
+  "options": [{ "name": "Size", "values": ["Twin", "Twin XL", "Full", "Queen", "King", "California King"] }],
+
+  "variants": [
+    { "size": "Twin",            "sku": "DMALQP-10-T",   "price": "1249.00", "compareAtPrice": "1624.00", "cost": "325.00" },
+    { "size": "Twin XL",         "sku": "DMALQP-10-TXL", "price": "1299.00", "compareAtPrice": "1689.00", "cost": "345.00" },
+    { "size": "Full",            "sku": "DMALQP-10-F",   "price": "1499.00", "compareAtPrice": "1949.00", "cost": "400.00" },
+    { "size": "Queen",           "sku": "DMALQP-10-Q",   "price": "1599.00", "compareAtPrice": "2079.00", "cost": "435.00" },
+    { "size": "King",            "sku": "DMALQP-10-K",   "price": "2049.00", "compareAtPrice": "2664.00", "cost": "585.00" },
+    { "size": "California King", "sku": "DMALQP-10-CK",  "price": "2049.00", "compareAtPrice": "2664.00", "cost": "585.00" }
+  ],
+
+  "collections_to_add": [
+    "mattresses", "diamond-mattresses", "hybrid-mattresses",
+    "soft-mattresses-for-pressure-relief", "cooling-mattresses",
+    "mattresses-for-side-sleepers", "mattresses-for-couples",
+    "queen-size-mattresses", "king-size-mattresses",
+    "full-size-mattresses", "twin-size-mattresses", "twin-xl-mattress-sale"
+  ],
+
+  "description_html": "<p><strong>The Diamond Dreamstage 2.0 Arise Luxe Plush is a 15-inch quilted hybrid mattress</strong> built around a cooling-copper memory-foam contour layer and a 7-Series individually pocketed coil system, with HD foam-encased edge support. The result is a soft-feeling surface that still holds its shape under pressure — the configuration that side sleepers and hot sleepers tend to land on after a half-hour on the showroom floor.</p>\n\n<h2>What's inside</h2>\n<ul>\n  <li><strong>Cool-temperature regulating quilt</strong> — phase-change yarns in the cover pull heat off the sleep surface so the contour foam doesn't trap it.</li>\n  <li><strong>Air Response Foam</strong> — open-cell top layer that breathes and bounces back instead of compressing flat.</li>\n  <li><strong>Cooling Copper Memory Foam</strong> — copper-infused contour layer; copper conducts heat 10× better than the dyes typical foam uses for cooling claims.</li>\n  <li><strong>CertiPUR-US HD comfort foams</strong> — independently certified for low-VOC content; tuned as the transition stack between the plush top and the coil unit.</li>\n  <li><strong>7-Series Individually Pocketed Coils</strong> — each coil works in its own fabric pocket, so motion on one side of the bed doesn't telegraph to the other.</li>\n  <li><strong>HD Foam-Encased Edge Support</strong> — high-density rails around the perimeter so the bed is usable to the edge, including when you sit on it to put on shoes.</li>\n</ul>\n\n<h2>Who it's for</h2>\n<p>Plush feel — a true <strong>4 / 10</strong> on Diamond's firmness scale. That's where side sleepers find shoulder relief without sinking past the support layer, where hot sleepers benefit from the copper layer, and where a back-and-side combo sleeper gets enough give to switch positions cleanly. Strict stomach sleepers should look at the Dreamstage 2.0 Arise Luxe <em>Medium</em> or <em>Firm</em> instead — at plush, the hips drop too far for spinal-neutral alignment.</p>\n\n<h2>Sizes &amp; prices</h2>\n<p>Twin, Twin XL, Full, Queen, King, and California King. Queen from <strong>$1,599</strong>. Pricing on each size shows in the selector above.</p>\n\n<h2>What's included</h2>\n<ul>\n  <li>Free white-glove delivery + setup anywhere in Los Angeles on $499+ orders.</li>\n  <li>Free haul-away of your old mattress on every Queen+ delivery.</li>\n  <li>Same-day delivery on orders placed by 4 p.m.</li>\n  <li>120-night comfort exchange.</li>\n  <li>20-year Diamond Mattress warranty against manufacturer defects.</li>\n</ul>"
+}

@@ -1,0 +1,87 @@
+{
+  "_meta": {
+    "source": "Diamond Mattress price list 06-18-26 (rep Michael Hyman, LOSINC)",
+    "vendor_sku_base": "DMRWXF-10",
+    "vendor_line": "Black Diamond",
+    "vendor_model": "Rockwell Quilted Extra Firm",
+    "compare_at_multiplier": 1.30
+  },
+
+  "title": "Black Diamond Rockwell Quilted Extra Firm Hybrid 16\" Mattress",
+  "handle": "black-diamond-rockwell-quilted-extra-firm-hybrid-16",
+  "vendor": "Diamond Mattress",
+  "productType": "Mattress",
+  "status": "ACTIVE",
+  "tags": [
+    "Diamond", "Black Diamond", "Rockwell", "Hybrid", "Extra Firm",
+    "16-inch", "Titanium Memory Foam", "Ice Flex Cooling",
+    "Charcoal Memory Foam", "Coolstream", "Pocketed Coil",
+    "20-year warranty", "Made in USA", "Luxury"
+  ],
+
+  "seo": {
+    "title": "Black Diamond Rockwell Extra Firm 16\" Hybrid Mattress | LA Mattress",
+    "description": "Black Diamond Rockwell — 16\" extra-firm hybrid with Coolstream fabric, Titanium + 5lb charcoal memory foam, Ice Flex cooling bands, and 9-Series wrapped coils. 20-year warranty. Queen $2,599."
+  },
+
+  "metafields": {
+    "custom.firmness": "Extra Firm",
+    "custom.height_inches": 16,
+    "custom.material_type": "Hybrid",
+    "custom.warranty_years": 20,
+    "custom.trial_nights": 120,
+
+    "custom.tagline": "Extra-firm luxury hybrid — titanium + charcoal memory foam over a 9-Series coil core.",
+    "custom.lede": "The Black Diamond Rockwell is Diamond Mattress's luxury extra-firm hybrid: a 16-inch build with Coolstream fabric on top, high-density titanium memory foam plus Ice Flex cooling bands in the middle, and a 9-Series wrapped coil system anchoring the support. 5-pound high-density charcoal memory foam adds odor control and a denser feel than typical hybrids. 20-year warranty, made in California.",
+    "custom.best_for": [
+      "Back and stomach sleepers who specifically want extra-firm",
+      "Heavier shoppers (260 lbs+) who need a stable, non-sinking core",
+      "Hot sleepers — three distinct cooling layers stack the deck",
+      "Anyone prioritizing long-term durability over short-term softness"
+    ],
+    "custom.not_ideal_for": [
+      "Side sleepers — the surface is too firm for shoulder relief",
+      "Anyone under 140 lbs who'd want a Medium or Plush build instead"
+    ],
+    "custom.firmness_score": 10,
+    "custom.position_fit": { "back": "great", "side": "poor", "stomach": "great" },
+
+    "custom.highlights": [
+      { "icon": "snowflake", "title": "3-layer cooling stack",     "body": "Coolstream fabric + Ice Flex cooling bands + titanium memory foam — engineered, not a marketing claim." },
+      { "icon": "spring",    "title": "9-Series wrapped coil core","body": "More coils per square foot than typical 7-Series hybrids — denser support that doesn't sag." },
+      { "icon": "shield",    "title": "5-lb charcoal memory foam", "body": "High-density charcoal layer for odor control and longevity." },
+      { "icon": "ruler",     "title": "16-inch foam-encased build","body": "Tall, dense build engineered to outlast — backed by a 20-year warranty." }
+    ],
+
+    "custom.layers": [
+      { "name": "Coolstream Fabric",                          "desc": "Heat-conductive cover that pulls warmth off the surface immediately." },
+      { "name": "High-Density Titanium Memory Foam",          "desc": "Top contour layer infused with titanium for cooling + responsiveness." },
+      { "name": "Ice Flex Cooling Bands",                     "desc": "Thermal-conductive bands that wick body heat away from the contour layer." },
+      { "name": "High-Density 5-lb Charcoal Memory Foam",     "desc": "Dense, odor-absorbing transition layer — denser than typical memory foam." },
+      { "name": "9-Series Individually Wrapped Coils",        "desc": "Denser-than-typical pocketed coil unit for spinal support + motion isolation." },
+      { "name": "Foam Encased Edge Support",                  "desc": "Reinforces the perimeter for full-surface use." }
+    ]
+  },
+
+  "options": [{ "name": "Size", "values": ["Twin", "Twin XL", "Full", "Queen", "King", "California King"] }],
+
+  "variants": [
+    { "size": "Twin",            "sku": "DMRWXF-10-T",   "price": "2199.00", "compareAtPrice": "2859.00", "cost": "560.00" },
+    { "size": "Twin XL",         "sku": "DMRWXF-10-TXL", "price": "2199.00", "compareAtPrice": "2859.00", "cost": "560.00" },
+    { "size": "Full",            "sku": "DMRWXF-10-F",   "price": "2499.00", "compareAtPrice": "3249.00", "cost": "700.00" },
+    { "size": "Queen",           "sku": "DMRWXF-10-Q",   "price": "2599.00", "compareAtPrice": "3379.00", "cost": "750.00" },
+    { "size": "King",            "sku": "DMRWXF-10-K",   "price": "3199.00", "compareAtPrice": "4159.00", "cost": "950.00" },
+    { "size": "California King", "sku": "DMRWXF-10-CK",  "price": "3199.00", "compareAtPrice": "4159.00", "cost": "950.00" }
+  ],
+
+  "collections_to_add": [
+    "mattresses", "diamond-mattresses", "hybrid-mattresses",
+    "firm-mattresses", "cooling-mattresses",
+    "mattresses-for-back-pain", "mattresses-for-stomach-sleepers",
+    "mattresses-for-heavy-people", "luxury-mattresses",
+    "queen-size-mattresses", "king-size-mattresses",
+    "full-size-mattresses", "twin-size-mattresses", "twin-xl-mattress-sale"
+  ],
+
+  "description_html": "<p><strong>The Black Diamond Rockwell is a 16-inch extra-firm hybrid mattress</strong> at the top of Diamond Mattress's lineup. A luxury build engineered around three distinct cooling systems and a 9-Series individually wrapped coil core, finished with a high-density 5-pound charcoal memory foam layer for longevity and odor control. Backed by Diamond Mattress's 20-year warranty.</p>\n\n<h2>What's inside</h2>\n<ul>\n  <li><strong>Coolstream Fabric</strong> — heat-conductive cover that pulls warmth off the sleep surface immediately on contact.</li>\n  <li><strong>High-Density Titanium Memory Foam</strong> — top contour layer infused with titanium for both cooling and faster response than typical memory foam.</li>\n  <li><strong>Ice Flex Cooling Bands</strong> — thermal-conductive bands engineered to wick body heat away from the contour layer all night, not just at first contact.</li>\n  <li><strong>High-Density 5-Pound Charcoal Memory Foam</strong> — dense, charcoal-infused transition layer for odor control and durability; significantly denser than the standard 3–4 lb foam most hybrids use.</li>\n  <li><strong>9-Series Individually Wrapped Coil System</strong> — denser-than-typical pocketed coil unit for spinal support and motion isolation.</li>\n  <li><strong>Foam-Encased Edge Support</strong> — high-density perimeter so the bed is usable corner-to-corner.</li>\n</ul>\n\n<h2>Who it's for</h2>\n<p>Extra firm — a true <strong>10 / 10</strong> on Diamond's scale. That's the build back and stomach sleepers reach for when other hybrids let the hips drop, and the configuration heavier shoppers tend to land on for long-term stability. The three-layer cooling stack (Coolstream + Ice Flex + titanium) is engineered for the kind of hot sleeper who has tried \"cooling\" mattresses that didn't deliver. Strict side sleepers should look at the Dreamstage 2.0 Arise Luxe Plush instead — an extra-firm surface is too unforgiving at the shoulder.</p>\n\n<h2>Sizes &amp; prices</h2>\n<p>Twin, Twin XL, Full, Queen, King, and California King. Queen from <strong>$2,599</strong>.</p>\n\n<h2>What's included</h2>\n<ul>\n  <li>Free white-glove delivery + setup anywhere in Los Angeles on $499+ orders.</li>\n  <li>Free haul-away of your old mattress on every Queen+ delivery.</li>\n  <li>Same-day delivery on orders placed by 4 p.m.</li>\n  <li>120-night comfort exchange.</li>\n  <li>20-year Diamond Mattress warranty — claims handled in-house, not through a third-party clearinghouse.</li>\n</ul>"
+}
