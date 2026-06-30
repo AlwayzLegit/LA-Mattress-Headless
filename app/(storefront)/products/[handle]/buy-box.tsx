@@ -7,6 +7,7 @@ import { useCart } from '@/app/_components/cart-context';
 import { Icon } from '@/app/_components/icon';
 import { announce } from '@/app/_components/announcer';
 import { formatMoney, formatPriceRange } from '@/lib/format';
+import { track } from '@/lib/analytics';
 import { findVariant, isOptionAvailable } from '@/lib/variant-select';
 import { SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { SIZE_DIMENSIONS } from './pdp-data';
@@ -24,9 +25,12 @@ type Props = {
   // Used by the sticky mobile bar.
   productTitle: string;
   productImage: Image | null;
+  // Used by the pdp_variant_selected analytics event so we can
+  // attribute selection-funnel data to the right PDP.
+  productHandle: string;
 };
 
-export function BuyBox({ options, variants, priceRange, compareAtPriceRange, productTitle, productImage }: Props) {
+export function BuyBox({ options, variants, priceRange, compareAtPriceRange, productHandle, productTitle, productImage }: Props) {
   const initial = useMemo(() => {
     const first = variants.find((v) => v.availableForSale) ?? variants[0];
     const out: Record<string, string> = {};
@@ -81,7 +85,10 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
       return;
     }
     const sizeOpt = matchingVariant.selectedOptions.find((o) => /size/i.test(o.name));
-    const otherOpts = matchingVariant.selectedOptions.filter((o) => !/size/i.test(o.name));
+    const firmnessOpt = matchingVariant.selectedOptions.find((o) => /firmness|comfort|feel/i.test(o.name));
+    const otherOpts = matchingVariant.selectedOptions.filter(
+      (o) => !/size|firmness|comfort|feel/i.test(o.name),
+    );
     const labelParts = [
       sizeOpt ? `${sizeOpt.value} size` : null,
       ...otherOpts.map((o) => o.value),
@@ -89,6 +96,22 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
       matchingVariant.availableForSale ? null : 'currently out of stock',
     ].filter(Boolean);
     announce(labelParts.join(', '));
+    // Funnel event — every user-driven variant change (chip click,
+    // size-sheet pick). Skipped on the initial mount above so the
+    // default selection doesn't get counted as a choice. Closes the
+    // pdp_view → pdp_variant_selected → add_to_cart funnel that
+    // surfaces which sizes/firmnesses cause hesitation and which
+    // combinations convert.
+    track('pdp_variant_selected', {
+      product_handle: productHandle,
+      variant_id: matchingVariant.id,
+      size: sizeOpt?.value,
+      firmness: firmnessOpt?.value,
+      other_options: otherOpts.length ? otherOpts.map((o) => `${o.name}:${o.value}`).join('|') : undefined,
+      price: Number(matchingVariant.price.amount),
+      currency: matchingVariant.price.currencyCode,
+      in_stock: matchingVariant.availableForSale,
+    });
   }, [matchingVariant]);
 
   function isAvailable(name: string, value: string): boolean {

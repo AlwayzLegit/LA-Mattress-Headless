@@ -391,6 +391,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
               variants={product.variants}
               priceRange={product.priceRange}
               compareAtPriceRange={product.compareAtPriceRange}
+              productHandle={product.handle}
               productTitle={product.title}
               productImage={product.featuredImage}
             />

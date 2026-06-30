@@ -71,6 +71,34 @@ export type AnalyticsEvent =
       };
     }
   | {
+      // PDP variant-selected — fires when the shopper changes a size /
+      // firmness / other option chip on the buy box. Distinct from
+      // pdp_view (which is one-shot per page render) and add_to_cart
+      // (which is the conversion). Closes the funnel between "looked at
+      // PDP" and "decided enough to add to cart" by surfacing which
+      // variants are explored, how often shoppers change their mind,
+      // and which combinations cause hesitation (e.g., back-and-forth
+      // between Queen / King suggests size uncertainty — a candidate
+      // for a sizing-guide overlay).
+      //
+      // Skips the initial mount (the default selection isn't a
+      // user-driven choice). Fires once per user-initiated change to
+      // any chip. props.size and props.firmness are best-effort
+      // pattern-matched from option names; unknown options fall into
+      // other_options for analysis without losing data.
+      name: 'pdp_variant_selected';
+      props: {
+        product_handle: string;
+        variant_id: string;
+        size?: string;
+        firmness?: string;
+        other_options?: string;
+        price: number;
+        currency: string;
+        in_stock: boolean;
+      };
+    }
+  | {
       // Search action — fires when the user submits a /search query.
       // Drives zero-result-rate insight + the most-searched terms list
       // for content gap analysis.
@@ -400,6 +428,28 @@ function toGa4Event(
               item_name: props.title ?? props.handle,
               item_brand: props.vendor,
               item_category: props.product_type,
+              price: props.price,
+              quantity: 1,
+            },
+          ],
+        },
+      };
+    case 'pdp_variant_selected':
+      // GA4 maps this to `select_item` — the conventional event for an
+      // intent signal that isn't yet a cart-add. Mirrors view_item
+      // shape so downstream funnels and revenue charts can ingest both
+      // without bespoke parsing.
+      return {
+        event: 'select_item',
+        params: {
+          currency: props.currency,
+          value: props.price,
+          items: [
+            {
+              item_id: props.product_handle,
+              item_variant: props.variant_id,
+              item_brand: undefined,
+              item_category: undefined,
               price: props.price,
               quantity: 1,
             },
