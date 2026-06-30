@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "source": "Diamond Mattress price list 06-18-26 (rep Michael Hyman, LOSINC)",
+    "vendor_sku_base": "DMINHY-11",
+    "vendor_line": "Anniversary Special",
+    "vendor_model": "Independence",
+    "compare_at_multiplier": 1.30,
+    "sale_hook": "4th-of-July sale page hero"
+  },
+
+  "title": "Diamond Anniversary Independence Medium Hybrid 12\" Mattress",
+  "handle": "diamond-anniversary-independence-medium-hybrid-12",
+  "vendor": "Diamond Mattress",
+  "productType": "Mattress",
+  "status": "ACTIVE",
+  "tags": [
+    "Diamond",
+    "Anniversary",
+    "Independence",
+    "Hybrid",
+    "Medium",
+    "12-inch",
+    "CertiPUR-US",
+    "Greenguard Gold",
+    "Bed-in-a-box",
+    "BIB",
+    "20-year warranty",
+    "4th of July",
+    "Made in USA"
+  ],
+
+  "seo": {
+    "title": "Diamond Anniversary Independence 12\" Medium Hybrid Mattress | LA Mattress",
+    "description": "Diamond Anniversary Independence — 12\" medium hybrid mattress in patriotic red, white & blue. CertiPUR-US foam, Dynamic Edge coils, Greenguard Gold, 20-year warranty. Queen from $899 with free same-day LA delivery."
+  },
+
+  "metafields": {
+    "custom.firmness": "Medium",
+    "custom.height_inches": 12,
+    "custom.material_type": "Hybrid",
+    "custom.warranty_years": 20,
+    "custom.trial_nights": 120,
+
+    "custom.tagline": "The patriotic, ship-in-a-box hybrid — built for the way LA sleeps.",
+    "custom.lede": "Diamond's anniversary edition pairs a Greenguard Gold–certified hybrid build with a head-turning red, white & blue cover. CertiPUR-US foam layers cushion the shoulders and hips; Dynamic Edge wrapped coils hold support all the way to the perimeter. Compressed in a box for clean apartment delivery, with a 20-year warranty behind every Queen we ship.",
+    "custom.best_for": [
+      "Couples who want one medium that fits two sleep styles",
+      "Back and side sleepers who switch positions overnight",
+      "Hot sleepers — the cool-temperature regulating cover does real work",
+      "Anyone with a tight stairwell — ships compressed in a box"
+    ],
+    "custom.not_ideal_for": [
+      "Strict stomach sleepers who need maximum spinal flatness",
+      "Shoppers above 280 lbs who'll want a firmer-core build"
+    ],
+    "custom.firmness_score": 5,
+    "custom.position_fit": { "back": "great", "side": "good", "stomach": "good" },
+
+    "custom.highlights": [
+      {
+        "icon": "snowflake",
+        "title": "Cool-temperature cover",
+        "body": "Phase-change yarns pull body heat off the surface so you fall asleep faster on warm LA nights."
+      },
+      {
+        "icon": "shield",
+        "title": "Greenguard Gold certified",
+        "body": "Independently tested for low chemical emissions — safer indoor air for the whole bedroom."
+      },
+      {
+        "icon": "spring",
+        "title": "Dynamic Edge coils",
+        "body": "Individually wrapped, edge-reinforced coil system that doesn't sag when you sit on the side of the bed."
+      },
+      {
+        "icon": "truck",
+        "title": "Ships in a box",
+        "body": "Compressed BIB packaging makes apartment + walk-up delivery effortless — or pick the white-glove option at checkout."
+      }
+    ],
+
+    "custom.layers": [
+      { "name": "Cool-temperature regulating cover",  "desc": "Phase-change quilt yarns disperse body heat." },
+      { "name": "CertiPUR-US comfort foam",            "desc": "Pressure-relief layer for the shoulders and hips." },
+      { "name": "Transition support foam",             "desc": "Bridges the soft top to the firm coil unit." },
+      { "name": "Dynamic Edge wrapped coil system",    "desc": "Individually pocketed steel coils with edge reinforcement for full-surface support." },
+      { "name": "High-density foam base",              "desc": "Stabilizes the coil unit and extends mattress lifespan." }
+    ]
+  },
+
+  "options": [{ "name": "Size", "values": ["Twin", "Twin XL", "Full", "Queen", "King", "California King"] }],
+
+  "variants": [
+    { "size": "Twin",           "sku": "DMINHY-11-T",   "price":  "649.00", "compareAtPrice":  "843.00", "cost":  "275.00", "barcode": null },
+    { "size": "Twin XL",        "sku": "DMINHY-11-TXL", "price":  "699.00", "compareAtPrice":  "908.00", "cost":  "285.00", "barcode": null },
+    { "size": "Full",           "sku": "DMINHY-11-F",   "price":  "799.00", "compareAtPrice": "1038.00", "cost":  "315.00", "barcode": null },
+    { "size": "Queen",          "sku": "DMINHY-11-Q",   "price":  "899.00", "compareAtPrice": "1168.00", "cost":  "350.00", "barcode": null },
+    { "size": "King",           "sku": "DMINHY-11-K",   "price": "1149.00", "compareAtPrice": "1493.00", "cost":  "470.00", "barcode": null },
+    { "size": "California King","sku": "DMINHY-11-CK",  "price": "1149.00", "compareAtPrice": "1493.00", "cost":  "470.00", "barcode": null }
+  ],
+
+  "collections_to_add": [
+    "mattresses",
+    "diamond-mattresses",
+    "hybrid-mattresses",
+    "queen-size-mattresses",
+    "king-size-mattresses",
+    "full-size-mattresses",
+    "twin-size-mattresses",
+    "twin-xl-mattress-sale",
+    "mattresses-under-1500",
+    "cooling-mattresses",
+    "4th-of-july-mattress-sale",
+    "popular"
+  ],
+
+  "description_html": "<p><strong>The Diamond Anniversary Independence is a 12-inch medium hybrid mattress</strong> built around a CertiPUR-US foam comfort stack and a Dynamic Edge wrapped coil system, with a Greenguard Gold certification and a patriotic red, white &amp; blue cover that reads as a quiet wink rather than a costume. It ships compressed in a box, lands on your bed in minutes, and is backed by Diamond Mattress's 20-year warranty.</p>\n\n<h2>What's inside</h2>\n<ul>\n  <li><strong>Cool-temperature regulating cover</strong> — phase-change yarns pull heat off the surface, so you don't wake up flipping the pillow at 3 a.m.</li>\n  <li><strong>CertiPUR-US comfort foam</strong> — independently certified for low-VOC content and durability; layered for shoulder and hip pressure relief.</li>\n  <li><strong>Dynamic Edge wrapped coil system</strong> — individually pocketed steel coils with reinforced perimeter, so the bed feels usable corner-to-corner.</li>\n  <li><strong>Greenguard Gold certified</strong> — meets the strictest indoor-air emissions standard, audited by a third party.</li>\n  <li><strong>High-density foam base</strong> — anchors the build, extends mattress lifespan, and dampens partner motion transfer.</li>\n</ul>\n\n<h2>Who it's for</h2>\n<p>The Independence sits squarely at a <strong>medium feel (5 / 10)</strong>. That makes it the easy pick when two sleepers in the same bed sleep differently — a side sleeper gets enough give to relieve the shoulder, a back sleeper gets enough support to keep the lower spine neutral. Strict stomach sleepers or shoppers who specifically want a firmer-than-medium core are better off in the Black Diamond Rockwell or Dreamstage 2.0 Firm.</p>\n\n<h2>Sizes &amp; prices</h2>\n<p>Available in Twin, Twin XL, Full, Queen, King, and California King — Queen from <strong>$899</strong>. See size selector above for current pricing on each size. Every size ships compressed in a box; white-glove delivery + old mattress haul-away is included free on every Queen+ order delivered in Los Angeles.</p>\n\n<h2>Why this mattress, and why now</h2>\n<p>Diamond Mattress has been hand-building in California since 1946 and is one of the few remaining brands that backs its own warranty at the factory rather than offloading claims to a third-party clearinghouse. The Anniversary Independence is a limited-build hybrid released to mark the 4th of July — the same construction Diamond ships year-round, in a one-time red-white-and-blue cover. When the run is gone, it's gone.</p>\n\n<h2>What's included</h2>\n<ul>\n  <li>Free white-glove delivery anywhere in Los Angeles on orders $499+, including setup.</li>\n  <li>Free haul-away of your old mattress on every Queen+ delivery.</li>\n  <li>Same-day delivery on orders placed by 4 p.m.</li>\n  <li>120-night comfort exchange — try it for at least 30 nights, then swap for another mattress if it isn't right.</li>\n  <li>20-year Diamond Mattress warranty against manufacturer defects, processed in-house.</li>\n</ul>"
+}

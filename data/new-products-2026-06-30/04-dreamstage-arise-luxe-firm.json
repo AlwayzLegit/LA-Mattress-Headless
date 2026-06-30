@@ -1,0 +1,83 @@
+{
+  "_meta": {
+    "source": "Diamond Mattress price list 06-18-26 (rep Michael Hyman, LOSINC)",
+    "vendor_sku_base": "DMALQF-10",
+    "vendor_line": "Dreamstage 2.0",
+    "vendor_model": "Arise Luxe Quilted Firm",
+    "compare_at_multiplier": 1.30
+  },
+
+  "title": "Diamond Dreamstage 2.0 Arise Luxe Firm Quilted Hybrid 15\" Mattress",
+  "handle": "diamond-dreamstage-2-0-arise-luxe-firm-hybrid-15",
+  "vendor": "Diamond Mattress",
+  "productType": "Mattress",
+  "status": "ACTIVE",
+  "tags": [
+    "Diamond", "Dreamstage 2.0", "Arise Luxe", "Hybrid", "Firm",
+    "15-inch", "Pocketed Coil", "Quilted", "20-year warranty", "Made in USA"
+  ],
+
+  "seo": {
+    "title": "Diamond Dreamstage 2.0 Arise Luxe Firm 15\" Hybrid Mattress | LA Mattress",
+    "description": "Diamond Dreamstage 2.0 Arise Luxe Firm — 15\" firm hybrid with 7-Series pocketed coils + HD edge support. Built for back and stomach sleepers. Queen $1,599. Free LA delivery + 120-night exchange."
+  },
+
+  "metafields": {
+    "custom.firmness": "Firm",
+    "custom.height_inches": 15,
+    "custom.material_type": "Hybrid",
+    "custom.warranty_years": 20,
+    "custom.trial_nights": 120,
+
+    "custom.tagline": "Firm-feel 15\" hybrid — built for back and stomach sleepers who don't want to sink.",
+    "custom.lede": "Diamond's Dreamstage 2.0 Arise Luxe Firm is the same 7-Series pocketed-coil platform as the Plush and Medium variants, with the comfort stack tuned to an 8 / 10 firm feel. Cool-temperature quilted top, CertiPUR HD comfort foams, HD foam-encased edges. 20-year warranty.",
+    "custom.best_for": [
+      "Back sleepers who need a flat support surface",
+      "Stomach sleepers — keeps the hips from dropping",
+      "Heavier shoppers (250 lbs+) who need a stable core",
+      "Lower back pain — firmer support tends to read as relief over time"
+    ],
+    "custom.not_ideal_for": [
+      "Strict side sleepers — too firm at the shoulder",
+      "Shoppers under 130 lbs who'd prefer the Medium or Plush"
+    ],
+    "custom.firmness_score": 8,
+    "custom.position_fit": { "back": "great", "side": "poor", "stomach": "great" },
+
+    "custom.highlights": [
+      { "icon": "spring",    "title": "7-Series pocketed coils",  "body": "Each coil moves on its own — spinal support without amplifying partner movement." },
+      { "icon": "shield",    "title": "HD foam-encased edge",     "body": "Reinforced perimeter so the bed feels usable corner-to-corner." },
+      { "icon": "snowflake", "title": "Cool-temperature cover",   "body": "Phase-change quilt keeps the surface from heat-soaking." },
+      { "icon": "ruler",     "title": "15-inch firm build",       "body": "Engineered to keep the hips from dropping — the alignment most back/stomach sleepers want." }
+    ],
+
+    "custom.layers": [
+      { "name": "Cool-temperature regulating quilt", "desc": "Phase-change cover keeps the sleep surface neutral." },
+      { "name": "Air Response Foam",                 "desc": "Open-cell top layer; firmer-tuned for this variant." },
+      { "name": "CertiPUR-US HD comfort foams",      "desc": "Firmer-density transition stack between the quilt and the coil unit." },
+      { "name": "7-Series Individually Pocketed Coils", "desc": "Independent steel coil unit for spinal support + motion isolation." },
+      { "name": "HD Foam Encased Edge Support",      "desc": "Reinforces the perimeter for full-surface use." }
+    ]
+  },
+
+  "options": [{ "name": "Size", "values": ["Twin", "Twin XL", "Full", "Queen", "King", "California King"] }],
+
+  "variants": [
+    { "size": "Twin",            "sku": "DMALQF-10-T",   "price": "1249.00", "compareAtPrice": "1624.00", "cost": "325.00" },
+    { "size": "Twin XL",         "sku": "DMALQF-10-TXL", "price": "1299.00", "compareAtPrice": "1689.00", "cost": "345.00" },
+    { "size": "Full",            "sku": "DMALQF-10-F",   "price": "1499.00", "compareAtPrice": "1949.00", "cost": "400.00" },
+    { "size": "Queen",           "sku": "DMALQF-10-Q",   "price": "1599.00", "compareAtPrice": "2079.00", "cost": "435.00" },
+    { "size": "King",            "sku": "DMALQF-10-K",   "price": "2049.00", "compareAtPrice": "2664.00", "cost": "585.00" },
+    { "size": "California King", "sku": "DMALQF-10-CK",  "price": "2049.00", "compareAtPrice": "2664.00", "cost": "585.00" }
+  ],
+
+  "collections_to_add": [
+    "mattresses", "diamond-mattresses", "hybrid-mattresses",
+    "firm-mattresses", "mattresses-for-back-pain",
+    "mattresses-for-stomach-sleepers", "mattresses-for-heavy-people",
+    "queen-size-mattresses", "king-size-mattresses",
+    "full-size-mattresses", "twin-size-mattresses", "twin-xl-mattress-sale"
+  ],
+
+  "description_html": "<p><strong>The Diamond Dreamstage 2.0 Arise Luxe Firm is a 15-inch quilted hybrid mattress</strong> tuned to a firm 8 / 10 feel — the build back and stomach sleepers ask for after a mattress that lets the hips drop. Same 7-Series pocketed coil unit and HD foam-encased edges as the Plush and Medium, with a denser comfort stack.</p>\n\n<h2>What's inside</h2>\n<ul>\n  <li><strong>Cool-temperature regulating quilt</strong> — phase-change yarns keep the surface from heat-soaking.</li>\n  <li><strong>Air Response Foam (firm-tuned)</strong> — open-cell top layer that breathes; specced firmer for this variant.</li>\n  <li><strong>CertiPUR-US HD comfort foams</strong> — independently certified, denser transition stack than the Plush or Medium.</li>\n  <li><strong>7-Series Individually Pocketed Coils</strong> — each coil works in its own fabric pocket; spinal support without partner-motion telegraph.</li>\n  <li><strong>HD Foam-Encased Edge Support</strong> — high-density perimeter so the bed is usable to the edge.</li>\n</ul>\n\n<h2>Who it's for</h2>\n<p>Firm feel — a true <strong>8 / 10</strong>. That's the configuration back sleepers and stomach sleepers tend to land on after trying medium — the surface holds the hips up so the spine stays flat. Heavier shoppers and people working through chronic lower-back pain tend to prefer this build for the same reason. Strict side sleepers should look at the Plush instead; an 8 / 10 firm surface can dig at the shoulder.</p>\n\n<h2>Sizes &amp; prices</h2>\n<p>Twin, Twin XL, Full, Queen, King, and California King. Queen from <strong>$1,599</strong>.</p>\n\n<h2>What's included</h2>\n<ul>\n  <li>Free white-glove delivery + setup anywhere in Los Angeles on $499+ orders.</li>\n  <li>Free haul-away of your old mattress on every Queen+ delivery.</li>\n  <li>Same-day delivery on orders placed by 4 p.m.</li>\n  <li>120-night comfort exchange.</li>\n  <li>20-year Diamond Mattress warranty.</li>\n</ul>"
+}
