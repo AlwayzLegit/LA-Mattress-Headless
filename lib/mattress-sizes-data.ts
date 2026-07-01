@@ -229,7 +229,7 @@ export const MATTRESS_SIZES_FAQ: FaqItem[] = [
   {
     q: 'King vs California King — what\'s the difference?',
     a: 'King is wider (76") but shorter (80"). California King is narrower (72") but longer (84"). Pick King if you want shoulder-room for two sleepers; pick Cal King if either sleeper is over 6 ft tall or your bedroom is long-and-narrow.',
-    link: { href: '/blogs/mattress-buying-guide/king-vs-california-king', label: 'Read the full King vs Cal King guide' },
+    link: { href: '/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference', label: 'Read the full King vs Cal King guide' },
   },
   // → "size twin bed dimensions" / "twin bed size" / "twin mattress dimensions"
   {
@@ -323,17 +323,17 @@ export const MATTRESS_SIZES_RELATED_GUIDES: RelatedGuideGroup[] = [
       { title: 'Full mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-full-mattress' },
       { title: 'How big is a double bed?', href: '/blogs/mattress-buying-guide/how-bigs-a-double-bed' },
       { title: 'Queen mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-queen-mattress' },
-      { title: 'Queen size guide — inches, feet, cm', href: '/blogs/mattress-buying-guide/queen-mattress-size-guide-inches-feet-how-to-pick-the-perfect-fit' },
+      { title: 'Queen size guide — inches, feet, cm', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-queen-mattress' },
       { title: 'King mattress dimensions', href: '/blogs/mattress-buying-guide/what-is-the-size-of-a-king-mattress' },
       { title: 'King size guide — types & how to choose', href: '/blogs/mattress-buying-guide/king-size-mattress-guide-what-are-the-dimensions-and-benefits' },
-      { title: 'Standard size of a Full bed', href: '/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed' },
+      { title: 'Standard size of a Full bed', href: '/blogs/mattress-buying-guide/full-size-mattress-measurements-room-layout-tips' },
     ],
   },
   {
     heading: 'Size comparisons',
     guides: [
       { title: 'Queen vs King', href: '/blogs/mattress-buying-guide/queen-mattress-vs-king-mattress' },
-      { title: 'King vs California King', href: '/blogs/mattress-buying-guide/king-vs-california-king' },
+      { title: 'King vs California King', href: '/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference' },
       { title: 'California King vs King', href: '/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference' },
       { title: 'Full vs Queen', href: '/blogs/mattress-buying-guide/full-vs-queen-mattress' },
       { title: 'Queen vs California Queen', href: '/blogs/mattress-buying-guide/queen-vs-california-queen-which-size-fits-your-needs' },
