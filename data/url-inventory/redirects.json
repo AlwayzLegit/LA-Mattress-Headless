@@ -2,7 +2,7 @@
   "$schema": "Shopify redirects inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-06-18T12:08:13.944Z",
-  "$count": 2023,
+  "$count": 2029,
   "redirects": [
     {
       "id": "gid://shopify/UrlRedirect/31411395",
@@ -12140,6 +12140,42 @@
       "id": "gid://shopify/UrlRedirect/485033476349",
       "source": "/blogs/mattress-buying-guide/california-king-vs-king-what-s-the-real-difference",
       "destination": "/blogs/mattress-buying-guide/king-vs-california-king",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489894641917",
+      "source": "/blogs/sales/best-presidents-day-mattress-sale-2024",
+      "destination": "/pages/presidents-day-sale-2027",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489894674685",
+      "source": "/blogs/sales/memorial-day-discount-on-mattresses-in-la",
+      "destination": "/pages/memorial-day-sale-2027",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489894707453",
+      "source": "/blogs/sales/best-memorial-day-sale-tempurpedic-mattresses",
+      "destination": "/collections/tempur-pedic-mattresses",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489894740221",
+      "source": "/blogs/sales/best-memorial-day-sale-latex-mattresses",
+      "destination": "/collections/latex-mattresses",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489894772989",
+      "source": "/blogs/sales/best-organic-mattresses-in-memorial-day-sales-2024",
+      "destination": "/collections/organic-mattress",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489894805757",
+      "source": "/blogs/extra-info/what-is-polyurethane-foam",
+      "destination": "/blogs/mattress-buying-guide/what-is-polyurethane-foam",
       "permanent": true
     }
   ]

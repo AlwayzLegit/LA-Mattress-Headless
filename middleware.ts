@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { canonicalizeRouteParams } from './lib/route-canonicalization';
 import { canonicalizeCollectionFilterPath } from './lib/collection-filter-redirect';
+import { canonicalizeProductJsonPath } from './lib/json-suffix-redirect';
 import { REDIRECTS } from './lib/redirects-table';
 
 /**
@@ -119,6 +120,22 @@ export function middleware(req: NextRequest): NextResponse {
     const parent = canonicalizeCollectionFilterPath(pathname);
     if (parent) {
       const target = new URL(parent, req.nextUrl);
+      if (req.nextUrl.search) target.search = req.nextUrl.search;
+      if (req.nextUrl.hash) target.hash = req.nextUrl.hash;
+      return NextResponse.redirect(target, 301);
+    }
+  }
+
+  // (1.6) Legacy Shopify `/products/<handle>.json` endpoint URLs. The
+  // old Online Store theme served these natively; the headless app
+  // 404s them. SEMrush 20260701 (orphan audit, issue 206) found stray
+  // external references — 301 to the product page so residual link
+  // equity flows. See lib/json-suffix-redirect.ts. Runs AFTER the
+  // legacy REDIRECTS table so a hand-curated redirect always wins.
+  if (!pathname.startsWith('/admin') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+    const productPath = canonicalizeProductJsonPath(pathname);
+    if (productPath) {
+      const target = new URL(productPath, req.nextUrl);
       if (req.nextUrl.search) target.search = req.nextUrl.search;
       if (req.nextUrl.hash) target.hash = req.nextUrl.hash;
       return NextResponse.redirect(target, 301);
