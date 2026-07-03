@@ -119,6 +119,20 @@ const CSP = [
   ...(CSP_REPORT_URI ? [`report-uri ${CSP_REPORT_URI}`] : []),
 ].join('; ');
 
+// Report-Only shadow policy (deep audit secpriv-02, phase 1 of the
+// nonce-CSP track): identical to the enforced CSP except script-src
+// drops 'unsafe-inline' + 'unsafe-eval'. Browsers report (never block)
+// every script the stricter policy WOULD have blocked, giving us a
+// production inventory of inline/eval scripts to nonce or eliminate —
+// own JSON-LD blocks, the GA4/Judge.me bootstraps, and the Judge.me
+// legacy eval — before the enforced policy can be tightened. Only
+// emitted when CSP_REPORT_URI is configured: report-only without a
+// report sink is dead weight on every response.
+const CSP_REPORT_ONLY = CSP.replace(
+  /script-src 'self' 'unsafe-inline' 'unsafe-eval'/,
+  "script-src 'self'",
+);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -128,6 +142,9 @@ const nextConfig = {
         source: '/:path*',
         headers: [
           { key: 'Content-Security-Policy', value: CSP },
+          ...(CSP_REPORT_URI
+            ? [{ key: 'Content-Security-Policy-Report-Only', value: CSP_REPORT_ONLY }]
+            : []),
           // Storefront pages are never legitimately iframed by other
           // origins. SAMEORIGIN (not DENY) so any future own-origin
           // embedding keeps working.

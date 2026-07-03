@@ -1,5 +1,5 @@
 {
-  "$schema": "Manual URL redirects — merged into the redirect table alongside the Shopify Admin export (redirects.json). Use this file for redirects that must SURVIVE the daily `pull-inventory.mjs` sync, which overwrites redirects.json wholesale. Same shape as redirects.json: { source, destination }. Sources are path-only (no query/hash/regexp meta — see build-redirects-table.mjs#isValidSource). Listed first at build time so a manual entry overrides a stale Shopify one for the same source.",
+  "$schema": "Manual URL redirects \u2014 merged into the redirect table alongside the Shopify Admin export (redirects.json). Use this file for redirects that must SURVIVE the daily `pull-inventory.mjs` sync, which overwrites redirects.json wholesale. Same shape as redirects.json: { source, destination }. Sources are path-only (no query/hash/regexp meta \u2014 see build-redirects-table.mjs#isValidSource). Listed first at build time so a manual entry overrides a stale Shopify one for the same source.",
   "$source": "hand-maintained",
   "redirects": [
     {
@@ -25,7 +25,7 @@
     {
       "source": "/collections/mattress-accessories",
       "destination": "/collections/bedding",
-      "note": "SEMrush 20260611 audit: this collections URL 404s (no such collection). /pages/mattress-accessories looked like the natural target but that page is UNPUBLISHED in Shopify (it 404s too — verified 20260611) and its body is one thin sentence, not worth publishing. /collections/bedding is the live accessories umbrella (40 products: protectors, toppers, pillows, sheets). Fixes the single site-wide 4xx."
+      "note": "SEMrush 20260611 audit: this collections URL 404s (no such collection). /pages/mattress-accessories looked like the natural target but that page is UNPUBLISHED in Shopify (it 404s too \u2014 verified 20260611) and its body is one thin sentence, not worth publishing. /collections/bedding is the live accessories umbrella (40 products: protectors, toppers, pillows, sheets). Fixes the single site-wide 4xx."
     },
     {
       "source": "/collections/all",
@@ -90,17 +90,27 @@
     {
       "source": "/blogs/beds-mattresses/how-to-dispose-of-a-mattress-los-angeles",
       "destination": "/blogs/mattress-care-tips/mattress-disposal-in-los-angeles-cost-effective-ways",
-      "note": "20260626 cleanup: the daily-blog automation published this article to the DEPRECATED beds-mattresses blog (2026-06-23), which is excluded from the XML sitemap, HTML sitemap, and /blogs hub — so it rendered live (200) but was fully orphaned. The LA mattress-disposal intent is already covered by the canonical, sitemap-included mattress-care-tips article. Consolidate to it instead of recreating a duplicate."
+      "note": "20260626 cleanup: the daily-blog automation published this article to the DEPRECATED beds-mattresses blog (2026-06-23), which is excluded from the XML sitemap, HTML sitemap, and /blogs hub \u2014 so it rendered live (200) but was fully orphaned. The LA mattress-disposal intent is already covered by the canonical, sitemap-included mattress-care-tips article. Consolidate to it instead of recreating a duplicate."
     },
     {
       "source": "/blogs/beds-mattresses/mattress-stores-los-angeles-guide",
       "destination": "/blogs/mattress-buying-guide/where-to-buy-a-mattress-in-los-angeles",
-      "note": "20260626 cleanup: automation published this 'mattress stores LA' guide to the deprecated beds-mattresses blog (2026-06-26) — orphaned (not in any sitemap/hub). Intent already covered by the curated mattress-buying-guide 'Where to Buy a Mattress in Los Angeles' pillar. Consolidate."
+      "note": "20260626 cleanup: automation published this 'mattress stores LA' guide to the deprecated beds-mattresses blog (2026-06-26) \u2014 orphaned (not in any sitemap/hub). Intent already covered by the curated mattress-buying-guide 'Where to Buy a Mattress in Los Angeles' pillar. Consolidate."
     },
     {
       "source": "/blogs/beds-mattresses/mattress-stores-in-los-angeles-buying-guide",
       "destination": "/blogs/mattress-buying-guide/where-to-buy-a-mattress-in-los-angeles",
-      "note": "20260626 cleanup: second near-duplicate 'mattress stores in LA' guide auto-published to the deprecated beds-mattresses blog (2026-06-20) — orphaned. Consolidate to the same mattress-buying-guide pillar."
+      "note": "20260626 cleanup: second near-duplicate 'mattress stores in LA' guide auto-published to the deprecated beds-mattresses blog (2026-06-20) \u2014 orphaned. Consolidate to the same mattress-buying-guide pillar."
+    },
+    {
+      "source": "/pages/mattress-store-playa-del-rey",
+      "destination": "/pages/mattress-store-marina-del-rey",
+      "note": "Deep audit seo-organic-04 (2026-07): this deleted page still ranks #6 for 'mattress store marina del rey' (Semrush 2026-07-03 pull) but 404s \u2014 the page was removed from Shopify with no redirect. Marina del Rey is the published neighborhood page covering the same coastal-westside area. Shopify-side redirect pending connector access; manual entry keeps www covered either way."
+    },
+    {
+      "source": "/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed",
+      "destination": "/blogs/mattress-buying-guide/full-size-bed-dimensions-width-couples",
+      "note": "Deep audit seo-organic-02 (2026-07): the 123k/mo 'full size bed dimensions' cluster was split across two surviving canonicals \u2014 this post (pos 47 on the 74k head term, 2 inbound 301s) and width-couples (pos 41 on the head term + pos 46 on the 27.1k variant). Consolidate on the stronger ranker; build-redirects-table's chain flattening re-points the 2 existing inbound redirects (measurements-room-layout-tips, how-much-space) directly at width-couples. Content fold-in of unique sections pending Shopify article access."
     }
   ]
 }
