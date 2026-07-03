@@ -19,8 +19,9 @@ import {
 import { FALLBACK_SHOWROOMS, type Showroom } from './showrooms';
 import type { ShopBrand } from './shopify/queries/shop';
 import type { LiveSiteConfig } from './shopify/queries/site-config';
+import { SITE_URL } from '@/lib/site-config';
 
-const SITE = 'https://www.mattressstoreslosangeles.com';
+const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
 const FALLBACK_LOGO = `${SITE}/assets/la-mattress-logo.png`;
 
 export const ORGANIZATION_LD = {

@@ -10,8 +10,9 @@
  */
 import { faqJsonLd, FAQ_PAGE_ITEMS, resolveFaqPageSections } from './faq';
 import { getFaqItems } from './shopify/queries/faq';
+import { SITE_URL } from '@/lib/site-config';
 
-const SITE = 'https://www.mattressstoreslosangeles.com';
+const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
 
 export const CODED_PAGE_HANDLES = [
   'faq',

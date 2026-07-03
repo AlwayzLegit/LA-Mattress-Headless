@@ -13,7 +13,7 @@ import { LOCAL_GUIDES } from '@/lib/local-guides';
 import { truncDescription, firstNonEmpty, stripBrandSuffix, toSentenceCase, ensureTitleDistinctFromH1 } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
-import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
+import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_URL } from '@/lib/site-config';
 import { isSalePage } from '@/lib/page-jsonld';
 import { isCodedPage, codedPageMeta, CODED_PAGE_HANDLES } from '@/lib/coded-pages';
 import { isPreviewEnabled } from '@/lib/preview-auth-cookie';
@@ -81,7 +81,7 @@ export const revalidate = 3600;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
-const SITE = 'https://www.mattressstoreslosangeles.com';
+const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
 
 export function generateStaticParams() {
   if (!SHOPIFY_CONFIGURED) return [];

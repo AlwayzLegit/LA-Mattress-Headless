@@ -8,6 +8,7 @@ import { stripBrandSuffix, toSentenceCase } from '@/lib/seo';
 import { GUIDE_PAGES } from '@/lib/guide-pages';
 import { MATTRESS_SIZES, MATTRESS_SIZES_FAQ, MATTRESS_SIZES_RELATED_GUIDES, SPECIALTY_SIZES, type MattressSize } from '@/lib/mattress-sizes-data';
 import { ServicePageToc } from './service-page-toc';
+import { SITE_URL } from '@/lib/site-config';
 
 // ── To-scale bed glyph ───────────────────────────────────────────
 // Every bed is drawn at the same px-per-inch scale so the diagrams are
@@ -125,7 +126,7 @@ const BODY_ID = 'guide-page-body';
 const FAQ_HEADING_ID = 'mattress-sizes-faq-heading';
 const DIMS_HEADING_ID = 'mattress-sizes-dims-heading';
 const GUIDES_HEADING_ID = 'mattress-sizes-guides-heading';
-const SITE = 'https://www.mattressstoreslosangeles.com';
+const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
 
 export function MattressSizesPage({ page }: { page: PageLike }) {
   const config = GUIDE_PAGES['mattress-sizes'];

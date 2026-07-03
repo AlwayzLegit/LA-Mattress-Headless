@@ -7,6 +7,7 @@ import {
   products as inventoryProducts,
 } from '@/lib/inventory';
 import { resolveRedirectPath } from '@/lib/sanitize';
+import { SITE_URL } from '@/lib/site-config';
 
 /**
  * HTML sitemap — every collection, every blog (with every article in it),
@@ -31,7 +32,7 @@ import { resolveRedirectPath } from '@/lib/sanitize';
  *
  * Skipping deprecated `beds-mattresses` blog (same filter as sitemap.ts).
  */
-const SITE = 'https://www.mattressstoreslosangeles.com';
+const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
 
 const DEPRECATED_BLOG_HANDLES = new Set(['beds-mattresses']);
 

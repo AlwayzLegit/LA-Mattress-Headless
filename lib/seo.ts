@@ -28,10 +28,15 @@ const TITLE_MAX = 70;
 const DESCRIPTION_MAX = 160;
 
 // Trailing brand suffix as appended by the metadata generators:
-// " | LA Mattress", " — LA Mattress Store", " - LA Mattress", etc.
-// Matches a leading-space separator (pipe / en-dash / em-dash / hyphen)
-// + "LA Mattress" + optional " Store".
-const BRAND_SUFFIX_RE = /\s[|–—-]\s*LA\s+Mattress(?:\s+Store)?\s*$/i;
+// " | LA Mattress", " — LA Mattress Store", " · LA Mattress Store", etc.
+// Matches a leading-space separator (pipe / en-dash / em-dash / hyphen /
+// middle dot) + "LA Mattress" + optional " Store".
+//
+// The middle dot matters: the PDP generator appends "· LA Mattress
+// Store", and without it here capTitle truncated INTO the suffix —
+// 25 of 218 live PDP titles rendered as "… · LA Mattres…" in SERPs,
+// the exact failure Phase 292 was built to prevent (audit seo-tech-02).
+const BRAND_SUFFIX_RE = /\s[·|–—-]\s*LA\s+Mattress(?:\s+Store)?\s*$/i;
 
 /**
  * Cap a rendered <title> at `max` chars.

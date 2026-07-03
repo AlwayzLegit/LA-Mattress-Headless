@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { Icon } from '../icon';
 import { getShopAggregate, getStorefrontReviews, getSitewideReviewsExtension, reviewerName, type JudgemeReview } from '@/lib/judgeme';
-import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
+import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY, SITE_URL } from '@/lib/site-config';
 
-const SITE = 'https://www.mattressstoreslosangeles.com';
+const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
 const ORGANIZATION_ID = `${SITE}/#organization`;
 
 /**
