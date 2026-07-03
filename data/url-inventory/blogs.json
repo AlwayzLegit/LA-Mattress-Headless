@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify blogs inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-06-18T12:08:13.941Z",
+  "$pulledAt": "2026-07-03T19:38:47.666Z",
   "$count": 7,
   "blogs": [
     {
@@ -56,7 +56,7 @@
       "handle": "beds-mattresses",
       "id": "gid://shopify/Blog/22001221722",
       "title": "LA Mattress Stores Blog",
-      "updatedAt": "2026-06-15T15:18:30Z",
+      "updatedAt": "2026-06-26T16:29:27Z",
       "articles": [
         {
           "handle": "take-back-your-sleep-declutter-your-bedroom-with-11-diy-tips",
@@ -2737,6 +2737,38 @@
           "isPublished": true,
           "publishedAt": "2024-08-31T01:56:58Z",
           "updatedAt": "2026-03-25T04:01:04Z"
+        },
+        {
+          "handle": "mattress-stores-in-los-angeles-buying-guide",
+          "id": "gid://shopify/Article/600639996157",
+          "title": "Mattress Stores in Los Angeles: A Local Buying Guide",
+          "isPublished": true,
+          "publishedAt": "2026-06-20T17:53:16Z",
+          "updatedAt": "2026-06-20T17:53:44Z"
+        },
+        {
+          "handle": "how-to-dispose-of-a-mattress-los-angeles",
+          "id": "gid://shopify/Article/600657264893",
+          "title": "How to Dispose of a Mattress in Los Angeles",
+          "isPublished": true,
+          "publishedAt": "2026-06-23T16:38:42Z",
+          "updatedAt": "2026-06-23T17:08:32Z"
+        },
+        {
+          "handle": "best-mattress-for-lower-back-pain-los-angeles",
+          "id": "gid://shopify/Article/600663261437",
+          "title": "Best Mattress for Lower Back Pain in Los Angeles",
+          "isPublished": true,
+          "publishedAt": "2026-06-24T15:18:36Z",
+          "updatedAt": "2026-06-24T15:18:37Z"
+        },
+        {
+          "handle": "mattress-stores-los-angeles-guide",
+          "id": "gid://shopify/Article/600672829693",
+          "title": "Mattress Stores Los Angeles: Your 2026 Shopping Guide",
+          "isPublished": true,
+          "publishedAt": "2026-06-26T16:29:27Z",
+          "updatedAt": "2026-06-26T16:29:27Z"
         }
       ]
     },
@@ -2768,7 +2800,7 @@
       "handle": "mattress-buying-guide",
       "id": "gid://shopify/Blog/89331695869",
       "title": "Mattress Buying Guide | Find Your Perfect Mattress",
-      "updatedAt": "2026-06-18T03:11:29Z",
+      "updatedAt": "2026-07-03T03:07:43Z",
       "articles": [
         {
           "handle": "12-steps-buying-new-mattress-5647",
@@ -4648,7 +4680,7 @@
           "title": "Best High End Mattresses",
           "isPublished": true,
           "publishedAt": "2024-08-21T19:56:27Z",
-          "updatedAt": "2026-06-11T17:06:11Z"
+          "updatedAt": "2026-06-19T16:38:28Z"
         },
         {
           "handle": "best-mattress-for-painful-hips",
@@ -4904,7 +4936,7 @@
           "title": "Best Mattress Covers For Allergies",
           "isPublished": true,
           "publishedAt": "2024-09-27T03:36:17Z",
-          "updatedAt": "2026-06-11T17:10:25Z"
+          "updatedAt": "2026-06-19T16:36:08Z"
         },
         {
           "handle": "best-mattress-topper-to-make-bed-firmer",
@@ -7699,124 +7731,180 @@
           "updatedAt": "2026-06-18T03:11:29Z"
         },
         {
-          "id": "gid://shopify/Article/600668471549",
-          "handle": "best-mattress-for-shoulder-pain",
-          "title": "Best Mattress for Shoulder Pain (Especially for Side Sleepers)",
-          "isPublished": true,
-          "publishedAt": "2026-06-25T20:10:58Z",
-          "updatedAt": "2026-06-25T20:10:59Z"
-        },
-        {
-          "id": "gid://shopify/Article/600668438781",
-          "handle": "best-mattress-for-kids",
-          "title": "Best Mattress for Kids: A Parent's Buying Guide",
-          "isPublished": true,
-          "publishedAt": "2026-06-25T19:58:36Z",
-          "updatedAt": "2026-06-25T19:58:37Z"
-        },
-        {
-          "id": "gid://shopify/Article/600665030909",
-          "handle": "how-to-choose-a-mattress-los-angeles",
-          "title": "How to Choose a Mattress: An LA Buyer's Guide",
-          "isPublished": true,
-          "publishedAt": "2026-06-25T03:08:02Z",
-          "updatedAt": "2026-06-25T03:08:02Z"
-        },
-        {
-          "id": "gid://shopify/Article/600659034365",
-          "handle": "best-time-to-buy-a-mattress-holiday-sales",
-          "title": "When Is the Best Time to Buy a Mattress? Holiday Sales Compared",
-          "isPublished": true,
-          "publishedAt": "2026-06-23T19:41:33Z",
-          "updatedAt": "2026-06-24T09:56:02Z"
-        },
-        {
-          "id": "gid://shopify/Article/600659001597",
-          "handle": "best-queen-and-king-mattress-deals",
-          "title": "Best Queen & King Mattress Deals: How to Save on the Most Popular Sizes",
-          "isPublished": true,
-          "publishedAt": "2026-06-23T19:41:33Z",
-          "updatedAt": "2026-06-24T09:56:02Z"
-        },
-        {
-          "id": "gid://shopify/Article/600658968829",
-          "handle": "4th-of-july-mattress-sale-los-angeles",
-          "title": "4th of July Mattress Sale in Los Angeles (2026): Best Deals & Buyer's Guide",
-          "isPublished": true,
-          "publishedAt": "2026-06-23T19:41:33Z",
-          "updatedAt": "2026-06-24T09:56:01Z"
-        },
-        {
-          "id": "gid://shopify/Article/600644190461",
-          "handle": "how-to-clean-a-mattress-complete-guide",
-          "title": "How to Clean a Mattress: Step-by-Step Guide",
-          "isPublished": true,
-          "publishedAt": "2026-06-22T03:11:10Z",
-          "updatedAt": "2026-06-22T03:11:11Z"
-        },
-        {
-          "id": "gid://shopify/Article/600642683133",
           "handle": "best-cooling-mattress-los-angeles",
+          "id": "gid://shopify/Article/600642683133",
           "title": "Best Cooling Mattress for Hot Sleepers in LA",
           "isPublished": true,
           "publishedAt": "2026-06-21T12:27:00Z",
           "updatedAt": "2026-06-21T12:27:01Z"
         },
         {
-          "id": "gid://shopify/Article/600672993533",
+          "handle": "how-to-clean-a-mattress-complete-guide",
+          "id": "gid://shopify/Article/600644190461",
+          "title": "How to Clean a Mattress: Step-by-Step Guide",
+          "isPublished": true,
+          "publishedAt": "2026-06-22T03:11:10Z",
+          "updatedAt": "2026-06-22T03:11:11Z"
+        },
+        {
+          "handle": "4th-of-july-mattress-sale-los-angeles",
+          "id": "gid://shopify/Article/600658968829",
+          "title": "4th of July Mattress Sale in Los Angeles (2026): Best Deals & Buyer's Guide",
+          "isPublished": true,
+          "publishedAt": "2026-06-23T19:41:33Z",
+          "updatedAt": "2026-06-24T09:56:01Z"
+        },
+        {
+          "handle": "best-queen-and-king-mattress-deals",
+          "id": "gid://shopify/Article/600659001597",
+          "title": "Best Queen & King Mattress Deals: How to Save on the Most Popular Sizes",
+          "isPublished": true,
+          "publishedAt": "2026-06-23T19:41:33Z",
+          "updatedAt": "2026-06-24T09:56:02Z"
+        },
+        {
+          "handle": "best-time-to-buy-a-mattress-holiday-sales",
+          "id": "gid://shopify/Article/600659034365",
+          "title": "When Is the Best Time to Buy a Mattress? Holiday Sales Compared",
+          "isPublished": true,
+          "publishedAt": "2026-06-23T19:41:33Z",
+          "updatedAt": "2026-06-24T09:56:02Z"
+        },
+        {
+          "handle": "how-to-choose-a-mattress-los-angeles",
+          "id": "gid://shopify/Article/600665030909",
+          "title": "How to Choose a Mattress: An LA Buyer's Guide",
+          "isPublished": true,
+          "publishedAt": "2026-06-25T03:08:02Z",
+          "updatedAt": "2026-06-25T03:08:02Z"
+        },
+        {
+          "handle": "best-mattress-for-kids",
+          "id": "gid://shopify/Article/600668438781",
+          "title": "Best Mattress for Kids: A Parent's Buying Guide",
+          "isPublished": true,
+          "publishedAt": "2026-06-25T19:58:36Z",
+          "updatedAt": "2026-06-25T19:58:37Z"
+        },
+        {
+          "handle": "best-mattress-for-shoulder-pain",
+          "id": "gid://shopify/Article/600668471549",
+          "title": "Best Mattress for Shoulder Pain (Especially for Side Sleepers)",
+          "isPublished": true,
+          "publishedAt": "2026-06-25T20:10:58Z",
+          "updatedAt": "2026-06-25T20:10:59Z"
+        },
+        {
           "handle": "purple-mattress-review-alternatives-los-angeles",
+          "id": "gid://shopify/Article/600672993533",
           "title": "Honest Purple Mattress Review + LA Alternatives to Try",
           "isPublished": true,
           "publishedAt": "2026-06-26T18:08:36Z",
           "updatedAt": "2026-06-26T18:08:36Z"
         },
         {
-          "id": "gid://shopify/Article/600673026301",
           "handle": "nectar-mattress-alternatives-los-angeles",
+          "id": "gid://shopify/Article/600673026301",
           "title": "Honest Nectar Mattress Review + LA Alternatives to Try",
           "isPublished": true,
           "publishedAt": "2026-06-26T18:09:20Z",
           "updatedAt": "2026-06-26T18:09:20Z"
         },
         {
-          "id": "gid://shopify/Article/600673059069",
           "handle": "casper-mattress-alternatives-los-angeles",
+          "id": "gid://shopify/Article/600673059069",
           "title": "Honest Casper Mattress Review + Best LA Alternatives to Try",
           "isPublished": true,
           "publishedAt": "2026-06-26T18:10:11Z",
           "updatedAt": "2026-06-26T18:10:11Z"
         },
         {
-          "id": "gid://shopify/Article/600673091837",
           "handle": "do-you-need-a-box-spring-platform-bed-bunkie-board",
+          "id": "gid://shopify/Article/600673091837",
           "title": "Box Spring vs Foundation vs Platform Base vs Bunkie Board",
           "isPublished": true,
-          "publishedAt": "2026-06-26T18:11:00Z",
-          "updatedAt": "2026-06-26T18:11:00Z"
+          "publishedAt": "2026-06-26T18:12:24Z",
+          "updatedAt": "2026-06-26T18:12:24Z"
         },
         {
-          "id": "gid://shopify/Article/600673878269",
           "handle": "dreamcloud-mattress-review-alternatives-los-angeles",
+          "id": "gid://shopify/Article/600673878269",
           "title": "Honest DreamCloud Review and Best LA Alternatives",
           "isPublished": true,
-          "publishedAt": "2026-06-26T18:30:00Z",
-          "updatedAt": "2026-06-26T18:30:00Z"
+          "publishedAt": "2026-06-26T19:56:54Z",
+          "updatedAt": "2026-06-26T19:56:54Z"
         },
         {
-          "id": "gid://shopify/Article/600673943805",
           "handle": "avocado-mattress-alternatives-los-angeles",
+          "id": "gid://shopify/Article/600673943805",
           "title": "Avocado Mattress Review & Better LA Alternatives to Try",
           "isPublished": true,
-          "publishedAt": "2026-06-26T18:30:00Z",
-          "updatedAt": "2026-06-26T18:30:00Z"
+          "publishedAt": "2026-06-26T19:57:46Z",
+          "updatedAt": "2026-06-26T19:57:46Z"
         },
         {
-          "id": "gid://shopify/Article/600674173181",
           "handle": "leesa-mattress-alternatives-los-angeles",
+          "id": "gid://shopify/Article/600674173181",
           "title": "Leesa Mattress Review: Honest Take + LA Alternatives to Try",
           "isPublished": true,
-          "publishedAt": "2026-06-26T18:30:00Z",
-          "updatedAt": "2026-06-26T18:30:00Z"
+          "publishedAt": "2026-06-26T20:00:45Z",
+          "updatedAt": "2026-06-26T20:00:45Z"
+        },
+        {
+          "handle": "how-to-dispose-of-a-mattress-los-angeles",
+          "id": "gid://shopify/Article/600675942653",
+          "title": "How to Dispose of a Mattress in Los Angeles (Free Recycling Options)",
+          "isPublished": true,
+          "publishedAt": "2026-06-27T03:06:51Z",
+          "updatedAt": "2026-06-27T03:07:06Z"
+        },
+        {
+          "handle": "best-mattress-for-adjustable-bed",
+          "id": "gid://shopify/Article/600680497405",
+          "title": "Best Mattresses for an Adjustable Bed Base (and What Won't Work)",
+          "isPublished": true,
+          "publishedAt": "2026-06-28T03:07:13Z",
+          "updatedAt": "2026-06-28T03:07:13Z"
+        },
+        {
+          "handle": "what-is-a-euro-top-mattress",
+          "id": "gid://shopify/Article/600684986621",
+          "title": "What Is a Euro Top Mattress? Euro Top vs Pillow Top Explained",
+          "isPublished": true,
+          "publishedAt": "2026-06-29T03:07:59Z",
+          "updatedAt": "2026-06-29T03:07:59Z"
+        },
+        {
+          "handle": "how-to-make-a-mattress-firmer",
+          "id": "gid://shopify/Article/600692719869",
+          "title": "How to Make a Mattress Firmer: 7 Fixes That Actually Work",
+          "isPublished": true,
+          "publishedAt": "2026-06-30T03:09:11Z",
+          "updatedAt": "2026-06-30T03:09:11Z"
+        },
+        {
+          "handle": "best-mattress-for-pregnancy",
+          "id": "gid://shopify/Article/600731091197",
+          "title": "Best Mattress for Pregnancy: Comfort & Support Through Every Trimester",
+          "isPublished": true,
+          "publishedAt": "2026-07-01T13:52:12Z",
+          "updatedAt": "2026-07-01T13:53:22Z"
+        },
+        {
+          "handle": "best-mattress-for-scoliosis",
+          "id": "gid://shopify/Article/600744689917",
+          "title": "Best Mattress for Scoliosis: Spinal Support That Adapts to Your Curve",
+          "isPublished": true,
+          "publishedAt": "2026-07-02T03:09:54Z",
+          "updatedAt": "2026-07-02T03:09:55Z"
+        },
+        {
+          "handle": "how-long-does-it-take-to-break-in-a-mattress",
+          "id": "gid://shopify/Article/600926191869",
+          "title": "How Long Does It Take to Break In a New Mattress?",
+          "isPublished": true,
+          "publishedAt": "2026-07-03T03:07:28Z",
+          "updatedAt": "2026-07-03T03:07:43Z"
         }
       ]
     },
@@ -7824,7 +7912,7 @@
       "handle": "sleep-blog",
       "id": "gid://shopify/Blog/89331728637",
       "title": "Sleep Blog | Tips, Research & Wellness",
-      "updatedAt": "2026-06-11T17:08:37Z",
+      "updatedAt": "2026-06-19T16:33:07Z",
       "articles": [
         {
           "handle": "clothing-sleep-6073",
@@ -8184,7 +8272,7 @@
           "title": "Can a Bad Mattress Cause Rib Pain?",
           "isPublished": true,
           "publishedAt": "2024-01-14T04:43:44Z",
-          "updatedAt": "2026-06-11T17:08:37Z"
+          "updatedAt": "2026-06-19T16:33:07Z"
         },
         {
           "handle": "choosing-the-right-tent-size-for-your-queen-mattress",
@@ -8344,7 +8432,7 @@
       "handle": "mattress-care-tips",
       "id": "gid://shopify/Blog/89331761405",
       "title": "Mattress Care Tips | Extend Your Mattress Life",
-      "updatedAt": "2026-06-12T20:17:16Z",
+      "updatedAt": "2026-06-19T16:34:19Z",
       "articles": [
         {
           "handle": "madcap-cottage-bedroom-therapy",
@@ -8568,7 +8656,7 @@
           "title": "How Long Does a Memory Foam Mattress Take to Expand?",
           "isPublished": true,
           "publishedAt": "2023-12-21T19:08:45Z",
-          "updatedAt": "2026-06-11T17:14:25Z"
+          "updatedAt": "2026-06-19T16:34:19Z"
         },
         {
           "handle": "why-is-my-air-mattress-bulging-on-one-side",
@@ -8840,7 +8928,7 @@
       "handle": "sleep-health",
       "id": "gid://shopify/Blog/89331794173",
       "title": "Sleep Health | Science, Benefits & Tips",
-      "updatedAt": "2026-06-13T22:39:39Z",
+      "updatedAt": "2026-06-19T15:24:51Z",
       "articles": [
         {
           "handle": "cant-sleep-caffeine-297634",
@@ -9192,7 +9280,7 @@
           "title": "What is an Advanced Wave Mattress? Everything You Need to Know",
           "isPublished": true,
           "publishedAt": "2024-03-04T22:06:53Z",
-          "updatedAt": "2026-06-13T22:38:28Z"
+          "updatedAt": "2026-06-19T15:24:51Z"
         },
         {
           "handle": "can-cockroaches-live-in-a-mattress",

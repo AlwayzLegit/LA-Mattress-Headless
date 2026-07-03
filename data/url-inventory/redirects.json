@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify redirects inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-06-18T12:08:13.944Z",
+  "$pulledAt": "2026-07-03T19:38:47.669Z",
   "$count": 2029,
   "redirects": [
     {
