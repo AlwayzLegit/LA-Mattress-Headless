@@ -189,6 +189,10 @@ export default async function BlogIndexPage(props: Params) {
             </p>
           ) : (
             <>
+              {/* Card titles below are h3s; without an h2 the outline
+                  jumps h1->h3 for every card (audit a11y-headings-05).
+                  Visually hidden — the grid is self-evident sighted. */}
+              <h2 className="sr-only">Featured and recent articles</h2>
               <div className="gd-grid" aria-label="Articles">
                 {articles.map((a, idx) => {
                   const cat = blog.title;

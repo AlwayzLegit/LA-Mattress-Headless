@@ -9,8 +9,6 @@ export type { CollectionSort, GetCollectionArgs } from './queries/collection';
 export type { ProductFilter, AvailableFilter, AvailableFilterValue } from './types';
 export { getPageByHandle }                    from './queries/page';
 export { getBlogByHandle, getArticleByHandle } from './queries/blog';
-export { getMenu }                            from './queries/menu';
-export { getAllProductHandles, getAllCollectionHandles, getAllPageHandles } from './queries/handles';
 export { searchProducts, searchArticles, predictiveSearch } from './queries/search';
 export { getProductRecommendations }          from './queries/recommendations';
 export { getQuizPicks }                       from './queries/quiz-picks';

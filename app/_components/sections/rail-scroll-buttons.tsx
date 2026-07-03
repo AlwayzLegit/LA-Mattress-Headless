@@ -25,7 +25,11 @@ type Props = {
 export function RailScrollButtons({ railId, leftLabel, rightLabel, step = 600, variant = 'default' }: Props) {
   const scroll = (dir: -1 | 1) => {
     const el = document.getElementById(railId);
-    el?.scrollBy({ left: dir * step, behavior: 'smooth' });
+    // JS scrollBy ignores the CSS reduced-motion kill switch, so gate
+    // the smooth behavior on the media query directly (audit
+    // a11y-motion-04) — same pattern as hero-controller.
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el?.scrollBy({ left: dir * step, behavior: reduced ? 'auto' : 'smooth' });
   };
   const btnClass = variant === 'dark' ? 'round-btn round-btn-dark' : 'round-btn';
   const wrapClass = variant === 'dark' ? 'scroll-controls scroll-controls-dark' : 'scroll-controls';

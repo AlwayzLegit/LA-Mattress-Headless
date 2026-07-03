@@ -2,9 +2,10 @@
  * Shopify Storefront API client.
  *
  * Uses the public Storefront API access token (read-only, scoped to product/
- * collection/page/blog/cart). Per the brief's hard rules: this is the ONLY
- * Shopify API used by the Next.js app — Admin API is forbidden in this
- * codebase.
+ * collection/page/blog/cart). Storefront routes use ONLY this client.
+ * The Admin API is confined to the /admin dashboard via
+ * lib/shopify/admin.ts (server-only) and to CI scripts — never import
+ * it from storefront code.
  *
  * Env vars (set in .env.local + Vercel project env):
  *   SHOPIFY_STORE_DOMAIN              e.g. la-mattress.myshopify.com

@@ -33,6 +33,27 @@ async function clearCartCookie() {
   (await cookies()).delete(COOKIE);
 }
 
+
+/**
+ * Map an action failure to shopper-safe copy (audit
+ * codeq-action-error-leak-12). Raw upstream messages (Storefront API
+ * bodies, AbortError timeouts) read as backend jargon in cart toasts
+ * and can disclose internals; Shopify UserError validation messages
+ * ("Discount code is invalid") are written for shoppers and pass
+ * through. Same split the chat widget's friendlyChatError uses.
+ */
+function friendlyCartError(err: unknown, fallback: string): string {
+  if (err instanceof Error) {
+    console.error('[cart-action]', err);
+    // Shopify checkout/cart UserErrors are surfaced as plain Errors with
+    // shopper-facing text and no API markers — keep those.
+    const m = err.message;
+    const looksInternal = /shopify|graphql|fetch|network|abort|timeout|5\d\d|json|unexpected token/i.test(m) || m.length > 140;
+    if (!looksInternal) return m;
+  }
+  return `${fallback} — please try again, or call (800) 218-3578 and we'll sort it out.`;
+}
+
 export async function readCart(): Promise<Cart | null> {
   const cartId = (await cookies()).get(COOKIE)?.value;
   if (!cartId) return null;
@@ -76,7 +97,7 @@ export async function addToCart(merchandiseId: string, quantity = 1): Promise<Ac
     revalidatePath('/cart');
     return { ok: true, cart };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Add to cart failed' };
+    return { ok: false, error: friendlyCartError(err, 'Add to cart failed') };
   }
 }
 
@@ -91,7 +112,7 @@ export async function updateCartLine(lineId: string, quantity: number): Promise<
     revalidatePath('/cart');
     return { ok: true, cart };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Update failed' };
+    return { ok: false, error: friendlyCartError(err, 'Update failed') };
   }
 }
 
@@ -103,7 +124,7 @@ export async function removeCartLine(lineId: string): Promise<ActionResult> {
     revalidatePath('/cart');
     return { ok: true, cart };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Remove failed' };
+    return { ok: false, error: friendlyCartError(err, 'Remove failed') };
   }
 }
 
@@ -125,7 +146,7 @@ export async function applyDiscountCode(code: string): Promise<ActionResult> {
     revalidatePath('/cart');
     return { ok: true, cart };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Could not apply code' };
+    return { ok: false, error: friendlyCartError(err, 'Could not apply code') };
   }
 }
 
@@ -137,7 +158,7 @@ export async function removeDiscountCode(): Promise<ActionResult> {
     revalidatePath('/cart');
     return { ok: true, cart };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Could not remove code' };
+    return { ok: false, error: friendlyCartError(err, 'Could not remove code') };
   }
 }
 
@@ -154,7 +175,7 @@ export async function changeLineVariant(
     revalidatePath('/cart');
     return { ok: true, cart };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Could not change option' };
+    return { ok: false, error: friendlyCartError(err, 'Could not change option') };
   }
 }
 
@@ -166,7 +187,7 @@ export async function updateCartNote(note: string): Promise<ActionResult> {
     revalidatePath('/cart');
     return { ok: true, cart };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Could not save note' };
+    return { ok: false, error: friendlyCartError(err, 'Could not save note') };
   }
 }
 
@@ -209,7 +230,7 @@ export async function setDeliveryDate(date: string | null): Promise<ActionResult
     revalidatePath('/cart');
     return { ok: true, cart };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Could not save delivery date' };
+    return { ok: false, error: friendlyCartError(err, 'Could not save delivery date') };
   }
 }
 
