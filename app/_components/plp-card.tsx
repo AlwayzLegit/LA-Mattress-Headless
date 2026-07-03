@@ -101,7 +101,7 @@ export function PlpCard({
           </div>
           {monthlyLabel ? (
             <div className="pcard-financing tnum">
-              From <strong>{monthlyLabel}</strong> · 0% APR
+              From <strong>{monthlyLabel}</strong> · 0% APR with Synchrony
             </div>
           ) : null}
         </div>

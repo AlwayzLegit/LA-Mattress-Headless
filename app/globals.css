@@ -83,6 +83,12 @@
   /* Layout */
   --container: 1440px;
   --gutter: 32px;
+  /* Horizontal padding for container-width surfaces. Audit ux-css-02:
+     five rules consume this token but it was never defined, so their
+     padding collapsed to 0 (PLP content block, sibling nav, mobile
+     announcement bar, HTML sitemap, dashboard). Tracks --gutter so the
+     20px mobile override applies too. */
+  --container-pad: var(--gutter);
   --top-bar-h: 32px;
   --nav-h: 64px;
 
@@ -594,14 +600,24 @@ summary:focus-visible,
 /* On the PDP, keep the floating chat bubble clear of the mobile sticky
    add-to-cart bar: lift it above the bar (~73px tall + safe area) while
    the bar is showing so it never covers the Add-to-cart button. Scoped to
-   the same breakpoint the sticky bar appears at (<=1100px) — on desktop
+   the same breakpoint the sticky bar appears at (<=1024px) — on desktop
    the bar is hidden, so no lift. */
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   body.pdp-atc-visible .chat-bubble { bottom: calc(85px + env(safe-area-inset-bottom)); }
+  /* Same collision for the floating compare tray (z-80, bottom-anchored):
+     lift it with the chat bubble while the sticky bar shows. Audit
+     ux-mobile-04 — the chat bubble got this fix, the tray didn't. */
+  body.pdp-atc-visible .compare-tray { bottom: calc(85px + env(safe-area-inset-bottom)); }
 }
 /* While the variant bottom-sheet (a modal) is open, hide the bubble — its
-   z-90 would otherwise float over the sheet. */
+   z-90 would otherwise float over the sheet. Same for the compare tray
+   (z-80 > sheet z-60). */
 body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
+body.pdp-sheet-open .compare-tray { opacity: 0; pointer-events: none; }
+/* While the PLP mobile filter sheet is open, hide the bubble — its z-90
+   floats over the sheet (z-60) and covers the right end of the full-width
+   "Show results" button. Audit ux-mobile-05; class set by FilterShell. */
+body.plp-filters-open .chat-bubble { opacity: 0; pointer-events: none; }
 .chat-bubble.is-open {
   /* When the panel is open, fade the bubble out instead of removing it
      from the DOM — keeps the close-from-button focus target stable. */
@@ -2842,13 +2858,19 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
   display: none;
   padding-bottom: env(safe-area-inset-bottom);
 }
-@media (max-width: 1100px) { .pdp-sticky-bar { display: block; } }
+/* Shown exactly while the desktop buy-box rail is NOT sticky: .pdp-grid
+   collapses to one column at <=1024px and .pdp-rail-inner goes static,
+   so the bar takes over from there down. Audit ux-pdp-01: this was
+   1100px while the variant sheet below only rendered <=880px, leaving
+   881-1100px viewports a sticky CTA that opened an invisible sheet and
+   scroll-locked the page. Keep BOTH breakpoints equal to the grid's. */
+@media (max-width: 1024px) { .pdp-sticky-bar { display: block; } }
 .pdp-sticky-bar.on { transform: translateY(0); }
 
 /* Phase 294: mobile sticky-ATC variant bottom sheet. Only reachable via
-   the sticky bar, which is itself mobile-only (display:block <=880px),
-   so the open state is effectively mobile-only — but gate the visible
-   chrome at <=880px defensively and hide above it. */
+   the sticky bar (display:block <=1024px), so gate the visible chrome
+   at the SAME breakpoint and hide above it — these two media queries
+   must always move together (audit ux-pdp-01). */
 .pdp-variant-scrim {
   position: fixed; inset: 0; z-index: 59;
   background: rgba(0,0,0,0.45);
@@ -2888,7 +2910,7 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
   padding: var(--s-4);
 }
 .pdp-variant-sheet-foot .btn { width: 100%; }
-@media (min-width: 881px) {
+@media (min-width: 1025px) {
   .pdp-variant-scrim, .pdp-variant-sheet { display: none; }
 }
 .pdp-sticky-bar__inner {
@@ -2980,7 +3002,7 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
 .pdp-size-label { font-size: 13px; font-weight: 600; }
 .pdp-size-sub { font-size: 11px; color: var(--text-3); }
 .pdp-size-price { font-size: 12px; font-weight: 500; margin-top: 2px; }
-.pdp-size.unavailable { color: var(--text-4); position: relative; }
+.pdp-size.unavailable { color: var(--text-3); position: relative; } /* audit a11y-contrast-01: --text-4 was 2.05:1 */
 .pdp-size.unavailable::after {
   content: ''; position: absolute; left: 10%; right: 10%; top: 50%;
   border-top: 1px solid var(--text-4); transform: rotate(-8deg);
@@ -3002,7 +3024,7 @@ body.pdp-sheet-open .chat-bubble { opacity: 0; pointer-events: none; }
 .pdp-firm.on { border-color: var(--text); background: var(--surface-2); }
 .pdp-firm-label { font-size: 14px; font-weight: 600; }
 .pdp-firm-sub { font-size: 11px; }
-.pdp-firm.unavailable { color: var(--text-4); position: relative; }
+.pdp-firm.unavailable { color: var(--text-3); position: relative; } /* audit a11y-contrast-01: --text-4 was 2.05:1 */
 .pdp-firm.unavailable::after {
   content: ''; position: absolute; left: 10%; right: 10%; top: 50%;
   border-top: 1px solid var(--text-4); transform: rotate(-8deg);

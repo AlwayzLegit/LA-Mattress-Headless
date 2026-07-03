@@ -51,8 +51,12 @@ export async function PopularProducts() {
       </div>
       <div className="pcard-scroll-wrap">
         <div id={RAIL_ID} className="pcard-scroll no-scrollbar">
-          {products.map((p, i) => (
-            <PlpCard key={p.id} product={p} priority={i < 3} />
+          {products.map((p) => (
+            // No priority: this rail starts ~880px below the fold, so
+            // high-priority preloads here competed with the hero LCP
+            // image (audit perf-img-08). PLPs keep priority on their
+            // first cards, where they ARE the LCP candidates.
+            <PlpCard key={p.id} product={p} />
           ))}
         </div>
       </div>

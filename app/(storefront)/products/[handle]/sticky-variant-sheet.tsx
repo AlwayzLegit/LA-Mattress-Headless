@@ -20,7 +20,7 @@ import { SIZE_DIMENSIONS } from './pdp-data';
  *
  * Bottom-sheet pattern + a11y kit (scroll lock, focus trap, Esc, focus
  * restore, scrim) mirrors CartDrawer / the PLP mobile filter sheet. CSS
- * (.pdp-variant-sheet*) is gated to <=880px to match the sticky bar.
+ * (.pdp-variant-sheet*) is gated to <=1024px to match the sticky bar.
  */
 type Props = {
   open: boolean;

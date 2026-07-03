@@ -125,7 +125,8 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
 
   // Sticky mobile add-to-cart bar: appears only after the user scrolls past
   // the main ATC button. We observe its visibility via IntersectionObserver
-  // and toggle a class. CSS hides it entirely on desktop (>880px).
+  // and toggle a class. CSS hides it entirely above 1024px (same
+  // breakpoint as the variant sheet — see globals.css, audit ux-pdp-01).
   const atcRef = useRef<HTMLButtonElement | null>(null);
   const [showSticky, setShowSticky] = useState(false);
   useEffect(() => {
