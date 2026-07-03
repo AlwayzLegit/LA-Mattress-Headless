@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { blogs as inventoryBlogs } from '@/lib/inventory';
 import { blogIntroFor } from '@/lib/blog-content';
 import { Icon } from '@/app/_components/icon';
+import { SITE_URL } from '@/lib/site-config';
 
 /**
  * `/blogs` — the master content hub.
@@ -36,7 +37,7 @@ import { Icon } from '@/app/_components/icon';
  * URLs continue to 301 untouched — they don't appear in the archive
  * because fullArchiveFor filters them out via resolveRedirectPath.
  */
-const SITE = 'https://www.mattressstoreslosangeles.com';
+const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
 
 const EXCLUDED_BLOG_HANDLES = new Set(['sales', 'extra-info']);
 

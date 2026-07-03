@@ -11,6 +11,7 @@ import { isNoindexBlogIndex } from '@/lib/noindex-articles';
 import { displayAuthorName } from '@/lib/article-author';
 import { resolveRedirectPath } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
+import { SITE_URL } from '@/lib/site-config';
 
 /**
  * Every published, non-redirected article in this blog, sorted A–Z, as a
@@ -51,7 +52,7 @@ type Params = {
 export const dynamic = 'force-dynamic';
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
-const SITE = 'https://www.mattressstoreslosangeles.com';
+const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
 const PER_PAGE = 12;
 
 export function generateStaticParams() {

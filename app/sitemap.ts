@@ -47,22 +47,20 @@ const LOCAL_LANDING_HANDLES = new Set<string>([
 ]);
 
 /**
- * Phase 260: blog handles that exist in the inventory snapshot but are
- * deprecated — every URL under them now 301/308-redirects, so listing
- * them in the sitemap signals stale content to crawlers and triggers
- * SEMrush's "Incorrect pages found in sitemap.xml" flag.
+ * Blog handles excluded from the sitemap because every URL under them
+ * redirects (none currently).
  *
- * `beds-mattresses` is the old Hydrogen-era blog. Phase 251 added a
- * wildcard redirect (`/blogs/beds-mattresses/:slug* → /blogs/sleep-blog`)
- * for its 184 articles; this phase removes the blog from the sitemap
- * entirely and adds a redirect for the bare blog index (no slug —
- * not caught by the wildcard).
- *
- * When the inventory is regenerated from Shopify, the dead blog will
- * likely re-appear (Shopify still exposes it). Keeping the filter here
- * is durable across regenerations.
+ * History: Phase 260 excluded `beds-mattresses` here on the assumption
+ * that "every URL under it 301s" — which turned out false: 72 of its
+ * 184 published articles are live at 200, and PR #494 deliberately
+ * restored the blog to the /blogs hub as a labeled archive. That left
+ * the sitemap contradicting the site's own link graph — indexable,
+ * internally-linked URLs carrying no sitemap discovery signal (audit
+ * seo-tech-03). Un-deprecating is safe: the final entry list is
+ * filtered against REDIRECT_SOURCES, so the 112 redirected article
+ * URLs still never appear — only the live archive does.
  */
-const DEPRECATED_BLOG_HANDLES = new Set(['beds-mattresses']);
+const DEPRECATED_BLOG_HANDLES = new Set<string>([]);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

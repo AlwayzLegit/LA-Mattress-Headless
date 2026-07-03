@@ -83,6 +83,24 @@ function unauthorized(reason: string): NextResponse {
 export function middleware(req: NextRequest): NextResponse {
   const pathname = req.nextUrl.pathname;
 
+  // (0) Host canonicalization: apex → www, permanent (308). The Semrush
+  // 2026-07-03 pull showed 63 keywords (4.3% of organic traffic) ranking
+  // under the apex host and ~30 paths indexed under BOTH hosts, splitting
+  // link equity on money pages (audit seo-organic-03). Canonicals already
+  // say www everywhere; this makes the response host agree. Belt-and-
+  // suspenders with the Vercel domain-level redirect — if the platform
+  // already 308s the apex, this branch simply never runs.
+  const host = req.headers.get('host') ?? '';
+  if (host === 'mattressstoreslosangeles.com') {
+    // Absolute https target (not derived from req.nextUrl) so the
+    // redirect is correct regardless of the incoming protocol/port —
+    // the apex only exists in production, where www is always https.
+    const target = new URL(
+      `https://www.mattressstoreslosangeles.com${pathname}${req.nextUrl.search}${req.nextUrl.hash}`,
+    );
+    return NextResponse.redirect(target, 308);
+  }
+
   // (1) Legacy URL redirects from Shopify's urlRedirects table.
   // O(1) lookup via Map. Skips /admin (auth-protected) and /_next /api
   // (no redirect logic needed for build assets or API routes).

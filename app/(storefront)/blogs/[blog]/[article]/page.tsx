@@ -18,6 +18,7 @@ import { displayAuthorName } from '@/lib/article-author';
 import { Icon } from '@/app/_components/icon';
 import { ArticleSkeleton } from './skeleton';
 import { ArticleToc } from './article-toc';
+import { SITE_URL } from '@/lib/site-config';
 
 type Params = { params: Promise<{ blog: string; article: string }> };
 
@@ -37,7 +38,7 @@ export const revalidate = 86400;
 export const dynamicParams = true;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
-const SITE = 'https://www.mattressstoreslosangeles.com';
+const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
 
 // Pre-render the published article handles from the inventory snapshot.
 // `dynamicParams = true` still serves articles published since the last

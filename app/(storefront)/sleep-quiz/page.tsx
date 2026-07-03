@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { SleepQuiz } from './sleep-quiz';
 import { allQuizPickHandles } from './quiz-data';
 import { getQuizPicks } from '@/lib/shopify';
+import { SITE_URL } from '@/lib/site-config';
 
 export const metadata: Metadata = {
   // `absolute` so the layout's "%s · LA Mattress Store" template
@@ -43,7 +44,7 @@ export default function SleepQuizPage() {
   // ISR cache tags via the `quiz-picks` tag in getQuizPicks); only the
   // await moved.
   const productPicksPromise = getQuizPicks(allQuizPickHandles());
-  const SITE = 'https://www.mattressstoreslosangeles.com';
+  const SITE = SITE_URL; // audit codeq-site-const-dup-10: single source, apex-guarded
   const url = `${SITE}/sleep-quiz`;
   const quizLd = {
     '@context': 'https://schema.org',
