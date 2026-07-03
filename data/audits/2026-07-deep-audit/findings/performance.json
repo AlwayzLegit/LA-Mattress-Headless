@@ -1,0 +1,119 @@
+{
+  "area": "performance",
+  "measurements": {
+    "html_captures": {
+      "homepage": { "raw_bytes": 337113, "gzip_bytes": 41098, "script_tags": 102, "external_scripts": 17, "inline_scripts": 85, "inline_script_bytes": 191471, "img_tags": 31, "eager_imgs": 5, "image_preloads": 5 },
+      "pdp-standard-foundation-box-spring": { "raw_bytes": 188095, "gzip_bytes": 27218, "script_tags": 73, "inline_script_bytes": 117314, "img_tags": 15, "image_preloads": 3 },
+      "plp-latex-mattresses": { "raw_bytes": 334264, "gzip_bytes": 42144, "script_tags": 92, "inline_script_bytes": 185590, "img_tags": 26, "eager_imgs": 5 },
+      "blog-archive-beds-mattresses": { "raw_bytes": 153071, "gzip_bytes": 26264 },
+      "article-redirected-to-plp": { "raw_bytes": 324359, "gzip_bytes": 42908 },
+      "404": { "raw_bytes": 45749, "gzip_bytes": 8030 }
+    },
+    "globals_css": { "raw_bytes": 283446, "gzip_bytes": 62126, "unique_class_tokens": 1216, "classes_unreferenced_in_source": 75, "bytes_in_fully_dead_rules": 10308, "family_bytes": { "pdp": 27283, "dash(admin)": 18787, "plp": 17800, "cart": 15615, "gd": 10828, "search": 10167, "quiz": 8384, "chat": 7808, "compare": 6241 } },
+    "posthog_js": { "module_js_raw": 195204, "module_js_gzip": 63406, "recorder_js_raw": 98586, "recorder_js_gzip": 30447 },
+    "third_parties_per_storefront_page": ["GA4 gtag (preloaded in head)", "PostHog (bundled, statically imported)", "Vercel Analytics", "Vercel Speed Insights", "Shopify hydrogen-react page-view beacon", "Judge.me (PDP only, lazyOnload)", "Sentry client SDK (bundled, no Replay)"],
+    "isr_map": { "/": 300, "/products/[handle]": 86400, "/pages/[handle]": 3600, "/blogs/[blog]/[article]": 86400, "/collections/[handle]": "force-dynamic (SSR every request)", "/search": 0, "webhook": "/api/revalidate busts product/article/homepage tags" }
+  },
+  "findings": [
+    {
+      "id": "perf-img-01",
+      "title": "PDP downloads the full-resolution ORIGINAL product image (untransformed, preloaded) for a 48px sticky-bar thumbnail",
+      "severity": "P1",
+      "evidence": "app/(storefront)/products/[handle]/pdp-sticky-atc-bar.tsx:58-64 renders a plain <img src={productImage.url}> (raw Shopify URL, no width/format/quality params) at width=48/height=48. Live capture pdp-standard-foundation-box-spring.html head contains BOTH the correct Next.js srcset preload (imagesrcset with format=webp&quality=75 variants) AND a second raw preload: <link rel=\"preload\" as=\"image\" href=\"https://cdn.shopify.com/s/files/1/0684/1759/products/Foundation.jpg?v=1689171402\"/> — the untransformed original, fetched at preload priority on every PDP view. The gallery srcset advertises variants up to 3840w, so the raw original is a multi-hundred-KB JPEG vs the <5KB 96px WebP the 48px slot needs. Only the PDP capture shows this raw preload; it is absent on homepage/PLP where no plain raw <img> exists.",
+      "impact": "Every PDP visitor double-downloads the hero product photo — once optimized for the gallery LCP, once as the raw original — with the raw fetch competing at preload priority against the actual LCP image on the most conversion-critical template. Directly inflates PDP LCP and mobile data cost across all 218 products.",
+      "effort": "S",
+      "proposed_fix": "In pdp-sticky-atc-bar.tsx, transform the URL with the same Shopify CDN params the loader uses (e.g. `${url}&width=96&format=webp&quality=75`) or switch to next/image with sizes=\"48px\". Re-capture PDP head after deploy to confirm the raw <link rel=preload> disappears."
+    },
+    {
+      "id": "perf-3p-02",
+      "title": "PostHog session-recorder bundle is downloaded and started for 100% of sessions, then thrown away for 90% of them",
+      "severity": "P1",
+      "evidence": "app/_components/analytics-posthog.tsx:66 sets `disable_session_recording: false` (recording starts for everyone at init), then lines 78-80 sample AFTER init: `if (Math.random() > 0.1) { posthog.stopSessionRecording(); }`. PostHog lazy-loads its recorder from us-assets.i.posthog.com the moment recording starts — measured locally at node_modules/posthog-js/dist/recorder.js = 98,586 B raw / 30,447 B gzip — so ~90% of visitors pay a ~30KB-gzip script download plus rrweb DOM-observer startup CPU during the interactive-critical window for a recording that is immediately discarded.",
+      "impact": "Wasted ~30KB gzip + main-thread recorder initialization on 9 of 10 sessions, on every storefront page, hitting INP/TBT during hydration on mobile.",
+      "effort": "S",
+      "proposed_fix": "Decide the sample BEFORE init: `const sampledIn = Math.random() < 0.1;` then `disable_session_recording: !sampledIn` (drop the post-init stop call), or move sampling server-side via PostHog project replay sample rate. Persist the decision (sessionStorage) so SPA navigations don't resample."
+    },
+    {
+      "id": "perf-js-03",
+      "title": "posthog-js (63KB gzip) is statically imported into the shared client bundle of every page — the code comment claiming lazy import is false",
+      "severity": "P2",
+      "evidence": "Static top-level `import posthog from 'posthog-js'` in app/_components/analytics-posthog.tsx:5, app/_components/analytics-ga4.tsx:6, and lib/analytics.ts:30 (track() used across storefront client components). Measured: node_modules/posthog-js/dist/module.js = 195,204 B raw / 63,406 B gzip. The comment at analytics-posthog.tsx:29-30 says 'SDK is lazy-imported only when the key is set so the bundle stays unaffected' — the code does no dynamic import anywhere.",
+      "impact": "~63KB gzip (~195KB parse/compile) of analytics SDK inside First Load JS on every route, including 404 and blog pages, delaying hydration/TTI on mobile; it is the single largest identifiable third-party contribution to the JS bundle.",
+      "effort": "M",
+      "proposed_fix": "Convert lib/analytics.ts + analytics-posthog.tsx to `await import('posthog-js')` inside initPostHog()/first track() call with a pre-init event queue (PostHog also documents a snippet/lazy pattern), and update or delete the stale comment. Verify with `next build` first-load-JS diff."
+    },
+    {
+      "id": "perf-3p-04",
+      "title": "Five analytics stacks ship on every storefront page; Core Web Vitals are reported to three of them",
+      "severity": "P2",
+      "evidence": "app/(storefront)/layout.tsx:153-168 mounts <Analytics/> (Vercel Analytics beacon), <SpeedInsights/> (second Vercel beacon script), <AnalyticsGa4/> (gtag ~130KB transfer), <AnalyticsShopify/> (@shopify/hydrogen-react sendShopifyAnalytics), and <AnalyticsPostHog/> (63KB-gzip SDK + recorder, perf-js-03/02). Web vitals are triple-reported: Speed Insights natively, plus analytics-ga4.tsx:44-74 forwards every metric to BOTH GA4 (gtag) and PostHog via useReportWebVitals.",
+      "impact": "Cumulative script weight, five network beacon chains per pageview, and duplicated event/CWV data collection. Each stack individually has a documented rationale, but the union is the single biggest recurring third-party tax on every page load and a standing INP/TBT cost on mid-range mobile.",
+      "effort": "M",
+      "proposed_fix": "Pick one CWV sink (Speed Insights OR PostHog) and drop the redundant forwards; evaluate dropping @vercel/analytics entirely (pageviews fully covered by GA4 + PostHog) — it and SpeedInsights are two separate /_vercel/* beacon scripts. Keep the Shopify beacon (Admin analytics dependency) and GA4 (Search Console attribution) per their documented purposes."
+    },
+    {
+      "id": "perf-3p-05",
+      "title": "GA4 gtag.js is preloaded in <head> on every page, contradicting the documented 'doesn't compete with LCP' intent",
+      "severity": "P2",
+      "evidence": "Every capture's head contains <link rel=\"preload\" href=\"https://www.googletagmanager.com/gtag/js?id=G-5REWNF4XJ2\" as=\"script\"/> (homepage.html, plp-latex-mattresses.html, pdp-*.html, blog-archive-*.html). Emitted by next/script strategy=\"afterInteractive\" at app/_components/analytics-ga4.tsx:80-83, whose own comment (lines 15-16) says afterInteractive was chosen 'so GA4 doesn't compete with the LCP image / fonts' — but the preload makes the browser's preload scanner start the ~130KB gtag transfer immediately, in parallel with the LCP hero image on bandwidth-constrained mobile.",
+      "impact": "Early bandwidth contention with the LCP image on every landing page; analytics gains nothing from arriving 1-2s earlier.",
+      "effort": "S",
+      "proposed_fix": "Switch the gtag <Script> to strategy=\"lazyOnload\" (loads on idle, no head preload). If very-early-bounce capture matters, keep afterInteractive but neutralize the preload by injecting the script manually in a useEffect after window load."
+    },
+    {
+      "id": "perf-css-06",
+      "title": "Single 283KB (62KB gzip) render-blocking globals.css on every route, including ~21KB of admin-only and ~10KB of provably dead rules",
+      "severity": "P2",
+      "evidence": "app/globals.css = 283,446 B raw / 62,126 B gzip (measured), imported once in app/layout.tsx:3 so every route — storefront, 404, and /admin — blocks first paint on the full file. Class-prefix byte census of rule blocks: pdp 27,283 B; dash/admin 18,787 B (+acct ~2.4KB → ~21KB admin-ish); plp 17,800 B; cart 15,615 B; search 10,167 B; quiz 8,384 B; chat 7,808 B; compare 6,241 B. 75 of 1,216 defined class tokens appear in no file under app/ or lib/ (e.g. pdp-review-form, pdp-review-card, gd-decision-*, dash-anomaly-*, acct-saved-*), totaling 10,308 B of rules whose every selector class is unreferenced.",
+      "impact": "Every visitor's critical rendering path carries CSS for the admin dashboard, chat, quiz, compare tray, and retired PDP-review UI. 62KB gzip render-blocking CSS is 2-4x a typical commerce page budget and grows monotonically since all new sections land in the same file.",
+      "effort": "M",
+      "proposed_fix": "1) Delete the 75 dead classes (script the census used here can gate CI). 2) Move dash-/acct-/admin rules into a CSS file imported by app/admin/layout.tsx only. 3) Longer term, split heavy per-surface families (pdp-, quiz-, chat-, compare-) into route- or component-level CSS so App Router code-splits them."
+    },
+    {
+      "id": "perf-isr-07",
+      "title": "All collection PLPs are force-dynamic — the top commercial landing pages pay full SSR TTFB on every request",
+      "severity": "P2",
+      "evidence": "app/(storefront)/collections/[handle]/page.tsx:41 `export const dynamic = 'force-dynamic';` (comment: 'PLP depends on searchParams — must be dynamic per request'), which overrides the generateStaticParams defined at lines 47-50 for all 77 collections. Every other key template is static/ISR: homepage revalidate=300 (page.tsx:103), PDP 86400 (products/[handle]/page.tsx:43), pages 3600, articles 86400. The PLP capture confirms dynamic render (no font preload emitted, matches dynamic-render path; see perf-font-10).",
+      "impact": "Category pages — the primary SEO entry points and highest-traffic commercial templates — get server-render latency (route render + layout's 5 awaited fetches) on every hit instead of edge-cached HTML, inflating TTFB→LCP for users and crawl cost for bots, while filter/sort query variants (the actual reason for dynamism) are a minority of hits given lib/route-canonicalization.ts.",
+      "effort": "L",
+      "proposed_fix": "Serve the bare /collections/[handle] URL from ISR (e.g. revalidate 3600 + webhook tag busting like PDPs) and keep dynamic rendering only when searchParams are present — via PPR, a parallel dynamic route, or reading sort/filter/cursor in a client boundary hydrated from the static shell."
+    },
+    {
+      "id": "perf-img-08",
+      "title": "Homepage gives fetchPriority=high + head preloads to 3 below-the-fold product-card images, competing with the hero LCP",
+      "severity": "P2",
+      "evidence": "app/_components/sections/popular-products.tsx:55 `<PlpCard ... priority={i < 3} />` → plp-card.tsx:71-79 sets priority + fetchPriority=\"high\" + eager. homepage.html capture shows 4 imagesrcset preloads (hero + 3 Diamond/Eastman House card images) and 5 eager images, 4 of them fetchPriority=high. The page's own comment at app/(storefront)/page.tsx:168 places PopularProducts starting ~880px down ('Hero ~700px + QuizLeadIn ~180px'), i.e. below the initial mobile viewport.",
+      "impact": "Three below-fold images are fetched at the same priority as, and in parallel with, the hero LCP image on the homepage — precisely the bandwidth contention the hero's own quality=50/50vw tuning (hero-slide-image.tsx:52-66) was added to win back.",
+      "effort": "S",
+      "proposed_fix": "Pass priority={false} for PopularProducts cards on the homepage (keep priority={i<4} on PLPs, where the first cards genuinely are LCP candidates — their sizes attr was verified accurate against .plp-grid breakpoints)."
+    },
+    {
+      "id": "perf-js-09",
+      "title": "Chat conversation UI is statically bundled into every page though it only renders after the launcher is clicked",
+      "severity": "P3",
+      "evidence": "app/_components/chat/chat-widget.tsx:9 `import { ChatConversation } from './chat-conversation';` — static import inside the sitewide widget mounted at app/(storefront)/layout.tsx:150. chat-conversation.tsx + chat-product-card.tsx = 28.9KB source (streaming parser, product cards, markdown-ish rendering) shipped in the shared bundle for all visitors, the vast majority of whom never open the chat.",
+      "impact": "A few KB gzip of parse/hydrate cost on every page for a click-gated feature; also drags lib/chat helpers into the shared graph.",
+      "effort": "S",
+      "proposed_fix": "Load it on demand: `const ChatConversation = dynamic(() => import('./chat-conversation'))` rendered only once `open` is true (widget already tracks open state)."
+    },
+    {
+      "id": "perf-img-10",
+      "title": "Logo <Image> emits a junk 16-entry srcset (same PNG repeated) and a pointless priority preload on every page",
+      "severity": "P3",
+      "evidence": "All captures: <img alt=\"LA Mattress\" ... sizes=\"68px\" srcSet=\"/assets/la-mattress-logo.png 16w, /assets/la-mattress-logo.png 32w, ... 3840w\"> plus a matching <link rel=\"preload\" as=\"image\" imageSrcSet=\"/assets/la-mattress-logo.png 16w, ...\"> in head. Cause: nav.tsx:357 uses next/image with priority, and lib/image-loader.ts:48-50 returns local assets unchanged for every requested width, so all 16 srcset candidates are the identical URL. File is public/assets/la-mattress-logo.png = 5,819 B (400x224).",
+      "impact": "Negligible bytes (5.8KB, cached) but ~2KB of HTML noise per page, a wasted preload slot ahead of real LCP resources, and misleading markup for anyone auditing image handling.",
+      "effort": "S",
+      "proposed_fix": "Render the logo as a plain <img src=\"/assets/la-mattress-logo.png\" width height> (or next/image with unoptimized), and drop priority — a 5.8KB same-origin image needs no preload."
+    },
+    {
+      "id": "perf-font-11",
+      "title": "Geist font preload only appears on prerendered routes — dynamic routes (all PLPs, 404) fetch the woff2 late",
+      "severity": "P3",
+      "evidence": "Captures: homepage.html and pdp-*.html contain <link rel=\"preload\" href=\"/_next/static/media/22a5144ee8d83bca-s.p.woff2\" as=\"font\">; plp-latex-mattresses.html, article-redirected-to-plp-mattresses.html, blog-archive-beds-mattresses.html, and 404-page.html do not (grep -c woff2: 2 vs 1, the single hit being the CSS/flight reference). The preload-less set corresponds to dynamically rendered responses (PLP is force-dynamic; 404/redirected-article render dynamically), despite next/font being configured with preload:true in the shared root layout (app/layout.tsx:25-34).",
+      "impact": "On PLPs — the top entry pages — the font is discovered only after CSS parse, extending the display:swap fallback window (FOUT/late brand-font paint). Cosmetic-to-minor CWV effect.",
+      "effort": "M",
+      "proposed_fix": "Reproduce locally (next start, compare `curl /collections/x | grep woff2` vs homepage); if confirmed as the Next dynamic-render path dropping font preloads, add an explicit <link rel=preload as=font> for the primary woff2 in app/layout.tsx head (harmlessly duplicated on static routes, React dedupes identical preloads). Largely mooted for PLPs if perf-isr-07 makes them static."
+    }
+  ],
+  "coverage_notes": "STAGED DATA + REPO ONLY. Live verification was blocked: the agent proxy answers 403 CONNECT for both mattressstoreslosangeles.com and cdn.shopify.com (recentRelayFailures in proxy status), so I could not (a) byte-size the raw Foundation.jpg vs its WebP variant, (b) fetch /_next/static chunks or the two live CSS files to measure real First Load JS / built CSS, or (c) confirm gtag/PostHog/Vercel beacon transfer sizes — third-party weights are quoted from node_modules dist files (posthog-js measured exactly) and public knowledge (gtag ~130KB). No MCP live call was attempted (connectors were reported failing; the one permitted attempt was not spent). The repo has no completed production build (.next contains only cache/), so per-route First Load JS could not be computed; a `next build` was not run because the audit is read-only and the build writes to the repo. No field CWV (CrUX/PSI/Sentry perf) data was available. Checked and intentionally NOT flagged: hero sizes=50vw/quality=50 under-serving (deliberate, documented LCP optimization in hero-slide-image.tsx:52-66); leaflet (dynamically imported only on showroom/contact routes, showrooms-map-client.tsx:46); Sentry Replay (explicitly excluded, instrumentation-client.ts:17-21); sanitize-html + 484KB redirects table (server-only, no client imports found); PLP card sizes attr (verified accurate against .plp-grid breakpoints); unsplash preconnect (justified — lifestyle backgrounds use images.unsplash.com); inline RSC flight weight (85 inline scripts / 191KB raw on homepage — normal Next.js App Router behavior, gzips to a fraction). The two-different-sentry-release observation across captures (2cc6ec4 vs 4917aca) reflects capture timing across deploys, not a defect."
+}

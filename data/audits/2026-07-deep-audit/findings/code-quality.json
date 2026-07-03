@@ -1,0 +1,114 @@
+{
+  "area": "code-quality",
+  "coverage_notes": "Live MCP not attempted (staged data + repo were sufficient for this area; per instructions at most one call, and connectors were reported failing). Verified from repo at HEAD. SEEDED FINDINGS THAT DID NOT HOLD (dropped): (7) tsconfig.tsbuildinfo is NOT committed — `git ls-files | grep tsbuildinfo` is empty and .gitignore:37 has `*.tsbuildinfo`; the 335KB file on disk is a local build artifact only. (8) All 8 eslint-disable sites are justified, each with a written rationale: sleep-quiz.tsx:140 (mount-only hydration effect, searchParams identity), sticky-variant-sheet.tsx:79 and cart-drawer.tsx:80 (focus-return effects intentionally keyed on open state only), pdp-sticky-atc-bar.tsx:57 and chat-product-card.tsx:74 (no-img-element for tiny fixed-size thumbnails, documented), chat-widget.tsx:63 (close-on-route-change must not depend on `open` or it would self-close), chat-conversation.tsx:81 (deliberate dev console.error), date-range-picker.tsx:75 (object-identity dep narrowed to .from/.to). No action needed. (9) Commented-out code: none found — a sweep for `// const|// function|// return|// import` patterns plus TODO/FIXME/HACK returned only prose comments containing code-like tokens; zero TODO/FIXME markers in app/ or lib/. Also verified clean: no circular imports (madge --circular over 291 files: none); Shopify webhook HMAC verification in app/api/revalidate/route.ts uses crypto.timingSafeEqual correctly; all POST API routes (chat/ccpa/newsletter) are rate-limited; app/_actions/cart.ts validates delivery dates server-side; middleware Basic Auth uses constant-time compare and fails closed (503) when env is missing. lib/sanitize.ts is structurally sound: parser-based allowlist (sanitize-html) runs before all regex repair passes, javascript:/data: schemes blocked, iframes host-pinned. Not exhaustively checked: runtime behavior (no dev server run in this read-only pass), the full 218-product data layer, and per-component client-bundle weight.",
+  "findings": [
+    {
+      "id": "codeq-env-example-01",
+      "title": "11 env vars used in code are missing from .env.example — including the two that gate /admin and the chat API",
+      "severity": "P2",
+      "evidence": "Missing from .env.example (verified by diffing `grep -rhoE 'process\\.env\\.[A-Z0-9_]+' app lib middleware.ts | sort -u` against .env.example): ADMIN_USER + ADMIN_PASSWORD (middleware.ts:44-45 — without them every /admin/* request returns 503 by design, middleware.ts:173-181), ANTHROPIC_API_KEY (app/api/chat/route.ts:140 — chat returns 503 without it), CHAT_USE_HOSTED_MCP (app/api/chat/route.ts:26), SALE_PAGE_PREVIEW_TOKEN (lib/preview-auth.ts:23), POSTHOG_PROJECT_API_KEY + POSTHOG_HOST (app/api/webhooks/shopify/order-paid/route.ts:46-48, lib/chat/telemetry.ts:22-24), NEXT_PUBLIC_POSTHOG_KEY + NEXT_PUBLIC_POSTHOG_HOST (app/_components/analytics-posthog.tsx:38-39, lib/analytics.ts:294), NEXT_PUBLIC_POSTHOG_PROJECT_URL (app/admin/_components/admin-toolbar.tsx:28-29), NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN (app/admin/_components/admin-toolbar.tsx:24-25). Bonus staleness: .env.example:21-25 documents SHOPIFY_ADMIN_TOKEN as 'USED ONLY by scripts/pull-inventory.mjs, never by the app' while lib/shopify/admin.ts:41 reads it at runtime for the /admin dashboard.",
+      "impact": "A fresh clone configured strictly from .env.example ships with a dead admin dashboard (503), dead chat, no PostHog analytics, and no server-side purchase telemetry — and the developer gets no hint which vars are missing. Onboarding/incident-recovery cost, not a live-site bug.",
+      "effort": "S",
+      "proposed_fix": "Add the 11 vars to .env.example with one-line comments (mark ADMIN_USER/ADMIN_PASSWORD and ANTHROPIC_API_KEY as required-for-feature), and correct the SHOPIFY_ADMIN_TOKEN comment to say it also powers the /admin dashboard via lib/shopify/admin.ts."
+    },
+    {
+      "id": "codeq-test-gaps-02",
+      "title": "Zero test coverage on sitemap.ts, lib/seo.ts, and middleware composition — the three riskiest untested surfaces",
+      "severity": "P2",
+      "evidence": "tests/ssr/ has 57 test files but `grep -rln 'sitemap|robots|middleware|lib/seo|lib/analytics|site-config' tests/` matches only lib-level helpers (route-canonicalization, preview-auth, etc.), none of these files. (1) app/sitemap.ts (237 lines): hand-rolled redirect-source exclusion (app/sitemap.ts:23-30), noindex-article and coded-page filtering — a regression silently re-advertises 301/noindex URLs to Google (the exact SEMrush 20260518 'Incorrect pages found in sitemap.xml' failure the code comments say it exists to prevent). (2) lib/seo.ts (173 lines): capTitle/brand-suffix-drop logic (lib/seo.ts:49-56) feeds every <title> sitewide, has already caused a real incident (41 duplicate title tags, documented at lib/seo.ts:14-16), and carries an admitted coupled magic number ('If you change this, also update the hardcoded threshold in app/products/[handle]/page.tsx', lib/seo.ts:26-27). (3) middleware.ts (230 lines): Basic-Auth parse/compare (lines 183-202), fail-closed 503 (173-181), and the precedence ordering of 4 redirect passes (86-163) are untested as a composition — only their pure helpers are. lib/analytics.ts (552 lines), lib/site-config.ts canonicalizeSiteUrl, and app/robots.ts are also untested but lower-blast-radius.",
+      "impact": "The three files where an unnoticed regression costs rankings (sitemap, titles) or exposes/breaks /admin and 2,000+ redirects (middleware). All are pure or near-pure and cheap to pin.",
+      "effort": "M",
+      "proposed_fix": "Three test files in the existing tests/ssr/*.test.mjs pattern: (a) sitemap unit test asserting a known redirect-source handle and a noindex article are excluded and all URLs start with the www origin; (b) lib/seo.ts table test for capTitle (suffix-drop vs truncate) and ensureTitleDistinctFromH1; (c) middleware test via NextRequest fixtures: no-env → 503, bad/valid Basic creds → 401/200+X-Robots-Tag, manual-redirect-beats-filter-subpath precedence."
+    },
+    {
+      "id": "codeq-phone-literals-03",
+      "title": "Canonical phone bypassed by hardcoded literals; chat surfaces present the Koreatown showroom line as the 'general line'",
+      "severity": "P2",
+      "evidence": "Canonical business phone is (800) 218-3578 (lib/site-config.ts:17-26, backed by the Shopify site_config metaobject; lib/sanitize.ts:643-654 even rewrites stale 818 numbers in merchant HTML to the 800 line for NAP consistency). Hardcoded literals bypassing it: lib/service-pages.ts:75,111,118 ('Call (800) 218-3578' + tel:+18002183578), lib/faq-extra.ts:92,196,240,320. Divergent number: app/_components/chat/chat-conversation.tsx:88,91,94,99 tell shoppers to 'call (213) 984-4654' on chat errors, chat-conversation.tsx:426 pattern-matches that literal, lib/chat/system-prompt.ts:43,164 declare '(213) 984-4654' the 'general line', and lib/plp-content.ts:255 repeats it — but +1-213-984-4654 is the Koreatown showroom's line (lib/showrooms.ts:62), not the 800 business line.",
+      "impact": "If the merchant changes the business phone in the site_config metaobject (the documented single source of truth), 13+ literals keep serving the old number; and today chat/PLP copy contradicts the NAP consistency that lib/sanitize.ts works to enforce — shoppers hitting a chat outage are routed to one showroom instead of the tracked 800 line.",
+      "effort": "S",
+      "proposed_fix": "Import SITE_PHONE_DISPLAY/SITE_PHONE_TEL in lib/service-pages.ts and lib/faq-extra.ts (template literals in the data strings). For chat: either confirm the 213 routing is intentional and add a comment + single CHAT_FALLBACK_PHONE constant, or switch chat-conversation.tsx, system-prompt.ts, and plp-content.ts:255 to the site-config 800 number."
+    },
+    {
+      "id": "codeq-god-admin-page-04",
+      "title": "God file: app/admin/page.tsx is 2,792 lines — one 1,980-line server component plus 20 inline chart components",
+      "severity": "P2",
+      "evidence": "wc -l app/admin/page.tsx = 2792. `DashboardPage` spans lines 100-2081 (single async server component fetching + rendering ~15 dashboard sections inline). Lines 2082-2792 hold ~20 purely presentational components (FunnelViz:2082, PostHogConfigHint:2114, DeviceTable:2140, DeviceConversionTable:2171, QuizResultsMixCard:2211, QuizClickTargetsTable:2285, ShowroomTrafficTable:2324, AnomalyStrip:2375, DeltaBadge:2422, RateDelta:2455, Sparkline:2503, RevenueLineChart:2550, DayOfWeekHeatmap:2613, HourOfDayHeatmap:2662, SourceDonut:2735, plus fmtMoney/relativeTime/pct helpers).",
+      "impact": "Any admin-dashboard change touches a 2.8k-line file; the monolithic component also serializes all section data fetches into one render instead of streaming per-section.",
+      "effort": "L",
+      "proposed_fix": "Two mechanical seams, both following patterns that already exist in the repo: (1) move the 20 components at lines 2082-2792 into app/admin/_components/ (directory already holds data-table.tsx, recent-orders-table.tsx, etc.) — pure cut-and-paste, ~700 lines out. (2) Split DashboardPage into per-section async server components (RevenueSection, FunnelSection, DeviceSection, QuizSection, ShowroomSection...), each co-locating its lib/shopify/admin.ts fetch, anchored on the existing lib/dashboard/sections.ts; wrap each in <Suspense> to parallelize the Admin-API calls the current sequential body awaits."
+    },
+    {
+      "id": "codeq-god-admin-lib-05",
+      "title": "God file: lib/shopify/admin.ts is 1,762 lines of 18 unrelated dashboard queries in one module",
+      "severity": "P3",
+      "evidence": "wc -l lib/shopify/admin.ts = 1762. Exports span four unrelated domains: orders (getOrderSummary:264, getOrderSummaryWithTrends:343, getOrderDetail:988, getOrderClassification:1687), catalog (getCatalogHealth:489, getTopProducts:550, getLowStock:852), SEO (getSeoGaps:624, getBlogSeoGaps:733), customers (getCustomerInsights:1269, getRefundHealth:1365, getCustomerLifetime:1461, getRepeatBuyerGap:1588), plus core plumbing (adminConfig:31, adminGql:53, getAdminHealth:147). The migration pattern already exists: pure aggregation was extracted to lib/dashboard/{customer-lifetime,refund-aggregation}.ts and re-imported at admin.ts:17-21.",
+      "impact": "Maintenance-only: every dashboard query change churns the same 1.8k-line file; unit tests can't import query builders without dragging in `server-only` (the reason numericIdFromGid was already evicted to ./gid, admin.ts:23-26).",
+      "effort": "M",
+      "proposed_fix": "Split into lib/shopify/admin/{client.ts (adminConfig, adminGql, ADMIN_CONFIGURED, getAdminHealth), orders.ts, catalog.ts, seo.ts, customers.ts} with an index.ts barrel re-exporting the current names so all call sites keep `@/lib/shopify/admin` imports unchanged. Continue moving pure aggregation (e.g. aggregateCustomerInsights:1236, percentile:1578) into lib/dashboard/ for testability."
+    },
+    {
+      "id": "codeq-god-pages-handle-06",
+      "title": "God file: app/(storefront)/pages/[handle]/page.tsx is 1,556 lines — 5 full page templates inlined in the route dispatcher",
+      "severity": "P3",
+      "evidence": "wc -l = 1556. The route is a dispatcher over ~12 page types, but 5 templates live inline: DefaultPage:403, LocationsIndexPage:483 (~320 lines), ShowroomPage:806, SalePage:990 (~300 lines, plus SALE_CATEGORY_CHIPS:949 / SALE_SHOP_BY:968 / SALE_GUIDES:980 data constants), NeighborhoodPage:1295 (~260 lines); generateMetadata alone spans lines 102-403. Meanwhile 10+ sibling page types already follow the extracted pattern — imports at lines 28-50 pull ServicePage, GuidePage, ComparisonPage, FaqPage, ReviewsPage, LegalPage, ContactPage etc. from app/_components/sections/.",
+      "impact": "Maintenance: sale-page or showroom edits churn the shared dispatcher for every CMS route; the half-migrated state means two conventions coexist in one file.",
+      "effort": "M",
+      "proposed_fix": "Finish the established migration: move LocationsIndexPage, ShowroomPage, SalePage (+ its SALE_* constants into lib/, matching lib/service-pages.ts), NeighborhoodPage, and DefaultPage into app/_components/sections/, and split generateMetadata's per-type branches alongside them. page.tsx shrinks to the handle-dispatch switch (~300 lines)."
+    },
+    {
+      "id": "codeq-npm-audit-07",
+      "title": "2 high-severity transitive vulns (undici via cheerio, protobufjs via posthog-js), all with fixes available",
+      "severity": "P2",
+      "evidence": "npm-audit.json: 21 total (2 high, 18 moderate, 1 low, 0 critical), all fixAvailable=true. `npm ls` traces: cheerio@1.2.0 → undici@7.25.0 (TLS cert-validation bypass in SOCKS5 ProxyAgent; Set-Cookie header injection) and posthog-js@1.374.2 → @opentelemetry/otlp-transformer → protobufjs@7.6.0 (property-shadowing; DoS via unbounded Any expansion).",
+      "impact": "Practical exploitability is low today — undici sits under cheerio (HTML parsing, not app networking) and protobufjs under a browser telemetry lib — but 'high + fixAvailable' is exactly what dependency scanners and merchants' security questionnaires flag, and the fix is nearly free.",
+      "effort": "S",
+      "proposed_fix": "Run `npm audit fix` (non-breaking per fixAvailable), re-run tsc/lint/ssr-tests, ship. Add a monthly `npm audit --audit-level=high` CI step so highs can't accumulate silently."
+    },
+    {
+      "id": "codeq-stale-admin-comment-08",
+      "title": "Stale 'Admin API is forbidden' doc in lib/shopify/client.ts (and .env.example) contradicts the shipped /admin dashboard",
+      "severity": "P3",
+      "evidence": "lib/shopify/client.ts:5-7: 'this is the ONLY Shopify API used by the Next.js app — Admin API is forbidden in this codebase.' Contradicted by lib/shopify/admin.ts (1,762-line runtime Admin API client, header comment: 'Used by the /admin route') reading SHOPIFY_ADMIN_TOKEN at admin.ts:41. Same staleness in .env.example:21-25 ('USED ONLY by scripts/pull-inventory.mjs, never by the app').",
+      "impact": "A new contributor following the stated hard rule would refuse to touch or would try to remove the admin data layer; stale invariant docs erode trust in the (otherwise unusually good) inline documentation.",
+      "effort": "S",
+      "proposed_fix": "Rewrite client.ts:4-7 to: Storefront token is the only API used on STOREFRONT routes; the Admin API is confined to the Basic-Auth-protected /admin surface via lib/shopify/admin.ts (server-only). Update .env.example:21-25 to match."
+    },
+    {
+      "id": "codeq-dead-exports-09",
+      "title": "Dead exports: getMenu and the entire lib/shopify/queries/handles.ts module (3 functions) have zero call sites",
+      "severity": "P3",
+      "evidence": "getMenu (lib/shopify/queries/menu.ts:23) is only referenced by its barrel re-export (lib/shopify/index.ts:12) and README.md:135 — `grep -rln getMenu` over app/, lib/, tests/, scripts/ finds no consumer. Same for all three exports of lib/shopify/queries/handles.ts (62 lines): getAllProductHandles, getAllCollectionHandles, getAllPageHandles (barrel line index.ts:13) — 0 usages; app/sitemap.ts:2 sources handles from '@/lib/inventory' snapshots instead.",
+      "impact": "~90 lines of dead Storefront-API query code that still compiles and reads as live surface area; the handles queries paginate the full catalog and would be an accidental cost/latency trap if someone 'reuses' them instead of lib/inventory.",
+      "effort": "S",
+      "proposed_fix": "Delete lib/shopify/queries/menu.ts and lib/shopify/queries/handles.ts plus their two barrel lines (lib/shopify/index.ts:12-13); fix the README.md:135 mention. tsc will confirm nothing breaks."
+    },
+    {
+      "id": "codeq-site-const-dup-10",
+      "title": "8 files hardcode `const SITE = 'https://www.mattressstoreslosangeles.com'` instead of importing SITE_URL, bypassing the apex-guard",
+      "severity": "P3",
+      "evidence": "grep 'const SITE = ': app/(storefront)/pages/[handle]/page.tsx:84, app/_components/sections/mattress-sizes-page.tsx:128, app/_components/sections/reviews-page.tsx:6, app/(storefront)/blogs/[blog]/page.tsx:54, app/(storefront)/blogs/[blog]/[article]/page.tsx:40, app/(storefront)/blogs/page.tsx:39, app/(storefront)/pages/sitemap/page.tsx:34, app/(storefront)/sleep-quiz/page.tsx:46. Contrast app/sitemap.ts:33 and app/robots.ts:7 which correctly do `const SITE = SITE_URL` — SITE_URL exists precisely to force-canonicalize apex→www (lib/site-config.ts:57-72, with a comment documenting the SEMrush 'Temporary redirects' regression it prevents).",
+      "impact": "No live bug (all literals currently equal the canonical origin), but canonical/JSON-LD URLs on 8 templates would silently diverge from sitemap/robots on any future domain or host change — exactly the class of drift canonicalizeSiteUrl was written to prevent.",
+      "effort": "S",
+      "proposed_fix": "Mechanical replace: `import { SITE_URL } from '@/lib/site-config'` and `const SITE = SITE_URL;` in the 8 files (client components among them are fine — NEXT_PUBLIC_SITE_URL is inlined at build)."
+    },
+    {
+      "id": "codeq-sanitize-style-11",
+      "title": "sanitize.ts allows unfiltered style= on every tag (no allowedStyles), so merchant HTML can carry arbitrary CSS",
+      "severity": "P3",
+      "evidence": "lib/sanitize.ts:65 — allowedAttributes '*': ['class','id','style',...] with no `allowedStyles` in SANITIZE_CONFIG (lines 54-89). sanitize-html passes style attribute values through verbatim unless allowedStyles is configured. The config's own comment (lines 47-53) says it is 'strict about EXECUTION' — which holds (no scripts/handlers, schemes pinned, iframes host-pinned) — but arbitrary CSS still permits position:fixed full-viewport overlays or background-image:url() beacons in rendered bodies.",
+      "impact": "Low: the input is the merchant's own TinyMCE content, so the attacker must already control Shopify Admin. But this is the single remaining unconstrained channel in an otherwise tightly allowlisted sanitizer, and a compromised merchant account could deface every article/PDP/PLP body at render time.",
+      "effort": "S",
+      "proposed_fix": "Add an allowedStyles map covering the properties merchant content actually uses (text-align, color, font-weight/style, width/height, margin/padding, list-style) — stripEditorCruft (lib/sanitize.ts:524) already prunes mso-*/font-weight:400, so the observed style vocabulary is small; extend tests/ssr/lib-sanitize-xss.test.mjs with a position:fixed overlay case."
+    },
+    {
+      "id": "codeq-action-error-leak-12",
+      "title": "Cart server actions return raw upstream error messages to the client UI",
+      "severity": "P3",
+      "evidence": "app/_actions/cart.ts:79 `return { ok: false, error: err instanceof Error ? err.message : 'Add to cart failed' }` — repeated at lines 94, 106, 128, 140, 157, 169, 212. ShopifyApiError messages embed upstream response bodies: lib/shopify/client.ts:75 throws `Storefront API HTTP ${res.status}: ${body.slice(0, 200)}`, and AbortSignal.timeout produces 'The operation was aborted due to timeout'.",
+      "impact": "On a Storefront outage/429, shoppers see raw backend jargon ('Storefront API HTTP 429: {\"errors\"...') in cart toasts instead of an actionable message — the exact anti-pattern the chat UI already solved (friendlyChatError, app/_components/chat/chat-conversation.tsx:66-79). Minor internal-detail disclosure, mostly a UX/consistency defect.",
+      "effort": "S",
+      "proposed_fix": "Map errors in one helper: return the caller-supplied friendly fallback ('Add to cart failed — please try again') for ShopifyApiError/AbortError, keep err.message only for UserError-derived validation messages, and console.error the raw error for Vercel logs."
+    }
+  ]
+}

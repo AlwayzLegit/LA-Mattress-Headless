@@ -1,0 +1,95 @@
+{
+  "area": "security-privacy",
+  "findings": [
+    {
+      "id": "secpriv-01",
+      "title": "PostHog session replay records unmasked PII from CCPA and newsletter forms",
+      "severity": "P1",
+      "evidence": "app/_components/analytics-posthog.tsx:60-66 sets session_recording { maskAllInputs: false, maskTextSelector: '[data-ph-mask]', maskInputOptions: { password: true } } with autocapture:true and replay enabled (disable_session_recording:false, 10% sample). The CCPA intake form inputs at app/_components/sections/data-opt-out-form.tsx:131 (name), :135 (email), :141 (zip) carry NO data-ph-mask attribute; newsletter email input in app/_components/newsletter-form.tsx is likewise unmasked. grep for data-ph-mask/data-ph-no-capture returns only the config comments, zero form usages.",
+      "impact": "For the ~10% of sessions sampled, PostHog captures the full name + email + ZIP a visitor types into the CCPA/CPRA privacy-rights form — i.e. the exact PII the user is submitting a request to keep private — plus every newsletter email keystroke. This lands the PII in PostHog replay storage (a third-party processor) with no consent gate beyond DNT, undermining the CCPA workflow and creating a disclosure/retention liability.",
+      "effort": "S",
+      "proposed_fix": "Either set maskAllInputs:true globally (mask text inputs in replay; explicitly unmask only non-PII fields), or add data-ph-mask (and data-ph-no-capture on the wrapper) to every name/email/zip/notes input on the CCPA and newsletter forms. Given the CCPA form's purpose, prefer masking by default and treating any exception as opt-in."
+    },
+    {
+      "id": "secpriv-02",
+      "title": "CSP relies on 'unsafe-inline' + 'unsafe-eval' while rendering a large merchant-HTML injection surface",
+      "severity": "P1",
+      "evidence": "next.config.mjs:107 `script-src 'self' 'unsafe-inline' 'unsafe-eval' ...`. Rationale documented at next.config.mjs:26-34,83-106: inline JSON-LD, GA4 bootstrap and Judge.me inline scripts require 'unsafe-inline'; the Judge.me legacy widget's eval() requires 'unsafe-eval'. Meanwhile 25+ components render merchant/CMS HTML via dangerouslySetInnerHTML (grep: app/(storefront)/blogs/[blog]/[article]/page.tsx, products/[handle]/page.tsx, pages/[handle]/page.tsx, plp-content-block.tsx, etc.).",
+      "impact": "'unsafe-inline' negates the primary XSS mitigation CSP would otherwise provide: if any of the numerous dangerouslySetInnerHTML paths ever renders attacker-controlled markup that slips past lib/sanitize.ts, an injected <script> or inline handler executes with no CSP backstop. 'unsafe-eval' additionally widens the gadget surface. The sanitizer is currently the ONLY line of defense against stored XSS from Shopify CMS content.",
+      "effort": "L",
+      "proposed_fix": "Move to a nonce-based CSP: generate a per-request nonce in middleware, stamp it on the app's own inline scripts (JSON-LD, GA4/PostHog bootstraps) and the CSP header, and drop 'unsafe-inline'. Migrate JSON-LD to nonce'd <script>. For Judge.me's eval requirement, isolate the legacy widget in a sandboxed iframe or push Judge.me for an eval-free build so 'unsafe-eval' can be removed. Report-only rollout first via the existing Sentry report-uri."
+    },
+    {
+      "id": "secpriv-03",
+      "title": "Rate-limit key derived from spoofable leftmost X-Forwarded-For, bypassing all throttles",
+      "severity": "P2",
+      "evidence": "lib/rate-limit.ts:91-98 getClientIp() returns `xff.split(',')[0]?.trim()` — the leftmost X-Forwarded-For value — as the rate-limit key. This key is used by /api/chat (route.ts:137), /api/newsletter (route.ts:29) and /api/ccpa-request (route.ts:41).",
+      "impact": "The leftmost XFF entry is client-appendable. An attacker who sends a rotating/spoofed X-Forwarded-For header lands each request in a fresh bucket, defeating the per-IP limiter entirely. For /api/chat this removes the only guard on Anthropic token spend (direct dollar cost); for /api/newsletter and /api/ccpa-request it removes the guard on Shopify customer-record creation. The in-memory-per-instance limitation (documented at rate-limit.ts:10-18) compounds this.",
+      "effort": "S",
+      "proposed_fix": "Key off Vercel's trusted client IP (request.headers 'x-vercel-ip' / the platform-provided IP, or `request.ip` where available) rather than the caller-controlled leftmost XFF. If XFF must be used, take the rightmost trusted hop appended by Vercel's proxy, not the leftmost. Longer term, move to a durable cross-instance store (the code already notes Upstash/KV as the swap-in)."
+    },
+    {
+      "id": "secpriv-04",
+      "title": "No Strict-Transport-Security (HSTS) header; COOP/CORP also absent",
+      "severity": "P2",
+      "evidence": "next.config.mjs:125-146 headers() emits CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and Permissions-Policy for source '/:path*' — but no Strict-Transport-Security, Cross-Origin-Opener-Policy, or Cross-Origin-Resource-Policy. Vercel does not add HSTS automatically.",
+      "impact": "Without HSTS a first-visit or cookie-stripped request is downgrade/SSL-strip-vulnerable on hostile networks (the cartId cookie is httpOnly+secure but the session still relies on TLS being reached). Absent HSTS the domain also can't be added to the browser preload list. Missing COOP/CORP leaves the origin without cross-origin isolation hardening.",
+      "effort": "S",
+      "proposed_fix": "Add `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` to the headers() array (confirm all subdomains are HTTPS before includeSubDomains/preload). Consider Cross-Origin-Opener-Policy: same-origin and Cross-Origin-Resource-Policy: same-origin as defense-in-depth."
+    },
+    {
+      "id": "secpriv-05",
+      "title": "Admin Basic Auth has no rate limiting or lockout — brute-force resistance rests entirely on password entropy",
+      "severity": "P2",
+      "evidence": "middleware.ts:183-202: on each /admin/* request the handler decodes the Basic header and compares with timingSafeEqual, returning 401 on mismatch. There is no attempt counter, backoff, or lockout, and the shared lib/rate-limit.ts is not invoked here (middleware runs at the edge where in-memory counters wouldn't hold anyway). Credentials come from ADMIN_USER/ADMIN_PASSWORD env vars (middleware.ts:44-45).",
+      "impact": "An attacker can submit unlimited credential guesses against /admin at edge speed. Security is 100% dependent on ADMIN_PASSWORD being high-entropy (the docstring says so but nothing enforces it) and never reused/leaked. There is no second factor and no alerting on repeated 401s.",
+      "effort": "M",
+      "proposed_fix": "Add brute-force friction: a durable (KV/Upstash) attempt counter per IP+realm with exponential backoff, and/or front /admin with Vercel's platform auth or an authenticated identity provider. At minimum, emit a Sentry alert on a burst of admin 401s (the X-Auth-Reason header already distinguishes failure modes) and document/enforce a minimum password length."
+    },
+    {
+      "id": "secpriv-06",
+      "title": "Newsletter endpoint subscribes arbitrary emails with SINGLE_OPT_IN and no verification",
+      "severity": "P2",
+      "evidence": "app/api/newsletter/route.ts:86-89 sets emailMarketingConsent { marketingState:'SUBSCRIBED', marketingOptInLevel:'SINGLE_OPT_IN' } for any email that passes the regex; duplicate-email is swallowed as success (:99). The only abuse guard is the spoofable, per-instance rate limiter (5/min, see secpriv-03).",
+      "impact": "Anyone can subscribe a third party's email to the merchant's marketing list without confirmation (list poisoning / consent injection), and — combined with the XFF-key bypass — do so at volume, flooding the Shopify customer list and potentially triggering CAN-SPAM/GDPR consent-provenance problems for the merchant. Idempotent-success on duplicates also means an attacker can silently re-subscribe someone who unsubscribed.",
+      "effort": "M",
+      "proposed_fix": "Switch to double opt-in (CONFIRMED_OPT_IN) so no address is marked subscribed until it confirms, and/or add a lightweight bot check (hCaptcha/Turnstile or a proof-of-work token) plus a trustworthy IP key. Do not treat an existing SUBSCRIBED customer as a re-subscribe."
+    },
+    {
+      "id": "secpriv-07",
+      "title": "sanitize.ts allowlist permits arbitrary inline style attribute on all tags",
+      "severity": "P3",
+      "evidence": "lib/sanitize.ts:65 `'*': ['class', 'id', 'style', 'title', 'dir', 'lang', 'align', 'data-*']` — style is allowed on every tag and no allowedStyles/CSS filter is configured, so sanitize-html passes CSS values through unparsed. (Scheme handling is otherwise sound: allowedSchemes at :77 omits javascript:/data:, event-handler attrs are not allowlisted so onclick etc. are dropped, and iframes are host-pinned at :78-85.)",
+      "impact": "Merchant/CMS-authored CSS can inject full-viewport fixed-position overlays (clickjacking of the storefront's own controls), off-screen content, or url()-based requests to arbitrary hosts. Not script execution, but a real UI-redress and request-initiation surface fed by editable Shopify content. The XSS allowlist itself is otherwise solid — this is the notable residual gap.",
+      "effort": "M",
+      "proposed_fix": "Constrain style via sanitize-html's allowedStyles (whitelist safe properties: color, text-align, font-*, margin/padding, width/height) and reject position:fixed/absolute and url(...) values, or drop the style attribute entirely and move presentation to allowlisted classes."
+    },
+    {
+      "id": "secpriv-08",
+      "title": "Preview-enable GET puts the preview token in the URL (server access logs + browser history)",
+      "severity": "P3",
+      "evidence": "app/api/preview/enable/route.ts:44-53 GET reads `token` from the query string and 302-redirects. The token equals SALE_PAGE_PREVIEW_TOKEN (lib/preview-auth.ts:23). Query strings are recorded in Vercel access logs and the visitor's browser history/Referer, unlike the POST body path.",
+      "impact": "The long-lived preview secret leaks into log aggregators and browser history on every bookmark click. Anyone with the token can enable draftMode and view unpublished/parked sale pages (e.g. the ELITE SLEEP+ draft cluster). Low blast radius (no data mutation, no PII), but a static shared secret in URLs is avoidable. verifyPreviewToken is timing-safe but has no rate limit, so the token is also brute-forceable if short.",
+      "effort": "S",
+      "proposed_fix": "Prefer the POST form for activation; if the bookmark GET UX must stay, rotate the token to a high-entropy value, keep Referrer-Policy strict (already set), and consider a short-lived signed token instead of a static secret. Add basic rate limiting to verifyPreviewToken callers."
+    },
+    {
+      "id": "secpriv-09",
+      "title": "Two high-severity transitive dependency CVEs (undici TLS-validation bypass, protobufjs DoS)",
+      "severity": "P3",
+      "evidence": "audit-data/npm-audit.json: undici (high) — 'TLS certificate validation bypass via dropped requestTls in SOCKS5 ProxyAgent' + 'HTTP header injection via Set-Cookie percent-decoding'; protobufjs (high) — 'DoS through unbounded Any expansion' + property shadowing. Both are transitive (pulled via @sentry/node / opentelemetry / posthog-node server dependencies). 21 total vulns (2 high, 18 moderate, 1 low). dompurify moderate is also present transitively though lib/sanitize.ts uses sanitize-html, not DOMPurify, on the render path.",
+      "impact": "undici's TLS-validation and header-injection issues affect server-side outbound HTTP (Shopify Admin/Storefront calls, PostHog/GA4/Sentry forwarding). The SOCKS5 path is not obviously exercised here, so real-world exposure is limited, but the header-injection vector touches Set-Cookie handling. protobufjs DoS is reachable only through the telemetry SDKs' serialization.",
+      "effort": "S",
+      "proposed_fix": "Run npm audit fix / bump @sentry/nextjs, posthog-node/posthog-js and the opentelemetry stack to versions pulling patched undici (>=6.21.2/7.x fixed) and protobufjs. Re-run npm audit to confirm the 2 highs clear; triage the 18 moderates after."
+    },
+    {
+      "id": "secpriv-10",
+      "title": "Sentry client beforeSend performs noise-filtering only, no PII scrubbing (defense-in-depth gap)",
+      "severity": "P3",
+      "evidence": "instrumentation-client.ts:83-103 beforeSend only drops extension/anonymous-frame noise; it does not scrub PII from event messages, breadcrumbs, or request context. Funnel breadcrumbs in lib/analytics.ts:341-357 attach event props for add_to_cart/checkout_started/quiz events (cart values, handles — no email today). Server webhook identifies PostHog persons with customer email/name (app/api/webhooks/shopify/order-paid/route.ts:147-156) — intended CRM enrichment, but no scrubbing layer exists if PII is ever added to a captured event or Sentry.setUser.",
+      "impact": "No email/PII is captured in Sentry today, so current exposure is low — but there is no guardrail. Any future Sentry.setUser(email) or a breadcrumb carrying an email/order-note would flow to Sentry unfiltered. The absence is a latent risk rather than an active leak.",
+      "effort": "S",
+      "proposed_fix": "Add a PII-scrub step in beforeSend/beforeBreadcrumb (redact email/phone/address-shaped strings from messages, breadcrumb data, and request query/body) and keep sendDefaultPii disabled. Cheap insurance given the analytics + webhook code paths already handle customer PII."
+    }
+  ]
+}
