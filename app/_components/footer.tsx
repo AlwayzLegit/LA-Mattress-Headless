@@ -97,7 +97,10 @@ export async function Footer() {
         </div>
         <div className="footer-cols">
           {COLS.map((c) => {
-            const navId = `footer-col-${c.title.toLowerCase()}`;
+            // Slugify: raw titles like 'Customer Care' produced an id with a
+            // space, which tokenizes the aria-labelledby IDREF into two dead
+            // references (audit a11y-aria-02).
+            const navId = `footer-col-${c.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
             return (
               // Each column is a nav landmark for SR landmark-nav. The
               // .eyebrow class is stylistic; the element is now a real

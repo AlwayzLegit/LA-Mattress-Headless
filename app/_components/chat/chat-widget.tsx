@@ -6,7 +6,16 @@ import { Icon } from '../icon';
 import { track } from '@/lib/analytics';
 import { useFocusTrap } from '../use-focus-trap';
 import { useBodyScrollLock } from '../use-body-scroll-lock';
-import { ChatConversation } from './chat-conversation';
+import dynamic from 'next/dynamic';
+
+// The conversation UI (~29KB source) only renders after the launcher is
+// clicked — dynamic import keeps it out of every page's shared bundle
+// (audit perf-js-09). No loading state needed: the panel opens with its
+// own skeleton feel within the chunk fetch.
+const ChatConversation = dynamic(
+  () => import('./chat-conversation').then((m) => m.ChatConversation),
+  { ssr: false },
+);
 import { CHAT_OPEN_EVENT } from '@/lib/chat/chat-events';
 
 /**

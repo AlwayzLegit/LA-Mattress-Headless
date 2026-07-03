@@ -81,6 +81,19 @@ if (DSN) {
     // anonymous (no-frame) inline script or an extension URL. These are
     // virtually always noise.
     beforeSend(event, hint) {
+      // Defense-in-depth PII scrub (audit secpriv-10): nothing should put
+      // an email/phone into an event today, but adjacent code paths
+      // (newsletter, CCPA, checkout handoff) handle both — redact from
+      // free-text surfaces so a future breadcrumb/message can't leak.
+      const EMAIL_RE = /[\w.+-]+@[\w-]+\.[\w.]+/g;
+      const PHONE_RE = /\+?1?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/g;
+      const scrub = (v: string) => v.replace(EMAIL_RE, '[email]').replace(PHONE_RE, '[phone]');
+      if (typeof event.message === 'string') event.message = scrub(event.message);
+      if (event.request?.url) event.request.url = scrub(event.request.url);
+      for (const crumb of event.breadcrumbs ?? []) {
+        if (typeof crumb.message === 'string') crumb.message = scrub(crumb.message);
+      }
+
       const frames = event.exception?.values?.[0]?.stacktrace?.frames ?? [];
       // No frames at all = synthetic "Script error." (handled above) or
       // an extension throw with stack stripped.

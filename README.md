@@ -132,7 +132,7 @@ lib/
     types.ts               Hand-written TS types (Product, Collection, Page, Cart, Money, Image,
                            Article, Blog, AvailableFilter, ProductFilter)
     queries/               getProductByHandle, getCollectionByHandle, getPageByHandle,
-                           getBlogByHandle, getArticleByHandle, getMenu, handles, search
+                           getBlogByHandle, getArticleByHandle, search
     mutations/cart.ts      cartCreate, cartLinesAdd/Update/Remove, getCart
     index.ts               Barrel export — routes import from `@/lib/shopify`
   inventory.ts             Build-time accessors over data/url-inventory snapshots

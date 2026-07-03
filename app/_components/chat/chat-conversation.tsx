@@ -85,7 +85,7 @@ function friendlyChatError(rawMessage: string, status?: number): string {
     return "We're getting a lot of questions right now. Give it a moment and try again.";
   }
   if (status === 503) {
-    return "The chat assistant is briefly unavailable. Call (213) 984-4654 or try again in a minute.";
+    return "The chat assistant is briefly unavailable. Call (800) 218-3578 or try again in a minute.";
   }
   if (status === 504 || /timeout|timed out/i.test(rawMessage)) {
     return "That took longer than expected. Try a shorter question, or call (213) 984-4654.";

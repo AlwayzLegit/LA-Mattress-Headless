@@ -2,7 +2,6 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Icon } from './icon';
 import { phImg, type PhFit } from './images';
@@ -348,23 +347,21 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
       <header className={`nav${scrolled ? ' nav-scrolled' : ''}`} onMouseLeave={() => setMega(null)}>
         <div className="container nav-inner">
           <Link href="/" className="logo" aria-label="LA Mattress">
-            <Image
+            {/* Plain <img>: the custom loader passes local assets through
+                untransformed, so next/image emitted a junk 16-entry srcset
+                (same PNG x16) plus a priority preload competing with real
+                LCP resources (audit perf-img-10). One eager fetch of the
+                static PNG is strictly better. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/assets/la-mattress-logo.png"
               alt="LA Mattress"
               className="logo-img"
               width={400}
               height={224}
-              priority
-              // .logo-img renders at height:38px, width:auto → ~68px wide
-              // at 400:224 aspect. Without `sizes` Next/Image's srcset
-              // selection assumes 100vw and serves the largest variant
-              // (~640px+); with sizes set, the browser picks the 96-128px
-              // variant (covers 2x DPI). Drops the logo payload from
-              // ~30 KB to ~6-8 KB on the LCP-blocking nav.
-              sizes="68px"
             />
           </Link>
-          <nav className="nav-items">
+          <nav className="nav-items" aria-label="Primary">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.label}
@@ -510,17 +507,15 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
       {mobileOpen ? (
         <div className="mobile-drawer" role="dialog" aria-label="Site menu" aria-modal="true" ref={mobileDrawerRef}>
           <div className="mobile-drawer-hd">
-            <Image
+            {/* Plain <img> — same rationale as the header logo
+                (perf-img-10); reused from cache when the drawer opens. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/assets/la-mattress-logo.png"
               alt="LA Mattress"
               className="logo-img"
               width={400}
               height={224}
-              // Same rendered size as the main nav logo (.logo-img — 38px
-              // tall, ~68px wide). The image is reused from cache when
-              // the mobile drawer opens, but `sizes` still helps the
-              // first cold-load through Next/Image's srcset selection.
-              sizes="68px"
             />
             <button ref={mobileCloseRef} className="icon-btn" type="button" onClick={closeMobile} aria-label="Close menu">
               <Icon name="close" size={22} />

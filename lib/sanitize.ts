@@ -51,6 +51,29 @@ import sanitizeHtml from 'sanitize-html';
 // host-pinned to the embed providers article bodies actually use
 // (YouTube/Vimeo pass through by design — see Phase 229 note above;
 // Google Maps iframes are additionally stripped by a later pass).
+// style="" value allowlist (audit codeq-sanitize-style-11 / secpriv-07):
+// `style` was the one unconstrained channel in an otherwise tight
+// sanitizer — merchant HTML could carry position:fixed overlays (UI
+// redress) or url(...) values (request beacons). Constrain to the
+// presentation vocabulary TinyMCE content actually uses. VALUE_SAFE
+// intentionally has no `(` so url()/expression()/var() never survive;
+// COLOR_SAFE additionally admits rgb()/rgba()/hsl()/hsla() only.
+const VALUE_SAFE = /^[\w\s.,%#+-]*$/;
+const COLOR_SAFE = /^(#[0-9a-f]{3,8}|[a-z]+|rgba?\([\d\s.,%]+\)|hsla?\([\d\s.,%]+\))$/i;
+const STYLE_PROPS: Record<string, RegExp[]> = Object.fromEntries([
+  ...['color', 'background-color', 'border-color'].map((k) => [k, [COLOR_SAFE]]),
+  ...[
+    'text-align', 'vertical-align', 'font-weight', 'font-style', 'font-size',
+    'text-decoration', 'text-decoration-line', 'line-height', 'letter-spacing',
+    'width', 'max-width', 'min-width', 'height', 'max-height',
+    'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+    'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+    'border', 'border-width', 'border-style', 'border-radius', 'border-collapse',
+    'border-spacing', 'float', 'clear', 'white-space', 'word-break',
+    'overflow-wrap', 'list-style-type', 'caption-side', 'table-layout',
+  ].map((k) => [k, [VALUE_SAFE]]),
+]);
+
 const SANITIZE_CONFIG: sanitizeHtml.IOptions = {
   allowedTags: [
     'a', 'abbr', 'address', 'b', 'blockquote', 'br', 'caption', 'code',
@@ -61,6 +84,7 @@ const SANITIZE_CONFIG: sanitizeHtml.IOptions = {
     'summary', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead',
     'tr', 'u', 'ul',
   ],
+  allowedStyles: { '*': STYLE_PROPS },
   allowedAttributes: {
     '*': ['class', 'id', 'style', 'title', 'dir', 'lang', 'align', 'data-*'],
     a: ['href', 'name', 'target', 'rel'],

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Shopify",
+      "mcp__Semrush",
+      "mcp__Vercel",
+      "mcp__Sentry",
+      "mcp__PostHog"
+    ]
+  }
+}
