@@ -15,8 +15,6 @@
     "@anthropic-ai/sdk": "^0.98.0",
     "@sentry/nextjs": "^10.51.0",
     "@shopify/hydrogen-react": "^2026.4.3",
-    "@vercel/analytics": "^2.0.1",
-    "@vercel/speed-insights": "^2.0.0",
     "leaflet": "^1.9.4",
     "next": "^15.5.15",
     "posthog-js": "^1.374.2",

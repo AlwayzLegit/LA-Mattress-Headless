@@ -27,7 +27,7 @@
  * not multiply ad-hoc.
  */
 
-import posthog from 'posthog-js';
+import { withPostHog } from '@/lib/ph'; // lazy SDK — keeps 63KB gzip out of First Load JS (audit perf-js-03)
 import * as Sentry from '@sentry/nextjs';
 
 /* ------------------------------------------------------------------------ *
@@ -292,7 +292,7 @@ export function track<E extends AnalyticsEvent>(name: E['name'], props: E['props
   if (typeof window === 'undefined') return;
   try {
     if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      posthog.capture(name, props as Record<string, unknown>);
+      withPostHog((ph) => ph.capture(name, props as Record<string, unknown>));
     }
   } catch {
     // Never let analytics break the page. Swallow silently.
@@ -507,13 +507,13 @@ export function registerAttribution(): void {
     initial.initial_landing_path = window.location.pathname;
 
     if (Object.keys(session).length > 0) {
-      posthog.register(session);
+      withPostHog((ph) => ph.register(session));
     }
     if (Object.keys(initial).length > 0) {
       // set_once: only the FIRST session's values stick on the person
       // row. Subsequent visits update the session-scoped super-props
       // above but leave the initial attribution intact.
-      posthog.people.set_once(initial);
+      withPostHog((ph) => ph.people.set_once(initial));
     }
   } catch {
     /* silent — never let analytics break the page */
@@ -531,7 +531,7 @@ export function identify(distinctId: string, properties?: Record<string, unknown
   if (typeof window === 'undefined') return;
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
   try {
-    posthog.identify(distinctId, properties);
+    withPostHog((ph) => ph.identify(distinctId, properties));
   } catch {
     /* silent */
   }
@@ -545,7 +545,7 @@ export function resetIdentity(): void {
   if (typeof window === 'undefined') return;
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
   try {
-    posthog.reset();
+    withPostHog((ph) => ph.reset());
   } catch {
     /* silent */
   }
