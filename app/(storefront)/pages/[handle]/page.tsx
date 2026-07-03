@@ -101,7 +101,6 @@ export function generateStaticParams() {
 
 export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
-  const isPreview = await isPreviewEnabled();
   if (!SHOPIFY_CONFIGURED) return { title: 'Page' };
   if (isCodedPage(params.handle)) {
     const m = codedPageMeta(params.handle);
@@ -121,6 +120,14 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   }
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) return { title: 'Page not found' };
+  // Read the preview cookie only AFTER the page is known to exist:
+  // cookies() marks the whole render dynamic, and a dynamic render
+  // that then throws notFound() ships Next's empty __next_error__
+  // shell instead of the prerendered branded 404 (audit
+  // seo-tech-04/ux-404-07/a11y-404-03). Unknown handles — the common
+  // case, via stale external links — must 404 without ever touching a
+  // dynamic API.
+  const isPreview = await isPreviewEnabled();
   // Mirror the SalePage storefront date gate: when `custom.available_at`
   // is in the future, hide metadata so the pre-launch URL isn't indexed
   // or shared with rich SEO data before the sale goes live. Preview
@@ -236,7 +243,6 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 
 export default async function ShopifyPage(props: Params) {
   const params = await props.params;
-  const isPreview = await isPreviewEnabled();
   if (!SHOPIFY_CONFIGURED) notFound();
   // Coded /pages/* dispatched here instead of via a standalone static
   // leaf route under app/pages/* (`reviews`, `data-sharing-opt-out`
@@ -260,6 +266,9 @@ export default async function ShopifyPage(props: Params) {
   }
   const page = await getPageByHandle(params.handle).catch(() => null);
   if (!page) notFound();
+  // Preview cookie read deliberately AFTER the notFound() gate — see
+  // the matching note in generateMetadata (404s must stay static).
+  const isPreview = await isPreviewEnabled();
 
   const showroom = findShowroom(page.handle);
   if (showroom) return <ShowroomPage page={page} showroom={showroom} />;
