@@ -9,8 +9,6 @@ import { CartDrawer } from '../_components/cart-drawer';
 import { CompareTray } from '../_components/compare-tray';
 import { ChatWidget } from '../_components/chat/chat-widget';
 import { Announcer } from '../_components/announcer';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
 import { composeBrandTitle } from '@/lib/seo';
 import { getShopBrand, getActiveAnnouncement, getBrands, getSiteConfig } from '@/lib/shopify';
@@ -150,8 +148,12 @@ export default async function StorefrontLayout({ children }: { children: React.R
         <ChatWidget />
         <Announcer />
       </CartProvider>
-      <Analytics />
-      <SpeedInsights />
+      {/* Vercel Analytics + Speed Insights removed (audit perf-3p-04):
+          pageviews are covered by GA4 + PostHog, and CWV now flows to a
+          single sink (PostHog `web_vital`, which /admin queries). That
+          was five beacon stacks per pageview; now three with distinct
+          jobs: GA4 (Search Console attribution), PostHog (funnels +
+          replay + CWV), Shopify (Admin Analytics). */}
       <AnalyticsGa4 />
       {/* Shopify-native page-view beacon so Admin → Analytics session
           reports (sessions, traffic source, landing pages, conversion,

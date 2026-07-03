@@ -30,7 +30,7 @@
 
 import { useEffect } from 'react';
 import * as Sentry from '@sentry/nextjs';
-import posthog from 'posthog-js';
+import { withPostHog } from '@/lib/ph';
 
 // Long enough for slow mobile connections to finish the preloader →
 // cache fetch → render chain; short enough to report while the visitor
@@ -67,7 +67,7 @@ export function JudgemeHealthCheck({ productId }: { productId: string }) {
         tags: { integration: 'judgeme' },
         extra: { productId, preloaderLoaded: true },
       });
-      posthog.capture('judgeme_widget_failed', { product_id: productId });
+      withPostHog((ph) => ph.capture('judgeme_widget_failed', { product_id: productId }));
     }, CHECK_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, [productId]);
