@@ -1,5 +1,6 @@
 'use client';
 
+import imageLoader from '@/lib/image-loader';
 import type { Image as ShopifyImage } from '@/lib/shopify';
 
 /**
@@ -15,8 +16,10 @@ import type { Image as ShopifyImage } from '@/lib/shopify';
  * Users who never scroll past the main ATC (desktop, or short PDPs)
  * skip the cost of this chunk.
  *
- * CSS hides the bar entirely on desktop (>880px) so the show-true case
- * is effectively mobile-only.
+ * CSS hides the bar entirely above 1024px (where the .pdp-grid buy-box
+ * rail becomes sticky again), so the show-true case only occurs where
+ * the variant bottom-sheet is also available — the two breakpoints
+ * must move together (see globals.css, audit ux-pdp-01).
  */
 type Props = {
   show: boolean;
@@ -54,9 +57,14 @@ export function PdpStickyAtcBar({
     <div className={`pdp-sticky-bar${show ? ' on' : ''}`} aria-hidden={!show}>
       <div className="pdp-sticky-bar__inner">
         {productImage ? (
+          // Plain <img> is fine for a 48px thumb, but the URL must go
+          // through the CDN transform: with the raw URL, React 19's SSR
+          // image preloading emitted a <link rel="preload"> for the
+          // full-resolution original on every PDP, competing with the
+          // actual LCP image (audit perf-img-01). 96px = 2x DPR slot.
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={productImage.url}
+            src={imageLoader({ src: productImage.url, width: 96, quality: 75 })}
             alt={productImage.altText ?? productTitle}
             className="pdp-sticky-bar__img"
             width={48}

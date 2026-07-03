@@ -18,6 +18,16 @@ export function FilterShell({ children }: { children: ReactNode }) {
   // Stack-aware body scroll lock for the mobile filter drawer.
   useBodyScrollLock(open);
 
+  // Mirror the sheet's open state onto <body> so globals.css can hide
+  // the floating chat bubble (z-90) while the sheet (z-60) is up —
+  // otherwise the bubble covers the right end of the full-width
+  // "Show results" button on phones. Same pattern as body.pdp-sheet-open
+  // in BuyBox.
+  useEffect(() => {
+    document.body.classList.toggle('plp-filters-open', open);
+    return () => document.body.classList.remove('plp-filters-open');
+  }, [open]);
+
   // Close on Escape; close when viewport grows past the mobile breakpoint.
   useEffect(() => {
     if (!open) return;

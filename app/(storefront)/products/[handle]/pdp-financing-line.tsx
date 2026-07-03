@@ -1,6 +1,7 @@
 'use client';
 
 import { formatMoney } from '@/lib/format';
+import { FINANCING_MIN_PRICE, monthlyPaymentFromPrice } from '@/lib/financing-calc';
 import type { Money } from '@/lib/shopify';
 
 type Props = {
@@ -11,39 +12,30 @@ type Props = {
 };
 
 /**
- * "From $X/mo · Or 4 payments of $Y" line shown directly below the price.
+ * Financing line shown directly below the price.
  *
  * Why: the analytics dashboard showed a 94% drop from PDP view to
  * add-to-cart on a catalog where mattresses run $1K-$5K+. With no
- * financing/sticker-shock relief next to the price, shoppers freeze. This
- * line gives both Affirm (12-month) and Shop Pay Installments (4
- * interest-free) framing without loading any third-party widget script
- * (script-free is cheaper for LCP and removes a load-failure path).
+ * financing/sticker-shock relief next to the price, shoppers freeze.
+ * Script-free (no third-party widget) so it costs nothing at LCP.
  *
- * Math:
- *   - Affirm: typical promotional APR varies, but the "as low as $X/mo"
- *     framing is 12 monthly payments at 0% — common for $1500+
- *     mattress-financing offers. Conservative + truthful for our price
- *     bands; the real plan + APR is shown at Affirm checkout.
- *   - Shop Pay: their installments product is 4 interest-free payments
- *     when the order total is $50-$1499 (the 0% bi-weekly product).
- *     For totals above that, Shop Pay routes to Affirm-powered monthly
- *     plans, so we suppress the 4-pay line on >$1500 orders to avoid
- *     promising a payment plan that won't actually be 4 equal payments.
+ * Math — ONE canonical monthly figure across the site (audit ux-plp-03:
+ * this line previously showed price/12 "with Affirm" while the PLP card
+ * showed the Synchrony price/24 figure, so the monthly number DOUBLED
+ * between browse and decision on the same product):
+ *   - >= $1,500: `monthlyPaymentFromPrice` from lib/financing-calc.ts —
+ *     the same 24-month 0% APR Synchrony figure PlpCard renders, with
+ *     the provider named. Both surfaces now share one helper.
+ *   - $50–$1,499.99: Shop Pay Installments 4-equal-payment framing (its
+ *     0% bi-weekly product caps at $1,499.99; the PLP card shows no
+ *     monthly figure below $1,500, so there is nothing to contradict).
  *
- * Hidden when price is null or below the minimum financing threshold
- * ($50, the Shop Pay floor and Affirm typical floor).
+ * Hidden when price is null or below $50 (the Shop Pay floor).
  */
 export function PdpFinancingLine({ price }: Props) {
   if (!price) return null;
   const amount = Number.parseFloat(price.amount);
   if (!Number.isFinite(amount) || amount < 50) return null;
-
-  const monthly = amount / 12;
-  // Shop Pay Installments 4-equal-pay product caps at $1,499.99 — above
-  // that, the financing routes to monthly plans (no 4-pay framing).
-  const fourPayEligible = amount <= 1499.99;
-  const splitFour = amount / 4;
 
   const fmt = (n: number) =>
     formatMoney({
@@ -51,19 +43,23 @@ export function PdpFinancingLine({ price }: Props) {
       currencyCode: price.currencyCode,
     });
 
+  const monthly = monthlyPaymentFromPrice(amount);
+  if (amount >= FINANCING_MIN_PRICE && monthly != null) {
+    return (
+      <p className="pdp-financing" aria-label="Financing options">
+        <span>
+          From <strong>${monthly}/mo</strong> · 0% APR for 24 months with Synchrony
+        </span>
+      </p>
+    );
+  }
+
+  const splitFour = amount / 4;
   return (
     <p className="pdp-financing" aria-label="Financing options">
       <span>
-        From <strong>{fmt(monthly)}/mo</strong> with Affirm
+        4 interest-free payments of <strong>{fmt(splitFour)}</strong> with Shop Pay
       </span>
-      {fourPayEligible ? (
-        <span className="pdp-financing-sep" aria-hidden="true">·</span>
-      ) : null}
-      {fourPayEligible ? (
-        <span>
-          Or 4 interest-free payments of <strong>{fmt(splitFour)}</strong> with Shop Pay
-        </span>
-      ) : null}
     </p>
   );
 }
