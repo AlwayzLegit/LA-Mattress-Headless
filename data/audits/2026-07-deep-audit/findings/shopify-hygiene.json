@@ -1,0 +1,89 @@
+{
+  "area": "shopify-hygiene",
+  "data_staleness": "url-inventory snapshots pulled 2026-06-18T12:08Z; seo-metafields CSV dated 2026-05-20; shopify-pages-bodies.jsonl covers 120 of 147 pages",
+  "clean_checks": {
+    "products_missing_featuredImage": 0,
+    "products_missing_seoTitle": 0,
+    "products_missing_seoDescription": 0,
+    "duplicate_product_titles": 0,
+    "duplicate_product_seoTitles": 0,
+    "duplicate_product_seoDescriptions": 0,
+    "duplicate_page_titles": 0,
+    "duplicate_collection_titles_or_seoTitles": 0,
+    "truly_broken_pages_links_from_published_bodies": 0
+  },
+  "findings": [
+    {
+      "id": "shopify-hyg-01-collections-missing-seo",
+      "title": "9 collections have no seoTitle AND no seoDescription, including twin-xl-mattress-sale (126 products)",
+      "severity": "P2",
+      "effort": "S",
+      "evidence": "url-inventory/collections.json (2026-06-18): foundations (20 products), sheets-pillowcases (20), twin-xl-mattress-sale (126), cooling-pillows (9), headboards (0), rize-adjustable-bases (12), rize-pillows (5), rize-mattress-protection (4), split-king-mattresses (22) all have seoTitle=null and seoDescription=null. App fallback at app/(storefront)/collections/[handle]/page.tsx:63-71 emits templated 'Shop {title} at LA Mattress Store. Free white-glove delivery in Los Angeles.' when collection.description is also empty.",
+      "impact": "Six sizable PLPs (twin-xl-mattress-sale alone has 126 products) serve generic templated meta descriptions instead of keyword-tuned copy; every other major collection got Semrush-tuned SEO in the Phase 2 migration, so these 9 were simply missed.",
+      "proposed_fix": "Write seoTitle/seoDescription in Shopify Admin for the 8 non-empty collections (skip headboards until it has products), matching the pattern used on popular/mattresses collections."
+    },
+    {
+      "id": "shopify-hyg-02-thin-plps-internally-linked",
+      "title": "6 published, internally linked collections have only 1-3 products (thin PLPs), some carrying 14KB of SEO content over a near-empty grid",
+      "severity": "P2",
+      "effort": "M",
+      "evidence": "url-inventory/collections.json (2026-06-18): mattress-toppers=1 product, mattress-protector=2, harvest-mattresses=2, comforters=2, organic-mattress=3, technogel-mattresses=3. Internal links confirmed: /collections/mattress-toppers linked from published page bodies 'about', 'love-your-bed-guarantee', 'mattress-store-financing' (shopify-pages-bodies.jsonl); /collections/harvest-mattresses appears in all 6 live HTML captures (html/homepage.html etc., i.e. site-wide footer/brands nav); organic-mattress + technogel-mattresses linked from html/plp-latex-mattresses.html. seo-metafields/data-audit-2026-05-20.csv: organic-mattress has 14,622-char custom.seo_content, technogel 5,920, harvest 5,992, mattress-toppers 2,409 — long-form SEO copy wrapped around 1-3 product grids.",
+      "impact": "Crawlable, sitemap-included PLPs that read as doorway-ish (huge text, almost no products) and convert poorly; harvest-mattresses is linked from every page on the site with only 2 products behind it.",
+      "proposed_fix": "Either merchandise these collections to 6+ products, or consolidate: redirect comforters/mattress-protector into a bedding collection, fold technogel/harvest into brand pages, and move mattress-toppers links to the bedding collection until stocked."
+    },
+    {
+      "id": "shopify-hyg-03-sleep-position-metafield-key-mismatch",
+      "title": "4 floor-sample clearance products use metafield key custom.sleep_position (singular) but the PLP filter queries custom.sleep_positions (plural)",
+      "severity": "P2",
+      "effort": "S",
+      "evidence": "seo-metafields/data-audit-2026-05-20.csv rows 78-81: product handles queen-diamond-lucille-firm-...-clearance-mattress, queen-diamond-lucille-plush-...-clearance-mattress, queen-chattam-wells-mattress-clearance-the-ashford-..., queen-diamond-diana-medium-...-clerance-mattress each carry namespace=custom key=sleep_position. Storefront filter builds { productMetafield: { namespace: 'custom', key: 'sleep_positions', ... } } at app/_components/plp-filters/filters.ts:73 and maps filter id 'filter.p.m.custom.sleep_positions' at filters.ts:143. grep across repo data/ finds only the 4 singular-key rows, no sleep_positions values on these products.",
+      "impact": "The 4 floor-sample clearance mattresses (high-margin inventory the store wants to move) are invisible whenever a shopper applies the Sleep Position filter on any PLP including the clearance collection.",
+      "proposed_fix": "In Shopify Admin, re-key the 4 values to custom.sleep_positions (list type matching other products) and delete the orphan custom.sleep_position entries."
+    },
+    {
+      "id": "shopify-hyg-04-product-seo-fields-unoptimized-at-source",
+      "title": "135/218 products have seoTitle identical to raw product title; 41 exceed 62 chars; 39 seoDescriptions exceed 165 chars (mitigated at render, unfixed at source)",
+      "severity": "P3",
+      "effort": "M",
+      "evidence": "url-inventory/products.json (2026-06-18): counts — seoTitle==raw title: 135; seoTitle>62 chars: 41 (max 95: diamond-dreamstage-2-0-collection-medium-titanium-memory-foam-euro-top-16-mattress); seoDescription>165 chars: 39; seoTitle<25 chars: 13; keyword-free seoTitle: 4. Worst 15: restara-1 ('Restara', 7 ch, keyword-free), serenova ('Serenova', 8 ch, keyword-free), rize-split ('Rize Split', 10 ch, keyword-free), rizer-kit ('Rizer Kit', 9 ch, keyword-free), medium-lucille-luxury-natural-latex-diamond-mattress (65-ch title, 183-ch desc), diamond-dreamstage-collection-2-0-grace-firm-... (79-ch title, 170-ch desc), diamond-dreamstage-2-0-grace-plush-... (69-ch title, 171-ch desc), aviada-adjustable-base, plus-adjustable-base, ez-adjustable-base, platform-base, deluxe-platform-base, rz-cloud-pillow, rz-low-dual-cool-pillow, rz-puff-pillow (all raw short titles). Render-time mitigation confirmed: app/(storefront)/products/[handle]/page.tsx:90-102 appends '· LA Mattress Store' and caps length; lib/seo.ts capTitle truncates.",
+      "impact": "Rendered PDP <title> is mostly fine thanks to app normalization, so ranking impact is limited — but Shopify-side values feed any non-headless surface (Google Shopping feed apps, Shop channel, future theme) and the 41 over-long titles are truncated with an ellipsis by capTitle, losing trailing keywords.",
+      "proposed_fix": "Batch-backfill Shopify product SEO fields (same pipeline as data/seo-backfills/products-2026-05-14 runs): brand+keyword-led titles <=60 chars, descriptions 140-160 chars, prioritizing the 41 over-long and 13 under-25-char titles."
+    },
+    {
+      "id": "shopify-hyg-05-stranded-description-underscore-metafield",
+      "title": "25 collections hold ~26KB of merchant copy in custom.description_ that no storefront code reads; May-20 analysis recommended a merge that was never executed",
+      "severity": "P3",
+      "effort": "M",
+      "evidence": "seo-metafields/data-audit-2026-05-20.csv: 25 collection rows with key=description_ (e.g. mattresses 4,794 chars, queen-size-mattresses 1,890, diamond-mattresses 1,602). Repo analysis /home/user/LA-Mattress-Headless/data/seo-backfills/description-underscore-2026-05-20-mcp-analysis.json: 'custom.description_ is NOT read anywhere — the ~26KB of merchant content in this metafield is currently invisible to visitors' and content is NOT a duplicate of seo_content; recommended merge path documented but mode was analysis_only and the CSV (2026-05-20) still shows all 25 rows.",
+      "impact": "Unique merchant-authored collection copy is invisible to users and crawlers; risk of future confusion over which field is canonical (three parallel fields: description_, seo_content, intro_short).",
+      "proposed_fix": "Execute the already-documented recommendation: merge still-relevant description_ copy into custom.seo_content, then delete the description_ metafield definition to close the loop."
+    },
+    {
+      "id": "shopify-hyg-06-empty-collections-and-orphaned-seo-content",
+      "title": "11 zero-product collections exist (9 seasonal-sale placeholders + metal-beds + headboards); metal-beds carries 2,380 chars of seo_content that can never be seen",
+      "severity": "P3",
+      "effort": "S",
+      "evidence": "url-inventory/collections.json (2026-06-18): productsCount=0 for labor-day-sale, veterans-day-sale, black-friday-cyber-monday-sale, holiday-sale, new-years-sale, mlk-day-sale, presidents-day-sale, mothers-day-sale, fathers-day-sale, metal-beds, headboards. Contained: app/sitemap.ts:90 drops productsCount===0 handles, no internal links found in page bodies or live captures, 0 hits in seo-audit mega export. But they render HTTP 200 with an empty grid if hit directly (collections/[handle]/page.tsx:138 only 404s when the collection is missing), and seo-metafields CSV shows metal-beds has 2,380-char custom.seo_content on a permanently empty PLP. Current-season collections are populated (4th-of-july-mattress-sale=12 products, memorial-day-sale=16 still populated in June snapshot).",
+      "impact": "Low — placeholders are sitemap-excluded and unlinked; main issues are the stranded metal-beds SEO investment, memorial-day-sale left populated a month after the event, and empty seasonal URLs returning 200 (soft-thin pages) to anyone with an old link.",
+      "proposed_fix": "Either stock or delete metal-beds/headboards (moving metal-beds seo_content if kept); adopt a post-event routine: empty the just-finished seasonal collection AND 301 it to /collections/on-sale until the next cycle."
+    },
+    {
+      "id": "shopify-hyg-07-page-bodies-link-via-redirect-hops",
+      "title": "Published page bodies link to /pages/mattress-warranty and /pages/shipping-and-delivery, which only resolve via 301 hops; /pages/low-price-guarantee is linked while unpublished in Shopify (served by Next code)",
+      "severity": "P3",
+      "effort": "S",
+      "evidence": "shopify-pages-bodies.jsonl: published pages 'policies' and 'returns' contain href /pages/mattress-warranty (handle absent from pages.json; 301 to /pages/warranty in lib/redirects-table.ts and redirects.json gid 435240468733); 'mattress-store-locations' links /pages/shipping-and-delivery (301 to /pages/mattress-store-delivery, gid 484547854589); 'policies' links /pages/low-price-guarantee twice — that handle is isPublished=false in pages.json but is a coded Next page (lib/coded-pages.ts:18), so it works. All targets verified published: warranty=true, mattress-store-delivery=true.",
+      "impact": "No broken UX (edge middleware serves the 301s), but internal links through redirects leak a hop of link equity and add latency; the low-price-guarantee Shopify draft vs coded-page split invites someone to 'clean up' the draft and confuse future audits.",
+      "proposed_fix": "Edit the 3 Shopify page bodies to point at final URLs (/pages/warranty, /pages/mattress-store-delivery); add a comment or metafield note on the low-price-guarantee draft that the live page is code-owned."
+    },
+    {
+      "id": "shopify-hyg-08-blog-draft-pool-and-dormant-sales-blog",
+      "title": "236 unpublished draft articles sit across blogs (151 in beds-mattresses alone); the 'sales' blog has published nothing since 2024-05-19",
+      "severity": "P3",
+      "effort": "S",
+      "evidence": "url-inventory/blogs.json (2026-06-18): beds-mattresses 335 articles / 151 unpublished (45%), latest publish 2024-08-31; mattress-buying-guide 631/75 unpublished, actively publishing (latest 2026-06-26); sleep-blog 64/4; sleep-health 55/6; mattress-care-tips 61/1; extra-info 2/1; sales 5/0 unpublished but latest publish 2024-05-19 with stale titles like 'President's Day Mattress Sale ... 2024'. beds-mattresses is an intentional archive per lib/blog-content.ts:44, but the 151-draft pool predates that decision.",
+      "impact": "Admin clutter and audit noise only (drafts don't render); the dormant sales blog risks a shopper landing on 2024 sale copy from search while seasonal sale PAGES (4th-of-july-mattress-sale-2026) are the real destination — split authority for 'mattress sale' queries.",
+      "proposed_fix": "Bulk-delete or archive-tag the 151 beds-mattresses drafts after a one-time skim for salvageable content; either retire the sales blog (redirect its 5 articles to current sale pages) or fold them into mattress-buying-guide."
+    }
+  ]
+}

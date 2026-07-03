@@ -1,0 +1,69 @@
+{
+  "area": "a11y",
+  "coverage_notes": "No live MCP calls attempted (connectors flagged as failing; staged data + repo were sufficient for the a11y scope). Contrast audit computed for every text/background token pair actually used in app/globals.css :root — PASSES verified, not just failures: --text #0A0A0A on --surface 19.80:1; --text-2 #2A2A2A 14.35:1; --text-3 #6B6B6B on --surface 5.33:1 and on --surface-2 4.97:1 (both pass AA); --text-on-inv #FFF on --surface-inv #1B2C5E 13.39:1; --text-on-inv-2 #B5B5B5 on navy 6.53:1 (pass); --accent #1428A0 on white 11.41:1; white on --accent 11.41:1; white on --accent-2 14.05:1; --sale #D8232A on white 5.01:1 (pass); --trust #1A7F4E on white 5.01:1 (pass); topbar rgba(255,255,255,.78/.62) blended over navy = 8.77/6.11:1 (pass); .announcement-bar-urgent white on #b91c1c 6.47:1 (pass); .pdp-save #D8232A on 8% red tint ~4.8:1 (pass at 12px/600). Borderline-but-passing: --text-3 on --surface-3 is 4.23:1, but no actual text-on-surface-3 pairing exists in globals.css (surface-3 is only progress-track fills and .round-btn:hover whose icon is --text at 19:1), so not reported. --brand-red on navy computes 2.67:1 but no text pairing of red-on-navy was found in CSS (only decorative .brand-stripe and icons on white), so not reported. Known-strong items re-verified silently: skip link + :focus-visible ring (globals.css:140-155), announcer live regions (plp-toolbar-count aria-live=polite, FilterPanel announce()), focus trap + Esc close in filter-shell.tsx:24, icon-only buttons all carry aria-label in all 6 captures (0 unnamed buttons found by parser), FilterMobileTrigger aria-label includes active count. False positives excluded after raw-markup verification: 33-44 'unlabeled' PLP checkboxes are implicitly wrapped in <label class=plp-filter-row>; the sort <select> is wrapped in <label class=plp-toolbar-sort>; 8 'empty' homepage brand links contain <img alt='<Brand> logo'>. tabIndex>0: zero occurrences in app/**/*.tsx. div/span onClick: only two scrim dismissers, both aria-hidden with keyboard-equivalent Esc handlers — acceptable. Reduced-motion CSS coverage is effectively total via the global kill switch at globals.css:289-291 (* { transition:none!important; animation:none!important }) plus 13 per-component guards; only JS-driven smooth scrolling escapes it (reported). NOT checked (no tooling in sandbox): real AT behavior, focus-order at runtime, color-only-information conveyance in charts/admin dashboard, touch-target sizes, and the post-hydration DOM of the 404 page (only the served HTML could be inspected). Heading order in PLP/PDP captures shows footer headings serialized before the h1 — this is React streaming out-of-order serialization, not final DOM order, so it was not reported as a heading-order defect.",
+  "findings": [
+    {
+      "id": "a11y-contrast-01",
+      "title": "Unavailable variant chips render 13-14px text at 2.05:1 — fails WCAG 1.4.3 and even the 3:1 large-text floor, and the chips are NOT disabled controls",
+      "severity": "P2",
+      "evidence": "app/globals.css:2983 `.pdp-size.unavailable { color: var(--text-4); ... }` and :3005 `.pdp-firm.unavailable { color: var(--text-4); ... }` with --text-4 = #B5B5B5 (globals.css:23). Computed: #B5B5B5 on --surface #FFFFFF = 2.05:1; on the `.on` state's --surface-2 #F7F7F7 = 1.91:1. The chips remain interactive <button>s (no disabled attr) — app/(storefront)/products/[handle]/buy-box.tsx:229-236 renders `className={...available ? '' : 'unavailable'}` with an active onClick and aria-label=\"$v (unavailable)\"; same pattern in sticky-variant-sheet.tsx:124. Because they are operable, the WCAG 1.4.3 'inactive component' exemption does not apply. Labels are .pdp-size-label 13px/600 and .pdp-firm-label 14px/600 — not large text.",
+      "impact": "Low-vision shoppers on any PDP with out-of-stock sizes/firmnesses cannot read which options exist but are unavailable — the exact options a shopper most needs to compare before calling a showroom or picking another size. Affects both the desktop buy box and the mobile sticky variant sheet across all 218 products.",
+      "effort": "S",
+      "proposed_fix": "Change `.pdp-size.unavailable` / `.pdp-firm.unavailable` text color from var(--text-4) to var(--text-3) #6B6B6B (5.33:1 on white, 4.97:1 on surface-2 — passes AA) and keep the diagonal strikethrough ::after as the second, non-color cue. If a lighter look is wanted, #767676 (4.54:1) is the lightest AA-passing gray on white. Leave `.pdp-stepper button:disabled` (globals.css:3035) as-is — it carries a real disabled attribute and is exempt."
+    },
+    {
+      "id": "a11y-aria-02",
+      "title": "Footer nav landmarks 'Customer Care' and 'Visit Us' have broken accessible names: aria-labelledby IDREF contains a space",
+      "severity": "P3",
+      "evidence": "app/_components/footer.tsx:100 `const navId = `footer-col-${c.title.toLowerCase()}`;` produces id=\"footer-col-customer care\" and id=\"footer-col-visit us\" — confirmed in the live capture homepage.html: `<nav aria-labelledby=\"footer-col-customer care\">` and `<h3 id=\"footer-col-customer care\" class=\"eyebrow\">Customer Care`. aria-labelledby is a space-separated ID reference list, so browsers tokenize the value into two lookups ('footer-col-customer' + 'care'), neither of which resolves; the space also makes the id itself invalid for IDREF use. Present on every page (footer is global) in all 5 content captures.",
+      "impact": "Two of the four footer nav landmarks expose no name in screen-reader landmark lists (users hear 'navigation' x2 alongside named 'Shop'/'About'), defeating the exact landmark-navigation intent documented in the code comment at footer.tsx:102-106. Small but global, and a 1-line fix.",
+      "effort": "S",
+      "proposed_fix": "Slugify the title when building the id: `const navId = `footer-col-${c.title.toLowerCase().replace(/\\s+/g, '-')}`;` → footer-col-customer-care / footer-col-visit-us."
+    },
+    {
+      "id": "a11y-404-03",
+      "title": "Live 404 responses serve an empty __next_error__ shell: no lang attribute, no headings, no landmarks, no links in the server HTML",
+      "severity": "P2",
+      "evidence": "Capture 404-page.html (45,749 bytes): document starts `<!DOCTYPE html><html id=\"__next_error__\"><head>...` — the <html> element has NO lang attribute (all 5 other captures have `<html lang=\"en\">`), and `<body><div hidden=\"\"><!--$--><!--/$--></div><script ...` — zero headings, zero landmarks, zero links in served HTML; parser confirms headings:0, landmarks:{}, links:0. All content (the well-built app/not-found.tsx:38-89 with h1/header/main/footer) arrives only via the inline RSC payload and client-side rendering; the payload references chunks for app/(storefront)/pages/[handle]/page, indicating notFound() on that route falls back to client-side error-shell rendering instead of SSR of the not-found UI.",
+      "impact": "Screen-reader and no-JS/failed-JS users hitting any dead URL get a literally blank, language-less document (WCAG 3.1.1 fail on the served page; nothing to read until hydration completes). Also overlaps SEO/perf: bots that don't execute JS see an empty 404 body. Every typo URL, discontinued-product URL, and stale backlink hits this.",
+      "effort": "M",
+      "proposed_fix": "Find the CSR bailout that prevents the not-found boundary from server-rendering (typical culprits: useSearchParams/usePathname without a Suspense boundary in the root layout chain, or notFound() thrown after streaming starts in (storefront)/pages/[handle]). Verify with `next build` output that /_not-found prerenders, and confirm a curl of a dead URL returns HTML containing `<html lang=\"en\">` and the 'We couldn't find that page.' h1."
+    },
+    {
+      "id": "a11y-motion-04",
+      "title": "Product-rail scroll buttons force smooth scrolling regardless of prefers-reduced-motion",
+      "severity": "P3",
+      "evidence": "app/_components/sections/rail-scroll-buttons.tsx:28 `el?.scrollBy({ left: dir * step, behavior: 'smooth' });` — unconditional. The CSS reduced-motion kill switch (app/globals.css:289-291 `* { transition: none !important; animation: none !important; }`) cannot affect JS-initiated scrollBy animation. Contrast with hero-controller.tsx:54, which correctly checks `window.matchMedia('(prefers-reduced-motion: reduce)')` before autoplaying, and admin smooth scroll which is gated behind `@media (prefers-reduced-motion: no-preference)` at globals.css:6361.",
+      "impact": "Vestibular-sensitive users who set reduced motion still get a ~400px animated horizontal glide every time they page a product rail (homepage 'Pairs well with', PLP rails). Isolated, but it is the only motion on the site that escapes the otherwise-complete reduced-motion system.",
+      "effort": "S",
+      "proposed_fix": "const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; el?.scrollBy({ left: dir * step, behavior: reduce ? 'auto' : 'smooth' });"
+    },
+    {
+      "id": "a11y-headings-05",
+      "title": "Blog archive skips from h1 straight to h3 for all 12 featured/recent article cards",
+      "severity": "P3",
+      "evidence": "blog-archive-beds-mattresses.html heading sequence: h1 'LA Mattress stores blog' → h3 'Mattress Stores Los Angeles: Your 2026 Shopping Guide' (+11 more h3 cards) with no intervening h2; the first h2 ('All LA Mattress stores blog articles') only appears AFTER the card grid. Parser output: SKIPS: [((1, 'LA Mattress stores blog'), (3, 'Mattress Stores Los Angeles: ...'))], sequence [1,3,3,3,3,3,3,3,3,3,3,3,3,2,2,...].",
+      "impact": "Screen-reader users skimming by heading level (NVDA 2-key) hear an empty h2 level above the card list and may assume the featured articles are subordinate to a section they missed. Cosmetic-to-moderate; single template.",
+      "effort": "S",
+      "proposed_fix": "Either demote nothing and add a visually-hidden h2 (e.g. 'Latest articles') before the card grid in the blog index component (the .gd-* blog index template), or promote the card titles to h2 to sit directly under the h1."
+    },
+    {
+      "id": "a11y-nav-06",
+      "title": "Desktop primary nav is the only unlabeled nav landmark among 6-8 on every page",
+      "severity": "P3",
+      "evidence": "app/_components/nav.tsx:367 `<nav className=\"nav-items\">` — no aria-label. Live PLP capture contains 8 nav elements; the other 7 are all named: aria-label=\"Breadcrumb\", \"Shop related collections\", \"Store benefits\", 4x footer aria-labelledby, and the mobile counterpart at nav.tsx:544 is `<nav className=\"mobile-list\" aria-label=\"Primary\">`. Mega submenu navs are also labeled (nav.tsx:479).",
+      "impact": "In screen-reader landmark lists the most important nav on the page is the one announced as bare 'navigation' among 6-8 landmarks, making it harder to jump to. Trivial fix, global benefit.",
+      "effort": "S",
+      "proposed_fix": "nav.tsx:367 → `<nav className=\"nav-items\" aria-label=\"Primary\">` (matches the mobile drawer's existing label so desktop/mobile announce identically)."
+    },
+    {
+      "id": "a11y-linktext-07",
+      "title": "Two different blog articles share the identical title/link text 'How to design a bedroom that actually helps you sleep'",
+      "severity": "P3",
+      "evidence": "blog-archive-beds-mattresses.html: identical link text resolves to two distinct targets — /blogs/beds-mattresses/bedroom-therapy-desann-collins and /blogs/beds-mattresses/bedroom-therapy-heather-vieira. This was the only identical-text/different-target collision across all 6 captures (all 551 links checked).",
+      "impact": "WCAG 2.4.4: link purpose is indistinguishable for SR users tabbing a links list — they cannot tell the Desann Collins interview from the Heather Vieira one. Content-level, 2 URLs.",
+      "effort": "S",
+      "proposed_fix": "Differentiate the article titles in Shopify (e.g. append the interviewee: '... — with Desann Collins' / '... — with Heather Vieira'); no code change needed."
+    }
+  ]
+}

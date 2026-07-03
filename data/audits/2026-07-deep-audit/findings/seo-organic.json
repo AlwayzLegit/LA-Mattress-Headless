@@ -1,0 +1,87 @@
+{
+  "area": "seo-organic",
+  "data_note": "The staged mega_export_20260504.csv is a Semrush SITE AUDIT issues export (per-URL issue counts, no keyword/position/traffic columns). Keyword analysis below is from a fresh live Semrush domain_organic pull (2026-07-03, top 500 keywords by traffic, saved to seo-audit/domain_organic_live_20260703.txt). Ranking distribution across the 500 rows: 153 top-3, 187 pos 4-10, 66 pos 11-20, 94 pos 21+. The 500 rows account for 75.5% of estimated organic traffic across 149 distinct URLs.",
+  "findings": [
+    {
+      "id": "seo-organic-01",
+      "title": "119 striking-distance keywords (pos 4-15, vol>=200); a large healthy mid-pack (187 kws in pos 4-10) is one CTR tier away from top-3",
+      "severity": "P1",
+      "evidence": "seo-audit/domain_organic_live_20260703.txt — top 15 by volume: helix 90,500/pos8 -> /collections/helix-mattresses; helix mattress 60,500/pos13 -> same; bed frame for bed 33,100/pos15 -> /collections/bed-frames; mattress and toppers 27,100/pos13 -> /collections/mattress-toppers; queen mattress sale 14,800/pos10 -> /collections/queen-size-mattresses; polyurethane foam 12,100/pos13 -> /blogs/mattress-buying-guide/what-is-polyurethane-foam; cal king mattress 5,400/pos12 -> /collections/california-king-mattresses; shop queen mattresses 5,400/pos13 -> /collections/queen-size-mattresses; gel memory foam mattress 4,400/pos13 -> /collections/gel-foam-mattresses; mattress sam's club queen 2,900/pos6 -> /blogs/.../ultimate-sam-s-club-queen-mattress-review...; mattress toppers near me 2,900/pos9 -> /collections/mattress-toppers; memorial day mattress sales 2,400/pos11 -> /collections/memorial-day-sale; california king size mattress 2,400/pos10 -> /collections/king-size-mattresses; king size mattress nearby 1,900/pos5 -> /collections/king-size-mattresses; sam's club mattress queen 1,900/pos4 -> Sam's Club review post. All target collections/blogs confirmed present in url-inventory/collections.json and blogs.json.",
+      "impact": "These 119 keywords carry most of the realistic near-term non-brand upside; e.g. helix + helix mattress alone are 151k monthly searches sitting at pos 8/13 on an existing collection that already earns 6.4% of site traffic. Moving pos 4-10 terms into top-3 typically 2-3x their CTR.",
+      "effort": "M",
+      "proposed_fix": "Prioritize on-page + internal-link sprints on the 6 collections above (helix-mattresses, bed-frames, mattress-toppers, queen-size-mattresses, gel-foam-mattresses, on-sale): title/H1 alignment to the exact striking-distance phrasing, add FAQ/buying-guide modules, and link to them from the high-authority location pages and top blog posts."
+    },
+    {
+      "id": "seo-organic-02",
+      "title": "Blog cannibalization: three separate posts split the 'full size bed dimensions' cluster (74k + 27.1k + 22.2k vol) and all are stuck at pos 41-48",
+      "severity": "P1",
+      "evidence": "domain_organic_live_20260703.txt: 'full size bed dimensions' 74,000 vol -> pos 41 (/blogs/mattress-buying-guide/full-size-bed-dimensions-width-couples) AND pos 47 (/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed); 'full bed dimensions' 27,100 -> pos 46 (width-couples post); 'full size mattress dimensions' 22,200 -> pos 48 (/blogs/mattress-buying-guide/how-much-space-does-a-full-size-mattress-really-give-you). All three articles exist in url-inventory/blogs.json.",
+      "impact": "A 123k+ monthly-search cluster produces ~0.26% of traffic because three thin pages divide relevance; a single consolidated page ranking pos 5-10 would be one of the site's largest organic assets.",
+      "effort": "S",
+      "proposed_fix": "Merge the three posts into one canonical 'Full size bed dimensions' guide (keep the strongest URL, 301 the other two via Shopify redirects), fold in unique content from each, and internally link from the full-size collection page."
+    },
+    {
+      "id": "seo-organic-03",
+      "title": "Dual-host indexation: 63 of 500 keywords (4.3% of traffic) rank under non-www URLs; 31 paths rank under BOTH www and apex",
+      "severity": "P1",
+      "evidence": "domain_organic_live_20260703.txt host split: www 437 kws / 71.2% traffic vs non-www 63 kws / 4.3%. Paths ranking under both hosts include /, /pages/mattress-store-studio-city, /pages/koreatown-best-mattress-store, /collections/bed-frames, /collections/king-size-mattresses and 26 blog posts. Repo: canonical tags all point to www (app/(storefront)/page.tsx:76, app/layout.tsx:45 metadataBase; confirmed in html/homepage.html and html/plp-latex-mattresses.html captures), but no host-level 301 exists in middleware.ts or next.config.mjs (grep for www/host returns nothing), so apex canonicalization depends entirely on Vercel domain settings.",
+      "impact": "Google is actively indexing and ranking apex-host duplicates despite www canonicals, splitting link equity and click signals across two hosts for money pages (studio-city location page appears twice in the top-15 traffic URLs, once per host at 7.36% + 1.34%).",
+      "effort": "S",
+      "proposed_fix": "Verify in Vercel that mattressstoreslosangeles.com is configured as a 308/301 redirect to www (not a serving alias); if it already is, the non-www rankings are stale and will decay, but if apex returns 200, add the redirect at the Vercel domain level or in middleware.ts. Could not verify live (curl returns 403 via audit proxy; Vercel MCP unavailable)."
+    },
+    {
+      "id": "seo-organic-04",
+      "title": "/pages/mattress-store-playa-del-rey ranks #6 for 'mattress store marina del rey' but is absent from the Shopify pages inventory and has no redirect",
+      "severity": "P1",
+      "evidence": "domain_organic_live_20260703.txt: 'mattress store marina del rey' vol 590? (row: pos 6, traffic 0.02%) -> https://www.mattressstoreslosangeles.com/pages/mattress-store-playa-del-rey. Handle 'mattress-store-playa-del-rey' does not exist in url-inventory/pages.json (147 pages). url-inventory/redirects.csv contains a redirect only for the different handle /pages/mattresses-in-playa-del-rey -> homepage. By contrast /pages/shipping-and-delivery (also ranking, pos 9-10) IS covered by a redirect to /pages/mattress-store-delivery.",
+      "impact": "A ranking local page that was deleted without a redirect is (or will shortly be) serving a 404 to searchers and will drop from the index, losing a top-10 local ranking in a coastal-westside market where the site has no other visibility.",
+      "effort": "S",
+      "proposed_fix": "Add a Shopify URL redirect /pages/mattress-store-playa-del-rey -> /pages/mattress-store-marina-del-rey (that neighborhood page exists and is published) or recreate the page. Could not confirm live HTTP status (403 bot-block via proxy) — verify with an authenticated crawl first."
+    },
+    {
+      "id": "seo-organic-05",
+      "title": "26 published 'mattress-store-<neighborhood>' pages are thin (0-1,500 chars body, zero page metafields) and earn zero top-500 rankings",
+      "severity": "P2",
+      "evidence": "url-inventory/pages.json: 26 published handles matching mattress-store-{west-hollywood, westwood, beverly-hills, santa-monica, downtown-la, pasadena, burbank, sherman-oaks, hollywood, long-beach, culver-city, encino, north-hollywood, silver-lake, brentwood, marina-del-rey, los-feliz, eagle-rock, toluca-lake, mid-wilshire, venice, highland-park, van-nuys, la-canada-flintridge, mid-city, tarzana}. shopify-pages-bodies.jsonl body lengths: west-hollywood 0, westwood 0, downtown-la 776, beverly-hills 847, sherman-oaks 1,330 chars, etc. seo-metafields/data-audit-2026-05-20.csv contains 0 rows with owner_type=page. None of these 26 URLs appears anywhere in the 500-row live organic export; not one neighborhood keyword (pasadena, burbank, sherman oaks, hollywood, venice...) ranks.",
+      "impact": "A 26-page programmatic local cluster that produces nothing: wasted crawl budget, doorway-page pattern risk, and unrealized demand that the site demonstrably can win (the four real-showroom pages each pull 5.7-7.9% of traffic at pos 1).",
+      "effort": "M",
+      "proposed_fix": "Either invest: rebuild the 8-10 highest-demand neighborhood pages with unique content (driving directions from that neighborhood to nearest showroom, delivery-zone info, local reviews, embedded map) modeled on the four winning showroom pages — or prune: noindex/consolidate the rest into /pages/mattress-store-locations."
+    },
+    {
+      "id": "seo-organic-06",
+      "title": "Traffic is highly concentrated: 6 URLs = 47.8% of organic traffic, and 45% of all traffic is local/near-me intent",
+      "severity": "P2",
+      "evidence": "domain_organic_live_20260703.txt aggregation: / 13.2%, /pages/best-mattress-store-west-la 7.9%, /pages/mattress-store-studio-city 7.4% (+1.3% apex dup), /pages/koreatown-best-mattress-store 7.1%, /collections/helix-mattresses 6.4%, /pages/mattress-store-in-glendale 5.9% -> cumulative 47.8%. Local-intent keywords (LA neighborhoods + 'near me') = 86 kws / 45.0% of traffic, mostly brand-shaped queries like 'la mattress stores koreatown' (pos 1).",
+      "impact": "Rankings rest on brand/navigational local queries to 5 pages; an algorithm shift on local intent, or a single lost location-page ranking, moves double-digit percentages of organic traffic. Non-brand transactional coverage (collections 20.0%, products 0.06%) is the diversification gap.",
+      "effort": "L",
+      "proposed_fix": "Treat as a portfolio-risk directive for findings 01/02/07: grow the non-brand collection and guide clusters so no single page class exceeds ~30% of organic traffic."
+    },
+    {
+      "id": "seo-organic-07",
+      "title": "Intent gap: blogs are 52% of ranking keywords but 11.6% of traffic, PDPs are invisible (2 kws, 0.06%), and the #1 blog asset reviews a competitor retailer (Sam's Club)",
+      "severity": "P2",
+      "evidence": "domain_organic_live_20260703.txt by section: blogs 258 kws / 11.61% traffic; collections 158 / 20.03%; pages 42 / 30.47%; home 40 / 13.34%; products 2 / 0.06%. Sam's Club-related keywords total 2.87% of all site traffic ('sams queen mattress' pos 2, 'sam's club queen mattress' pos 4, etc.) landing on /blogs/mattress-buying-guide/ultimate-sam-s-club-queen-mattress-review-pros-cons-and-top-picks — the 8th-biggest traffic URL on the site.",
+      "impact": "The largest single content asset attracts shoppers explicitly seeking a competitor's product, with no evidence of a conversion path; meanwhile 218 products earn essentially zero organic entries, so all commercial ranking pressure sits on collections.",
+      "effort": "M",
+      "proposed_fix": "Add a prominent 'compare before you buy at a warehouse club' conversion module + comparable-product links to the Sam's Club post (and the similar warehouse/brand-review posts); for PDPs, target long-tail model-name queries via review schema and unique buying copy on the top-20 revenue products rather than relying on collections alone."
+    },
+    {
+      "id": "seo-organic-08",
+      "title": "The La Brea/Hancock Park showroom has zero organic visibility while the other four showrooms each pull 5.7-7.9% of traffic",
+      "severity": "P2",
+      "evidence": "url-inventory/pages.json: best-mattress-store-la-brea published ('Best Mattress Store in Hancock Park on La Brea Ave'). domain_organic_live_20260703.txt: zero keywords containing 'la brea' or 'hancock' and zero rankings for that URL in the top 500, vs west-la 7.9%, studio-city 8.75% local traffic, koreatown 7.5%, glendale 6.0% — all pos 1 on their 'la mattress stores <area>' terms. Also note santa-monica-mattress-store is unpublished (isPublished false) while a thin duplicate mattress-store-santa-monica is published.",
+      "impact": "One of five physical showrooms gets no organic search contribution — foot-traffic and 'near me' demand around Mid-Wilshire/Hancock Park is being lost to competitors despite proven page template success.",
+      "effort": "S",
+      "proposed_fix": "Bring the La Brea page to parity with the four winning showroom pages (same content depth, LocalBusiness schema, homepage + /pages/mattress-store-locations links, and GBP landing-page alignment); target 'la mattress stores la brea / hancock park / mid wilshire' phrasing that matches how the other four rank."
+    },
+    {
+      "id": "seo-organic-09",
+      "title": "California-king queries land on the wrong collection: 'california king size mattress' (2,400 vol) ranks pos 10 with /collections/king-size-mattresses while /collections/california-king-mattresses exists",
+      "severity": "P3",
+      "evidence": "domain_organic_live_20260703.txt: 'california king size mattress' 2,400/pos10 and 'california king size bed mattress' 1,900/pos11 -> /collections/king-size-mattresses; meanwhile 'cal king mattress' 5,400/pos12 correctly -> /collections/california-king-mattresses (handle confirmed in url-inventory/collections.json). Also 'california queen mattress' 1,600/pos9 -> queen collection.",
+      "impact": "Google prefers the generic king page for cal-king intent, capping both pages ~pos 10-12; consolidating relevance would likely lift the dedicated cal-king collection into top-5 on ~9,700 combined monthly searches.",
+      "effort": "S",
+      "proposed_fix": "Strengthen /collections/california-king-mattresses (title/H1 with 'California King Size Mattress', intro copy, dimensions FAQ) and add a crosslink from the king-size collection ('Looking for California King?') so the right page wins the query."
+    }
+  ]
+}
