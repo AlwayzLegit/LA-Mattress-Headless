@@ -758,6 +758,17 @@ export function categoryIntroFor(handle: string, title: string): string {
     return `Heavier sleepers need more from a mattress — sturdier support, denser foams, taller builds, and reinforced edges that hold up over years of higher load. The mattresses here are hybrid and innerspring constructions with high-gauge pocketed coils and high-density comfort layers (generally 12"+ tall) chosen for durability and proper support without bottoming out. Free white-glove delivery across Los Angeles, 120-night Love Your Bed Guarantee, and 0% APR financing on orders of $1,500+.`;
   }
 
+  // Size-specific intros. Only cal-king gets one so far (deep audit
+  // seo-organic-09): Google was sending 'california king size mattress'
+  // (2,400/mo) to the generic king PLP because the dedicated collection
+  // had no size-specific copy — the exact-phrase intro + dimensions
+  // below give this page the relevance signal to win its own query.
+  // Checked BEFORE the material/accessory matches; 'california-king'
+  // must also beat any plain 'king' handling ever added below.
+  if (h.includes('california-king') || h.includes('cal-king')) {
+    return `A California King size mattress is 72" wide by 84" long — 4 inches narrower and 4 inches longer than a standard King (76" × 80"), making it the longest stock mattress size we sell and the right pick for sleepers over 6'2" or bedrooms that are deeper than they are wide. Every Cal King on this page ships with free white-glove delivery anywhere in Los Angeles, a 120-night Love Your Bed Guarantee, and 0% APR financing on orders of $1,500+. Not sure between King and Cal King? The width-vs-length trade-off is the whole decision — see the guide below or lie on both at any of our 5 LA showrooms.`;
+  }
+
   // Material-specific intros
   if (h.includes('memory-foam') || h.includes('foam')) {
     return `Memory foam contours to your body and isolates motion better than any other mattress type — the ideal choice for side sleepers who want pressure relief at the shoulders and hips, and for anyone who shares a bed with a restless partner. The trade-off is heat retention; we recommend choosing a foam with gel infusion, copper, or open-cell cooling tech if you sleep hot.`;
