@@ -39,3 +39,8 @@ next-env.d.ts.bak
 
 # inventory snapshots are committed; raw scratch is not
 data/scratch/
+
+# Claude Code local (per-machine) settings — personal permission grants,
+# never shared. The project-level .claude/settings.json (if ever added)
+# WOULD be committed; the .local variant must not be.
+.claude/settings.local.json
