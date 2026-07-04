@@ -1,0 +1,1049 @@
+/* Admin dashboard styles (.dash-*) — split out of app/globals.css
+ * (deep-audit perf-css-06): these rules are used exclusively by
+ * app/admin/** but rode in the render-blocking global stylesheet on
+ * every storefront page (~19KB raw). Imported only by
+ * app/admin/layout.tsx, so the storefront critical path no longer
+ * pays for the dashboard. globals.css still loads on /admin (root
+ * layout), providing the shared tokens these rules consume. */
+
+
+
+/* Admin shell — sidebar + main column. The shell wraps every /admin/*
+   route via app/admin/layout.tsx. Mobile collapses the sidebar into a
+   top strip; desktop keeps it fixed on the left. */
+
+
+.dash-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+  background: var(--surface-1);
+}
+@media (max-width: 880px) { .dash-shell { grid-template-columns: 1fr; }}
+
+
+.dash-main {
+  min-width: 0; /* let card grids reflow without overflowing */
+  padding: var(--s-6) clamp(var(--s-4), 4vw, var(--s-7)) var(--s-9);
+}
+
+
+.dash-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  padding: var(--s-5) var(--s-4);
+  background: var(--surface-2, #fafafa);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+@media (max-width: 880px) {
+  .dash-sidebar {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding: var(--s-4);
+  }}
+
+
+.dash-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+
+.dash-sidebar-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--text-1);
+  color: var(--surface-1);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+
+.dash-sidebar-brand-text { font-weight: 600; font-size: 14px; line-height: 1.15; }
+
+
+.dash-sidebar-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+@media (max-width: 880px) {
+  .dash-sidebar-list { flex-direction: row; flex-wrap: wrap; gap: 6px; }}
+
+
+.dash-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+}
+
+
+.dash-sidebar-link:hover { background: var(--surface-1); color: var(--text-1); }
+
+
+.dash-sidebar-link-active {
+  background: var(--text-1);
+  color: var(--surface-1);
+  font-weight: 600;
+}
+
+
+.dash-sidebar-link-active:hover { background: var(--text-1); color: var(--surface-1); }
+
+
+.dash-sidebar-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+
+/* Searchable / CSV-exportable data table wrapper — used by sections
+   with mid-sized lists (Top searches, Top products, Low stock, SEO
+   gaps, Blog SEO gaps). The wrapper adds a search input + match
+   count + CSV export button above the existing .dash-table. */
+
+
+.dash-datatable { display: flex; flex-direction: column; gap: 10px; }
+
+
+.dash-datatable-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+
+.dash-datatable-search {
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 320px;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  background: var(--surface-1);
+  color: var(--text-1);
+}
+
+
+.dash-datatable-search::placeholder { color: var(--text-3, #999); }
+
+
+.dash-datatable-search:focus {
+  outline: none;
+  border-color: var(--text-1);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+
+.dash-datatable-count { font-size: 12px; }
+
+
+.dash-datatable-export {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  background: var(--surface-1);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+
+.dash-datatable-export:hover {
+  background: var(--text-1);
+  color: var(--surface-1);
+  border-color: var(--text-1);
+}
+
+
+.dash-datatable-export:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--surface-1);
+  color: var(--text-2);
+  border-color: var(--line);
+}
+
+
+/* Top toolbar — sticky, shared across every /admin/* route. */
+
+
+.dash-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) 0;
+  margin-bottom: var(--s-5);
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--line);
+}
+
+
+.dash-range-picker {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+
+/* The preset row sits in its own pill group; the Custom button + popover
+   sit alongside; the Compare toggle sits at the far right with its own
+   spacing so it doesn't read as part of the preset cluster. */
+
+
+.dash-range-picker > .dash-range-btn {
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+}
+
+
+.dash-range-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  padding: 6px 12px;
+  color: var(--text-2);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface-1);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  font-family: inherit;
+}
+
+
+.dash-range-btn:hover { background: var(--surface-2, #f5f5f5); color: var(--text-1); }
+
+
+.dash-range-btn-active {
+  background: var(--text-1);
+  color: var(--surface-1);
+  border-color: var(--text-1);
+  font-weight: 600;
+}
+
+
+.dash-range-btn-active:hover { background: var(--text-1); color: var(--surface-1); }
+
+
+.dash-range-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 240px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+.dash-range-popover label {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  color: var(--text-2);
+  gap: 4px;
+}
+
+
+.dash-range-popover input[type="date"] {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  background: var(--surface-1);
+  color: var(--text-1);
+}
+
+
+.dash-range-apply {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border: none;
+  border-radius: var(--r-1);
+  background: var(--text-1);
+  color: var(--surface-1);
+  cursor: pointer;
+}
+
+
+.dash-range-apply:disabled {
+  background: var(--surface-2, #f5f5f5);
+  color: var(--text-3, #999);
+  cursor: not-allowed;
+}
+
+
+.dash-range-compare {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-2);
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface-1);
+  cursor: pointer;
+  user-select: none;
+}
+
+
+.dash-range-compare input[type="checkbox"] { margin: 0; }
+
+
+.dash-range-compare:has(input:checked) {
+  border-color: var(--text-1);
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+
+/* QA #224: hard refresh button + "just refreshed" pill */
+
+
+.dash-refresh-form {
+  display: inline-flex;
+  margin: 0;
+}
+
+
+.dash-refresh-btn {
+  font-size: 12px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface-1);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  font-family: inherit;
+}
+
+
+.dash-refresh-btn:hover { background: var(--surface-2, #f5f5f5); color: var(--text-1); }
+
+
+.dash-refresh-btn:active { transform: translateY(1px); }
+
+
+.dash-refreshed-pill {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(10, 122, 64, 0.12);
+  color: #0a7a40;
+  font-weight: 600;
+  font-size: 11px;
+  vertical-align: middle;
+}
+
+
+/* QA #224: section-aware dashboard layout. Each <section> becomes a
+   labeled band with its own grid; the section nav up top jumps between
+   them. Scroll-margin keeps the heading clear of any sticky header. */
+
+
+.dash-section {
+  margin-top: var(--s-6);
+}
+
+
+.dash-section:first-of-type { margin-top: var(--s-5); }
+
+
+
+/* Single-banner mitigation for "everything's broken" perception when
+   Shopify Admin token is degraded — surfaced when ≥3 admin queries
+   return null in one render. Amber-tinted so it reads as warning, not
+   page-level error. */
+
+
+.dash-incident-banner {
+  margin: var(--s-5) 0 0;
+  padding: 14px 18px;
+  border-radius: var(--r-2);
+  background: #fff7ed;
+  border: 1px solid #f59e0b;
+  color: #7c2d12;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+.dash-incident-banner code {
+  background: rgba(124, 45, 18, 0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+
+.dash-incident-banner a { color: #7c2d12; text-decoration: underline; }
+
+
+.dash-section-hd {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--text-2);
+  margin: 0 0 var(--s-3) 0;
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--line);
+  /* QA 2026-05-22: account for the now-sticky `.dashboard-section-nav`
+     (≈54px tall) so jumping to a section doesn't park the heading
+     underneath the sticky chip row. */
+  scroll-margin-top: calc(var(--s-7) + 54px);
+}
+
+
+/* Anomaly callout strip — sits above the section nav when any
+   detector fires. Each row is its own card colored by severity, with
+   a "Jump to section" link to the relevant in-page anchor. */
+
+
+.dash-anomaly-strip {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+}
+@media (min-width: 720px) {
+  .dash-anomaly-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }}
+
+
+.dash-anomaly {
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-2);
+  border-left: 4px solid var(--line);
+  background: var(--surface-1);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+
+.dash-anomaly-critical {
+  border-left-color: #c0392b;
+  background: rgba(192, 57, 43, 0.06);
+}
+
+
+.dash-anomaly-warn {
+  border-left-color: #b3611c;
+  background: rgba(179, 97, 28, 0.06);
+}
+
+
+.dash-anomaly-info {
+  border-left-color: #1b6ec2;
+  background: rgba(27, 110, 194, 0.05);
+}
+
+
+.dash-anomaly-headline {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-1);
+  margin-bottom: 2px;
+}
+
+
+.dash-anomaly-detail {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+
+
+.dash-anomaly-link {
+  color: var(--text-1);
+  text-decoration: underline;
+  font-weight: 600;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+
+.dash-anomaly-link:hover {
+  text-decoration: none;
+}
+
+
+/* At-a-glance KPI strip — one tile per cross-section headline number,
+   rendered above the first section band. Tiles are anchor links into
+   the section that explains the number, so the strip doubles as a
+   high-level table of contents. */
+
+
+.dash-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+}
+@media (max-width: 1100px) { .dash-kpi-strip { grid-template-columns: repeat(3, 1fr); }}
+@media (max-width: 720px) { .dash-kpi-strip { grid-template-columns: repeat(2, 1fr); }}
+
+
+.dash-kpi {
+  display: block;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: var(--s-3) var(--s-4);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.12s ease;
+}
+
+
+.dash-kpi:hover { border-color: var(--text-2); }
+
+
+.dash-kpi-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.dash-kpi-value {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.dash-shell) { scroll-behavior: smooth; }}
+
+
+/* Order detail (/admin/orders/[id]) — status badges shown next to the
+   order name in the header. Color tokens mirror the anomaly strip so
+   the two pages read as one design. */
+
+
+.dash-order-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+
+.dash-order-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+
+.dash-order-badge-green {
+  background: rgba(10, 122, 64, 0.12);
+  color: #0a7a40;
+}
+
+
+.dash-order-badge-warn {
+  background: rgba(179, 97, 28, 0.12);
+  color: #b3611c;
+}
+
+
+.dash-order-badge-critical {
+  background: rgba(192, 57, 43, 0.12);
+  color: #c0392b;
+}
+
+
+.dash-order-badge-neutral {
+  background: var(--surface-2, #f5f5f5);
+  color: var(--text-2);
+}
+
+
+.dash-stat-delta {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+
+.dash-stat-delta-up    { color: #0a7a40; }
+
+
+.dash-stat-delta-down  { color: #b3611c; }
+
+
+.dash-stat-delta-flat  { color: var(--text-2); font-weight: 500; }
+
+
+.dash-stat-delta-inline {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-left: 4px;
+}
+
+
+.dash-stat-delta-inline.dash-stat-delta-up    { color: #0a7a40; }
+
+
+.dash-stat-delta-inline.dash-stat-delta-down  { color: #b3611c; }
+
+
+.dash-stat-delta-inline.dash-stat-delta-flat  { color: var(--text-2); font-weight: 500; }
+
+
+.dash-spark {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-2);
+  opacity: 0.85;
+}
+
+
+/* Phase 300b: full-width revenue line chart + day-of-week heatmap. */
+
+
+.dash-line-chart {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-top: var(--s-2);
+  color: var(--text-1);
+}
+
+
+.dash-heatmap {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: var(--s-2);
+}
+
+
+.dash-heatmap-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  text-align: center;
+}
+
+
+.dash-heatmap-label {
+  font-size: 11px;
+  color: var(--text-2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+
+.dash-heatmap-bar {
+  border-radius: var(--r-1);
+  padding: 12px 4px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+
+.dash-heatmap-value {
+  display: block;
+}
+
+
+.dash-heatmap-sub {
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+
+/* Hour-of-day heatmap — 24 narrow columns (0..23 UTC) in a fixed
+   grid. Same intensity formula as the weekday heatmap; cells get
+   tighter to fit 24 in the same card width. */
+
+
+.dash-hour-heatmap {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 2px;
+}
+
+
+.dash-hour-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+.dash-hour-bar {
+  height: 44px;
+  border-radius: var(--r-1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+
+.dash-hour-value {
+  display: block;
+}
+
+
+.dash-hour-label {
+  font-size: 10px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+
+/* Phase 300c: traffic-source donut + legend layout */
+
+
+.dash-donut-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: var(--s-4);
+  align-items: center;
+}
+@media (max-width: 720px) {
+  .dash-donut-row {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }}
+
+
+.dash-donut {
+  width: 140px;
+  height: 140px;
+  display: block;
+}
+
+
+.dash-donut-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+
+.dash-table-tight th,
+.dash-table-tight td {
+  padding: 4px 6px;
+  font-size: 12.5px;
+}
+
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-5);
+}
+@media (max-width: 1100px) { .dash-grid { grid-template-columns: repeat(2, 1fr); }}
+@media (max-width: 720px) { .dash-grid { grid-template-columns: 1fr; }}
+
+
+.dash-card {
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  padding: var(--s-5);
+}
+
+
+.dash-card-wide { grid-column: span 2; }
+@media (max-width: 1100px) { .dash-card-wide { grid-column: span 2; }}
+@media (max-width: 720px) { .dash-card-wide { grid-column: span 1; }}
+
+
+.dash-card-hd {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--s-4);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--line);
+}
+
+
+.dash-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-4);
+}
+
+
+.dash-stat-label { font-size: 12px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; }
+
+
+.dash-stat-value { font-size: 28px; font-weight: 700; line-height: 1.2; margin-top: 4px; }
+
+
+.dash-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+.dash-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+
+.dash-list li:last-child { border-bottom: none; }
+
+
+.dash-list li.dash-warn { color: #b3611c; font-weight: 600; }
+
+
+/* Generic warn tint — table rows/cells and notes across the dashboard
+   set className="dash-warn" but only the list-item and funnel-drop
+   variants ever had a rule, so <tr>/<td>/<p> warns rendered unstyled.
+   Color inherits down to cells; keep it color-only so tabular layouts
+   don't shift. */
+
+
+.dash-warn { color: #b3611c; }
+
+
+.dash-table tr.dash-warn td { font-weight: 600; }
+
+
+.dash-list-compact { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+
+
+.dash-list-compact li { padding: 4px 0; }
+
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+
+.dash-table th, .dash-table td {
+  text-align: left;
+  padding: var(--s-2) var(--s-3) var(--s-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+
+.dash-table th { font-weight: 600; font-size: 12px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; }
+
+
+.dash-badge {
+  display: inline-block;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-family: var(--font-geist-mono, monospace);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+
+.dash-funnel {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-3);
+}
+
+
+.dash-funnel-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) 3fr 64px;
+  gap: var(--s-3);
+  align-items: center;
+}
+@media (max-width: 720px) {
+  .dash-funnel-row {
+    grid-template-columns: 1fr;
+    gap: var(--s-1);
+  }}
+
+
+.dash-funnel-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+
+.dash-funnel-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+.dash-funnel-bar {
+  position: relative;
+  background: var(--surface-2);
+  border-radius: 4px;
+  height: 24px;
+  overflow: hidden;
+}
+
+
+.dash-funnel-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--accent, #2563eb);
+  opacity: 0.85;
+  transition: width 240ms ease;
+}
+
+
+.dash-funnel-value {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 4px var(--surface-1);
+}
+
+
+.dash-funnel-drop {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--text-2);
+}
+
+
+.dash-funnel-drop.dash-warn { color: var(--warn, #b94a00); font-weight: 600; }
+
+/* ── /admin ─────────────────────────────────────────────────
+   Internal metrics page. Server-rendered; no client interactivity.
+   Tight grid + table styling — design-language consistent with rest
+   of the site (uses the existing CSS variables --s-*, --line, etc.). */
+.dashboard {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--s-7) var(--container-pad) var(--s-9);
+}
+/* When the dashboard is rendered inside the admin shell (sidebar +
+   toolbar layout), .dash-main already provides outer padding, so the
+   .dashboard wrapper drops its own padding to avoid double-spacing. */
+.dashboard-in-shell {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+  max-width: none;
+}
+.dashboard-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--s-5);
+  margin-bottom: var(--s-6);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.dashboard-links {
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.dashboard-links a {
+  font-size: 13px;
+  color: var(--text-2);
+  text-decoration: none;
+}
+.dashboard-links a:hover { color: var(--text-1); text-decoration: underline; }
+/* Phase 300: range picker + delta badges + sparklines. */
+.dashboard-head-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--s-3);
+}
+.dash-table .tnum, .dash-table td:nth-last-child(-n+2) { font-variant-numeric: tabular-nums; }

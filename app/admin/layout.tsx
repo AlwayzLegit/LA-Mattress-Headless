@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { AdminSidebar } from './_components/sidebar';
 import { AdminToolbar } from './_components/admin-toolbar';
+import './admin.css';
 
 /**
  * Shared chrome for every route under /admin: left-rail sidebar +
