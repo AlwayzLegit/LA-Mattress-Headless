@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { getProductByHandle, getProductRecommendations } from '@/lib/shopify';
 import type { Product, ProductSummary } from '@/lib/shopify';
 import { products as inventoryProducts, findProduct } from '@/lib/inventory';
-import { capTitle, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
+import { capTitle, ensureTitleDistinctFromH1, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { pickPrimaryCollection } from '@/lib/product-jsonld';
@@ -99,7 +99,14 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   // name), the <title> would duplicate the H1 with no brand. Append
   // the canonical brand suffix so it stays distinct + brand-bearing.
   if (stripBrandSuffix(title).trim().toLowerCase() === product.title.trim().toLowerCase()) {
-    title = capTitle(`${product.title} · LA Mattress Store`);
+    // ensureTitleDistinctFromH1 reserves room for the suffix (caps the
+    // base to 70 minus the suffix length) so the brand always survives
+    // capping. The previous `capTitle(title + ' · LA Mattress Store')`
+    // hit both failure modes in turn: before the middle-dot regex fix
+    // it truncated INTO the suffix ("· LA Mattres…"), after it capTitle
+    // dropped the whole suffix and the title collapsed back into the H1
+    // (Semrush issue 105, +46 pages on the 2026-07-04 crawl).
+    title = ensureTitleDistinctFromH1(`${product.title} | LA Mattress Store`, product.title);
   }
   const description = truncDescription(
     firstNonEmpty(
