@@ -176,6 +176,31 @@ Also dropped during the code-quality area's own verification (never entered the 
 
 ---
 
+## Appendix: design notes for the two deferred L items
+
+Written 2026-07-04 after Batches 7–9 shipped. Both items are implementable but need a decision/measurement first — captured here so the next round starts from the analysis, not from scratch.
+
+### perf-isr-07 — PLP ISR
+
+**Current state:** `app/(storefront)/collections/[handle]/page.tsx` sets `export const dynamic = 'force-dynamic'` because sort/pagination/filter state lives in `searchParams`. Every PLP request — including the param-less canonical view that crawlers and most organic landings hit — is server-rendered per request. The *data* layer is already cached (Shopify fetches carry `revalidate` windows), so the per-request cost is render time + function cold starts, not API round-trips.
+
+**Options considered:**
+1. **PPR (Partial Prerendering)** — the "right" long-term answer (static shell + dynamic holes for the filter/sort-dependent grid), but still experimental on Next 15.5.x; not appropriate for this production store yet.
+2. **Route split** (static `/collections/[handle]` + separate dynamic browse route for param'd views) — changes URLs for filtered/sorted views, which are already canonicalized and crawl-managed; SEO churn outweighs the render savings. Rejected.
+3. **CDN caching for the param-less view (recommended first step):** dynamic render stays, but responses without query params get `Cache-Control: s-maxage=300, stale-while-revalidate=600` so Vercel's CDN serves repeat hits without invoking the function. Small, reversible, and targets exactly the request class that dominates PLP traffic. Param'd views (sort/filter/pagination) remain uncached per request.
+
+**Before implementing:** pull p75 TTFB per PLP route from PostHog `web_vital` events to size the win — if p75 TTFB on canonical PLP views is already <300ms, option 3's user-visible gain is marginal and the item can be closed as "not worth the cache-invalidation complexity". Revisit PPR when it reaches stable.
+
+### ux-css-08 — breakpoint consolidation
+
+**Census (globals.css, post-Batch-8):** `max-width: 760px` ×25, `880px` ×16, `640px` ×14, `720px` ×13, `1024px` ×12, `480px` ×10, `768px` ×6, `600px` ×7, plus a long tail (520, 560, 420, 900, 980, 1200). The sticky-bar/sheet cluster was already aligned at 1024px in Batch 1.
+
+**Proposed canonical scale:** 480 (small phone) / 640 (large phone) / 768 (tablet portrait) / 1024 (desktop) / 1200 (wide) — matching the industry-default scale so future contributors guess right.
+
+**First slice:** merge the 720/760/768 "tablet" cluster onto 768. The risk window is real devices in the 721–768px band — most notably iPad Mini portrait at exactly 768px, which would flip into mobile treatment for every migrated `max-width: 760px` rule. That's usually the *correct* behavior (those rules exist to linearize multi-column layouts that cramp at tablet width), but it must be eyeballed, not sed'd: migrate template-by-template (PLP first, then PDP, then CMS chrome) with a device-width spot check per template. Not started this round because each slice needs visual review the CI suite can't provide.
+
+---
+
 ## Verification note
 
 Top-P1 evidence was independently re-checked in the main session before publication (2026-07-02): ux-pdp-01 (globals.css:2845/2891 + buy-box.tsx:345 — dead zone is 881–1100px, wider than the auditor's 881–1024px), ux-css-02 (5 usages, 0 definitions), secpriv-01 (maskAllInputs:false, zero data-ph-mask usages), seo-tech-02 (BRAND_SUFFIX_RE missing '·'; live PDP title renders "· LA Mattres…"), perf-img-01 (raw untransformed preload confirmed in capture head), seo-tech-01 (last inventory snapshot commit cbc8d18, 2026-06-18). All confirmed.
