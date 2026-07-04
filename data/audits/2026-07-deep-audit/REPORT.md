@@ -160,6 +160,22 @@ Also dropped during the code-quality area's own verification (never entered the 
 
 ---
 
+## Appendix: 404 empty-shell on matched dynamic routes — diagnosed, upstream
+
+**Symptom (seo-tech / issue observed during Batch 6):** unknown handles under a *matched* dynamic route (e.g. `/pages/zzz-unknown-handle`, matched by `app/(storefront)/pages/[handle]`) return HTTP 404 with `<html id="__next_error__">` and an **empty server-rendered body** — the branded not-found content and site chrome arrive only via the RSC flight payload and render client-side. Truly unmatched paths (e.g. `/zzz-nowhere`) serve the fully prerendered branded `/404` correctly.
+
+**What was ruled out in our code:**
+- PR #504 moved the `cookies()` (preview-mode) read *after* the `notFound()` gates in both `generateMetadata` and the page component — correct hygiene, but the shell persisted.
+- Retested 2026-07-04 on **next 15.5.20** (PR #507; production deployment `bef91cd` confirmed READY before the fetch): `x-nextjs-prerender: 1`, status 404, correct `<title>Page not found · LA Mattress Store</title>` and meta in `<head>`, visible body text = 0 chars, `__next_error__` shell still present.
+
+**Conclusion:** this is framework behavior for `notFound()` thrown from a matched dynamic route in this App Router setup (Next 15.5.x on Vercel), not an app bug we can patch — the route-level not-found boundary streams the error shell and hydrates the branded content client-side.
+
+**Impact assessment (why this is acceptable to park):** status code (404), title, and robots meta are all correct — crawlers see the right signals; Google renders JS anyway; the page is a dead-end 404 by design. The only real cost is JS-disabled users seeing a blank 404 body.
+
+**Re-check trigger:** on future Next.js major/minor upgrades, re-fetch `/pages/zzz-unknown-handle` and check for `__next_error__` + empty body. If Next ships a fix, no app change should be needed.
+
+---
+
 ## Verification note
 
 Top-P1 evidence was independently re-checked in the main session before publication (2026-07-02): ux-pdp-01 (globals.css:2845/2891 + buy-box.tsx:345 — dead zone is 881–1100px, wider than the auditor's 881–1024px), ux-css-02 (5 usages, 0 definitions), secpriv-01 (maskAllInputs:false, zero data-ph-mask usages), seo-tech-02 (BRAND_SUFFIX_RE missing '·'; live PDP title renders "· LA Mattres…"), perf-img-01 (raw untransformed preload confirmed in capture head), seo-tech-01 (last inventory snapshot commit cbc8d18, 2026-06-18). All confirmed.
