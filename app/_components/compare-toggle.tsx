@@ -50,19 +50,35 @@ export function CompareToggle({ handle, title }: { handle: string; title: string
     }
   };
 
-  // Don't render until hydrated so SSR matches first paint.
-  if (!hydrated) return null;
+  // SSR in the unselected default state instead of returning null
+  // (audit ux-plp-06: the null-until-hydrated version popped a ~40px
+  // button into every one of 24 PLP cards at hydration, reflowing the
+  // whole grid under the shopper's thumb — feeding the PLP CLS tail).
+  // The markup below is identical server- and client-side for the
+  // default state, so there's no hydration mismatch; a card that IS in
+  // the compare set just flips aria-pressed/check after hydration — a
+  // paint-only change, no layout shift. Clicks before hydration are
+  // ignored via the `hydrated` guard (same net behavior as before,
+  // where the button didn't exist yet).
+  const shown = hydrated && selected;
 
   return (
     <button
       type="button"
-      className={`compare-toggle${selected ? ' is-selected' : ''}`}
-      onClick={onToggle}
-      aria-pressed={selected}
-      aria-label={selected ? `Remove ${title} from compare` : `Add ${title} to compare (up to ${COMPARE_MAX})`}
+      className={`compare-toggle${shown ? ' is-selected' : ''}`}
+      onClick={(e) => {
+        if (!hydrated) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        onToggle(e);
+      }}
+      aria-pressed={shown}
+      aria-label={shown ? `Remove ${title} from compare` : `Add ${title} to compare (up to ${COMPARE_MAX})`}
     >
       <span className="compare-toggle-box" aria-hidden>
-        {selected ? <Icon name="check" size={12} /> : null}
+        {shown ? <Icon name="check" size={12} /> : null}
       </span>
       Compare
     </button>
