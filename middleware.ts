@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { canonicalizeRouteParams } from './lib/route-canonicalization';
 import { canonicalizeCollectionFilterPath } from './lib/collection-filter-redirect';
 import { canonicalizeProductJsonPath } from './lib/json-suffix-redirect';
@@ -68,6 +69,19 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 function unauthorized(reason: string): NextResponse {
+  // Audit secpriv-05 (lite): Basic Auth has no lockout, so brute-force
+  // resistance rests on password entropy — at minimum make attempts
+  // VISIBLE. Every failed credential pair emits a Sentry event tagged
+  // admin-auth-failure; an alert rule on event bursts (Sentry UI →
+  // Alerts, threshold e.g. >20/5min) turns guessing into a page.
+  // 'no-basic' (the initial promptless request every browser makes) is
+  // excluded — only actual wrong credentials count.
+  if (reason !== 'no-basic') {
+    Sentry.captureMessage('Admin Basic Auth failure', {
+      level: 'warning',
+      tags: { surface: 'admin-auth-failure', reason },
+    });
+  }
   return new NextResponse('Authentication required', {
     status: 401,
     headers: {
