@@ -111,6 +111,36 @@
       "source": "/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed",
       "destination": "/blogs/mattress-buying-guide/full-size-bed-dimensions-width-couples",
       "note": "Deep audit seo-organic-02 (2026-07): the 123k/mo 'full size bed dimensions' cluster was split across two surviving canonicals \u2014 this post (pos 47 on the 74k head term, 2 inbound 301s) and width-couples (pos 41 on the head term + pos 46 on the 27.1k variant). Consolidate on the stronger ranker; build-redirects-table's chain flattening re-points the 2 existing inbound redirects (measurements-room-layout-tips, how-much-space) directly at width-couples. Content fold-in of unique sections pending Shopify article access."
+    },
+    {
+      "source": "/blogs/sales/memorial-day-discount-on-mattresses-in-la",
+      "destination": "/pages/memorial-day-sale-2026",
+      "note": "Crawl 2026-07-04 issue 8: the 07-03 consolidation pointed this at memorial-day-sale-2027, which is availableAt-date-gated until 2027-05 and 404s today. Repoint to the live 2026 page (manual layer overrides the Shopify-sourced entry)."
+    },
+    {
+      "source": "/blogs/sales/best-presidents-day-mattress-sale-2024",
+      "destination": "/collections/on-sale",
+      "note": "Crawl 2026-07-04 issue 8: same date-gate mistake \u2014 presidents-day-sale-2027 404s until 2027-01-29. No live presidents-day page exists, so use the evergreen on-sale collection (the established convention for expired sale content)."
+    },
+    {
+      "source": "/blogs/sales",
+      "destination": "/collections/on-sale",
+      "note": "Crawl 2026-07-04 issue 8: the dormant sales blog index (no posts since 2024-05) still rendered card links to its 5 articles, all of which now 301 elsewhere. Retire the index (audit shopify-hyg-08)."
+    },
+    {
+      "source": "/products/olive-8-firm-value-collection-mattress-by-spring-air",
+      "destination": "/collections/spring-air-mattresses",
+      "note": "Crawl 2026-07-04 issue 8: product removed from Shopify (June 19-July 3 window) but still linked from ~9 blog article bodies. Redirect to the brand collection."
+    },
+    {
+      "source": "/products/luxe-gel-memory-foam-plush-by-venus-mattress-limited-stock-may-not-be-available",
+      "destination": "/collections/gel-foam-mattresses",
+      "note": "Crawl 2026-07-04 issue 8: limited-stock product removed from Shopify but still linked from ~5 blog article bodies. Redirect to the gel-foam collection."
+    },
+    {
+      "source": "/pages/free-120-night-comfort-guarantee",
+      "destination": "/pages/love-your-bed-guarantee",
+      "note": "Crawl 2026-07-04 issue 8: page is unpublished in Shopify but linked from 2 article bodies (and the legacy theme footer). love-your-bed-guarantee is the live equivalent of the 120-night guarantee."
     }
   ]
 }
