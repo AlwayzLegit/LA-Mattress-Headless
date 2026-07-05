@@ -40,6 +40,9 @@ on:
         options:
           - ''
           - semrush-2026-05-25-broken-ext
+          - semrush-2026-05-27-broken-int
+          - semrush-2026-05-27-broken-ext
+          - semrush-2026-07-05-quiz-and-ext
 
 permissions:
   contents: read
