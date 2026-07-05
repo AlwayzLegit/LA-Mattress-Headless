@@ -210,6 +210,37 @@ const BATCHES = {
     'can-you-sleep-in-a-room-after-painting-it',
     'sleeping-on-floor-benefits-health',
   ],
+
+  /**
+   * semrush-2026-07-05-quiz-and-ext:
+   *   SEMrush 2026-07-05 crawl. Two cohorts in one batch:
+   *
+   *   Quiz links (issues 2 + 8 — the site's only 4xx and all 4 broken
+   *   internal links): the first four articles were published Jul 4–5
+   *   by the external daily-blog automation, whose template links
+   *   `/pages/quiz` — a URL that has never existed on the headless
+   *   storefront (the quiz is `/sleep-quiz`). Pass 12 rewrites the
+   *   hrefs; the 301 shipped in PR #511 covers stragglers and any
+   *   future recurrence until the automation's template is fixed.
+   *
+   *   Broken external links (issue 12): the last four articles link
+   *   third-party URLs that responded 5xx/429 at crawl time
+   *   (iblspecifik.com 503 — genuinely unstable; researchgate.net
+   *   429 — crawler rate-limiting). Pass 4 unwraps every external
+   *   anchor, same posture as the two prior broken-ext batches:
+   *   external anchors leak authority and create perpetual broken-
+   *   link maintenance regardless of whether the link works today.
+   */
+  'semrush-2026-07-05-quiz-and-ext': [
+    'new-mattress-smell-off-gassing',
+    'innerspring-vs-memory-foam',
+    'how-to-make-a-mattress-softer',
+    'best-mattress-for-combination-sleepers',
+    'how-to-clean-a-sweat-stained-mattress',
+    'the-connection-between-quality-sleep-and-relationship-health',
+    'how-to-choose-the-best-allergy-mattress-cover-for-your-needs',
+    '10-reasons-why-your-mattress-needs-to-be-replaced',
+  ],
 };
 
 const ENDPOINT = `https://${STORE}/admin/api/${VERSION}/graphql.json`;
@@ -349,6 +380,19 @@ function clean(body, counts) {
   //    that may have been left mid-string (e.g. `?&"` → `"`).
   pc('orphan_amp_chain_2', /\?(&|&amp;|amp;)+/g, '?');
   pc('orphan_trailing_q_2', /\?(?=["#])/g, '');
+
+  // 12. Rewrite internal quiz links to the canonical quiz URL. The
+  //    external daily-blog automation templates `/pages/quiz` into
+  //    new article bodies, but the quiz lives at `/sleep-quiz` —
+  //    SEMrush 2026-07-05 flagged the resulting 404 as the site's
+  //    only remaining 4xx (issue 2) plus all 4 broken internal links
+  //    (issue 8). A 301 now covers the old URL (redirects-manual.json,
+  //    PR #511); this pass fixes the hrefs at the source so article
+  //    links go direct. Matches relative and absolute (apex + www)
+  //    forms; idempotent.
+  pc('quiz_href_rewrites',
+     /(\bhref=")(?:https?:\/\/(?:www\.)?mattressstoreslosangeles\.com)?\/pages\/quiz(?=["?#\/])/g,
+     '$1/sleep-quiz');
 
   // 8. Refresh hardcoded outdated year in section headings.
   pc('year_refresh',
