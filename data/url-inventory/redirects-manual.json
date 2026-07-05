@@ -3,6 +3,11 @@
   "$source": "hand-maintained",
   "redirects": [
     {
+      "source": "/pages/quiz",
+      "destination": "/sleep-quiz",
+      "note": "SEMrush 20260705 crawl (issues 2 + 8): 4 mattress-buying-guide articles link /pages/quiz in their CMS bodies, which 404s — the sleep quiz lives at /sleep-quiz. Shopify urlRedirect gid://shopify/UrlRedirect/489990881533 created 2026-07-05 as the durable source of truth; mirrored here so the middleware table serves the 301 immediately (headless traffic never hits Shopify's redirect layer)."
+    },
+    {
       "source": "/blogs/beds-mattresses/best-mattress-for-lower-back-pain-los-angeles",
       "destination": "/blogs/mattress-buying-guide/best-mattress-for-lower-back-pain-los-angeles",
       "note": "SEMrush audit 20260625 (duplicate title tag, error id 6): the daily-blog automation published a near-duplicate 'Best Mattress for Lower Back Pain in Los Angeles' in the legacy beds-mattresses blog (2026-06-24), duplicating the established mattress-buying-guide article (2026-06-16). Consolidate to the primary-blog canonical."

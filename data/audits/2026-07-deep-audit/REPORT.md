@@ -176,6 +176,24 @@ Also dropped during the code-quality area's own verification (never entered the 
 
 ---
 
+## Appendix: 2026-07-05 crawl triage (round 4)
+
+Snapshot `6a49a336b8060ebdf5c70d9c` (03:29 UTC, first crawl covering all 9 fix batches). **Quality 95 (+1), errors 5 (−26), warnings −40.** Wins confirmed: issue 105 h1/title duplicates **46 → 0** (PDP `ensureTitleDistinctFromH1` guard), 4xx pages **9 → 1**, broken internal links **22 → 4**.
+
+**Fixed this round:**
+- The remaining 4xx and all 4 broken internal links were one URL: `/pages/quiz` (linked from 4 buying-guide article bodies; the quiz lives at `/sleep-quiz`). Shopify urlRedirect `gid://shopify/UrlRedirect/489990881533` created + mirrored in `redirects-manual.json` → middleware 301. Issues 2 and 8 should read 0 next crawl (the 4 links migrate to notice 214 until the article bodies are edited — needs `graphql_query` access, still approval-gated this session).
+
+**Checked and closed as stale crawl data (no change made — verified live 2026-07-05):**
+- Issue 214 rows claiming `/pages/mattress-sizes` links 301 (`king-vs-california-king`, `full-size-bed-dimensions-width-couples`, `queen-mattress-size-guide-…`): all three URLs return 200 with self-canonicals today. Transient article-handle churn, since reverted. `lib/mattress-sizes-data.ts` left untouched — "fixing" to Semrush's targets would have pointed at the wrong URLs.
+- Issue 214 row claiming the locations hub links a redirecting `marina-del-rey`: live, marina IS the page (200, neighborhood template) and the manual layer already 301s playa→marina. No change.
+
+**Documented, no action:**
+- Issue 12 (4 broken external links): 3× researchgate.net respond 429 to crawlers (bot rate-limiting; fine for humans) — false positives. 1× iblspecifik.com 503 in `how-to-clean-a-sweat-stained-mattress` — real but needs a CMS body edit (blocked on `graphql_query`); revisit when Admin reads are available.
+- Issue 206 (206 GA orphans, +7): the historical GA tail — old blog URLs, `.json` product endpoints, retired sale handles that still log GA sessions while 301ing. Redirects are already in place for everything fixable; the count decays with traffic.
+- Issues 213 (+3), 112 (1225), 223 (89), 4 (276 robots-blocked): unchanged posture — fluctuating notices / content-strategy items / intentional blocks.
+
+---
+
 ## Appendix: design notes for the two deferred L items
 
 Written 2026-07-04 after Batches 7–9 shipped. Both items are implementable but need a decision/measurement first — captured here so the next round starts from the analysis, not from scratch.
