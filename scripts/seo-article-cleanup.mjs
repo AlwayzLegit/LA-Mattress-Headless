@@ -241,6 +241,41 @@ const BATCHES = {
     'how-to-choose-the-best-allergy-mattress-cover-for-your-needs',
     '10-reasons-why-your-mattress-needs-to-be-replaced',
   ],
+
+  /**
+   * semrush-2026-07-07-all-open:
+   *   Superset batch — every article flagged open as of the 2026-07-07
+   *   crawl, in one run. The 07-05 batch never got applied (the
+   *   SHOPIFY_ADMIN_TOKEN Actions secret died 2026-07-04/05 and every
+   *   run 401'd), and the 07-07 crawl added 7 more broken-external
+   *   articles: healthline.com reorganized its /health/* URLs (5
+   *   anchors now 404) and us-mattress.com started answering crawlers
+   *   with 423 (3 anchors). Rather than chaining two batch runs when
+   *   the token comes back, this batch covers the 07-05 set (quiz-link
+   *   rewrites via pass 12 + ext unwraps via pass 4) plus the 7 new
+   *   articles. All passes are idempotent, so the overlap is harmless
+   *   and this batch supersedes 07-05 (kept above for the audit
+   *   trail).
+   */
+  'semrush-2026-07-07-all-open': [
+    // 07-05 cohort — quiz links + first ext wave
+    'new-mattress-smell-off-gassing',
+    'innerspring-vs-memory-foam',
+    'how-to-make-a-mattress-softer',
+    'best-mattress-for-combination-sleepers',
+    'how-to-clean-a-sweat-stained-mattress',
+    'the-connection-between-quality-sleep-and-relationship-health',
+    'how-to-choose-the-best-allergy-mattress-cover-for-your-needs',
+    '10-reasons-why-your-mattress-needs-to-be-replaced',
+    // 07-07 cohort — healthline 404s + us-mattress 423s
+    'what-is-the-best-mattress-for-fibromyalgia-pain-relief',
+    'tempur-pedic-mattress-review-2025-pros-cons-and-alternatives',
+    'king-size-bed-frames-which-style-and-size-should-you-choose',
+    'best-mattress-for-joint-pain',
+    'signs-of-bed-bugs-on-foam-mattresses-and-what-to-do',
+    'signs-it-s-time-to-replace-your-memory-foam-mattress',
+    'best-twin-mattresses-for-toddlers',
+  ],
 };
 
 const ENDPOINT = `https://${STORE}/admin/api/${VERSION}/graphql.json`;

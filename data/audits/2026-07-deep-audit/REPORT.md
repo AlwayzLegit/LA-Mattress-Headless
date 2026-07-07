@@ -191,6 +191,10 @@ Snapshot `6a49a336b8060ebdf5c70d9c` (03:29 UTC, first crawl covering all 9 fix b
 
 **Documented, no action:**
 - Issue 12 external-link detail: 3× researchgate.net respond 429 to crawlers (bot rate-limiting; fine for humans) and 1× iblspecifik.com 503 (genuinely unstable) — all four articles included in the round-5 batch above; pass 4 unwraps the anchors, keeping the visible text.
+
+**Round 6 (2026-07-07 crawl, snapshot `6a4c45f9708a1073bbac99c0`):** quality 97 (−1). Two changes triaged:
+- **Issue 12 grew 4 → 11:** external-domain decay on old articles, not new content — healthline.com reorganized its `/health/*` URLs (5 anchors now 404) and us-mattress.com now answers crawlers 423 (3 anchors). Remedy: new **superset batch `semrush-2026-07-07-all-open`** (15 articles = the unapplied 07-05 cohort + the 7 new) so a single apply run clears the whole backlog once the token is fixed. The cleanup pipeline is still blocked — `SHOPIFY_ADMIN_TOKEN` failed 401 again on the Jul 6 and Jul 7 scheduled inventory runs.
+- **Issue 111 (1 too-slow page, 5.2s):** the just-published `best-mattress-features-for-aging-bodies…` article's first-ever render (ISR cold start — the crawler was its first visitor). Verified live at 200/fast; transient, self-heals in the next crawl. Errors otherwise remain 0; issues 2/8/105 all hold at 0.
 - Issue 206 (206 GA orphans, +7): the historical GA tail — old blog URLs, `.json` product endpoints, retired sale handles that still log GA sessions while 301ing. Redirects are already in place for everything fixable; the count decays with traffic.
 - Issues 213 (+3), 112 (1225), 223 (89), 4 (276 robots-blocked): unchanged posture — fluctuating notices / content-strategy items / intentional blocks.
 
