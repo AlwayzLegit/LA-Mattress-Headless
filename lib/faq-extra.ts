@@ -155,7 +155,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
   'love-your-bed-guarantee': [
     {
       q: 'How long is the comfort exchange window?',
-      a: '120 nights from delivery. Sleep on your new mattress for at least 30 nights — give your body time to adjust — then if it\'s not right, contact us anytime within 120 nights to start an exchange. One free exchange per purchase.',
+      a: '120 nights from delivery. Sleep on your new mattress for at least 30 nights — give your body time to adjust — then if it\'s not right, contact us anytime within 120 nights to start an exchange. One exchange per purchase; a flat $100 service fee covers pickup and redelivery.',
     },
     {
       q: 'What\'s the minimum sleep period before I can exchange?',
@@ -167,11 +167,11 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
     },
     {
       q: 'What if the replacement costs more or less than the original?',
-      a: 'You pay the difference (if more) or we refund the difference (if less). If you used financing, the new balance gets applied to the existing loan at the same terms — no second application, no second credit check.',
+      a: 'If the replacement costs more, you pay the difference. If it costs less, the difference isn\'t refunded — so most customers swap to a same-price or higher-priced model. If you used financing, the new balance gets applied to the existing loan at the same terms — no second application, no second credit check.',
     },
     {
       q: 'Are there any restocking fees or return shipping costs?',
-      a: 'None. No restocking fees, no shipping costs, no haggling. We pick up the original mattress and deliver + set up the replacement as one appointment, included white-glove logistics.',
+      a: 'No restocking fee and no haggling. The exchange carries a flat $100 service fee that covers white-glove pickup of the original mattress and delivery + setup of the replacement in one appointment.',
     },
     {
       q: 'Does the guarantee apply to floor samples or clearance items?',
@@ -361,7 +361,7 @@ const CMS_PAGE_FAQS: Record<string, FaqItem[]> = {
     },
     {
       q: 'Is there a fee or restocking charge for the 120-night comfort exchange?',
-      a: 'No. No restocking fee, no shipping fee, no re-delivery fee. White-glove pickup of the original mattress and delivery + setup of the replacement is included. You pay only the price difference if you upgrade to a more expensive mattress (or we refund the difference if you downgrade).',
+      a: 'There\'s no restocking fee. The exchange carries a flat $100 service fee covering white-glove pickup of the original mattress and delivery + setup of the replacement. If the new mattress costs more, you pay the difference; if it costs less, the difference isn\'t refunded.',
     },
     {
       q: 'What conditions void the comfort exchange?',

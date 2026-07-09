@@ -34,12 +34,12 @@ const FLOWS: Record<string, FlowConfig> = {
       {
         icon: 'truck',
         title: 'We pick up & redeliver',
-        body: 'We collect the original and bring your new pick — any in-stock mattress, any brand, any size. Pickup and redelivery included.',
+        body: 'We collect the original and bring your new pick — any in-stock mattress, any brand, any size. A flat $100 exchange service fee covers the pickup and redelivery.',
       },
       {
         icon: 'card',
-        title: 'Pay only the difference',
-        body: 'No restocking fee. You pay only the price difference, if any. We recycle the original through California’s program.',
+        title: 'Pay the difference if you trade up',
+        body: 'No restocking fee. If the new mattress costs more, you pay the difference; if it costs less, the difference isn’t refunded. We recycle the original through California’s program.',
       },
     ],
   },
