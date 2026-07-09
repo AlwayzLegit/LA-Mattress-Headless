@@ -30,7 +30,7 @@ export function PriceConfidencePage() {
           <h1 className="h1" style={{ marginTop: 'var(--s-3)' }}>Our low price guarantee</h1>
           <p className="muted" style={{ maxWidth: '62ch', marginTop: 'var(--s-3)' }}>
             Great mattresses at honest prices — backed by a real price match and a
-            120-night comfort exchange, so the decision is risk-free.
+            120-night sleep trial with one comfort exchange per purchase.
           </p>
         </header>
 

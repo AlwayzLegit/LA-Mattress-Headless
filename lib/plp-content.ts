@@ -390,7 +390,7 @@ const BACK_PAIN_FAQ: FaqItem[] = [
   },
   {
     q: 'How long until a new mattress relieves my back pain?',
-    a: 'Allow 30 nights for your body to adjust — that\'s why our 120-night guarantee requires a 30-night minimum before exchange. Most shoppers feel improvement within 2 weeks; full benefits show up by day 30–60. If pain worsens or doesn\'t improve at all after 30 nights, exchange for a different firmness or construction at no charge.',
+    a: 'Allow 30 nights for your body to adjust — that\'s why our 120-night guarantee requires a 30-night minimum before exchange. Most shoppers feel improvement within 2 weeks; full benefits show up by day 30–60. If pain worsens or doesn\'t improve at all after 30 nights, use the one-time comfort exchange to switch firmness or construction — no restocking fee, just the flat $100 exchange service.',
   },
 ];
 

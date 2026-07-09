@@ -34,7 +34,7 @@ Family-owned since 2012. Five Los Angeles showrooms: Koreatown, West LA, La Brea
 Every mattress purchase includes:
 - Free white-glove delivery within Los Angeles on orders $499 and up
 - Same-day delivery if the order is placed before 4 PM Monday–Saturday (Monday includes federal holidays; we deliver every day we are open)
-- 120-night Love Your Bed Guarantee — sleep on it for at least 30 nights; if it's not right, swap it for any other mattress at original purchase value
+- 120-night Love Your Bed Guarantee — sleep on it for at least 30 nights; if it's not right, one exchange per purchase for any other in-stock mattress. Flat $100 exchange service fee (covers pickup + redelivery); if the new mattress costs more the customer pays the difference, and if it costs less the difference is not refunded
 - 0% APR financing on approved credit through Synchrony and Acima, 60-second instant decision
 - Old-mattress haul-away during delivery, recycled responsibly
 
