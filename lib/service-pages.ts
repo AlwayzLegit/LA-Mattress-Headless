@@ -82,8 +82,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
     lede: 'Sleep on it for at least 30 nights. If it isn’t right, swap it for any other mattress within 120 nights of delivery — we handle the pickup, drop-off, and recycling.',
     trust: [
       { icon: 'check', title: 'One exchange per purchase', sub: 'Any other in-stock mattress, any brand, any size' },
-      { icon: 'truck', title: 'Pickup + redelivery included', sub: 'We haul the original to CA mattress recycling' },
-      { icon: 'shield', title: 'No restocking fees', sub: 'Pay only the price difference if any' },
+      { icon: 'shield', title: 'No restocking fees', sub: 'Trade up: pay the difference. Trade down: no refund.' },
     ],
     cta: {
       headline: 'Choose with confidence.',

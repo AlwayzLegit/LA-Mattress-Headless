@@ -73,7 +73,7 @@ export const LOCATIONS_FAQ: LocationsFaqItem[] = [
   },
   {
     q: 'What if I don\'t love the mattress after I bring it home?',
-    a: 'Every mattress comes with a 120-night Love Your Bed Guarantee — sleep on it for 30 days minimum to adjust, then if it isn\'t right, we\'ll swap it for a different model. No restocking fee, no return shipping cost. You only pay the price difference if you exchange up; nothing if you exchange down or to the same tier.',
+    a: 'Every mattress comes with a 120-night Love Your Bed Guarantee — sleep on it for 30 days minimum to adjust, then if it isn\'t right, we\'ll swap it for a different model. No restocking fee; a flat $100 service fee covers pickup and redelivery. If the new mattress costs more you pay the difference; if it costs less, the difference isn\'t refunded.',
     link: { href: '/pages/love-your-bed-guarantee', label: 'How the exchange works' },
   },
 ];
