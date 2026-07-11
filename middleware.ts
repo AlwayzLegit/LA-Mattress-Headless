@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/nextjs';
 import { canonicalizeRouteParams } from './lib/route-canonicalization';
 import { canonicalizeCollectionFilterPath } from './lib/collection-filter-redirect';
 import { canonicalizeProductJsonPath } from './lib/json-suffix-redirect';
-import { plpCdnCacheControl, PLP_CDN_CACHE_HEADER } from './lib/plp-cache';
 import { REDIRECTS } from './lib/redirects-table';
 
 /**
@@ -197,24 +196,19 @@ export function middleware(req: NextRequest): NextResponse {
 
   // (3) /admin/* requires Basic Auth — fall through to the auth logic.
   // Non-admin storefront paths with no query params just pass through.
+  //
+  // NOTE (perf-isr-07, 2026-07-11): do NOT try to CDN-cache the
+  // force-dynamic PLPs from here. Both `Cache-Control` and
+  // `Vercel-CDN-Cache-Control` set on this pass-through response were
+  // verified live to have no effect — Next.js owns Cache-Control for
+  // dynamic renders (replaces it with private/no-store), and Vercel's
+  // edge decides cacheability from the FUNCTION's response headers,
+  // which middleware cannot reach (headers merge after the cache
+  // decision; x-vercel-cache stayed MISS across repeat fetches).
+  // Making PLPs edge-cacheable requires the route restructure tracked
+  // in the audit report appendix (perf-isr-07), not a header.
   if (!pathname.startsWith('/admin')) {
-    const res = NextResponse.next();
-    // (2.5) CDN caching for canonical (param-less) collection PLPs
-    // (audit perf-isr-07 step 1). PLPs are force-dynamic, so every
-    // cold hit pays a full lambda + Shopify render — the 20260707 and
-    // 20260711 crawls each caught a ~5s first-visitor render (issue
-    // 111). The param-less view is identical for every anonymous
-    // visitor, so let Vercel's edge serve it: max-age=300 +
-    // stale-while-revalidate=600 means repeat hits (crawlers included)
-    // never wait on a cold render. Query variants returned early at
-    // step (2) and stay fully dynamic. Uses Vercel-CDN-Cache-Control
-    // because Next.js overwrites plain Cache-Control on dynamic
-    // renders (verified live 2026-07-11) — see lib/plp-cache.ts.
-    if (req.method === 'GET') {
-      const cc = plpCdnCacheControl(pathname, req.nextUrl.search);
-      if (cc) res.headers.set(PLP_CDN_CACHE_HEADER, cc);
-    }
-    return res;
+    return NextResponse.next();
   }
 
   // If either env var isn't set, lock the dashboard rather than let it
