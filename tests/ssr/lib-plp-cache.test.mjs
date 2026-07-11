@@ -10,7 +10,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const { plpCdnCacheControl, PLP_CDN_CACHE_CONTROL } = await import('../../lib/plp-cache.ts');
+const { plpCdnCacheControl, PLP_CDN_CACHE_CONTROL, PLP_CDN_CACHE_HEADER } = await import('../../lib/plp-cache.ts');
 
 test('canonical collection PLP gets the CDN policy', () => {
   assert.equal(
@@ -23,8 +23,11 @@ test('canonical collection PLP gets the CDN policy', () => {
   );
 });
 
-test('policy value is the audited s-maxage + SWR pair', () => {
-  assert.equal(PLP_CDN_CACHE_CONTROL, 'public, s-maxage=300, stale-while-revalidate=600');
+test('policy value is the audited max-age + SWR pair on the Vercel CDN header', () => {
+  assert.equal(PLP_CDN_CACHE_CONTROL, 'max-age=300, stale-while-revalidate=600');
+  // Vercel-CDN-Cache-Control (not Cache-Control): Next.js overwrites
+  // plain Cache-Control on dynamic renders — verified live 2026-07-11.
+  assert.equal(PLP_CDN_CACHE_HEADER, 'Vercel-CDN-Cache-Control');
 });
 
 test('query-carrying requests stay dynamic', () => {
