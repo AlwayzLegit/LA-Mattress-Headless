@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/nextjs';
 import { canonicalizeRouteParams } from './lib/route-canonicalization';
 import { canonicalizeCollectionFilterPath } from './lib/collection-filter-redirect';
 import { canonicalizeProductJsonPath } from './lib/json-suffix-redirect';
-import { plpCdnCacheControl } from './lib/plp-cache';
+import { plpCdnCacheControl, PLP_CDN_CACHE_HEADER } from './lib/plp-cache';
 import { REDIRECTS } from './lib/redirects-table';
 
 /**
@@ -204,15 +204,15 @@ export function middleware(req: NextRequest): NextResponse {
     // cold hit pays a full lambda + Shopify render — the 20260707 and
     // 20260711 crawls each caught a ~5s first-visitor render (issue
     // 111). The param-less view is identical for every anonymous
-    // visitor, so let Vercel's edge serve it: s-maxage=300 +
+    // visitor, so let Vercel's edge serve it: max-age=300 +
     // stale-while-revalidate=600 means repeat hits (crawlers included)
     // never wait on a cold render. Query variants returned early at
-    // step (2) and stay fully dynamic. Middleware-set Cache-Control
-    // wins over the framework default — same mechanism the /admin
-    // branch below already relies on. See lib/plp-cache.ts.
+    // step (2) and stay fully dynamic. Uses Vercel-CDN-Cache-Control
+    // because Next.js overwrites plain Cache-Control on dynamic
+    // renders (verified live 2026-07-11) — see lib/plp-cache.ts.
     if (req.method === 'GET') {
       const cc = plpCdnCacheControl(pathname, req.nextUrl.search);
-      if (cc) res.headers.set('Cache-Control', cc);
+      if (cc) res.headers.set(PLP_CDN_CACHE_HEADER, cc);
     }
     return res;
   }
