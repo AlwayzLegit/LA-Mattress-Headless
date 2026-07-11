@@ -204,6 +204,8 @@ Snapshot `6a49a336b8060ebdf5c70d9c` (03:29 UTC, first crawl covering all 9 fix b
 
 Written 2026-07-04 after Batches 7–9 shipped. Both items are implementable but need a decision/measurement first — captured here so the next round starts from the analysis, not from scratch.
 
+> **Status update (2026-07-11, round 9):** option 3 below is **implemented** — `lib/plp-cache.ts` + a middleware step set `Cache-Control: public, s-maxage=300, stale-while-revalidate=600` on canonical param-less `/collections/[handle]` responses. The measurement gate was satisfied by crawler evidence instead of PostHog (the PostHog MCP tool is approval-gated): the 07-07 and 07-11 crawls each caught a ~5s first-visitor render (issue 111 — an article cold start, then `/collections/tempur-pedic-adjustable-bases`), pinning the performance score at 95. Related: the *article* flavor of those cold starts heals once `SHOPIFY_ADMIN_TOKEN` is fixed — the daily inventory refresh redeploys, prerendering new articles before the crawler arrives. Round-9 triage also confirmed the GA-orphan growth (220 → 247) is sale-week traffic on already-redirected legacy URLs — decays, no action.
+
 ### perf-isr-07 — PLP ISR
 
 **Current state:** `app/(storefront)/collections/[handle]/page.tsx` sets `export const dynamic = 'force-dynamic'` because sort/pagination/filter state lives in `searchParams`. Every PLP request — including the param-less canonical view that crawlers and most organic landings hit — is server-rendered per request. The *data* layer is already cached (Shopify fetches carry `revalidate` windows), so the per-request cost is render time + function cold starts, not API round-trips.
