@@ -200,6 +200,10 @@ Snapshot `6a49a336b8060ebdf5c70d9c` (03:29 UTC, first crawl covering all 9 fix b
 
 ---
 
+## Appendix: round 10 (2026-07-13) — issue-223 PDP content diversification
+
+Triage of the last workable warning: **issue 223 (89 pages)** is dominated by 36 Diamond/Helix PDPs (errorType 2). Root cause is NOT thin content — a prior enrichment gave each ~600 structured words — it's that the "Technology & Construction" and "Who This Mattress Is Best For" sections are **word-for-word identical across all 36 products** (the Helix template even carries an "is a mattress mattress" bug). Fix: `scripts/seo-pdp-content-diversify.mjs` + the "SEO — PDP content diversify" workflow replace exactly those two sections with per-product copy (all claims derived from each product's own title/tags/seo fields; family-level construction facts: gel swirl vs titanium vs copper gel vs natural latex vs Technogel vs zoned Helix hybrids). Dry-run default, SHA-verified apply with rollback. **Topaz was applied live via MCP as validation** — run the workflow with apply=true (after the SHOPIFY_ADMIN_TOKEN secret is fixed) to cover the other 35. Also closed: issue 213 is `?variant=`/`?position=` URL-parameter noise (canonicalized, not real orphans); the 223 blog-article flags (errorType 1/3) stay deferred to the content pipeline.
+
 ## Appendix: design notes for the two deferred L items
 
 Written 2026-07-04 after Batches 7–9 shipped. Both items are implementable but need a decision/measurement first — captured here so the next round starts from the analysis, not from scratch.
