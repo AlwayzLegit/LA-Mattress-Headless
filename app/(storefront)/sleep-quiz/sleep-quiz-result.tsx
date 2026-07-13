@@ -238,7 +238,7 @@ function QuizProductHero({ pick, onClick }: { pick: ProductSummary; onClick: () 
             alt={pick.featuredImage.altText ?? pick.title}
             width={600}
             height={600}
-            sizes="(max-width: 760px) 100vw, 360px"
+            sizes="(max-width: 768px) 100vw, 360px"
             style={{ objectFit: 'contain', width: '100%', height: '100%' }}
           />
         ) : (

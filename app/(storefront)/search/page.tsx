@@ -318,7 +318,7 @@ export default async function SearchPage(props: Params) {
                             src={s.imageUrl}
                             alt={s.name}
                             fill
-                            sizes="(max-width: 760px) 100vw, 50vw"
+                            sizes="(max-width: 768px) 100vw, 50vw"
                             style={{ objectFit: 'cover' }}
                           />
                         </div>
@@ -386,7 +386,7 @@ export default async function SearchPage(props: Params) {
                                 src={a.image.url}
                                 alt={a.image.altText ?? a.title}
                                 fill
-                                sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                 style={{ objectFit: 'cover' }}
                                 priority={!after && idx < 3}
                               />
@@ -598,7 +598,7 @@ function SearchAllTab({
                       src={s.imageUrl}
                       alt={s.name}
                       fill
-                      sizes="(max-width: 760px) 100vw, 50vw"
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       style={{ objectFit: 'cover' }}
                     />
                   </div>
@@ -642,7 +642,7 @@ function SearchAllTab({
                         src={a.image.url}
                         alt={a.image.altText ?? a.title}
                         fill
-                        sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         style={{ objectFit: 'cover' }}
                       />
                     ) : (

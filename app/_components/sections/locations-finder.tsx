@@ -209,7 +209,7 @@ export function LocationsFinder({ showrooms }: Props) {
                     alt={`${s.name} storefront`}
                     width={520}
                     height={400}
-                    sizes="(max-width: 720px) 100vw, 260px"
+                    sizes="(max-width: 768px) 100vw, 260px"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 </Link>

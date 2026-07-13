@@ -61,7 +61,7 @@ export function RelatedRail({
                     alt={p.featuredImage.altText ?? p.title}
                     width={400}
                     height={400}
-                    sizes="(max-width: 760px) 60vw, 240px"
+                    sizes="(max-width: 768px) 60vw, 240px"
                     style={{ objectFit: 'contain', width: '100%', height: '100%' }}
                     loading="lazy"
                   />
