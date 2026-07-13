@@ -203,6 +203,31 @@ export type AnalyticsEvent =
       };
     }
   | {
+      // tel: link click anywhere on the storefront (topbar, footer,
+      // location cards, sale/contact/service pages…). Round 12: the
+      // showroom-led business's primary conversion is a call, and the
+      // site had ZERO call instrumentation — the phone_click events in
+      // the shared PostHog project all belonged to other JetNine
+      // properties. Captured by the delegated listener in
+      // contact-click-tracker.tsx, so any future tel: link is tracked
+      // automatically. `area` is the closest landmark (header/footer/
+      // main) — placement signal without per-call-site wiring.
+      name: 'phone_click';
+      props: {
+        page: string;
+        area: 'header' | 'footer' | 'main';
+      };
+    }
+  | {
+      // Google-Maps directions link click (location cards, showroom
+      // pages). Same delegated listener + rationale as phone_click.
+      name: 'directions_click';
+      props: {
+        page: string;
+        area: 'header' | 'footer' | 'main';
+      };
+    }
+  | {
       // Judge.me review-widget interaction. `action` distinguishes
       // engagement levels: just opening the form, submitting a review,
       // or clicking through review pagination. Helps surface PDPs

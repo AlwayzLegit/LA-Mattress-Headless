@@ -8,6 +8,7 @@ import { CartProvider } from '../_components/cart-context';
 import { CartDrawer } from '../_components/cart-drawer';
 import { CompareTray } from '../_components/compare-tray';
 import { ChatWidget } from '../_components/chat/chat-widget';
+import { ContactClickTracker } from '../_components/contact-click-tracker';
 import { Announcer } from '../_components/announcer';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
 import { composeBrandTitle } from '@/lib/seo';
@@ -146,6 +147,9 @@ export default async function StorefrontLayout({ children }: { children: React.R
         <CartDrawer />
         <CompareTray />
         <ChatWidget />
+        {/* Delegated tel:/maps click tracking (phone_click /
+            directions_click) — see contact-click-tracker.tsx. */}
+        <ContactClickTracker />
         <Announcer />
       </CartProvider>
       {/* Vercel Analytics + Speed Insights removed (audit perf-3p-04):
