@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Icon } from '../icon';
 import { SITE_PHONE_TEL, SITE_PHONE_DISPLAY } from '@/lib/site-config';
 import { OptOutForm } from './data-opt-out-form';
+import { PrivacySignalStatus } from './privacy-signal-status';
 
 const CONTACT_EMAIL = 'privacy@mattressstoreslosangeles.com';
 
@@ -33,6 +34,13 @@ export function DataOptOutPage() {
           45 days, as required by California law.
         </p>
       </header>
+
+      {/* Browser-level opt-out status + one-click toggle (2026 CCPA
+          regs: honored GPC must be displayed; the pure sale/share
+          opt-out must be verification-free and symmetrical). The form
+          below remains the channel for access/delete/correct requests,
+          which may be verified. */}
+      <PrivacySignalStatus />
 
       <section className="ccpa-grid">
         <div className="ccpa-form-wrap">

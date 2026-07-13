@@ -67,7 +67,8 @@ const COLS: Col[] = [
     // available destination (/pages/data-sharing-opt-out) is the CCPA
     // opt-out, not an accessibility statement. The legal-links row at
     // the bottom still carries the CCPA destination under its honest
-    // label ("Do Not Sell My Info"). When the merchant publishes a
+    // label ("Do Not Sell or Share My Personal Information" — the
+    // exact CPRA-required wording, Round 13). When the merchant publishes a
     // real /pages/accessibility statement, add it back here.
   ]},
 ];
@@ -187,7 +188,7 @@ export async function Footer() {
         <ul className="footer-legal-links">
           <li><Link href="/pages/privacy-policy">Privacy</Link></li>
           <li><Link href="/pages/terms-conditions">Terms</Link></li>
-          <li><Link href="/pages/data-sharing-opt-out">Do Not Sell My Info</Link></li>
+          <li><Link href="/pages/data-sharing-opt-out">Do Not Sell or Share My Personal Information</Link></li>
           <li><Link href="/pages/sitemap">Sitemap</Link></li>
         </ul>
       </div>
