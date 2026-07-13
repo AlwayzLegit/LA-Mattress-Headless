@@ -9,6 +9,8 @@ export { FilterMobileTrigger } from './filter-mobile-trigger';
 export { ActiveFilters } from './active-filters';
 export {
   FILTER_PARAMS,
+  PLP_PARAMS_CHANGED_EVENT,
+  notifyPlpParamsChanged,
   parseFilterSelection,
   selectionToProductFilters,
   withFilterChange,

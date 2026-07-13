@@ -21,7 +21,10 @@ const PER_PAGE = 24;
  *
  * Query params (all mirror the PLP page's `searchParams` shape):
  *   handle          — required collection handle
- *   after           — required Shopify cursor for the next page
+ *   after           — optional Shopify cursor. Present on load-more calls;
+ *                     absent when <PlpParamResults> fetches the FIRST page
+ *                     of a sorted/filtered view (perf-isr-07 — the static
+ *                     PLP renders only the canonical view server-side).
  *   sort            — optional, same value the PLP page uses (e.g.
  *                     "PRICE-r", "BEST_SELLING")
  *   vendor / type / size / firmness / sleepPosition / heightRange
@@ -31,15 +34,14 @@ const PER_PAGE = 24;
  * Response shape:
  *   { products: ProductSummary[], pageInfo: { hasNextPage, endCursor } }
  *
- * Returns 400 on missing handle or after — these are required for a
- * load-more call.
+ * Returns 400 on missing handle.
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const handle = searchParams.get('handle');
   const after = searchParams.get('after');
 
-  if (!handle || !after) {
+  if (!handle) {
     return NextResponse.json(
       { products: [], pageInfo: { hasNextPage: false, endCursor: null } },
       { status: 400 },

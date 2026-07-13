@@ -112,6 +112,81 @@ test('collection: utm + filter.* together → keep filter, strip utm', () => {
   assert.equal(r.clean, 'filter.v.option.size=Queen');
 });
 
+/* --- /collections/* — the app's OWN sort/filter params (Round 11) ----- */
+// These were missing from the PR #447 allow-list, so every sort/filter
+// interaction 301'd back to the bare collection URL — the filter UI was
+// silently dead in production. Locked down here so it can't regress.
+
+test('collection: app sort param survives (?sort=PRICE-r)', () => {
+  const r = check('/collections/mattresses', 'sort=PRICE-r');
+  assert.equal(r.shouldRedirect, false);
+  assert.equal(r.clean, 'sort=PRICE-r');
+});
+
+test('collection: app filter params survive (vendor/size/price/firmness…)', () => {
+  const r = check(
+    '/collections/mattresses',
+    'vendor=Helix&size=Queen%2CKing&price=500-1500&firmness=Firm&sleepPosition=Side&heightRange=10-12+inches&type=Hybrid',
+  );
+  assert.equal(r.shouldRedirect, false);
+  assert.match(r.clean, /vendor=Helix/);
+  assert.match(r.clean, /size=Queen%2CKing/);
+  assert.match(r.clean, /price=500-1500/);
+});
+
+test('collection: app after cursor survives (?after=<cursor>)', () => {
+  const r = check('/collections/mattresses', 'after=eyJsYXN0X2lkIjo0Mn0');
+  assert.equal(r.shouldRedirect, false);
+  assert.equal(r.clean, 'after=eyJsYXN0X2lkIjo0Mn0');
+});
+
+test('collection: app params + tracking noise → keep app params, strip noise', () => {
+  const r = check(
+    '/collections/mattresses',
+    'vendor=Helix&sort=PRICE-r&utm_source=email&srsltid=Xyz',
+  );
+  assert.equal(r.shouldRedirect, true);
+  assert.equal(r.clean, 'vendor=Helix&sort=PRICE-r');
+});
+
+test('collection: empty app param values are stripped (?vendor=)', () => {
+  const r = check('/collections/mattresses', 'vendor=&sort=PRICE-r');
+  assert.equal(r.shouldRedirect, true);
+  assert.equal(r.clean, 'sort=PRICE-r');
+});
+
+/* --- `_rsc` (Next soft-navigation payload fetches) -------------------- */
+// Stripping `_rsc` 301'd every client-side navigation's payload fetch,
+// which silently dropped the query params mid-flight (part of the dead
+// filter UI). It must pass through UNCHANGED on every route and must
+// never, by itself, trigger a redirect.
+
+test('_rsc alone never triggers a redirect (collection)', () => {
+  const r = check('/collections/mattresses', '_rsc=1a2b3');
+  assert.equal(r.shouldRedirect, false);
+  assert.equal(r.clean, '_rsc=1a2b3');
+});
+
+test('_rsc alone never triggers a redirect (homepage)', () => {
+  const r = check('/', '_rsc=1a2b3');
+  assert.equal(r.shouldRedirect, false);
+  assert.equal(r.clean, '_rsc=1a2b3');
+});
+
+test('_rsc rides along with app params without being dropped', () => {
+  const r = check('/collections/mattresses', 'vendor=Helix&_rsc=1a2b3');
+  assert.equal(r.shouldRedirect, false);
+  assert.match(r.clean, /vendor=Helix/);
+  assert.match(r.clean, /_rsc=1a2b3/);
+});
+
+test('_rsc is preserved even when noise forces a redirect', () => {
+  const r = check('/products/foo', 'utm_source=email&_rsc=1a2b3');
+  assert.equal(r.shouldRedirect, true);
+  assert.match(r.clean, /_rsc=1a2b3/);
+  assert.doesNotMatch(r.clean, /utm_source/);
+});
+
 /* --- /blogs/* — only page + after survive ---------------------------- */
 
 test('blog: bare /blogs is canonical', () => {
