@@ -36,6 +36,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { PostHog } from 'posthog-node';
+import { POSTHOG_DISTINCT_ID_KEY } from '@/lib/cart-attributes';
 import { sendGa4Purchase } from '@/lib/ga4-server';
 
 export const runtime = 'nodejs';
@@ -102,6 +103,9 @@ type ShopifyOrderPaid = {
   source_name?: string;
   referring_site?: string;
   landing_site?: string;
+  /** Cart attributes carried through checkout — includes the
+   * `_posthog_distinct_id` stitch stamped by setAnalyticsAttribution. */
+  note_attributes?: { name?: string; value?: string }[];
 };
 
 export async function POST(req: NextRequest) {
@@ -135,11 +139,28 @@ export async function POST(req: NextRequest) {
 
   const webhookId = req.headers.get('x-shopify-webhook-id');
   const customer = order.customer ?? null;
-  // Use the Shopify customer ID when available so a returning customer's
-  // events stitch under one PostHog person. Otherwise fall back to an
-  // order-scoped identifier (still ties cart + order events for guest
-  // checkouts, just not across multiple guest orders).
-  const distinctId = customer?.id ? `shopify:customer:${customer.id}` : `shopify:order:${order.id}`;
+  // Attribution stitch (Round 12): the storefront stamps the shopper's
+  // PostHog distinct_id on the cart as the `_posthog_distinct_id` note
+  // attribute (see app/_actions/cart.ts setAnalyticsAttribution).
+  // Capturing `order_completed` under that id joins the purchase to the
+  // browsing session, which is what makes the /admin funnel and the
+  // quiz->purchase / chat->purchase / top-converting-articles panels
+  // non-zero. Before this, the event landed on a disconnected
+  // `shopify:customer:<id>` person and every browser->purchase funnel
+  // read 0 despite real orders. Same charset/length guard as the
+  // stamping action — webhook payloads are external input.
+  const stampedId = (order.note_attributes ?? []).find(
+    (a) => a?.name === POSTHOG_DISTINCT_ID_KEY,
+  )?.value?.trim();
+  const browserId =
+    stampedId && stampedId.length <= 200 && /^[\w.:@+-]+$/.test(stampedId) ? stampedId : null;
+  // Fallback for orders without the stamp (drafts, POS, pre-stitch
+  // carts): the Shopify customer ID keeps a returning customer's orders
+  // on one person; order-scoped id for guests.
+  const shopifySideId = customer?.id
+    ? `shopify:customer:${customer.id}`
+    : `shopify:order:${order.id}`;
+  const distinctId = browserId ?? shopifySideId;
 
   // identify() the customer so PostHog person profiles carry email,
   // name, repeat-purchase status — useful for cohort retention charts.
@@ -154,6 +175,14 @@ export async function POST(req: NextRequest) {
         orders_count: customer.orders_count,
       },
     });
+  }
+
+  // Merge identities: when the order carries both the browser id and a
+  // Shopify customer id, alias them so this customer's OTHER orders
+  // (past webhook-only captures, future POS/draft orders that lack the
+  // stamp) resolve to the same PostHog person as the browsing sessions.
+  if (browserId && customer?.id) {
+    client.alias({ distinctId: browserId, alias: `shopify:customer:${customer.id}` });
   }
 
   client.capture({
