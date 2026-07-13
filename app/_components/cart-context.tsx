@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useOptimistic, useState, useTransition } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useOptimistic, useRef, useState, useTransition } from 'react';
 import type { ReactNode } from 'react';
 import type { Cart } from '@/lib/shopify';
 import {
@@ -12,10 +12,13 @@ import {
   changeLineVariant,
   updateCartNote,
   setDeliveryDate as setDeliveryDateAction,
+  setAnalyticsAttribution,
   readCart,
 } from '@/app/_actions/cart';
 import { announce, announceAssertive } from './announcer';
 import { track } from '@/lib/analytics';
+import { withPostHog } from '@/lib/ph';
+import { POSTHOG_DISTINCT_ID_KEY } from '@/lib/cart-attributes';
 import { sendShopifyAddToCart } from './analytics-shopify';
 
 type CartContextValue = {
@@ -48,6 +51,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
     readCart().then((c) => { if (!cancelled) setCart(c); }).catch(() => {});
     return () => { cancelled = true; };
   }, []);
+
+  // Attribution stitch: stamp the PostHog distinct_id on the cart as a
+  // hidden note attribute so the order-paid webhook can capture
+  // `order_completed` under the same PostHog person as the browsing
+  // session (see setAnalyticsAttribution). Runs once per cart id per
+  // mount; skipped when the cart already carries the current id, so
+  // reloads don't generate redundant Storefront mutations.
+  const attributionSyncedFor = useRef<string | null>(null);
+  useEffect(() => {
+    const cartId = cart?.id;
+    if (!cartId || attributionSyncedFor.current === cartId) return;
+    const existing = cart.attributes?.find((a) => a.key === POSTHOG_DISTINCT_ID_KEY)?.value;
+    withPostHog((ph) => {
+      const distinctId = ph.get_distinct_id?.();
+      if (!distinctId) return;
+      if (existing === distinctId) {
+        attributionSyncedFor.current = cartId;
+        return;
+      }
+      attributionSyncedFor.current = cartId;
+      // Best-effort: no UI feedback, no cart state update needed (the
+      // attribute is invisible to the shopper).
+      void setAnalyticsAttribution(distinctId).catch(() => {});
+    });
+  }, [cart]);
   const [optimisticCount, setOptimisticCount] = useOptimistic(
     cart?.totalQuantity ?? 0,
     (state, delta: number) => Math.max(0, state + delta),

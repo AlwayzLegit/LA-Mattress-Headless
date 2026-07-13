@@ -14,7 +14,7 @@ import {
   getProductByHandle,
 } from '@/lib/shopify';
 import type { Cart, CartLineInput, ProductOption, ProductVariant } from '@/lib/shopify';
-import { DELIVERY_DATE_KEY } from '@/lib/cart-attributes';
+import { DELIVERY_DATE_KEY, POSTHOG_DISTINCT_ID_KEY } from '@/lib/cart-attributes';
 
 const COOKIE = 'cartId';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 14; // 14 days
@@ -231,6 +231,36 @@ export async function setDeliveryDate(date: string | null): Promise<ActionResult
     return { ok: true, cart };
   } catch (err) {
     return { ok: false, error: friendlyCartError(err, 'Could not save delivery date') };
+  }
+}
+
+/**
+ * Stamps the shopper's PostHog distinct_id on the cart as a hidden note
+ * attribute so the order-paid webhook can attribute `order_completed`
+ * to the same PostHog person as the browsing session (the funnel /
+ * quiz→purchase / chat→purchase panels on /admin all depend on this
+ * join). Fired by CartProvider once per cart; failures are silent —
+ * attribution is best-effort and must never disturb the cart UX.
+ *
+ * PostHog distinct_ids are UUIDs for anonymous visitors but can be
+ * arbitrary strings after identify(); the guard caps length and
+ * charset so junk can't be written into order note attributes.
+ */
+export async function setAnalyticsAttribution(distinctId: string): Promise<{ ok: boolean }> {
+  const id = (distinctId ?? '').trim();
+  if (!id || id.length > 200 || !/^[\w.:@+-]+$/.test(id)) return { ok: false };
+  const cartId = (await cookies()).get(COOKIE)?.value;
+  if (!cartId) return { ok: false };
+  try {
+    const current = await getCart(cartId);
+    if (!current) return { ok: false };
+    const existing = current.attributes.find((a) => a.key === POSTHOG_DISTINCT_ID_KEY)?.value;
+    if (existing === id) return { ok: true };
+    const others = current.attributes.filter((a) => a.key !== POSTHOG_DISTINCT_ID_KEY);
+    await cartAttributesUpdate(cartId, [...others, { key: POSTHOG_DISTINCT_ID_KEY, value: id }]);
+    return { ok: true };
+  } catch {
+    return { ok: false };
   }
 }
 

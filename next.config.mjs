@@ -136,6 +136,23 @@ const CSP_REPORT_ONLY = CSP.replace(
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      // Server Actions verify that the request Origin matches the
+      // x-forwarded-host. Visitors who land on the apex domain (old
+      // links, typed URLs) submit actions with Origin=apex while the
+      // proxy forwards Host=www — Next aborted every such POST
+      // ("Invalid Server Actions request", 38 affected users in the
+      // Vercel runtime log through 2026-07-13). Cart mutations are
+      // Server Actions, so this was silently breaking add-to-cart for
+      // apex visitors. Allow both hosts; middleware still 308s apex
+      // GETs to www.
+      allowedOrigins: [
+        'www.mattressstoreslosangeles.com',
+        'mattressstoreslosangeles.com',
+      ],
+    },
+  },
   async headers() {
     return [
       {
