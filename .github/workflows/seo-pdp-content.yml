@@ -1,0 +1,53 @@
+name: SEO — PDP content diversify
+
+# 2026-07-13. Runs scripts/seo-pdp-content-diversify.mjs against the 36
+# Diamond + Helix PDPs whose "Technology & Construction" and "Who This
+# Mattress Is Best For" sections were identical boilerplate across
+# products (SEMrush issue 223, errorType 2). Replaces exactly those two
+# sections with the per-product copy embedded in the script. Dry-run by
+# default; SHA-verified writes with auto-rollback when apply=true.
+#
+# Required repo secrets (same as refresh-inventory.yml):
+#   SHOPIFY_STORE_DOMAIN, SHOPIFY_ADMIN_TOKEN (read/write_products).
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply changes (write to Shopify). Leave false for dry-run.'
+        type: boolean
+        default: false
+      handle:
+        description: 'Optional single product handle. Blank = all 36.'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  diversify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run diversify
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.handle }}" ]; then ARGS="$ARGS ${{ inputs.handle }}"; fi
+          if [ "${{ inputs.apply }}" = "true" ]; then ARGS="$ARGS --apply"; fi
+          node scripts/seo-pdp-content-diversify.mjs $ARGS
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdp-diversify-${{ github.run_id }}
+          path: data/seo-backfills/pdp-diversify-*.json
+          if-no-files-found: warn
+          retention-days: 90
