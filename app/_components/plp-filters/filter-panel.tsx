@@ -8,6 +8,7 @@ import { announce } from '../announcer';
 import {
   FILTER_PARAMS,
   clearAllFilters,
+  notifyPlpParamsChanged,
   paramForFilterId,
   parseFilterSelection,
   withFilterChange,
@@ -109,6 +110,9 @@ export function FilterPanel({ availableFilters, resultCount }: Props) {
     startTransition(() => {
       router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     });
+    // perf-isr-07: the static PLP re-renders nothing server-side on a
+    // param-only push — tell <PlpParamResults> to swap the grid.
+    notifyPlpParamsChanged(qs);
   };
 
   const onToggle = (param: FilterParam, value: string) => {

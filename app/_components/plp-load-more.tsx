@@ -151,9 +151,11 @@ export function PlpLoadMore({
  * Skeleton card matching the visual + layout of `PlpCard` — image
  * placeholder + meta lines. Rendered during in-flight load-more fetch
  * so the user has immediate feedback that something's happening; far
- * better than a silent button or a spinner alone.
+ * better than a silent button or a spinner alone. Exported for
+ * <PlpParamResults>, which shows the same skeletons while fetching a
+ * sorted/filtered first page (perf-isr-07).
  */
-function PlpCardSkeleton() {
+export function PlpCardSkeleton() {
   return (
     <article className="pcard plp-card" aria-hidden="true">
       <div className="pcard-link">

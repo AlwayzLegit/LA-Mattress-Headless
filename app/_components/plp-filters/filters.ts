@@ -119,6 +119,22 @@ export function clearAllFilters(current: URLSearchParams): URLSearchParams {
   return next;
 }
 
+/**
+ * perf-isr-07: the PLP route is static, so a router.push that only changes
+ * query params re-renders nothing server-side — <PlpParamResults> owns the
+ * grid for param'd views and needs to hear about the change. Every PLP
+ * control that pushes a new query string calls this right after
+ * router.push, passing the query string it pushed (window.location.search
+ * still holds the OLD value until the soft navigation commits, so the
+ * event detail is the source of truth). popstate covers back/forward.
+ */
+export const PLP_PARAMS_CHANGED_EVENT = 'plp:params-changed';
+
+export function notifyPlpParamsChanged(queryString: string): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent(PLP_PARAMS_CHANGED_EVENT, { detail: queryString }));
+}
+
 export function hasAnyFilter(sel: FilterSelection): boolean {
   return Boolean(
     sel.vendor.length || sel.type.length || sel.size.length ||

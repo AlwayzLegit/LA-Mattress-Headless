@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 import { getCollectionByHandle } from '@/lib/shopify';
 import { isMattressSubCategoryHandle } from '@/lib/collection-jsonld';
-import type { CollectionSort } from '@/lib/shopify';
 import { collections as inventoryCollections, findCollection } from '@/lib/inventory';
 import { getCollectionSiblings } from '@/lib/collection-siblings';
 import { capTitle, truncDescription, firstNonEmpty } from '@/lib/seo';
@@ -19,26 +18,31 @@ import { PlpLoadMore } from '@/app/_components/plp-load-more';
 import { PlpContentBlock } from '@/app/_components/plp-content-block';
 import { TrackPlpView } from '@/app/_components/track-plp-view';
 import { SortControl } from './sort-control';
-import { SORT_OPTIONS, parseSort } from './sort-options';
+import { SORT_OPTIONS } from './sort-options';
 import { CollectionSkeleton } from './skeleton';
+import { PlpParamResults } from './plp-param-results';
 import {
   FilterPanel,
   FilterMobileTrigger,
   FilterShell,
   ActiveFilters,
-  FILTER_PARAMS,
-  parseFilterSelection,
-  selectionToProductFilters,
 } from '@/app/_components/plp-filters';
 
 type Params = {
   params: Promise<{ handle: string }>;
-  searchParams: Promise<Record<string, string | undefined>>;
 };
 
-// PLP depends on searchParams (sort, after, filters) — must be dynamic per request.
-// The Storefront `getCollectionByHandle` fetch is cached by URL on Next's data layer.
-export const dynamic = 'force-dynamic';
+// perf-isr-07 (Round 11 restructure): PLPs are static + ISR. This route
+// renders ONLY the canonical param-less view (default sort, no filters) and
+// never reads searchParams — reading them is what forced per-request
+// rendering and the ~5s cold PLP renders SEMrush kept flagging (issue 111).
+// Sort/filter/pagination variants are rendered client-side by
+// <PlpParamResults> from /api/load-more-products; middleware stamps those
+// URLs with `X-Robots-Tag: noindex` to keep the old per-request robots
+// behavior. All snapshot collections prerender via generateStaticParams;
+// unknown handles render on demand (dynamicParams default) and still 404
+// through the sync CollectionBody path below.
+export const revalidate = 300;
 
 const SHOPIFY_CONFIGURED = Boolean(process.env.SHOPIFY_STORE_DOMAIN && process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN);
 
@@ -51,7 +55,6 @@ export function generateStaticParams() {
 
 export async function generateMetadata(props: Params): Promise<Metadata> {
   const params = await props.params;
-  const searchParams = await props.searchParams;
   if (!SHOPIFY_CONFIGURED) return { title: 'Collection' };
   const collection = await getCollectionByHandle({ handle: params.handle, first: 1 }).catch(() => null);
   if (!collection) return { title: 'Collection not found' };
@@ -70,17 +73,16 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     ),
   );
   const url = `/collections/${collection.handle}`;
-  // Canonical is always the bare PLP URL. Any query-string variant
-  // (`?after=`, `?filter.*`, `?sort_by=`, `?variant=`, etc.) renders a
-  // different slice of the same set and was flagged by SEMrush as thin /
-  // near-duplicate. noindex (follow) blocks indexing while still letting
-  // Googlebot crawl through to products — standard PLP / faceted-nav SEO.
-  const hasAnyParams = Object.values(searchParams ?? {}).some((v) => v != null && v !== '');
+  // Canonical is always the bare PLP URL. Query-string variants (`?sort=`,
+  // `?vendor=`, `?after=`, legacy `?sort_by=` etc.) serve this same static
+  // HTML with the grid swapped client-side; the per-request
+  // `robots: noindex` that used to live here moved to middleware
+  // (`X-Robots-Tag: noindex` on any /collections/* request with surviving
+  // query params) because static metadata cannot see searchParams.
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    ...(hasAnyParams ? { robots: { index: false, follow: true } } : {}),
     // Per Next.js metadata rules: a route declaring its own `openGraph`
     // object replaces the parent layout's wholesale, and the file-system
     // OG image convention (`app/opengraph-image.tsx`) is NOT auto-merged
@@ -102,38 +104,31 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 }
 
 export default async function CollectionPage(props: Params) {
-  const searchParams = await props.searchParams;
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
 
   // Hybrid: known handles in inventory snapshot use Suspense fast-path with
-  // skeleton on filter/sort/page changes. Unknown handles fall through to a
-  // synchronous fetch so bad URLs hit notFound() outside any Suspense and
-  // emit a real HTTP 404. See app/products/[handle]/page.tsx for the
-  // Phase 19 finding (notFound() inside Suspense returns 200, not 404).
+  // skeleton while an on-demand ISR render streams. Unknown handles fall
+  // through to a synchronous fetch so bad URLs hit notFound() outside any
+  // Suspense and emit a real HTTP 404. See app/products/[handle]/page.tsx
+  // for the Phase 19 finding (notFound() inside Suspense returns 200, not 404).
   if (findCollection(params.handle)) {
-    const suspenseKey = `${params.handle}|${searchParams.sort ?? ''}|${searchParams.after ?? ''}|${FILTER_PARAMS.map((p) => searchParams[p] ?? '').join('|')}`;
     return (
-      <Suspense fallback={<CollectionSkeleton />} key={suspenseKey}>
-        <CollectionBody handle={params.handle} searchParams={searchParams} />
+      <Suspense fallback={<CollectionSkeleton />} key={params.handle}>
+        <CollectionBody handle={params.handle} />
       </Suspense>
     );
   }
-  return <CollectionBody handle={params.handle} searchParams={searchParams} />;
+  return <CollectionBody handle={params.handle} />;
 }
 
-async function CollectionBody({ handle, searchParams }: { handle: string; searchParams: Record<string, string | undefined> }) {
-  const { sortKey, reverse, index: sortIndex } = parseSort(searchParams.sort);
-  const after = searchParams.after ?? null;
-  const filterSel = parseFilterSelection(searchParams);
-  const filters = selectionToProductFilters(filterSel);
+async function CollectionBody({ handle }: { handle: string }) {
+  // Canonical view only: default sort, first page, no filters. Param'd
+  // views never reach this server render — <PlpParamResults> swaps the
+  // grid client-side from /api/load-more-products.
   const collection = await getCollectionByHandle({
     handle,
     first: PER_PAGE,
-    after,
-    sortKey,
-    reverse,
-    filters,
   }).catch(() => null);
   if (!collection) notFound();
 
@@ -148,24 +143,6 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
   // if a product is added or removed from the collection between snapshot
   // pulls — accurate enough for "Showing 24 of 169" UX, though.
   const totalInCollection = findCollection(handle)?.productsCount ?? null;
-  const filterCount =
-    Object.values(filterSel).filter((v) => Array.isArray(v) ? v.length > 0 : v != null).length;
-  const hasFiltersApplied = filterCount > 0;
-
-  // Phase 217: serialize the active filter params so the client-side
-  // PlpLoadMore can pass them through to the /api/load-more-products
-  // route. Same shape the old <Link href="?after=cursor"> used to
-  // build, just minus the `after` cursor and minus the route prefix.
-  function buildFilterQueryString(
-    sp: Record<string, string | undefined>,
-  ): string {
-    const out = new URLSearchParams();
-    for (const p of FILTER_PARAMS) {
-      const v = sp[p];
-      if (v) out.set(p, v);
-    }
-    return out.toString();
-  }
 
   const hasResults = collection.products.nodes.length > 0;
   const availableFilters = collection.products.filters ?? [];
@@ -286,79 +263,107 @@ async function CollectionBody({ handle, searchParams }: { handle: string; search
       <section className="section plp-section">
         <FilterShell>
           <div className="plp-layout">
-            <FilterPanel
-              availableFilters={availableFilters}
-              resultCount={hasFiltersApplied ? collection.products.nodes.length : (totalInCollection ?? collection.products.nodes.length)}
-            />
+            {/* Every client island below that reads useSearchParams gets
+                its own tight <Suspense> boundary. On a static route,
+                useSearchParams client-side-renders the tree up to the
+                NEAREST boundary — without these, the bailout would climb
+                to the page-level Suspense and the prerendered HTML would
+                be a skeleton instead of the product grid (the whole point
+                of the perf-isr-07 restructure). Fallbacks keep the layout
+                slot; the real control hydrates in immediately. */}
+            <Suspense fallback={<aside className="plp-filters" aria-hidden />}>
+              <FilterPanel
+                availableFilters={availableFilters}
+                resultCount={totalInCollection ?? collection.products.nodes.length}
+              />
+            </Suspense>
             <div className="plp-main">
               <div className="plp-toolbar">
                 <div className="plp-toolbar-left">
-                  <FilterMobileTrigger sel={filterSel} />
-                  {/* Phase 217: count display is now a client island
-                      that listens for `plp:count-rendered` events from
-                      `PlpLoadMore` and re-renders with the cumulative
-                      total. Initial value is SSR-correct from props. */}
+                  <Suspense fallback={null}>
+                    <FilterMobileTrigger />
+                  </Suspense>
+                  {/* Phase 217: count display is a client island that
+                      listens for `plp:count-rendered` events from
+                      `PlpLoadMore` / `PlpParamResults` and re-renders
+                      with the running total. Initial value is the
+                      SSR-correct canonical count. */}
                   <PlpCount
                     initial={collection.products.nodes.length}
-                    total={hasFiltersApplied ? null : totalInCollection}
-                    hasFiltersApplied={hasFiltersApplied}
+                    total={totalInCollection}
+                    hasFiltersApplied={false}
                   />
                 </div>
-                <SortControl
-                  options={SORT_OPTIONS.map((o, i) => ({
-                    value: `${o.value}${o.reverse ? '-r' : ''}`,
-                    label: o.label,
-                    index: i,
-                  }))}
-                  currentIndex={sortIndex}
-                />
+                <Suspense fallback={null}>
+                  <SortControl
+                    options={SORT_OPTIONS.map((o, i) => ({
+                      value: `${o.value}${o.reverse ? '-r' : ''}`,
+                      label: o.label,
+                      index: i,
+                    }))}
+                  />
+                </Suspense>
               </div>
 
-              <ActiveFilters sel={filterSel} />
+              <Suspense fallback={null}>
+                <ActiveFilters />
+              </Suspense>
 
-            {hasResults ? (
-              <>
-                <div className="plp-grid">
-                  {collection.products.nodes.map((p, idx) => (
-                    <PlpCard
-                      key={p.id}
-                      product={p}
-                      // LCP candidates: first 4 cards of the SSR'd first
-                      // page. At desktop widths (4-col grid via PLP CSS),
-                      // the 4th card is in the first viewport row too —
-                      // priority lets it skip the lazy-loading queue and
-                      // hits the network in the first batch alongside
-                      // the hero image. Subsequent pages (loaded by
-                      // `PlpLoadMore` client-side append) pass
-                      // `priority={false}`.
-                      priority={!after && idx < 4}
-                    />
-                  ))}
+            {/* perf-isr-07: the server renders ONLY the canonical grid.
+                <PlpParamResults> passes it through untouched when the URL
+                has no sort/filter/cursor params, and swaps in a client-
+                fetched grid (via /api/load-more-products) when it does.
+                It deliberately avoids useSearchParams (event + popstate
+                driven instead) so this whole subtree stays in the static
+                HTML — see the component docblock. */}
+            <PlpParamResults
+              handle={collection.handle}
+              initialCount={collection.products.nodes.length}
+            >
+              {hasResults ? (
+                <>
+                  <div className="plp-grid">
+                    {collection.products.nodes.map((p, idx) => (
+                      <PlpCard
+                        key={p.id}
+                        product={p}
+                        // LCP candidates: first 4 cards of the SSR'd first
+                        // page. At desktop widths (4-col grid via PLP CSS),
+                        // the 4th card is in the first viewport row too —
+                        // priority lets it skip the lazy-loading queue and
+                        // hits the network in the first batch alongside
+                        // the hero image. Subsequent pages (loaded by
+                        // `PlpLoadMore` client-side append) pass
+                        // `priority={false}`.
+                        priority={idx < 4}
+                      />
+                    ))}
+                  </div>
+                  {/* Phase 217: client-side append replaces the previous
+                      `<Link href={?after=cursor}>` full-page navigation.
+                      Renders any client-loaded pages directly below the
+                      SSR'd first page + a skeleton during fetch + the
+                      Load More button. */}
+                  <PlpLoadMore
+                    collectionHandle={collection.handle}
+                    sortParam={undefined}
+                    filterQuery=""
+                    initialCursor={collection.products.pageInfo.endCursor ?? null}
+                    initialHasNext={collection.products.pageInfo.hasNextPage}
+                    initialCount={collection.products.nodes.length}
+                  />
+                </>
+              ) : (
+                <div className="plp-empty">
+                  <div className="plp-empty-mark"><Icon name="search" size={28} /></div>
+                  <h3 className="h3">No mattresses match these filters.</h3>
+                  <p className="muted">Try removing a filter or clearing them all to see more results.</p>
+                  <Link href={`/collections/${collection.handle}`} className="btn btn-primary">
+                    Clear all filters
+                  </Link>
                 </div>
-                {/* Phase 217: client-side append replaces the previous
-                    `<Link href={?after=cursor}>` full-page navigation.
-                    Renders any client-loaded pages directly below the
-                    SSR'd first page + a skeleton during fetch + the
-                    Load More button. */}
-                <PlpLoadMore
-                  collectionHandle={collection.handle}
-                  sortParam={searchParams.sort}
-                  filterQuery={buildFilterQueryString(searchParams)}
-                  initialCursor={collection.products.pageInfo.endCursor ?? null}
-                  initialHasNext={collection.products.pageInfo.hasNextPage}
-                  initialCount={collection.products.nodes.length}
-                />
-              </>
-            ) : (
-              <div className="plp-empty">
-                <div className="plp-empty-mark"><Icon name="search" size={28} /></div>
-                <h3 className="h3">No mattresses match these filters.</h3>
-                <p className="muted">Try removing a filter or clearing them all to see more results.</p>
-                <Link href={`/collections/${collection.handle}`} className="btn btn-primary">
-                  Clear all filters
-                </Link>
-              </div>
-            )}
+              )}
+            </PlpParamResults>
             </div>
           </div>
         </FilterShell>

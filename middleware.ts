@@ -191,22 +191,30 @@ export function middleware(req: NextRequest): NextResponse {
       if (qs) target.search = qs;
       return NextResponse.redirect(target, 301);
     }
-    return NextResponse.next();
+    const res = NextResponse.next();
+    // perf-isr-07: PLPs are static — param'd variants (?sort=, ?vendor=,
+    // ?after=, legacy ?sort_by= …) serve the canonical HTML with the grid
+    // swapped client-side. The page's old per-request
+    // `robots: { index: false }` metadata for these variants went away
+    // with force-dynamic (static metadata can't see searchParams), so the
+    // same signal is stamped here instead. Same mechanism the /admin
+    // branch below already uses; `_rsc`-only URLs are payload fetches and
+    // the header is harmless there.
+    if (pathname.startsWith('/collections/')) {
+      res.headers.set('X-Robots-Tag', 'noindex');
+    }
+    return res;
   }
 
   // (3) /admin/* requires Basic Auth — fall through to the auth logic.
   // Non-admin storefront paths with no query params just pass through.
   //
-  // NOTE (perf-isr-07, 2026-07-11): do NOT try to CDN-cache the
-  // force-dynamic PLPs from here. Both `Cache-Control` and
-  // `Vercel-CDN-Cache-Control` set on this pass-through response were
-  // verified live to have no effect — Next.js owns Cache-Control for
-  // dynamic renders (replaces it with private/no-store), and Vercel's
-  // edge decides cacheability from the FUNCTION's response headers,
-  // which middleware cannot reach (headers merge after the cache
-  // decision; x-vercel-cache stayed MISS across repeat fetches).
-  // Making PLPs edge-cacheable requires the route restructure tracked
-  // in the audit report appendix (perf-isr-07), not a header.
+  // NOTE (perf-isr-07): PLPs are now static + ISR (revalidate 300) via the
+  // Round 11 route restructure — the canonical view is edge-served without
+  // a function invocation. Do NOT set Cache-Control from middleware for
+  // any render mode: for dynamic renders Next.js overwrites it
+  // (verified live, #516–#518), and for static/ISR responses Next/Vercel
+  // already emit the correct s-maxage/stale-while-revalidate pair.
   if (!pathname.startsWith('/admin')) {
     return NextResponse.next();
   }

@@ -1,9 +1,12 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useTransition } from 'react';
+import { useMemo, useTransition } from 'react';
 import {
+  FILTER_PARAMS,
   clearAllFilters,
+  notifyPlpParamsChanged,
+  parseFilterSelection,
   withFilterChange,
   type FilterParam,
   type FilterSelection,
@@ -32,11 +35,24 @@ function chipsForSelection(sel: FilterSelection): Chip[] {
   return chips;
 }
 
-export function ActiveFilters({ sel }: { sel: FilterSelection }) {
+// perf-isr-07: selection is derived from useSearchParams instead of a
+// server prop — the PLP is static and its server render never sees
+// searchParams, so a prop would always be the empty selection on
+// deep-linked filter URLs. Rendered inside a tight <Suspense> on the page.
+export function ActiveFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
+
+  const sel = useMemo<FilterSelection>(() => {
+    const obj: Record<string, string | undefined> = {};
+    for (const p of FILTER_PARAMS) {
+      const v = params.get(p);
+      if (v !== null) obj[p] = v;
+    }
+    return parseFilterSelection(obj);
+  }, [params]);
 
   const chips = chipsForSelection(sel);
   if (!chips.length) return null;
@@ -46,6 +62,9 @@ export function ActiveFilters({ sel }: { sel: FilterSelection }) {
     startTransition(() => {
       router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     });
+    // perf-isr-07: the static PLP re-renders nothing server-side on a
+    // param-only push — tell <PlpParamResults> to swap the grid.
+    notifyPlpParamsChanged(qs);
   };
 
   const onRemove = (chip: Chip) => {

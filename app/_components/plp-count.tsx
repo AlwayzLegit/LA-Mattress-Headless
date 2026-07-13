@@ -35,11 +35,22 @@ type Props = {
 
 export function PlpCount({ initial, total, hasFiltersApplied }: Props) {
   const [rendered, setRendered] = useState(initial);
+  const [filtered, setFiltered] = useState(hasFiltersApplied);
 
   useEffect(() => {
+    // Two event shapes: PlpLoadMore dispatches a bare number (running
+    // total, filter state unchanged); PlpParamResults (perf-isr-07)
+    // dispatches { count, filtered } because on a static PLP the filter
+    // state is client-side knowledge — the server props are always the
+    // canonical view's.
     const handler = (e: Event) => {
-      const detail = (e as CustomEvent<number>).detail;
-      if (typeof detail === 'number') setRendered(detail);
+      const detail = (e as CustomEvent<number | { count: number; filtered: boolean }>).detail;
+      if (typeof detail === 'number') {
+        setRendered(detail);
+      } else if (detail && typeof detail.count === 'number') {
+        setRendered(detail.count);
+        setFiltered(detail.filtered);
+      }
     };
     window.addEventListener('plp:count-rendered', handler);
     return () => window.removeEventListener('plp:count-rendered', handler);
@@ -64,7 +75,7 @@ export function PlpCount({ initial, total, hasFiltersApplied }: Props) {
 
   return (
     <span className="plp-toolbar-count" aria-live="polite">
-      {hasFiltersApplied || safeTotal == null
+      {filtered || safeTotal == null
         ? `Showing ${rendered} ${productWord}`
         : `Showing ${rendered} of ${safeTotal} ${totalWord}`}
     </span>

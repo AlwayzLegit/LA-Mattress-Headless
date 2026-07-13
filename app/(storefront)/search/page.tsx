@@ -258,7 +258,7 @@ export default async function SearchPage(props: Params) {
                 <div className="plp-main">
                   <div className="plp-toolbar">
                     <div className="plp-toolbar-left">
-                      <FilterMobileTrigger sel={filterSel} />
+                      <FilterMobileTrigger />
                       <span className="plp-toolbar-count">
                         {products.length > 0
                           ? `${totalCount} result${totalCount === 1 ? '' : 's'}`
@@ -267,7 +267,7 @@ export default async function SearchPage(props: Params) {
                     </div>
                   </div>
 
-                  <ActiveFilters sel={filterSel} />
+                  <ActiveFilters />
 
                   {products.length > 0 ? (
                     <>

@@ -55,13 +55,31 @@ const ROUTE_ALLOW: ReadonlyArray<readonly [RegExp, AllowSpec]> = [
   // _v, amp, gclid, fbclid, srsltid, etc.) is tracking noise.
   [/^\/products(\/|$)/, { exact: new Set(['variant']) }],
 
-  // PLPs: Shopify's filter UI emits `?filter.v.option.size=Queen`,
-  // `?filter.v.price.gte=500`, `?sort_by=price-ascending`, `?page=2`.
-  // All allowed. Empty filter values (`?filter.v.price.gte=`) get
-  // stripped — they're the artifact of a cleared filter that the URL
-  // forgot to drop.
+  // PLPs. Two families of legitimate params:
+  //
+  // 1. This app's own sort/filter/pagination UI: `?sort=PRICE-r`,
+  //    `?vendor=Helix`, `?size=Queen`, `?price=500-1500`, `?after=<cursor>`
+  //    etc. — the FILTER_PARAMS set in app/_components/plp-filters plus
+  //    `sort` and `after`. **These were MISSING from the original
+  //    allow-list (PR #447)**, which meant every sort/filter interaction
+  //    301'd back to the bare collection URL and the grid silently never
+  //    changed — the PLP filter UI was dead in production from #447 until
+  //    the Round 11 perf-isr-07 restructure caught it. Locked down by
+  //    tests now.
+  // 2. Legacy Shopify Liquid params still present in old indexed/inbound
+  //    URLs: `?filter.v.option.size=Queen`, `?filter.v.price.gte=500`,
+  //    `?sort_by=price-ascending`, `?page=2`, `?variant=`.
+  //
+  // Empty values (`?filter.v.price.gte=`, `?vendor=`) still get stripped —
+  // they're the artifact of a cleared filter the URL forgot to drop.
   [/^\/collections(\/|$)/, {
-    exact: new Set(['variant', 'sort_by', 'page']),
+    exact: new Set([
+      // app params
+      'sort', 'after',
+      'vendor', 'type', 'size', 'price', 'firmness', 'sleepPosition', 'heightRange',
+      // legacy Shopify params
+      'variant', 'sort_by', 'page',
+    ]),
     prefixes: ['filter.'],
   }],
 
@@ -108,6 +126,15 @@ export function canonicalizeRouteParams(
   const clean = new URLSearchParams();
   let dropped = false;
   for (const [k, v] of search) {
+    // Next.js App Router appends `_rsc=<hash>` to every soft-navigation
+    // payload fetch. It must NEVER trigger a redirect (the client fetch
+    // would follow the 301 and the navigation silently loses its query
+    // params — the root cause of the dead filter UI fixed in Round 11),
+    // and it must be preserved so the RSC request stays cache-keyed.
+    if (k === '_rsc') {
+      clean.append(k, v);
+      continue;
+    }
     if (spec.exact.has(k)) {
       // Empty allowed-name params are noise too (e.g. `?variant=`).
       // Don't preserve them; they don't drive any UI either.

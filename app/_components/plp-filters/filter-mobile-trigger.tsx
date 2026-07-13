@@ -1,8 +1,10 @@
 'use client';
 
+import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Icon } from '@/app/_components/icon';
 import { useFilterShell } from './filter-shell';
-import type { FilterSelection } from './filters';
+import { FILTER_PARAMS, parseFilterSelection, type FilterSelection } from './filters';
 
 function activeCount(sel: FilterSelection): number {
   return (
@@ -16,8 +18,20 @@ function activeCount(sel: FilterSelection): number {
   );
 }
 
-export function FilterMobileTrigger({ sel }: { sel: FilterSelection }) {
+// perf-isr-07: selection is derived from useSearchParams instead of a
+// server prop (the static PLP's server render never sees searchParams).
+// Rendered inside a tight <Suspense> on the page.
+export function FilterMobileTrigger() {
   const { setOpen } = useFilterShell();
+  const params = useSearchParams();
+  const sel = useMemo<FilterSelection>(() => {
+    const obj: Record<string, string | undefined> = {};
+    for (const p of FILTER_PARAMS) {
+      const v = params.get(p);
+      if (v !== null) obj[p] = v;
+    }
+    return parseFilterSelection(obj);
+  }, [params]);
   const count = activeCount(sel);
   return (
     <button

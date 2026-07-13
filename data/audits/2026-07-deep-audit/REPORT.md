@@ -225,6 +225,22 @@ Written 2026-07-04 after Batches 7–9 shipped. Both items are implementable but
 
 **Before implementing:** pull p75 TTFB per PLP route from PostHog `web_vital` events to size the win — if p75 TTFB on canonical PLP views is already <300ms, option 3's user-visible gain is marginal and the item can be closed as "not worth the cache-invalidation complexity". Revisit PPR when it reaches stable.
 
+> **Status update (2026-07-13, Round 11): IMPLEMENTED via route restructure (PR #521).** `force-dynamic` is gone: the route is static + ISR (`revalidate = 300`, all 77 snapshot collections prerendered via the existing `generateStaticParams`) and renders only the canonical param-less view. Sort/filter/`after` variants are rendered client-side by the new `<PlpParamResults>` boundary from `/api/load-more-products` (the Phase 217 load-more route, `after` now optional); the toolbar/filter controls derive their state from `useSearchParams` behind tight per-island Suspense boundaries so the product grid stays in the prerendered HTML. The old per-request `robots: noindex` for param'd URLs moved to a middleware `X-Robots-Tag: noindex` header. Documented tradeoff: sorted/filtered/paginated views are JS-rendered — standard for headless storefronts; canonicals already point at bare URLs and every PDP is prerendered + sitemapped.
+>
+> **Collateral P1 found and fixed during implementation:** the PR #447 param-canonicalization allow-list only listed *legacy Shopify* params (`sort_by`, `page`, `filter.*`, `variant`) — never the app's own `sort`/`after`/filter params, and not Next's `_rsc` payload param. Every sort/filter interaction (and its RSC fetch) was being 301'd back to the bare collection URL, so **the PLP filter/sort UI was silently dead in production from #447 until this round** (verified live: `?sort=PRICE-r` and `?vendor=Helix` both served the default grid). Fixed in `lib/route-canonicalization.ts` (+9 regression tests, `_rsc` now passes through on every route so soft navigations keep their query params).
+
+### Round 11C (2026-07-13) — blog content-quality pilot (issue 223, errorType 1)
+
+Five sleep-health articles flagged for missing related terms were enriched in place via Admin `articleUpdate` (Semrush `phrase_related` informed; medical-adjacent copy keeps the "ask your surgeon / consult your provider" framing):
+
+- `when-can-you-sleep-on-your-back-after-hip-replacement` — wove *posterior hip precautions* / anterior-approach context into the transition section; new FAQs for *hip replacement recovery time week by week* and *lifetime precautions after hip replacement*.
+- `how-to-sleep-after-back-surgery` — wove *laminectomy* and *back surgery recovery time*; new FAQs for overall *recovery time* (microdiscectomy vs *spinal fusion healing time*) and *laminectomy recovery tips*. **Also stripped leftover ChatGPT UI wrapper markup** (`data-testid="conversation-turn-9"` div chain) that had been pasted into the body.
+- `how-to-relieve-upper-back-pain-while-sleeping` — new pain-location paragraph (*upper middle / upper left / upper right back pain*); two new FAQs (one-sided pain; red-flag symptoms handled with see-a-doctor framing); stale "2024" heading de-dated.
+- `do-tempurpedic-mattresses-have-fiberglass` — added *fiberglass-free mattress / mattresses without fiberglass / mattress protector* terms, internal links to the Beautyrest & Molblly fiberglass guides + the TEMPUR-Pedic collection, 3 new FAQs.
+- `can-you-sleep-with-a-back-support-belt-on…` — wove *back brace for lower back pain / back brace for work / best sleeping position for lower back pain*; 2 new FAQs; **stripped a second ChatGPT wrapper block** and a stray `�` replacement character.
+
+Pattern proved: read via no-op `articleUpdate` → keyword lookup → surgical HTML edit → full-body write-back. The remaining ~45 flagged articles should get a scripted batch (like `seo-pdp-content-diversify.mjs`) once the pilot's next crawl confirms issue-223 rows clear for these five.
+
 ### ux-css-08 — breakpoint consolidation
 
 **Census (globals.css, post-Batch-8):** `max-width: 760px` ×25, `880px` ×16, `640px` ×14, `720px` ×13, `1024px` ×12, `480px` ×10, `768px` ×6, `600px` ×7, plus a long tail (520, 560, 420, 900, 980, 1200). The sticky-bar/sheet cluster was already aligned at 1024px in Batch 1.
