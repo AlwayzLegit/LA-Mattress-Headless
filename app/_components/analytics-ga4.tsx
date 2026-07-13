@@ -3,7 +3,9 @@
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 import { useReportWebVitals } from 'next/web-vitals';
+import { useEffect, useState } from 'react';
 import { withPostHog } from '@/lib/ph';
+import { isOptedOut } from '@/lib/privacy-optout';
 
 // GA4 client-side analytics. Wired in Phase 277 (SEO measurement plan).
 //
@@ -63,7 +65,19 @@ export function AnalyticsGa4() {
     );
   });
 
-  if (!MEASUREMENT_ID || isAdmin) return null;
+  // CCPA sale/share opt-out (Round 13): browsers signalling Global
+  // Privacy Control or carrying the first-party opt-out never load GA4
+  // — the one tag on the site that could constitute "sharing" under
+  // the CCPA. Decided post-mount (useEffect) so server HTML is
+  // identical for all visitors; GA4 was lazyOnload anyway, so gating
+  // it behind hydration costs nothing. Default false = don't load
+  // until we've positively checked the signals.
+  const [allowed, setAllowed] = useState(false);
+  useEffect(() => {
+    setAllowed(!isOptedOut());
+  }, []);
+
+  if (!MEASUREMENT_ID || isAdmin || !allowed) return null;
 
   return (
     <>
