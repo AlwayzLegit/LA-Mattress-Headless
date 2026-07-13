@@ -66,7 +66,7 @@ export function PlpCard({
               alt={product.featuredImage.altText ?? product.title}
               width={600}
               height={600}
-              sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
               style={{ objectFit: 'contain', width: '100%', height: '100%' }}
               priority={priority}
               // Explicit fetchPriority on LCP-candidate cards. priority

@@ -233,6 +233,12 @@ Written 2026-07-04 after Batches 7–9 shipped. Both items are implementable but
 
 **First slice:** merge the 720/760/768 "tablet" cluster onto 768. The risk window is real devices in the 721–768px band — most notably iPad Mini portrait at exactly 768px, which would flip into mobile treatment for every migrated `max-width: 760px` rule. That's usually the *correct* behavior (those rules exist to linearize multi-column layouts that cramp at tablet width), but it must be eyeballed, not sed'd: migrate template-by-template (PLP first, then PDP, then CMS chrome) with a device-width spot check per template. Not started this round because each slice needs visual review the CI suite can't provide.
 
+**Slice 1 shipped (Round 11, 2026-07-13):** all `@media (max-width: 720px)` (×6) and `760px` (×20) queries in globals.css migrated to 768px; the lone paired `@media (min-width: 720px)` (showroom expect list) moved to 769px so the boundary stays gapless. Image `sizes` hints across 8 components/templates that referenced the 720/760 conditions were bumped to 768px to keep srcset selection in step. Verified with Playwright Chromium screenshots (production vs PR preview) at 700/730/764/768/900px on home / PLP / PDP / guarantee: identical outside the 721–768 band, only the intended column collapses inside it. admin.css still has 5×720px queries — auth-gated surface, deferred to a later slice with the 880 and 640 tails.
+
+### secpriv-05 (lite) — admin-auth alert rule status (Round 11, 2026-07-13)
+
+Verified via Sentry MCP: project `jetnine/la-mattress-headless` has exactly one alert rule ("Send a notification for high priority issues", ID 3418561) which fires only on new/existing *high-priority* issues — the middleware's `Admin Basic Auth failure` events are `level: warning`, so a brute-force burst would never page. The MCP catalog exposes no create-alert tool, so the rule is a 2-minute UI task: **Alerts → Create Alert → Issues**, "when" = *Number of events in an issue is more than 20 in 5 minutes*, "if" = *The event's tags match `surface` equals `admin-auth-failure`*, "then" = send email notification; name it "Admin Basic Auth brute-force burst".
+
 ---
 
 ## Verification note

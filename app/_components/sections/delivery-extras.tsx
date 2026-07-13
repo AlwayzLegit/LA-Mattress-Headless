@@ -92,7 +92,7 @@ export function DeliveryExtras() {
           alt="LA Mattress Store delivery crew unloading a wrapped Tempur-Pedic mattress from the delivery truck in Los Angeles"
           width={1000}
           height={806}
-          sizes="(max-width: 720px) 100vw, 720px"
+          sizes="(max-width: 768px) 100vw, 720px"
           style={{ width: '100%', maxWidth: 720, height: 'auto', display: 'block', margin: '0 auto', borderRadius: 'var(--r-3)', objectFit: 'cover' }}
         />
       </figure>
