@@ -55,32 +55,37 @@ const ROUTE_ALLOW: ReadonlyArray<readonly [RegExp, AllowSpec]> = [
   // _v, amp, gclid, fbclid, srsltid, etc.) is tracking noise.
   [/^\/products(\/|$)/, { exact: new Set(['variant']) }],
 
-  // PLPs. Two families of legitimate params:
+  // PLPs. Only the app's OWN param vocabulary is served as a live
+  // (200 + noindex) faceted view: `?sort=PRICE-r`, `?vendor=Helix`,
+  // `?size=Queen`, `?price=500-1500`, `?after=<cursor>` etc. — the
+  // FILTER_PARAMS set in app/_components/plp-filters plus `sort` and
+  // `after`. **These were MISSING from the original allow-list (PR
+  // #447)**, which 301'd every sort/filter interaction back to the bare
+  // URL so the grid silently never changed — the PLP filter UI was dead
+  // in production from #447 until the Round 11 perf-isr-07 restructure
+  // caught it. Locked down by tests; do not remove these.
   //
-  // 1. This app's own sort/filter/pagination UI: `?sort=PRICE-r`,
-  //    `?vendor=Helix`, `?size=Queen`, `?price=500-1500`, `?after=<cursor>`
-  //    etc. — the FILTER_PARAMS set in app/_components/plp-filters plus
-  //    `sort` and `after`. **These were MISSING from the original
-  //    allow-list (PR #447)**, which meant every sort/filter interaction
-  //    301'd back to the bare collection URL and the grid silently never
-  //    changed — the PLP filter UI was dead in production from #447 until
-  //    the Round 11 perf-isr-07 restructure caught it. Locked down by
-  //    tests now.
-  // 2. Legacy Shopify Liquid params still present in old indexed/inbound
-  //    URLs: `?filter.v.option.size=Queen`, `?filter.v.price.gte=500`,
-  //    `?sort_by=price-ascending`, `?page=2`, `?variant=`.
+  // Legacy Shopify Liquid params (`variant`, `sort_by`, `page`, and the
+  // `filter.*` family) are deliberately NOT allow-listed (Round 13,
+  // SEMrush 2026-07-14 issues 209/213). The PLP client boundary
+  // (PlpParamResults) reads only `sort`/`after` + FILTER_PARAMS, so a
+  // legacy-param URL renders the IDENTICAL default grid — there is no
+  // functional difference between serving it as a noindex'd 200 and
+  // 301-ing it to the bare canonical URL, and the 301 is cleaner (no
+  // wasted crawl budget, equity consolidates via the redirect). It also
+  // fixes the semantically-nonsensical `?variant=` on collection pages
+  // (variant selection is a PDP concept) and the malformed
+  // `?variant=NNN?` double-`?` URLs the crawl surfaced. The app never
+  // generates any of these; they come only from historical/external/
+  // blog-content links, which the 301 handles gracefully.
   //
-  // Empty values (`?filter.v.price.gte=`, `?vendor=`) still get stripped —
-  // they're the artifact of a cleared filter the URL forgot to drop.
+  // Empty allowed-param values (`?vendor=`) still get stripped — the
+  // artifact of a cleared filter the URL forgot to drop.
   [/^\/collections(\/|$)/, {
     exact: new Set([
-      // app params
       'sort', 'after',
       'vendor', 'type', 'size', 'price', 'firmness', 'sleepPosition', 'heightRange',
-      // legacy Shopify params
-      'variant', 'sort_by', 'page',
     ]),
-    prefixes: ['filter.'],
   }],
 
   // Blog index uses `?page` for pagination + the Shopify Storefront
