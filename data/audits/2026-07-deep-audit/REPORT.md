@@ -257,6 +257,21 @@ Verified via Sentry MCP: project `jetnine/la-mattress-headless` has exactly one 
 
 ---
 
+### Round 13 — SEMrush 2026-07-14 crawl triage (first crawl after Round 11)
+
+Snapshot `6a558d5c299f558a818463eb`, quality 98, **0 errors**. This is the first crawl reflecting the Round 11 PLP restructure (#521, deployed 07-13).
+
+**Confirmed landing:** issue 223 (content not optimized) **89 → 75** — the Round 10 PDP diversify + Round 11C article enrichment are registering.
+
+**Triaged as no-action (verified, not blind-fixed):**
+- **broken:1 + issue 12 (broken external links, +2) + issue 202** — all the same class: sleepfoundation.org / myhealth.alberta.ca / naplab.com / idlershome.com returning `429`/`503`/`409` because they *rate-limit SEMrush's crawler*. The links work for real users; these are authoritative health/sleep citations whose removal would hurt EEAT. False positives.
+- **issue 218 (+3)** — outbound external links on freshly-published blog articles (mayoclinic.org, naplab). Informational, all live.
+- **issue 206 (GA orphans, +10), 112 (text ratio, +51), 214 (links to redirects, −8)** — known noise / improving.
+
+**Actioned — issues 209 (+50) and 213 (+46):** both are the same root cause — legacy-Shopify-param collection URLs (`?variant=`, `?sort_by=`, `?filter.*`, `?page=`) that the Round 11 restructure left allow-listed (200 + `X-Robots-Tag: noindex`). The PLP client boundary reads only the app's own params (`sort`/`after` + FILTER_PARAMS), so those legacy URLs render the identical default grid. Removed them from the collection allow-list in `lib/route-canonicalization.ts` so they now **301 to the bare canonical URL** — cleaner than a noindex'd duplicate (no wasted crawl budget, equity consolidates via the redirect), and it kills the semantically-nonsensical `?variant=` on collection pages (variant is a PDP concept) plus the malformed `?variant=NNN?` double-`?` URLs. The app's native sort/filter params stay allow-listed (200 + noindex) — the Round 11 filter-UI fix is preserved and still locked down by tests. +9 regression tests updated/added.
+
+**Deferred to a content round — the real ranking item:** the 24 Diamond PDPs still flagged issue 223 errorType 2 (duplicate content). Diffing two live Diamond PDPs shows the Round 10 diversify made the *Technology & Construction*, *Who This Is Best For*, and *Available Sizes* blocks unique (~150 words), but **three blocks remain word-for-word identical across all Diamond PDPs** (~320 words): the company-intro paragraph, the entire "Why Shop at LA Mattress Store" block, and the closing CTA. The pages are still >60% duplicate main-content. The correct fix is architectural — lift the truly-generic shared boilerplate (delivery/warranty/financing/showrooms + closing CTA) out of every product's `descriptionHtml` and render it from the PDP template component, leaving each product record with only its unique content so the unique portion dominates. This helps all ~256 products, not just Diamond, but it's a careful two-part change (strip script + template component, verified against products that lack the boilerplate) — scoped as the next round rather than rushed.
+
 ## Verification note
 
 Top-P1 evidence was independently re-checked in the main session before publication (2026-07-02): ux-pdp-01 (globals.css:2845/2891 + buy-box.tsx:345 — dead zone is 881–1100px, wider than the auditor's 881–1024px), ux-css-02 (5 usages, 0 definitions), secpriv-01 (maskAllInputs:false, zero data-ph-mask usages), seo-tech-02 (BRAND_SUFFIX_RE missing '·'; live PDP title renders "· LA Mattres…"), perf-img-01 (raw untransformed preload confirmed in capture head), seo-tech-01 (last inventory snapshot commit cbc8d18, 2026-06-18). All confirmed.

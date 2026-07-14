@@ -66,7 +66,12 @@ test('product: gclid + fbclid are stripped (paid-ad noise)', () => {
   assert.equal(r.clean, 'variant=42');
 });
 
-/* --- /collections/* — sort_by, page, filter.* allowed ----------------- */
+/* --- /collections/* — legacy Shopify params 301 to bare (Round 13) ---- */
+// The app's PLP client reads only its own params (sort/after +
+// FILTER_PARAMS); legacy Shopify Liquid params (variant, sort_by, page,
+// filter.*) render the identical default grid, so they are canonicalized
+// away to the bare URL rather than served as noindex'd duplicates
+// (SEMrush 2026-07-14 issues 209/213).
 
 test('collection: bare PLP is canonical', () => {
   const r = check('/collections/mattresses', '');
@@ -74,42 +79,42 @@ test('collection: bare PLP is canonical', () => {
   assert.equal(r.clean, '');
 });
 
-test('collection: sort_by + page params are canonical (drive PLP rendering)', () => {
+test('collection: legacy sort_by + page → 301 to bare', () => {
   const r = check('/collections/mattresses', 'sort_by=price-ascending&page=2');
-  assert.equal(r.shouldRedirect, false);
-  assert.equal(r.clean, 'sort_by=price-ascending&page=2');
+  assert.equal(r.shouldRedirect, true);
+  assert.equal(r.clean, '');
 });
 
-test('collection: filter.* params with values are canonical', () => {
+test('collection: legacy filter.* params → 301 to bare', () => {
   const r = check(
     '/collections/mattresses',
     'filter.v.option.size=Queen&filter.v.price.gte=500',
   );
-  assert.equal(r.shouldRedirect, false);
-  assert.match(r.clean, /filter\.v\.option\.size=Queen/);
-  assert.match(r.clean, /filter\.v\.price\.gte=500/);
+  assert.equal(r.shouldRedirect, true);
+  assert.equal(r.clean, '');
 });
 
-test('collection: EMPTY filter.* values get stripped (cleared-filter artifact)', () => {
-  // This is the most common SEMrush flag pattern on collections:
-  // `?sort_by=manual&filter.v.option.size=King&filter.v.price.gte=&filter.v.price.lte=`
-  // — the empty gte / lte are from a cleared price filter that the
-  // form didn't drop from the URL.
-  const r = check(
-    '/collections/mattresses',
-    'sort_by=manual&filter.v.option.size=King&filter.v.price.gte=&filter.v.price.lte=',
-  );
+test('collection: ?variant= on a collection is meaningless noise → 301 to bare', () => {
+  const r = check('/collections/tempur-pedic-mattresses', 'variant=44029596860669');
   assert.equal(r.shouldRedirect, true);
-  assert.equal(r.clean, 'sort_by=manual&filter.v.option.size=King');
+  assert.equal(r.clean, '');
 });
 
-test('collection: utm + filter.* together → keep filter, strip utm', () => {
+test('collection: malformed ?variant=NNN? (double-?) → 301 to bare', () => {
+  // The crawl surfaced `?variant=43955095830781?` — the trailing bare
+  // `?` becomes part of the value; either way variant is not allow-listed.
+  const r = check('/collections/spring-air-mattresses', 'variant=43955095830781?');
+  assert.equal(r.shouldRedirect, true);
+  assert.equal(r.clean, '');
+});
+
+test('collection: legacy filter.* + app sort mixed → keep app sort, drop legacy', () => {
   const r = check(
     '/collections/mattresses',
-    'utm_source=facebook&filter.v.option.size=Queen',
+    'sort=PRICE-r&filter.v.option.size=King',
   );
   assert.equal(r.shouldRedirect, true);
-  assert.equal(r.clean, 'filter.v.option.size=Queen');
+  assert.equal(r.clean, 'sort=PRICE-r');
 });
 
 /* --- /collections/* — the app's OWN sort/filter params (Round 11) ----- */
@@ -235,8 +240,11 @@ test('homepage: ?variant=, ?_sid=, ?preview_key= are all noise → stripped', ()
 
 test('homepage: the / entry does not over-match /products or /collections', () => {
   // /^\/$/ is anchored, so deeper routes keep their own allow-specs.
+  // Use params each route's own spec ALLOWS (variant on PDP, sort on
+  // PLP) — the homepage empty-allow spec would strip both, so
+  // shouldRedirect=false proves the deeper spec applied, not `/`.
   assert.equal(check('/products/foo', 'variant=42').shouldRedirect, false);
-  assert.equal(check('/collections/mattresses', 'sort_by=manual').shouldRedirect, false);
+  assert.equal(check('/collections/mattresses', 'sort=PRICE-r').shouldRedirect, false);
 });
 
 /* --- /search ---------------------------------------------------------- */
@@ -278,7 +286,7 @@ test('idempotency: canonical URLs stay canonical', () => {
   // Apply twice — the second pass should be a no-op.
   const inputs = [
     ['/products/foo', 'variant=42'],
-    ['/collections/mattresses', 'filter.v.option.size=Queen&sort_by=price-ascending'],
+    ['/collections/mattresses', 'vendor=Helix&sort=PRICE-r'],
     ['/blogs', 'page=3'],
     ['/search', 'q=hello'],
   ];
