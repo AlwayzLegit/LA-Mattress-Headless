@@ -1,0 +1,57 @@
+name: SEO — PDP boilerplate strip
+
+# 2026-07-14. Runs scripts/seo-pdp-boilerplate-strip.mjs against the 36
+# enriched Diamond + Helix PDPs. Removes the three shared boilerplate
+# blocks (brand-story paragraph, "Why Shop at LA Mattress Store", closing
+# CTA) from each description so the main content is dominantly unique
+# (SEMrush issue 223, errorType 2 — duplicate content). The brand story
+# is preserved by the PDP template's brand band (pdp-brand-story.tsx),
+# which self-gates on the same signature; the "Why Shop"/CTA blocks are
+# redundant with the PDP FAQ and dropped. Dry-run by default; SHA-verified
+# writes with auto-rollback when apply=true. Products not in the enriched
+# format are skipped, and re-runs are no-ops.
+#
+# Required repo secrets (same as refresh-inventory.yml):
+#   SHOPIFY_STORE_DOMAIN, SHOPIFY_ADMIN_TOKEN (read/write_products).
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply changes (write to Shopify). Leave false for dry-run.'
+        type: boolean
+        default: false
+      handle:
+        description: 'Optional single product handle. Blank = all 36.'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  strip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run strip
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.handle }}" ]; then ARGS="$ARGS ${{ inputs.handle }}"; fi
+          if [ "${{ inputs.apply }}" = "true" ]; then ARGS="$ARGS --apply"; fi
+          node scripts/seo-pdp-boilerplate-strip.mjs $ARGS
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdp-boilerplate-strip-${{ github.run_id }}
+          path: data/seo-backfills/pdp-boilerplate-strip-*.json
+          if-no-files-found: warn
+          retention-days: 90
