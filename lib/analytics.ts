@@ -203,6 +203,21 @@ export type AnalyticsEvent =
       };
     }
   | {
+      // Email-capture promo popup lifecycle ("20% off your first order
+      // of $499+" modal, promo-popup.tsx). `shown` fires once when the
+      // modal opens (8s dwell or exit-intent), `dismissed` when it's
+      // closed without signing up (with the trigger), and `converted`
+      // on a successful in-popup signup. Conversion is also reliably
+      // read off newsletter_signup{source:'popup'}; `converted` here
+      // pairs the funnel end with its shown/dismissed siblings in one
+      // event so the popup's show→convert rate is a single query.
+      name: 'promo_popup';
+      props: {
+        action: 'shown' | 'dismissed' | 'converted';
+        reason?: 'button' | 'backdrop' | 'escape';
+      };
+    }
+  | {
       // tel: link click anywhere on the storefront (topbar, footer,
       // location cards, sale/contact/service pages…). Round 12: the
       // showroom-led business's primary conversion is a call, and the

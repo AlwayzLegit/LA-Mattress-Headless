@@ -9,6 +9,7 @@ import { CartDrawer } from '../_components/cart-drawer';
 import { CompareTray } from '../_components/compare-tray';
 import { ChatWidget } from '../_components/chat/chat-widget';
 import { ContactClickTracker } from '../_components/contact-click-tracker';
+import { PromoPopup } from '../_components/promo-popup';
 import { Announcer } from '../_components/announcer';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
 import { composeBrandTitle } from '@/lib/seo';
@@ -147,6 +148,12 @@ export default async function StorefrontLayout({ children }: { children: React.R
         <CartDrawer />
         <CompareTray />
         <ChatWidget />
+        {/* Email-capture promo modal ("20% off your first order of
+            $499+"). Self-gates: opens on 8s dwell / exit-intent, once
+            per visitor, off /admin, /account, /checkout — see
+            promo-popup.tsx. Inside CartProvider so it can auto-apply the
+            code to the cart on signup. */}
+        <PromoPopup />
         {/* Delegated tel:/maps click tracking (phone_click /
             directions_click) — see contact-click-tracker.tsx. */}
         <ContactClickTracker />
