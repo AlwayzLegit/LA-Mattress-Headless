@@ -3030,6 +3030,12 @@ body.plp-filters-open .chat-bubble { opacity: 0; pointer-events: none; }
 @media (max-width: 1024px) {
   .pdp-section-head { grid-template-columns: 1fr; gap: var(--s-3); margin-bottom: var(--s-5); }}
 
+/* Brand band (Round 13) — the per-vendor brand story, rendered once per
+   PDP below the description. Supplementary brand context, so the body
+   copy is muted and capped for readability. */
+.pdp-brand-story h2 { margin: var(--s-2) 0 var(--s-3); }
+.pdp-brand-story p { margin: 0; max-width: 68ch; color: var(--text-2); font-size: 15px; line-height: 1.65; }
+
 /* PDP §Specs grid — design handoff: 4-col on desktop, 2 on tablet, 1 on mobile. */
 .pdp-specs-grid {
   display: grid;

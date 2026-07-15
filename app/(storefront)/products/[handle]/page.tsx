@@ -26,6 +26,7 @@ import { PdpGallery } from './gallery';
 import { PdpOverview } from './pdp-overview';
 import { PdpFirmness } from './pdp-firmness';
 import { PdpMaterials } from './pdp-materials';
+import { PdpBrandStory } from './pdp-brand-story';
 import { RelatedRail } from './related-rail';
 import { ProductSkeleton } from './skeleton';
 
@@ -505,6 +506,13 @@ function ProductView({ product, related }: { product: Product; related: ProductS
           ) : (
             <ProductAboutFallback product={product} />
           )}
+
+          {/* Brand band (Round 13). The brand story that used to be
+              duplicated inside every Diamond/Helix product description
+              now renders here once, in a consistent template position.
+              Self-gates: shows nothing until the description strip
+              removes the in-body copy, so deploy order doesn't matter. */}
+          <PdpBrandStory vendor={product.vendor} descriptionHtml={product.descriptionHtml} />
 
           <PdpFaq product={product} />
         </div>
