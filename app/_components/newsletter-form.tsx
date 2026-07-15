@@ -18,8 +18,16 @@ type Source = 'footer' | 'popup' | 'cart' | 'unknown';
  * its place. Focus is moved to the success element (tabindex=-1)
  * so keyboard + SR users land on the confirmation instead of having
  * focus dropped to <body>.
+ *
+ * `onSuccess` is an optional callback fired once after a successful
+ * signup (in addition to the analytics event). The promo popup uses it
+ * to swap its own body to the discount-code reveal; the footer usage
+ * passes nothing and keeps the inline success message.
  */
-export function NewsletterForm({ source = 'footer' }: { source?: Source } = {}) {
+export function NewsletterForm({
+  source = 'footer',
+  onSuccess,
+}: { source?: Source; onSuccess?: () => void } = {}) {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
   const successRef = useRef<HTMLDivElement>(null);
@@ -55,6 +63,7 @@ export function NewsletterForm({ source = 'footer' }: { source?: Source } = {}) 
       if (res.ok && data.ok) {
         setStatus('success');
         track('newsletter_signup', { source });
+        onSuccess?.();
       } else {
         setStatus('error');
         setError(data.error === 'invalid_email' ? 'That email looks off — try again.' : 'Something went wrong. Try again later.');
