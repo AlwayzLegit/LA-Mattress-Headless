@@ -611,6 +611,32 @@ body.pdp-sheet-open .compare-tray { opacity: 0; pointer-events: none; }
    floats over the sheet (z-60) and covers the right end of the full-width
    "Show results" button. Audit ux-mobile-05; class set by FilterShell. */
 body.plp-filters-open .chat-bubble { opacity: 0; pointer-events: none; }
+
+/* Sitewide mobile call/directions bar (sticky-contact-bar.tsx). Full-width
+   bottom bar, mobile-only. Suppressed on /products/* in the component, so it
+   never stacks with the PDP sticky add-to-cart bar. z-75 sits below the chat
+   panel/bubble; while it shows, the chat bubble + compare tray lift above it
+   (mirrors the pdp-atc-visible block above). */
+.sticky-contact-bar {
+  position: fixed; inset: auto 0 0 0;
+  z-index: 75;
+  display: none;
+  gap: 10px;
+  padding: 10px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.06);
+}
+.sticky-contact-btn { flex: 1; }
+@media (max-width: 768px) {
+  .sticky-contact-bar { display: flex; }
+  body.contactbar-visible .chat-bubble { bottom: calc(80px + env(safe-area-inset-bottom)); }
+  body.contactbar-visible .compare-tray { bottom: calc(80px + env(safe-area-inset-bottom)); }
+  /* While the PLP filter sheet is open, hide the bar (like the chat bubble) so
+     it doesn't poke over the sheet's "Show results" button. */
+  body.plp-filters-open .sticky-contact-bar { display: none; }
+}
 .chat-bubble.is-open {
   /* When the panel is open, fade the bubble out instead of removing it
      from the DOM — keeps the close-from-button focus target stable. */

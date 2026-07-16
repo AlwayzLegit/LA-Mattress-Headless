@@ -228,6 +228,33 @@ export function categoryDeepContentFor(handle: string, _title: string): string {
     });
   }
 
+  if (h.includes('chattam')) {
+    return brandBlock({
+      brand: 'Chattam & Wells',
+      oneliner:
+        'a luxury hand-tufted innerspring line built around a pocketed-coil support unit with natural latex and gel-memory-foam comfort layers, finished in damask and cashmere-blend covers. It sits at the top of the traditional innerspring category — the coil-and-latex answer to the all-foam flagships.',
+      builds:
+        'the Lismore and Miramare "Luxury Firm" builds as the supportive core (13-inch, firmer feel for back sleepers); plush Euro-top and pillow-top models in the 14–18-inch range for deeper pressure relief; and hand-tufted constructions throughout the lineup.',
+      hallmark:
+        '<strong>What makes Chattam & Wells different.</strong> Hand-tufting — needled construction with no glue between the layers — is what separates a true luxury innerspring from a mass-produced one: the comfort layers can\'t shift, so the mattress holds its shape and firmness for well over a decade. Natural latex over the pocketed coil adds responsive, breathable pressure relief that memory foam alone can\'t match.',
+      fitsWho:
+        'Shoppers who want a classic luxury innerspring feel — supportive coil bounce with a plush hand-finished top — rather than the deep sink of all-foam. Especially back and combo sleepers, and anyone prioritizing longevity and a cooler-sleeping natural-latex comfort layer.',
+    });
+  }
+  if (h.includes('spring-air') || h.includes('spring air')) {
+    return brandBlock({
+      brand: 'Spring Air',
+      oneliner:
+        'one of the longest-running American mattress names — a value-to-mid lineup of innerspring and hybrid builds centered on the Back Supporter zoned pocketed-coil unit, which firms up under the lumbar region for targeted lower-back support without buying up into a luxury tier.',
+      builds:
+        'the Value Collection as the entry tier (firmer, straightforward innerspring builds from 8 inches, ideal for guest rooms and budgets); and the Tradition Collection as the mid-tier with deeper comfort layers, gel-memory-foam or pillow-top finishes, and heights up to 16 inches.',
+      hallmark:
+        '<strong>What makes Spring Air different.</strong> The Back Supporter coil zones the support — more coils and a firmer gauge under the midsection where the hips and lower back sink most — so you get lumbar support at an accessible price. It\'s the practical, budget-conscious innerspring choice when a shopper wants firm traditional support over foam contouring.',
+      fitsWho:
+        'Budget-to-mid shoppers, guest rooms and second bedrooms, and back or stomach sleepers who want firm, traditional innerspring support. Available across firmnesses from firm to plush pillow-top, so most sleep positions are covered within the range.',
+    });
+  }
+
   // ── Material categories ───────────────────────────────────────
   if (h.includes('memory-foam') || (h.includes('foam') && !h.includes('gel'))) {
     return materialBlock({

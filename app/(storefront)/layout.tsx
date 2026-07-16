@@ -10,6 +10,7 @@ import { CompareTray } from '../_components/compare-tray';
 import { ChatWidget } from '../_components/chat/chat-widget';
 import { ContactClickTracker } from '../_components/contact-click-tracker';
 import { PromoPopup } from '../_components/promo-popup';
+import { StickyContactBar } from '../_components/sticky-contact-bar';
 import { Announcer } from '../_components/announcer';
 import { buildOrganizationLd, WEBSITE_LD } from '@/lib/structured-data';
 import { composeBrandTitle } from '@/lib/seo';
@@ -154,6 +155,10 @@ export default async function StorefrontLayout({ children }: { children: React.R
             promo-popup.tsx. Inside CartProvider so it can auto-apply the
             code to the cart on signup. */}
         <PromoPopup />
+        {/* Mobile-only sticky Call + Find-a-store bar (the showroom store's
+            top conversions). Self-gates off /products/* etc. — see
+            sticky-contact-bar.tsx. */}
+        <StickyContactBar />
         {/* Delegated tel:/maps click tracking (phone_click /
             directions_click) — see contact-click-tracker.tsx. */}
         <ContactClickTracker />
