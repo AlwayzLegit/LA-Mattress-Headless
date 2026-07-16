@@ -115,3 +115,64 @@ test('size-pattern specificity: twin xl matches before twin', () => {
   // the lede, which the test asserts is present.
   assert.ok(twin.includes('38" × 75"'), 'twin block should mention standard 38×75 dimensions');
 });
+
+// ── Round 14: firmness-tier + construction/price coverage ────────
+// SEMrush 20260716 — the firmness PLPs (extra-firm … ultra-plush),
+// pocketed-coil, luxury, and under-$1,000 had no deep-content block and
+// rendered thin long-form. These blocks fill that slot.
+const FIRMNESS_HANDLES = [
+  'extra-firm-mattresses',
+  'firm-mattress',
+  'medium-firm-mattresses',
+  'medium-mattresses',
+  'plush-mattresses',
+  'ultra-plush-mattresses',
+  'soft-mattresses-for-pressure-relief',
+];
+const CONSTRUCTION_PRICE_HANDLES = [
+  'pocketed-coil-mattresses',
+  'luxury-mattresses',
+  'mattresses-under-1000',
+];
+
+test('firmness + construction/price handles return deep content with internal links', () => {
+  for (const handle of [...FIRMNESS_HANDLES, ...CONSTRUCTION_PRICE_HANDLES]) {
+    const out = categoryDeepContentFor(handle, 'Test');
+    assert.ok(out.length >= 300, `"${handle}" too short (${out.length})`);
+    assert.ok(out.length <= 3500, `"${handle}" too long (${out.length})`);
+    const internalLinks = (out.match(/<a\s+href="\//g) ?? []).length;
+    assert.ok(internalLinks >= 1, `"${handle}" has 0 internal links`);
+  }
+});
+
+test('firmness specificity: compound tiers match before their subset', () => {
+  // 'medium-firm' must win over 'firm' and 'medium'; 'ultra-plush' over
+  // 'plush' — same longest-first hazard as the size blocks. Assert on
+  // unique per-tier prose so a mis-ordered match is caught.
+  const mediumFirm = categoryDeepContentFor('medium-firm-mattresses', 'MF');
+  assert.ok(mediumFirm.includes('most-recommended firmness for back pain'), 'medium-firm block');
+
+  const firm = categoryDeepContentFor('firm-mattress', 'F');
+  assert.ok(firm.includes('without going as rigid as extra-firm'), 'firm block');
+  assert.ok(!firm.includes('most-recommended firmness for back pain'), 'firm must not be medium-firm');
+
+  const medium = categoryDeepContentFor('medium-mattresses', 'M');
+  assert.ok(medium.includes('right in the middle'), 'medium block');
+  assert.ok(!medium.includes('most-recommended firmness for back pain'), 'medium must not be medium-firm');
+
+  const ultra = categoryDeepContentFor('ultra-plush-mattresses', 'UP');
+  assert.ok(ultra.includes('softest tier we carry'), 'ultra-plush block');
+
+  const plush = categoryDeepContentFor('plush-mattresses', 'P');
+  assert.ok(plush.includes('go-to comfort level for side sleepers'), 'plush block');
+  assert.ok(!plush.includes('softest tier we carry'), 'plush must not be ultra-plush');
+});
+
+test('firmness/construction blocks do not steal material, brand, or size handles', () => {
+  // Regression: adding h.includes('firm'|'medium'|'soft'|'luxury'|'pocketed')
+  // must not hijack a material/brand/size handle. Spot-check the controls.
+  assert.ok(categoryDeepContentFor('memory-foam-mattresses', 'x').includes('Memory foam'));
+  assert.ok(categoryDeepContentFor('tempur-pedic-mattresses', 'x').includes('Tempur-Pedic'));
+  assert.ok(categoryDeepContentFor('king-size-mattresses', 'x').includes('76"'));
+  assert.ok(categoryDeepContentFor('mattresses-for-back-pain', 'x').includes('lowest pain scores'));
+});
