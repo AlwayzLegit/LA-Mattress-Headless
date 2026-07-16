@@ -102,9 +102,35 @@ function materialBlock(opts: {
 }
 
 /**
+ * Firmness-tier block. The firmness collections (extra-firm … ultra-plush)
+ * had no deep-content coverage — they rendered just the FAQ + link cluster
+ * while every brand/material/size PLP got ~350 words (SEMrush 20260716:
+ * the firmness PLPs were the remaining thin long-form slots). Same opts
+ * shape as materialBlock; per-tier copy carries the uniqueness so no two
+ * firmness pages read alike.
+ */
+function firmnessBlock(opts: {
+  tier: string;
+  scale: string;
+  oneliner: string;
+  feel: string;
+  fitsWho: string;
+  materialNote: string;
+}): string {
+  const { tier, scale, oneliner, feel, fitsWho, materialNote } = opts;
+  return [
+    `<p>${oneliner}</p>`,
+    `<p><strong>Where ${tier} sits on the scale.</strong> Mattress firmness runs 1–10, where 1 is hospital-soft and 10 is plywood-hard. ${tier} lands around ${scale}. Brand naming varies wildly — one maker's "medium" is another's "medium-firm" — so the number is a starting point, not a guarantee; feel it in person before you commit.</p>`,
+    `<p><strong>How ${tier} feels.</strong> ${feel}</p>`,
+    `<p><strong>Who ${tier} fits.</strong> ${fitsWho}</p>`,
+    `<p><strong>Material matters as much as the label.</strong> ${materialNote} Not sure which tier is right for your body and sleep position? Take our <a href="${SLEEP_QUIZ_HREF}">2-minute sleep quiz</a>, then lie on the finalists at any of our <a href="${SHOWROOMS_HREF}">5 LA showrooms</a> — firmness is the one spec photos can't convey.</p>`,
+  ].join('\n');
+}
+
+/**
  * Returns long-form HTML for the collection's "About X" block, or
  * empty string when no pattern matches. Order: brand → material →
- * accessory → size → sale → generic.
+ * firmness → accessory → size → sale → generic.
  */
 export function categoryDeepContentFor(handle: string, _title: string): string {
   const h = handle.toLowerCase();
@@ -274,6 +300,130 @@ export function categoryDeepContentFor(handle: string, _title: string): string {
       tradeoff:
         'Significantly higher cost than conventional builds — GOTS/GOLS certifications add ~30-50% to retail. Lifespan is excellent (15+ years on a quality build) so the cost amortizes, but the upfront price tag is real. Returns and exchanges run lower than synthetic mattresses because resale of opened organic mattresses is restricted.',
     });
+  }
+
+  // ── Firmness tiers ───────────────────────────────────────────
+  // Order: extra-firm → medium-firm → firm → ultra-plush → plush →
+  // medium → soft, so longer/compound handles win before their subset
+  // ('medium-firm' before 'firm' and 'medium'; 'ultra-plush' before
+  // 'plush'). None of these keywords appear in a brand/material/size
+  // handle, so this section is safe anywhere after material.
+  if (h.includes('extra-firm')) {
+    return firmnessBlock({
+      tier: 'extra-firm',
+      scale: '8–9 out of 10',
+      oneliner:
+        'Extra-firm mattresses give the most support and the least sink of any comfort level — a nearly flat sleep surface that keeps your spine level and your hips from dipping into the bed.',
+      feel: 'Very little give. You lie on top of the mattress, not in it. Weight is spread broadly across the surface rather than cradled at any one point, and turning over is effortless because nothing grabs you.',
+      fitsWho:
+        'Stomach sleepers, who need their hips held level with their shoulders; heavier back sleepers; and anyone replacing an old firm innerspring who wants the same taut, supportive feel. It is the one tier where "too firm" is rarely the complaint.',
+      materialNote:
+        'An extra-firm feel comes from a dense innerspring or hybrid base under a thin comfort layer — coils resist compression better than deep foam. Firm memory foam gets close but rarely this rigid.',
+    });
+  }
+  if (h.includes('medium-firm')) {
+    return firmnessBlock({
+      tier: 'medium-firm',
+      scale: '6–7 out of 10',
+      oneliner:
+        'Medium-firm is the most-recommended firmness for back pain — the clinical research (Kovacs 2003, Jacobson 2015) found it produces the lowest pain scores across most sleepers. It balances support and pressure relief better than any other tier.',
+      feel: 'Supportive underneath with a genuine comfort cushion on top. Your shoulders and hips get light contouring without the deep sink of a plush bed — the all-rounder feel.',
+      fitsWho:
+        'The widest range of sleepers: back sleepers, most combo sleepers, couples who can\'t agree (this is the compromise tier), and anyone with lower-back pain. Our mattress for back pain collection is tuned to this exact feel.',
+      materialNote:
+        'Every material makes a good medium-firm, but a medium-firm hybrid is the single most universally comfortable build we sell.',
+    });
+  }
+  if (h.includes('firm')) {
+    return firmnessBlock({
+      tier: 'firm',
+      scale: '7–8 out of 10',
+      oneliner:
+        'Firm mattresses give supportive, on-top-of-the-bed sleeping without going as rigid as extra-firm — the most popular choice for back and stomach sleepers.',
+      feel: 'Supportive with a thin cushion of give at the surface: enough to take the edge off pressure points, not enough to let you sink. Strong edge support and easy movement across the bed.',
+      fitsWho:
+        'Back sleepers, stomach sleepers, combo sleepers who change positions through the night, and anyone who sleeps hot — a firmer surface means less body contact and better airflow than a plush build.',
+      materialNote:
+        'Firm comes in every material: firm memory foam, firm hybrid, firm latex, firm innerspring. If you like the support but want more give at the shoulders, step down to medium-firm.',
+    });
+  }
+  if (h.includes('ultra-plush')) {
+    return firmnessBlock({
+      tier: 'ultra-plush',
+      scale: '2–4 out of 10',
+      oneliner:
+        'Ultra-plush is the softest tier we carry — deep, pillowy sink for sleepers who want to feel enveloped by the bed rather than supported on top of it.',
+      feel: 'Maximum cradle. Thick, soft comfort layers let your body settle in deeply and wrap around every curve. Best for lighter sleepers; heavier bodies can sink past the comfort layer to the firmer support below.',
+      fitsWho:
+        'Dedicated side sleepers with pressure-point pain, lighter-weight sleepers, and anyone upgrading from a plush bed that still felt too firm at the shoulders and hips.',
+      materialNote:
+        'Ultra-plush almost always means a thick memory foam or pillow-top comfort layer. If you share the bed with a heavier partner, a plush hybrid may serve you both better than a true all-foam ultra-plush.',
+    });
+  }
+  if (h.includes('plush')) {
+    return firmnessBlock({
+      tier: 'plush',
+      scale: '4–5 out of 10',
+      oneliner:
+        'Plush mattresses are soft and cushioning — built for pressure relief at the shoulders and hips rather than firm support. The go-to comfort level for side sleepers.',
+      feel: 'Noticeable sink and cradle. The comfort layers wrap around your body\'s curves, taking pressure off the joints that bear the most weight in a side-lying position.',
+      fitsWho:
+        'Side sleepers, lighter-weight sleepers (under ~150 lb, who don\'t compress a firmer bed enough to feel its comfort layer), and anyone who likes the "hug" of memory foam. Our mattress for side sleepers collection lists the best matches.',
+      materialNote:
+        'Plush is where memory foam shines — deep contouring. Plush hybrids add coil support under the soft top for sleepers who want cushioning without losing bounce and edge support.',
+    });
+  }
+  if (h.includes('medium')) {
+    return firmnessBlock({
+      tier: 'medium',
+      scale: '5–6 out of 10',
+      oneliner:
+        'Medium mattresses sit right in the middle — enough contouring to relieve pressure, enough support to keep you aligned. The safest pick when you\'re not yet sure what firmness you prefer.',
+      feel: 'Balanced give. You feel gentle cradling at the shoulders and hips but stay supported through the middle — neither lying "on top of" nor "sinking into" the bed.',
+      fitsWho:
+        'Combo sleepers who move between back and side, couples with mild preference differences, and first-time buyers who want a crowd-pleaser. Lighter side sleepers often prefer medium over medium-firm.',
+      materialNote:
+        'A medium memory foam contours more; a medium hybrid stays more responsive. If you sleep mostly on your side, consider stepping down to plush.',
+    });
+  }
+  if (h.includes('soft') || h.includes('pressure-relief') || h.includes('pressure relief')) {
+    return firmnessBlock({
+      tier: 'soft, pressure-relieving',
+      scale: '3–5 out of 10',
+      oneliner:
+        'These mattresses are built specifically for pressure relief — soft, contouring comfort layers that take the load off the shoulders, hips, and joints. The right category for side sleepers and anyone with joint pain.',
+      feel: 'Cushioning and cradling. The surface gives readily and redistributes weight away from your pressure points instead of concentrating it under the heaviest parts of your body.',
+      fitsWho:
+        'Side sleepers, sleepers with arthritis or chronic joint pain, and anyone who wakes with a numb arm or a sore hip on a firmer bed. Memory foam and plush hybrids do this best.',
+      materialNote:
+        'Pressure relief comes from the comfort layer, not the support core — look for deep memory foam or latex over a supportive base.',
+    });
+  }
+
+  // ── Construction / price tiers ────────────────────────────────
+  if (h.includes('pocketed-coil') || h.includes('pocket-coil') || h.includes('pocketed coil')) {
+    return [
+      `<p>Pocketed-coil mattresses use hundreds to thousands of individually fabric-wrapped springs that compress independently — the modern evolution of the old connected-innerspring unit, and the support core inside almost every hybrid mattress we sell.</p>`,
+      `<p><strong>Why independent coils matter.</strong> Because each coil moves on its own, weight in one spot doesn't lever the whole surface — that's what gives pocketed-coil beds their strong motion isolation (a partner can shift without waking you) and their contouring support (the coils under your hips compress more than the coils under your waist, keeping your spine level).</p>`,
+      `<p><strong>What pocketed coils feel like.</strong> Responsive and supportive with real edge support — you can sit and sleep near the perimeter without rolling off, which pure memory foam can't match. Paired with foam or latex comfort layers on top (a hybrid mattress), you get the contouring of foam and the bounce and airflow of coils in one build.</p>`,
+      `<p><strong>Who they fit.</strong> Nearly everyone — couples especially (motion isolation plus edge support), hot sleepers (air moves through the coil unit), and heavier sleepers (coils resist sagging better than all-foam). Compare with all-foam builds in our <a href="/collections/memory-foam-mattresses">memory foam</a> and <a href="/collections/hybrid-mattresses">hybrid</a> collections, or take the <a href="${SLEEP_QUIZ_HREF}">2-minute sleep quiz</a> and try the finalists at any of our <a href="${SHOWROOMS_HREF}">5 LA showrooms</a>.</p>`,
+    ].join('\n');
+  }
+  if (h.includes('luxury')) {
+    return [
+      `<p>Luxury mattresses are the flagship tier — deeper builds, hand-tufted construction, premium covers (cashmere, silk, wool blends), and the thickest, highest-density comfort layers each brand makes. This is where you'll find Stearns & Foster's Reserve line, Tempur-Pedic's LuxeAdapt and LuxeBreeze, and the top hybrids from every maker we carry.</p>`,
+      `<p><strong>What the extra cost buys.</strong> More material and better material. Luxury builds stand 14–17 inches tall with several distinct comfort layers, use higher-density foams that hold their shape past the 10-year mark, and finish with hand-tufting (needled construction) that keeps the layers from shifting over time — the single biggest driver of a mattress lasting a decade-plus versus five years.</p>`,
+      `<p><strong>What luxury does not automatically mean.</strong> It doesn't mean softer — luxury models come in firm, medium, and plush just like every other tier. And it doesn't always mean cooler; if you sleep hot, look specifically for a cooling build (gel, copper, or phase-change covers) within the luxury range rather than assuming the premium price includes it.</p>`,
+      `<p><strong>Who it fits.</strong> Shoppers prioritizing longevity and finish over lowest price, and anyone who wants the deepest pressure relief a brand offers. Browse by name on the <a href="/collections/stearns-foster-mattresses">Stearns & Foster</a> and <a href="/collections/tempur-pedic-mattresses">Tempur-Pedic</a> collections, or take the <a href="${SLEEP_QUIZ_HREF}">sleep quiz</a> and feel the flagships side-by-side at any of our <a href="${SHOWROOMS_HREF}">5 LA showrooms</a>.</p>`,
+    ].join('\n');
+  }
+  if (h.includes('under-1000') || h.includes('under-$1000') || h.includes('budget')) {
+    return [
+      `<p>A good mattress under $1,000 is absolutely attainable — this price tier covers quality memory foam, hybrid, and innerspring builds from real brands, not just bargain-bin foam. The difference from the flagship tiers is usually comfort-layer depth, cover materials, and warranty length, not a fundamental drop in support or safety (every mattress we sell is CertiPUR-US certified regardless of price).</p>`,
+      `<p><strong>Where the savings come from.</strong> Thinner (but still supportive) comfort layers, simpler covers, and standard rather than premium cooling. A sub-$1,000 build typically stands 10–12 inches tall versus 14–17 for luxury — plenty for most sleepers under ~230 lb.</p>`,
+      `<p><strong>How to spend the budget well.</strong> Prioritize the support core (a pocketed-coil hybrid gives more durability per dollar than budget all-foam), match the firmness to your sleep position first, and add a <a href="/collections/mattress-protector">mattress protector</a> to keep the warranty valid. Sales rotate weekly, so a model that's normally over $1,000 often lands in this range during a promo.</p>`,
+      `<p><strong>Who it fits.</strong> First apartments, guest rooms, kids' and teens' rooms, and anyone who wants a genuinely comfortable bed without flagship pricing. Browse <a href="/collections/memory-foam-mattresses">memory foam</a> and size options like <a href="/collections/queen-size-mattresses">Queen</a> and <a href="/collections/full-size-mattresses">Full</a>, or take the <a href="${SLEEP_QUIZ_HREF}">sleep quiz</a> for a match within budget.</p>`,
+    ].join('\n');
   }
 
   // ── Accessory categories ──────────────────────────────────────
