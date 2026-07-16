@@ -168,6 +168,24 @@ test('firmness specificity: compound tiers match before their subset', () => {
   assert.ok(!plush.includes('softest tier we carry'), 'plush must not be ultra-plush');
 });
 
+test('brand tail: chattam-wells & spring-air resolve to their own brand blocks', () => {
+  const chattam = categoryDeepContentFor('chattam-wells-mattresses', 'CW');
+  assert.ok(chattam.includes('Chattam &amp; Wells') || chattam.includes('Chattam & Wells'), 'chattam brand block');
+  assert.ok(chattam.length >= 300 && chattam.length <= 3500, `chattam length ${chattam.length}`);
+
+  const springAir = categoryDeepContentFor('spring-air-mattresses', 'SA');
+  assert.ok(springAir.includes('Spring Air'), 'spring-air brand block');
+  // spring-air must NOT be captured by the 'innerspring' material block
+  // (its handle contains 'spring' but not 'innerspring'); the brand block
+  // is the Back Supporter copy, the material block is generic innerspring.
+  assert.ok(springAir.includes('Back Supporter'), 'spring-air should be the brand block, not the innerspring material block');
+
+  for (const h of ['chattam-wells-mattresses', 'spring-air-mattresses']) {
+    const internalLinks = (categoryDeepContentFor(h, 'x').match(/<a\s+href="\//g) ?? []).length;
+    assert.ok(internalLinks >= 1, `"${h}" has 0 internal links`);
+  }
+});
+
 test('firmness/construction blocks do not steal material, brand, or size handles', () => {
   // Regression: adding h.includes('firm'|'medium'|'soft'|'luxury'|'pocketed')
   // must not hijack a material/brand/size handle. Spot-check the controls.
