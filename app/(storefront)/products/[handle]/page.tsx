@@ -170,7 +170,9 @@ export default async function ProductPage(props: Params) {
     );
   }
 
-  const product = await getProductByHandle(params.handle).catch(() => null);
+  // Upstream failures throw (5xx / stale-ISR-keeps-serving) — only a genuine
+  // Shopify "no such handle" (null) may 404. See the pages/[handle] note.
+  const product = await getProductByHandle(params.handle);
   if (!product) notFound();
   const related = await getProductRecommendations(product.handle).catch(() => [] as ProductSummary[]);
   return <ProductView product={product} related={related} />;
