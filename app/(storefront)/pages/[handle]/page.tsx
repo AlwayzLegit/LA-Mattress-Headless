@@ -232,7 +232,13 @@ export default async function ShopifyPage(props: Params) {
         return <DataOptOutPage />;
     }
   }
-  const page = await getPageByHandle(params.handle).catch(() => null);
+  // Upstream failures (ShopifyApiError) must propagate to the error
+  // boundary — swallowing them into notFound() serves a 404 that ISR then
+  // caches for the whole revalidate window. SEMrush 2026-07-17: one blip
+  // during regeneration of a footer-linked showroom page fanned into 1,318
+  // broken-internal-link flags. `null` means Shopify genuinely has no such
+  // page → real 404. Same rule on the PDP/PLP/article/blog routes.
+  const page = await getPageByHandle(params.handle);
   if (!page) notFound();
   // Preview cookie read deliberately AFTER the notFound() gate — see
   // the matching note in generateMetadata (404s must stay static).

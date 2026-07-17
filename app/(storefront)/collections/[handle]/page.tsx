@@ -126,10 +126,12 @@ async function CollectionBody({ handle }: { handle: string }) {
   // Canonical view only: default sort, first page, no filters. Param'd
   // views never reach this server render — <PlpParamResults> swaps the
   // grid client-side from /api/load-more-products.
+  // Upstream failures throw (5xx / stale-ISR-keeps-serving) — only a genuine
+  // Shopify "no such handle" (null) may 404. See the pages/[handle] note.
   const collection = await getCollectionByHandle({
     handle,
     first: PER_PAGE,
-  }).catch(() => null);
+  });
   if (!collection) notFound();
 
   // Custom on-page H1 from the `custom.seo_h1` metafield (merchant-editable

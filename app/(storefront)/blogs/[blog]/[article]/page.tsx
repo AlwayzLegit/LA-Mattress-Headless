@@ -148,13 +148,16 @@ export default async function ArticlePage(props: Params) {
     );
   }
 
-  const article = await getArticleByHandle(params.blog, params.article).catch(() => null);
+  // Upstream failures throw (5xx / stale-ISR-keeps-serving) — only a genuine
+  // Shopify "no such handle" (null) may 404. See the pages/[handle] note.
+  const article = await getArticleByHandle(params.blog, params.article);
   if (!article) notFound();
   return <ArticleView article={article} />;
 }
 
 async function ArticleBody({ blog, article }: { blog: string; article: string }) {
-  const a = await getArticleByHandle(blog, article).catch(() => null);
+  // Same rule as the sync path above: let upstream failures throw.
+  const a = await getArticleByHandle(blog, article);
   if (!a) notFound();
   return <ArticleView article={a} />;
 }

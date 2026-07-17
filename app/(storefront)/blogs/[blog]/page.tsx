@@ -115,7 +115,9 @@ export default async function BlogIndexPage(props: Params) {
   const params = await props.params;
   if (!SHOPIFY_CONFIGURED) notFound();
   const after = searchParams.after ?? null;
-  const blog = await getBlogByHandle({ handle: params.blog, first: PER_PAGE, after }).catch(() => null);
+  // Upstream failures throw (5xx / stale-ISR-keeps-serving) — only a genuine
+  // Shopify "no such handle" (null) may 404. See the pages/[handle] note.
+  const blog = await getBlogByHandle({ handle: params.blog, first: PER_PAGE, after });
   if (!blog) notFound();
 
   const articles = blog.articles.nodes;
