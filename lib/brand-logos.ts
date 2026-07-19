@@ -36,6 +36,8 @@ const LOGOS: Record<string, BrandLogo> = {
   'eastman-house-mattresses':  { src: `${CDN}/eastmanhouse_Logo.png?v=1734093102`,                                         width: 572,  height: 193 },
   'harvest-mattresses':        { src: `${CDN}/Harvest_Corporate_Logo_png.png?v=1734092763`,                                width: 400,  height: 176 },
   'englander-mattresses':      { src: `${CDN}/Englander_Logo_RGB_360x_22e6e6b2-7219-4012-babd-471329f296a4.png?v=1734093101`, width: 360, height: 38 },
+  'brooklyn-bedding-mattresses': { src: `${CDN}/brand-brooklyn-bedding-mattresses.svg?v=1784476368`,                          width: 242,  height: 31 },
+  'birch-mattresses':          { src: `${CDN}/brand-birch-mattresses.svg?v=1784476368`,                                        width: 600,  height: 399 },
 };
 
 export function brandLogo(handle: string): BrandLogo | undefined {
