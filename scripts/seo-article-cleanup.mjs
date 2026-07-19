@@ -276,6 +276,21 @@ const BATCHES = {
     'signs-it-s-time-to-replace-your-memory-foam-mattress',
     'best-twin-mattresses-for-toddlers',
   ],
+
+  /**
+   * semrush-2026-07-19-broken-ext:
+   *   SEMrush 2026-07-19 crawl — the 3 residual broken external links
+   *   (issue 12) left after the 07-07 superset batch cleared the rest:
+   *   roh.nhs.uk moved its hip-precautions page (404), and
+   *   aerocommattress.com / ethicalbedding.com blog posts died. Pass 4
+   *   unwraps every external anchor in these articles, same posture as
+   *   the prior broken-ext batches.
+   */
+  'semrush-2026-07-19-broken-ext': [
+    'when-can-you-sleep-on-your-back-after-hip-replacement',
+    'best-bed-sheets-for-allergies',
+    'the-role-of-mattress-height-and-support-in-creating-a-luxurious-sleep-experience',
+  ],
 };
 
 const ENDPOINT = `https://${STORE}/admin/api/${VERSION}/graphql.json`;
