@@ -291,6 +291,44 @@ const BATCHES = {
     'best-bed-sheets-for-allergies',
     'the-role-of-mattress-height-and-support-in-creating-a-luxurious-sleep-experience',
   ],
+
+  /**
+   * semrush-2026-07-21-broken-ext:
+   *   SEMrush 2026-07-21 crawl — issue 12 jumped 3 → 27 because
+   *   sleepfoundation.org reorganized its URL structure: three paths we
+   *   linked heavily now 404 (mattress-construction/mattress-coil-types
+   *   ×14, mattress-information/dunlop-vs-talalay-latex ×5,
+   *   what-is-the-difference-between-memory-foam-and-latex ×4, plus
+   *   /sleep-disorders ×1) across 22 articles. Also swept in: one dead
+   *   greensunmedical.com post, one dead sleepessentials.com post, and
+   *   an americanmattress.com competitor link (authority bleed either
+   *   way). Pass 4 unwraps every external anchor in these articles,
+   *   same posture as all prior broken-ext batches.
+   */
+  'semrush-2026-07-21-broken-ext': [
+    'can-you-sleep-with-a-back-support-belt-on-guide-to-sleeping-in-a-back-brace',
+    'what-type-of-mattress-is-best-for-an-adjustable-bed',
+    'the-best-mattress-for-degenerative-disc-disease-a-comprehensive-guide',
+    'short-queen-vs-standard-queen-mattress-best-choice-for-rvs-and-campers',
+    'pocket-spring-vs-hybrid-mattresses-which-should-you-choose',
+    'pocket-coil-vs-innerspring-mattresses-what-s-the-difference',
+    'memory-foam-vs-hybrid-mattresses-which-is-better-for-couples',
+    'is-latex-mattresses-the-best-mattress-for-culver-city',
+    'is-a-plush-mattress-good-for-back-pain-relief',
+    'how-do-i-know-if-my-mattress-is-too-firm-signs-to-watch-for',
+    'high-rise-bed-frames',
+    'can-you-use-a-box-spring-with-a-memory-foam-mattress',
+    'can-you-put-an-air-mattress-on-a-bed-frame',
+    'can-an-englander-visco-mattress-be-used-on-adjustable-beds',
+    'best-mattress-topper-for-rheumatoid-arthritis',
+    'best-mattress-topper-for-hospital-bed',
+    'best-mattress-topper-for-bed-sores',
+    'best-mattress-for-osteoporosis',
+    'best-high-end-mattresses',
+    'best-flex-king-mattress',
+    'best-back-supporter-mattresses-of-2024',
+    'best-affordable-non-toxic-mattress-toppers',
+  ],
 };
 
 const ENDPOINT = `https://${STORE}/admin/api/${VERSION}/graphql.json`;
