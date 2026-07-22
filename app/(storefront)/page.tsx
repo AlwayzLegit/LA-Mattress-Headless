@@ -74,9 +74,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { absolute: title },
     description,
     alternates: { canonical: 'https://www.mattressstoreslosangeles.com/' },
-    // Only override the layout's OG image when the merchant set one on the
-    // metaobject; otherwise inherit the sitewide brand cover image.
-    ...(seo?.ogImage ? { openGraph: { images: [{ url: seo.ogImage }] } } : {}),
+    // CRO review 2026-07-22: the metaobject's ogImage currently holds the
+    // SQUARE brand logo, which shadowed the designed 1200×630 card at
+    // app/opengraph-image.tsx in every social preview (same issue as the
+    // layout's coverImage, removed in the same round). Suppress the
+    // override until the merchant sets a genuine landscape OG asset —
+    // then restore this spread with a ratio guard.
   };
 }
 
