@@ -108,7 +108,15 @@ const CSP = [
   "style-src 'self' 'unsafe-inline' https://cdn.judge.me https://cdnwidget.judge.me",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://cdn.judge.me https://cdnwidget.judge.me",
-  "connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://*.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://api.judge.me https://cache.judge.me https://cdn.judge.me https://*.sentry.io",
+  // Sentry CSP-violation telemetry (issues -2K/-26/-2J/-27/-2C, Jun 2026)
+  // showed four wanted integrations being blocked in real browsers:
+  // monorail-edge.shopifysvc.com (Shopify analytics beacon fired by the
+  // Shop components in our own bundle — blocked for ~5.7k users),
+  // tracking.aws.judge.me + cdnwidget.judge.me (Judge.me review widget
+  // telemetry/prefetch), api.zippopotam.us (the locations-finder ZIP
+  // geocoder — our own feature, silently broken by the block), and
+  // www.google.com (GA4/GTM consent-mode pings).
+  "connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://stats.g.doubleclick.net https://api.judge.me https://cache.judge.me https://cdn.judge.me https://cdnwidget.judge.me https://tracking.aws.judge.me https://monorail-edge.shopifysvc.com https://api.zippopotam.us https://*.sentry.io",
   "frame-src 'self' https://maps.google.com https://www.google.com https://judge.me https://*.judge.me https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
   "media-src 'self' blob: https://cdn.shopify.com",
   "worker-src 'self' blob:",

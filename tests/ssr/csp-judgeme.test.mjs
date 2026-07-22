@@ -72,3 +72,20 @@ test('CSP reports violations to Sentry when a DSN is configured', async (t) => {
   const uri = d.get('report-uri')?.[0] ?? '';
   assert.match(uri, /^https:\/\/.+\/api\/\d+\/security\/\?sentry_key=/, 'report-uri targets the Sentry security endpoint');
 });
+
+test('CSP connect-src carries the Jun-2026 violation-report additions', async () => {
+  const d = await getCspDirectives();
+  // Sentry CSP telemetry (issues -2K/-26/-2J/-27/-2C) showed these
+  // wanted integrations blocked in real browsers — Shopify's analytics
+  // beacon, Judge.me telemetry/prefetch, our own locations-finder ZIP
+  // geocoder, and GA4/GTM consent-mode pings.
+  for (const host of [
+    'https://monorail-edge.shopifysvc.com',
+    'https://tracking.aws.judge.me',
+    'https://cdnwidget.judge.me',
+    'https://api.zippopotam.us',
+    'https://www.google.com',
+  ]) {
+    assert.ok(d.get('connect-src')?.includes(host), `connect-src: ${host}`);
+  }
+});
