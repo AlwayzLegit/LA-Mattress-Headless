@@ -23,6 +23,15 @@ name: SEO — blog article cleanup
 # already-cleaned articles is a no-op.
 
 on:
+  # TEMPORARY (2026-07-22): one-shot push trigger — run the 07-21
+  # broken-ext batch now that the SHOPIFY_ADMIN_TOKEN secret is
+  # refreshed (API dispatch 403s for this integration). Dry-run first,
+  # then --apply, then removed.
+  push:
+    branches:
+      - claude/diamond-mattress-orphaned-pages-rdc6r7
+    paths:
+      - '.github/workflows/seo-article-cleanup.yml'
   workflow_dispatch:
     inputs:
       apply:
@@ -64,9 +73,14 @@ jobs:
       - name: Run cleanup
         run: |
           ARGS=""
-          if [ -n "${{ inputs.handle }}" ]; then ARGS="$ARGS ${{ inputs.handle }}"; fi
-          if [ -n "${{ inputs.batch }}" ]; then ARGS="$ARGS --batch=${{ inputs.batch }}"; fi
-          if [ "${{ inputs.apply }}" = "true" ]; then ARGS="$ARGS --apply"; fi
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # TEMPORARY (2026-07-22): push runs execute the 07-21 batch, dry-run.
+            ARGS=" --batch=semrush-2026-07-21-broken-ext"
+          else
+            if [ -n "${{ inputs.handle }}" ]; then ARGS="$ARGS ${{ inputs.handle }}"; fi
+            if [ -n "${{ inputs.batch }}" ]; then ARGS="$ARGS --batch=${{ inputs.batch }}"; fi
+            if [ "${{ inputs.apply }}" = "true" ]; then ARGS="$ARGS --apply"; fi
+          fi
           echo "::group::Invocation"
           echo "node scripts/seo-article-cleanup.mjs$ARGS"
           echo "::endgroup::"
