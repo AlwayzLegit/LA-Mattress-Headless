@@ -23,10 +23,10 @@ name: SEO — blog article cleanup
 # already-cleaned articles is a no-op.
 
 on:
-  # TEMPORARY (2026-07-21): push trigger to run the 07-21 broken-ext
-  # batch without manual dispatch (API dispatch 403s for this
-  # integration). Dry-run first; flipped to --apply after report review;
-  # removed once applied.
+  # TEMPORARY (2026-07-21, retried 07-22 with the 4 churned articles
+  # added): push trigger to run the 07-21 broken-ext batch without
+  # manual dispatch (API dispatch 403s for this integration). Dry-run
+  # first; flipped to --apply after report review; removed once applied.
   push:
     branches:
       - claude/diamond-mattress-orphaned-pages-rdc6r7

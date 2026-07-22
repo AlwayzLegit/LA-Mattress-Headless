@@ -328,6 +328,13 @@ const BATCHES = {
     'best-flex-king-mattress',
     'best-back-supporter-mattresses-of-2024',
     'best-affordable-non-toxic-mattress-toppers',
+    // 07-22 crawl additions — issue 12 churned (27 → 6, mostly new URLs:
+    // sleepfoundation intermittently blocks the crawler, plus dead
+    // idlershome.com / shiptons.ca posts). Same one-run immunization.
+    'why-does-my-mattress-feel-like-its-moving',
+    'is-it-safe-to-buy-a-used-mattress',
+    'do-memory-foam-mattresses-make-you-sweat',
+    'are-low-beds-better-for-your-back-discover-the-ergonomic-health-benefits',
   ],
 };
 
