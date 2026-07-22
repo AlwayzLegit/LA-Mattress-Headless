@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Icon } from './icon';
 import type { HeroSlide } from './hero-slides';
 import { HeroController } from './hero-controller';
@@ -26,7 +27,18 @@ import { HeroSlideImage } from './hero-slide-image';
  * (this component) for the static layout, with state isolated in
  * hero-controller.tsx.
  */
-export function Hero({ slides, autoplay = true }: { slides: HeroSlide[]; autoplay?: boolean }) {
+export function Hero({
+  slides,
+  autoplay = true,
+  aggregate = null,
+}: {
+  slides: HeroSlide[];
+  autoplay?: boolean;
+  /** Sitewide Judge.me aggregate — renders the "★ 4.5 · 11,424 verified
+   *  reviews" trust line under the CTAs (CRO review 2026-07-22: the
+   *  store's strongest trust asset was buried near the footer). */
+  aggregate?: { rating: number; count: number } | null;
+}) {
   return (
     <section
       className="hero"
@@ -82,6 +94,14 @@ export function Hero({ slides, autoplay = true }: { slides: HeroSlide[]; autopla
                     </a>
                     <a className="btn btn-lg btn-ghost-on-dark" href={s.secondary.href}>{s.secondary.label}</a>
                   </div>
+                  {aggregate ? (
+                    <Link className="hero-rating" href="/pages/reviews">
+                      <Icon name="star" size={14} />
+                      <span className="tnum">{aggregate.rating.toFixed(1)}</span>
+                      {' · '}
+                      <span className="tnum">{aggregate.count.toLocaleString('en-US')}</span> verified reviews
+                    </Link>
+                  ) : null}
                 </div>
               </div>
             </div>

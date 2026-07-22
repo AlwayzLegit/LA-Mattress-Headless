@@ -85,18 +85,27 @@ export function PlpCard({
         <div className="pcard-meta">
           <div className="pcard-brand">{product.vendor}</div>
           <div className="pcard-name">{product.title}</div>
-          {product.reviews ? (
+          {/* CRO review 2026-07-22: a visible "1 review" line hurts more
+              than no line — suppress the badge below 10 reviews on
+              browse grids (the PDP keeps its own fuller treatment). */}
+          {product.reviews && product.reviews.count >= 10 ? (
             <div className="pcard-reviews"><ReviewsBadge reviews={product.reviews} size="inline" /></div>
           ) : null}
           <PcardSpecs specs={product.specs} />
+          {/* CRO review 2026-07-22: "$399 – $749" ranges read as
+              ambiguity — "From $399" communicates the entry price
+              (passing the same Money twice collapses the range
+              formatter to a single price). Single-price products render
+              the bare price with no prefix. */}
           <div className="pcard-price">
             {onSale ? (
               <span className="pcard-was tnum">
-                {formatPriceRange(product.compareAtPriceRange.minVariantPrice, product.compareAtPriceRange.maxVariantPrice)}
+                {formatPriceRange(product.compareAtPriceRange.minVariantPrice, product.compareAtPriceRange.minVariantPrice)}
               </span>
             ) : null}
             <span className="pcard-now tnum">
-              {formatPriceRange(product.priceRange.minVariantPrice, product.priceRange.maxVariantPrice)}
+              {product.priceRange.minVariantPrice.amount !== product.priceRange.maxVariantPrice.amount ? 'From ' : ''}
+              {formatPriceRange(product.priceRange.minVariantPrice, product.priceRange.minVariantPrice)}
             </span>
           </div>
           {monthlyLabel ? (

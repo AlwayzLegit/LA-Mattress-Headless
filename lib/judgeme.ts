@@ -58,16 +58,25 @@ export type JudgemeReview = {
  * their public API uses. Returns the fallback only when every known
  * field is empty.
  */
+// Judge.me stores literal "Unknown Name" / "Unknown" placeholders for
+// imported reviews with no reviewer record — treat them as empty so
+// those reviews render the "Verified customer" fallback instead of the
+// placeholder (CRO review 2026-07-22).
+function realName(s: string | null | undefined): string {
+  const t = (s ?? '').trim();
+  return /^unknown(\s+name)?$/i.test(t) ? '' : t;
+}
+
 export function reviewerName(r: JudgemeReview, fallback = 'Verified customer'): string {
   const rv = r.reviewer ?? {};
-  const direct = (rv.name ?? '').trim();
+  const direct = realName(rv.name);
   if (direct) return direct;
   const joined = [rv.first_name, rv.last_name]
-    .map((s) => (s ?? '').trim())
+    .map((s) => realName(s))
     .filter(Boolean)
     .join(' ');
   if (joined) return joined;
-  const top = (r.reviewer_name ?? '').trim();
+  const top = realName(r.reviewer_name);
   if (top) return top;
   return fallback;
 }
@@ -334,38 +343,14 @@ export async function getShopAggregate(): Promise<ShopReviewsAggregate | null> {
 // available without an upgrade.
 // ───────────────────────────────────────────────────────────────────────
 
-/** Truncate review body for embedding — Google ignores anything past
- *  the first few hundred chars and over-long reviews bloat the JSON-LD
- *  payload. Keeps full reviews visible in the rendered carousels. */
-function truncateReview(body: string, max = 500): string {
-  if (body.length <= max) return body;
-  const slice = body.slice(0, max);
-  const lastSpace = slice.lastIndexOf(' ');
-  return (lastSpace > max * 0.7 ? slice.slice(0, lastSpace) : slice).trim() + '…';
-}
-
-/**
- * Format one Judge.me review as a Schema.org Review node. `itemReviewedId`
- * lets the caller pin the @id of the parent (LocalBusiness on homepage,
- * Organization on /pages/reviews) so each Review correctly attaches to
- * the brand entity instead of orphaning in the graph.
- */
-function reviewLdFrom(r: JudgemeReview, itemReviewedId: string): Record<string, unknown> {
-  return {
-    '@type': 'Review',
-    author: { '@type': 'Person', name: reviewerName(r) },
-    datePublished: r.created_at,
-    reviewBody: truncateReview(r.body || ''),
-    ...(r.title ? { name: r.title } : {}),
-    reviewRating: {
-      '@type': 'Rating',
-      ratingValue: r.rating,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    itemReviewed: { '@id': itemReviewedId },
-  };
-}
+// CRO review 2026-07-22: individual Review nodes (author + reviewBody +
+// per-review stars) are NO LONGER emitted. Judge.me carries genuine
+// customer entries whose star rating and text disagree (5★ with a
+// complaint body — e.g. the CA-recycling-fee "scam" review) and pairing
+// negative text with high-star markup is a known trigger for Google's
+// review-snippet spam filters, risking the AggregateRating snippet
+// itself. The AggregateRating (which is what earns the stars-in-SERP
+// rich result) is kept; the visible review carousels are unaffected.
 
 /**
  * Async — fetches sitewide aggregate + top reviews and returns the
@@ -382,15 +367,14 @@ function reviewLdFrom(r: JudgemeReview, itemReviewedId: string): Record<string, 
  * ~15 there's diminishing return and the JSON-LD payload grows.
  */
 export async function getSitewideReviewsExtension(
-  itemReviewedId: string,
-  { perPage = 12 }: { perPage?: number } = {},
-): Promise<{ aggregateRating: Record<string, unknown>; review: Record<string, unknown>[] } | null> {
+  // Kept for call-site compatibility — the parent @id is no longer
+  // referenced now that individual Review nodes aren't emitted.
+  _itemReviewedId: string,
+  _opts: { perPage?: number } = {},
+): Promise<{ aggregateRating: Record<string, unknown> } | null> {
   if (!ENABLED) return null;
-  const [aggregate, reviews] = await Promise.all([
-    getShopAggregate(),
-    getStorefrontReviews({ perPage, minRating: 4 }),
-  ]);
-  if (!aggregate || reviews.length === 0) return null;
+  const aggregate = await getShopAggregate();
+  if (!aggregate) return null;
   return {
     aggregateRating: {
       '@type': 'AggregateRating',
@@ -399,6 +383,5 @@ export async function getSitewideReviewsExtension(
       bestRating: '5',
       worstRating: '1',
     },
-    review: reviews.map((r) => reviewLdFrom(r, itemReviewedId)),
   };
 }

@@ -59,7 +59,11 @@ export async function generateMetadata(): Promise<Metadata> {
   // slogan already leads with "LA Mattress …".
   const defaultTitle = composeBrandTitle(siteName, shop?.brand?.slogan, FALLBACK_TITLE);
   const description = shop?.brand?.shortDescription ?? shop?.description ?? FALLBACK_DESCRIPTION;
-  const ogImage = shop?.brand?.coverImage?.url;
+  // CRO review 2026-07-22: the Shopify brand coverImage (a square logo)
+  // was emitted as the FIRST og:image, shadowing the designed 1200×630
+  // branded card at app/opengraph-image.tsx in every social/messaging
+  // preview. Stop emitting it — the file-convention card is the
+  // correct-ratio canonical OG image sitewide.
   // Phase 277: Search Console + Bing Webmaster verification meta tags.
   // Gated on env vars so unconfigured deploys don't emit empty
   // <meta name="google-site-verification" content="">, which would
@@ -89,7 +93,6 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName,
       title: defaultTitle,
       description: shop?.brand?.shortDescription ?? FALLBACK_OG_DESCRIPTION,
-      ...(ogImage ? { images: [{ url: ogImage }] } : {}),
     },
     twitter: { card: 'summary_large_image' },
     ...(verification ? { verification } : {}),

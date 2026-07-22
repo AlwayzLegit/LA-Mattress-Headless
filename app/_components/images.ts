@@ -11,16 +11,21 @@ import type { CSSProperties, HTMLAttributes } from 'react';
 // images that DO pass through next/image are unaffected — next/image
 // rewrites the q param on its own via the `quality` prop in
 // `hero-slide-image.tsx` (also lowered to 65 in this phase).
+// CRO review 2026-07-22: all remaining Unsplash stock swapped for real
+// LA Mattress assets already on the Shopify CDN (showroom photos +
+// product cutouts). For a store whose pitch is "come lie on our real
+// beds," stock imagery undercut the message — and this removes the
+// third-party image dependency entirely.
 const FALLBACK_BEDROOM =
-  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1280&q=65&auto=format&fit=crop';
+  'https://cdn.shopify.com/s/files/1/0684/1759/files/Los_Angeles_Mattress_Stores_Inside.png?v=1734095081&width=1280&quality=65&format=webp';
 const FALLBACK_PRODUCT =
-  'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&q=65&auto=format&fit=crop';
+  'https://cdn.shopify.com/s/files/1/0684/1759/files/Diamond_Dreamstage_Value_Firm_Tight_Top_b9dfd81e-5d64-4bc8-afaf-865406f0ff60.png?v=1775395335&width=800&quality=65&format=webp';
 
 export const IMAGES: Record<string, string> = {
   // Hero
   'hero-showroom':     '/brand/showroom-customer.webp',
-  'hero-engineered':   'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1280&q=65&auto=format&fit=crop',
-  'hero-sale':         'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=1280&q=65&auto=format&fit=crop',
+  'hero-engineered':   'https://cdn.shopify.com/s/files/1/0684/1759/files/Los_Angeles_Mattress_Stores_organic_Mattresses.png?v=1734095077&width=1280&quality=65&format=webp',
+  'hero-sale':         'https://cdn.shopify.com/s/files/1/0684/1759/files/la-store.jpg?v=1734095238&width=1280&quality=65&format=webp',
 
   // Product cutouts (LA Mattress Shopify CDN)
   'product-tempur-proadapt':   'https://cdn.shopify.com/s/files/1/0684/1759/files/pro-adapt-soft-cover.jpg?v=1739813427&width=800',
@@ -34,12 +39,12 @@ export const IMAGES: Record<string, string> = {
   'product-eclipse':           'https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Elite_-_Plus_-_05_csqszn.jpg?v=1772572000&width=800',
   'product-harvest-green':     'https://cdn.shopify.com/s/files/1/0684/1759/files/HarvestGreenEssentialGOTSCertified10Mattress.jpg?v=1739811316&width=800',
 
-  // Categories
-  'cat-memory-foam':   'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=65&auto=format&fit=crop',
-  'cat-hybrid':        'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=65&auto=format&fit=crop',
-  'cat-innerspring':   'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=65&auto=format&fit=crop',
-  'cat-latex':         'https://images.unsplash.com/photo-1592229505726-ca121723b8ef?w=800&q=65&auto=format&fit=crop',
-  'cat-cooling':       'https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=800&q=65&auto=format&fit=crop',
+  // Categories — real catalog product photography per category
+  'cat-memory-foam':   'https://cdn.shopify.com/s/files/1/0684/1759/files/10_Pro_Gel_AF.webp?v=1772526094&width=800&quality=65',
+  'cat-hybrid':        'https://cdn.shopify.com/s/files/1/0684/1759/files/bb-signature-carousel-badge-1_5dc9db54-e486-447b-beca-5d7645e48a4a.jpg?v=1784473914&width=800&quality=65&format=webp',
+  'cat-innerspring':   'https://cdn.shopify.com/s/files/1/0684/1759/files/Spring_Air_Value_Collection_Olive_Firm_8_Mattress_974cfaf5-f78d-4d8d-a263-9fcc4e0beb0d.png?v=1775395335&width=800&quality=65&format=webp',
+  'cat-latex':         'https://cdn.shopify.com/s/files/1/0684/1759/files/HarvestGreenEssentialGOTSCertified10Mattress.jpg?v=1739811316&width=800&quality=65&format=webp',
+  'cat-cooling':       'https://cdn.shopify.com/s/files/1/0684/1759/files/bb-aurora-carousel-badge-2026_803fbadb-60b1-4053-9990-fdfba8c0d362.jpg?v=1784473960&width=800&quality=65&format=webp',
   'cat-adjustable':    'https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Elite_-_Plus_-_05_csqszn.jpg?v=1772572000&width=800',
 
   // Showrooms — Phase 237: migrated 4 of 5 URLs from

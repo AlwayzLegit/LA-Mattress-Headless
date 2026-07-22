@@ -20,7 +20,7 @@ import { RecentlyViewedRail } from '../_components/recently-viewed';
 import { faqJsonLd, resolveHomepageFaq } from '@/lib/faq';
 import { buildLocalBusinessLd } from '@/lib/structured-data';
 import { getHomepageSeo } from '@/lib/shopify';
-import { getSitewideReviewsExtension } from '@/lib/judgeme';
+import { getShopAggregate, getSitewideReviewsExtension } from '@/lib/judgeme';
 import { getHeroSlides, getShowrooms, getFaqItems } from '@/lib/shopify';
 import { FALLBACK_SHOWROOMS } from '@/lib/showrooms';
 import { FALLBACK_HERO_SLIDES } from '../_components/hero-slides';
@@ -113,11 +113,14 @@ export default async function Home() {
   // LocalBusiness schema, eligible for the brand review snippet in
   // SERP. Returns null when Judge.me is unconfigured; we fall through
   // to the un-enriched LOCAL_BUSINESS_LD without surfacing an error.
-  const [shopifySlides, reviewsExtension, liveShowrooms, liveFaq] = await Promise.all([
+  const [shopifySlides, reviewsExtension, liveShowrooms, liveFaq, heroAggregate] = await Promise.all([
     getHeroSlides(),
     getSitewideReviewsExtension(LOCAL_BUSINESS_ID),
     getShowrooms(),
     getFaqItems(),
+    // Hero trust line under the CTAs (CRO review 2026-07-22) — same
+    // cached Judge.me aggregate the layout already fetches.
+    getShopAggregate(),
   ]);
   // Live FAQ for the homepage JSON-LD — same subset rendered by
   // <FAQ />, so the structured data and the visible accordion stay in
@@ -147,7 +150,7 @@ export default async function Home() {
           Keep this string in sync with the canonical <title> + meta
           description in generateMetadata() above. */}
       <h1 className="sr-only">Mattress Store Los Angeles &mdash; Shop Mattresses, Mattress Sales &amp; Same-Day Delivery</h1>
-      <Hero slides={slides} />
+      <Hero slides={slides} aggregate={heroAggregate} />
       {/* Quiz lead-in sits directly under the hero so the first
           interactive surface on the homepage is the "find your match"
           path. Pre-fills /sleep-quiz?position=<id> on tap, dropping

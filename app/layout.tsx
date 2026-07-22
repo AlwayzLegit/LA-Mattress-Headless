@@ -57,7 +57,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://cdn.shopify.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://cdn.shopify.com" />
-        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
       </head>
       <body>{children}</body>
     </html>
