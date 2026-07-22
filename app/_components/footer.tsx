@@ -128,13 +128,13 @@ export async function Footer() {
             className="footer-sig-logo"
             width={400}
             height={224}
-            // .footer-sig-logo renders at height:72px desktop / 56px
-            // mobile, width:auto → ~129px wide desktop / ~100px mobile
-            // at 400:224 aspect. Without `sizes` Next/Image picks the
-            // largest srcset variant; with sizes set, the browser picks
-            // the ~256px variant for 2x DPI screens — substantially
-            // smaller than the no-hint default.
-            sizes="(max-width: 880px) 100px, 129px"
+            // CRO review 2026-07-22: the custom image loader returns
+            // local /assets paths unchanged for every requested width,
+            // so next/image was emitting a srcset of N identical URLs
+            // with fake width descriptors. `unoptimized` drops the
+            // srcset entirely and serves the single 400px source —
+            // already ≥2x the ~129px display size, so no quality loss.
+            unoptimized
           />
           <div className="footer-sig-tagline">
             <div className="footer-sig-tag-line">Family-owned in Los Angeles since 2012</div>

@@ -2,7 +2,7 @@
   "$schema": "Shopify redirects inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
   "$pulledAt": "2026-07-03T19:38:47.669Z",
-  "$count": 2029,
+  "$count": 2031,
   "redirects": [
     {
       "id": "gid://shopify/UrlRedirect/31411395",
@@ -12176,6 +12176,18 @@
       "id": "gid://shopify/UrlRedirect/489894805757",
       "source": "/blogs/extra-info/what-is-polyurethane-foam",
       "destination": "/blogs/mattress-buying-guide/what-is-polyurethane-foam",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/491254644989",
+      "source": "/products/diamond-dreamstage-2-0-collection-clarity-plush-hybrid-cool-copper-gel-memory-foam-14-mattress-copy",
+      "destination": "/products/diamond-dreamstage-2-0-collection-clarity-plush-hybrid-cool-copper-gel-memory-foam-14-mattress",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/491254677757",
+      "source": "/products/diamond-dreamstage-2-0-collection-clarity-medium-hybrid-cool-copper-gel-memory-foam-12-mattress-copy",
+      "destination": "/products/diamond-dreamstage-2-0-collection-clarity-medium-hybrid-cool-copper-gel-memory-foam-14-mattress",
       "permanent": true
     }
   ]

@@ -1420,7 +1420,10 @@ body.plp-filters-open .chat-bubble { opacity: 0; pointer-events: none; }
 }
 .trust-strip-inner {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* auto-fit instead of a hardcoded 4: the trust items are merchant-
+     editable metaobjects, and the price-match item (CRO review
+     2026-07-22) makes 5. Columns stay even for any count. */
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   align-items: center;
   /* Center each item within its grid cell so the four pills are evenly
      distributed instead of left-clustering with trailing whitespace. */
@@ -1964,6 +1967,16 @@ body.plp-filters-open .chat-bubble { opacity: 0; pointer-events: none; }
 .hero-line { display: block; }
 .hero-body { font-size: 18px; line-height: 1.5; color: rgba(255,255,255,0.78); margin: 0 0 36px; max-width: 520px; }
 .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+/* CRO review 2026-07-22: sitewide rating surfaced under the hero CTAs —
+   the strongest trust asset was previously buried near the footer. */
+.hero-rating {
+  position: relative; z-index: 2;
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 14px; font-size: 14px;
+  color: rgba(255, 255, 255, 0.85); text-decoration: none;
+}
+.hero-rating:hover { color: #fff; text-decoration: underline; }
+.hero-rating svg { color: #f5b942; }
 
 .hero-controls { position: absolute; left: 0; right: 0; bottom: 32px; display: flex; align-items: center; justify-content: space-between; pointer-events: none; }
 .hero-progress { display: flex; gap: 12px; pointer-events: auto; }
