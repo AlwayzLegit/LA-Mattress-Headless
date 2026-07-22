@@ -74,8 +74,9 @@ jobs:
         run: |
           ARGS=""
           if [ "${{ github.event_name }}" = "push" ]; then
-            # TEMPORARY (2026-07-22): push runs execute the 07-21 batch, dry-run.
-            ARGS=" --batch=semrush-2026-07-21-broken-ext"
+            # TEMPORARY (2026-07-22): push runs execute the 07-21 batch, APPLY
+            # (dry-run 29935099253 reviewed: 26/26 fetched, plans sane).
+            ARGS=" --batch=semrush-2026-07-21-broken-ext --apply"
           else
             if [ -n "${{ inputs.handle }}" ]; then ARGS="$ARGS ${{ inputs.handle }}"; fi
             if [ -n "${{ inputs.batch }}" ]; then ARGS="$ARGS --batch=${{ inputs.batch }}"; fi
