@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { getProductByHandle, getProductRecommendations } from '@/lib/shopify';
 import type { Product, ProductSummary } from '@/lib/shopify';
 import { products as inventoryProducts, findProduct } from '@/lib/inventory';
-import { capTitle, ensureTitleDistinctFromH1, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
+import { capTitle, ensureTitleDistinctFromH1, pdpTitleBase, truncDescription, firstNonEmpty, stripBrandSuffix } from '@/lib/seo';
 import { sanitizeShopifyHtml } from '@/lib/sanitize';
 import { autoLinkArticleBody } from '@/lib/article-autolink';
 import { pickPrimaryCollection } from '@/lib/product-jsonld';
@@ -107,7 +107,10 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     // it truncated INTO the suffix ("· LA Mattres…"), after it capTitle
     // dropped the whole suffix and the title collapsed back into the H1
     // (Semrush issue 105, +46 pages on the 2026-07-04 crawl).
-    title = ensureTitleDistinctFromH1(`${product.title} | LA Mattress Store`, product.title);
+    // pdpTitleBase drops the leading vendor from over-long names so the
+    // trailing firmness word survives capping (else Firm/Medium/Soft
+    // siblings collapse to one duplicate <title>).
+    title = ensureTitleDistinctFromH1(`${pdpTitleBase(product.title, product.vendor)} | LA Mattress Store`, product.title);
   }
   const description = truncDescription(
     firstNonEmpty(

@@ -128,6 +128,23 @@ export function ensureTitleDistinctFromH1(title: string, h1: string): string {
   return `${capTitle(stripBrandSuffix(title), TITLE_MAX - TITLE_BRAND_SUFFIX.length)}${TITLE_BRAND_SUFFIX}`;
 }
 
+// Base string for the PDP fallback <title> ("<base> | LA Mattress
+// Store"). Long product names overflow TITLE_MAX once the suffix is
+// reserved, and tail-truncation then cuts the trailing firmness word —
+// the only token distinguishing Firm/Medium/Soft sibling products, so
+// all three collapse to one <title> (Semrush issue 6, duplicate title
+// tags: the three 65-char "Brooklyn Bedding Signature Hybrid Cloud
+// Pillow Top …" PDPs on the 2026-07-21 crawl). When the suffixed title
+// wouldn't survive capping intact and the name leads with the vendor,
+// drop the vendor instead — the tail is the unique, keyword-bearing
+// part, and the suffix keeps the title brand-bearing.
+export function pdpTitleBase(title: string, vendor: string | null | undefined): string {
+  const suffixed = `${title}${TITLE_BRAND_SUFFIX}`;
+  if (capTitle(suffixed) === suffixed) return title;
+  if (vendor && title.startsWith(`${vendor} `)) return title.slice(vendor.length + 1);
+  return title;
+}
+
 // Words that must keep their original case after sentenceCase normalization.
 // Anything else is lowercased except the first character of the string.
 // Order matters when one entry is a substring of another.

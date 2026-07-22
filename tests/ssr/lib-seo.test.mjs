@@ -11,7 +11,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const { capTitle, composeBrandTitle, ensureTitleDistinctFromH1, firstNonEmpty, stripBrandSuffix, truncDescription } =
+const { capTitle, composeBrandTitle, ensureTitleDistinctFromH1, firstNonEmpty, pdpTitleBase, stripBrandSuffix, truncDescription } =
   await import('../../lib/seo.ts');
 
 const SUFFIXES = [' | LA Mattress', ' — LA Mattress Store', ' - LA Mattress', ' · LA Mattress Store', ' – LA Mattress'];
@@ -85,4 +85,36 @@ test('truncDescription caps at 160 with ellipsis', () => {
   assert.equal(out.length, 160);
   assert.ok(out.endsWith('...'));
   assert.equal(truncDescription('short'), 'short');
+});
+
+test('pdpTitleBase: short names pass through, over-long names drop the leading vendor', () => {
+  // Short name: suffixed title fits — untouched.
+  assert.equal(pdpTitleBase('Birch Natural Mattress', 'Birch'), 'Birch Natural Mattress');
+  // Over-long name led by the vendor: vendor is dropped.
+  assert.equal(
+    pdpTitleBase('Brooklyn Bedding Signature Hybrid Cloud Pillow Top Firm Mattress', 'Brooklyn Bedding'),
+    'Signature Hybrid Cloud Pillow Top Firm Mattress',
+  );
+  // Over-long name NOT led by the vendor: left alone (capping handles it).
+  const long = 'Some Extremely Long Product Name That Overflows The Title Cap Easily';
+  assert.equal(pdpTitleBase(long, 'Brooklyn Bedding'), long);
+});
+
+test('pdpTitleBase composition: Firm/Medium/Soft siblings keep distinct titles (Semrush issue 6, 2026-07-21)', () => {
+  // The three Signature Hybrid Cloud Pillow Top PDPs rendered one
+  // identical <title> because the collapse branch truncated away the
+  // firmness word. Lock the fixed composition end-to-end.
+  const titles = ['Firm', 'Medium', 'Soft'].map((f) => {
+    const productTitle = `Brooklyn Bedding Signature Hybrid Cloud Pillow Top ${f} Mattress`;
+    return ensureTitleDistinctFromH1(
+      `${pdpTitleBase(productTitle, 'Brooklyn Bedding')} | LA Mattress Store`,
+      productTitle,
+    );
+  });
+  assert.equal(new Set(titles).size, 3, `titles must be unique, got: ${titles.join(' // ')}`);
+  for (const [i, f] of ['Firm', 'Medium', 'Soft'].entries()) {
+    assert.ok(titles[i].includes(f), `"${titles[i]}" must keep its firmness word ${f}`);
+    assert.ok(titles[i].length <= 70, `"${titles[i]}" must fit the 70-char cap`);
+    assert.ok(titles[i].endsWith('| LA Mattress Store'), 'brand suffix must survive');
+  }
 });
