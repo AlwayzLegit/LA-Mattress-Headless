@@ -1,0 +1,61 @@
+name: SEO — em-dash apply (trigger-file)
+
+# 2026-07-23. Push-triggered runner for scripts/seo-emdash-cleanup.mjs.
+# workflow_dispatch can't be fired programmatically from this session
+# (the GitHub app integration lacks actions:write), so this workflow
+# runs on push of a trigger file instead — letting the assistant drive
+# the em-dash cleanup end to end by committing a one-line JSON control
+# file, with the store token living only in Actions secrets.
+#
+# Control file: data/emdash-run/run.json
+#   { "resource": "articles" | "products" | "collections" | "pages",
+#     "mode": "dryrun" | "apply",
+#     "limit": <optional number>,
+#     "note": "free-text, ignored by the script — bump it to force a
+#              fresh push when re-running the same resource/mode" }
+#
+# The script is dry-run by default and only writes when mode=apply. It
+# is gated hard (visible-text skeleton must be byte-identical, SHA-verify
+# + auto-rollback on real corruption) and idempotent, so an accidental
+# re-run on already-clean content is a no-op. Totals + per-item status
+# print to the job log (readable without downloading the artifact).
+
+on:
+  push:
+    paths:
+      - 'data/emdash-run/run.json'
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run em-dash cleanup from control file
+        run: |
+          CTRL=data/emdash-run/run.json
+          RES=$(node -p "require('./$CTRL').resource")
+          MODE=$(node -p "require('./$CTRL').mode || 'dryrun'")
+          LIMIT=$(node -p "require('./$CTRL').limit || ''")
+          ARGS="--resource=$RES"
+          if [ -n "$LIMIT" ]; then ARGS="$ARGS --limit=$LIMIT"; fi
+          if [ "$MODE" = "apply" ]; then ARGS="$ARGS --apply"; fi
+          echo "::notice::node scripts/seo-emdash-cleanup.mjs $ARGS"
+          node scripts/seo-emdash-cleanup.mjs $ARGS
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emdash-run-${{ github.run_id }}
+          path: data/seo-backfills/emdash-cleanup-*.json
+          if-no-files-found: warn
+          retention-days: 90
