@@ -12,12 +12,12 @@ export default function CollectionNotFound() {
   return (
     <main className="container" style={{ paddingTop: 'var(--s-10)', paddingBottom: 'var(--s-10)' }}>
       <div style={{ maxWidth: 720 }}>
-        <div className="eyebrow">404 — Collection</div>
+        <div className="eyebrow">404, Collection</div>
         <h1 className="h-display" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>
           Lost in<br />the night.
         </h1>
         <p className="muted" style={{ fontSize: 18, lineHeight: 1.5, maxWidth: '50ch', marginBottom: 'var(--s-6)' }}>
-          That collection doesn&rsquo;t exist anymore — it may have been merged or renamed.
+          That collection doesn&rsquo;t exist anymore, it may have been merged or renamed.
           Try one of these instead:
         </p>
         <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>

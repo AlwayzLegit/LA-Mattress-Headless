@@ -100,7 +100,7 @@ export function ServicePage({
           {/*
             Right-rail TOC injected client-side from the rendered h2s.
             Scrollspy + sticky position. Hidden on tablet/mobile via
-            CSS — collapses below the body where a TOC adds no value.
+            CSS, collapses below the body where a TOC adds no value.
           */}
           <ServicePageToc bodyContainerId={BODY_ID} />
           <div

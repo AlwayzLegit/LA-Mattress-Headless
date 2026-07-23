@@ -22,7 +22,7 @@ const STEPS: Array<{ n: number; icon: IconName; title: string; body: string }> =
     n: 1,
     icon: 'cart',
     title: 'Pick your mattress',
-    body: 'Shop online or with a consultant at any of our 5 LA showrooms — no pre-approval needed to browse.',
+    body: 'Shop online or with a consultant at any of our 5 LA showrooms, no pre-approval needed to browse.',
   },
   {
     n: 2,
@@ -34,7 +34,7 @@ const STEPS: Array<{ n: number; icon: IconName; title: string; body: string }> =
     n: 3,
     icon: 'check',
     title: 'Get a decision instantly',
-    body: 'Most applicants are approved on the spot — you’ll see your plan and spending limit before you commit.',
+    body: 'Most applicants are approved on the spot, you’ll see your plan and spending limit before you commit.',
   },
   {
     n: 4,
@@ -66,7 +66,7 @@ const PROVIDERS: Array<{
     name: 'Acima',
     tag: 'No credit needed',
     kind: 'Lease-to-own',
-    who: 'Best if you’re building or rebuilding credit — approval is based on income, not just your score.',
+    who: 'Best if you’re building or rebuilding credit, approval is based on income, not just your score.',
     points: [
       'No established credit history required',
       'Early-purchase options to save on the lease',
@@ -81,7 +81,7 @@ export function FinancingExtras() {
       <section className="fin-steps-sec" aria-labelledby="fin-steps-h">
         <h2 id="fin-steps-h" className="h2 mt-section-h">How financing works</h2>
         <p className="muted mt-section-lede">
-          Four steps from browsing to sleeping — most shoppers finish the application in under two minutes.
+          Four steps from browsing to sleeping, most shoppers finish the application in under two minutes.
         </p>
         <ol className="fin-steps">
           {STEPS.map((s) => (
@@ -100,7 +100,7 @@ export function FinancingExtras() {
       <section className="fin-prov-sec" aria-labelledby="fin-prov-h">
         <h2 id="fin-prov-h" className="h2 mt-section-h">Two ways to pay over time</h2>
         <p className="muted mt-section-lede">
-          Pick the plan that fits your credit — you can apply for either at checkout or in any showroom.
+          Pick the plan that fits your credit, you can apply for either at checkout or in any showroom.
         </p>
         <div className="fin-prov-grid">
           {PROVIDERS.map((p) => (

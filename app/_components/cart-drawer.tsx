@@ -190,7 +190,7 @@ export function CartDrawer() {
 
             {/* Cross-sell nudge: "Protect your investment". Renders
                 only when the cart has a mattress and no
-                protector/cover/sheet — direct conversion + warranty
+                protector/cover/sheet, direct conversion + warranty
                 preservation hint (stains void the 120-night
                 exchange). Single line, link to the protector
                 collection; not a card strip so it doesn't compete
@@ -203,7 +203,7 @@ export function CartDrawer() {
               >
                 <Icon name="shield" size={16} />
                 <span>
-                  <strong>Protect your investment.</strong> A mattress protector keeps your 120-night exchange intact — stains void it.
+                  <strong>Protect your investment.</strong> A mattress protector keeps your 120-night exchange intact, stains void it.
                 </span>
                 <Icon name="arrow-right" size={14} />
               </Link>
@@ -223,7 +223,7 @@ export function CartDrawer() {
               <div className="cart-summary-row">
                 <span className="muted">Subtotal</span>
                 <span className="tnum cart-subtotal">
-                  {cart ? formatMoney(cart.cost.subtotalAmount) : '—'}
+                  {cart ? formatMoney(cart.cost.subtotalAmount) : ', '}
                 </span>
               </div>
               <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>

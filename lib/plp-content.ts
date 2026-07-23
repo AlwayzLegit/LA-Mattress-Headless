@@ -34,26 +34,26 @@ import type { FaqItem } from './faq';
 const UNIVERSAL_FAQ: FaqItem[] = [
   {
     q: 'How does delivery work?',
-    a: 'Free white-glove delivery on orders over $499 anywhere in Los Angeles. Same-day if you order before 4 PM, otherwise next-day. We set up the new mattress, haul away your old one, and recycle it — not landfill.',
+    a: 'Free white-glove delivery on orders over $499 anywhere in Los Angeles. Same-day if you order before 4 PM, otherwise next-day. We set up the new mattress, haul away your old one, and recycle it, not landfill.',
   },
   {
     q: 'What if the mattress isn’t right for me?',
-    a: 'We back every purchase with a 120-night Love Your Bed Guarantee. Sleep on it for at least 30 nights to let your body adjust, then if it’s not the right fit, exchange it for any other mattress — we credit the full original price.',
+    a: 'We back every purchase with a 120-night Love Your Bed Guarantee. Sleep on it for at least 30 nights to let your body adjust, then if it’s not the right fit, exchange it for any other mattress, we credit the full original price.',
   },
   {
     q: 'Is financing really 0% APR?',
-    a: 'Yes. We offer 0% APR financing through Synchrony and Acima on approved credit. Terms vary by purchase amount and partner — apply in 60 seconds at checkout or in any showroom.',
+    a: 'Yes. We offer 0% APR financing through Synchrony and Acima on approved credit. Terms vary by purchase amount and partner, apply in 60 seconds at checkout or in any showroom.',
   },
 ];
 
 const MEMORY_FOAM_FAQ: FaqItem[] = [
   {
     q: 'Will a memory foam mattress sleep hot?',
-    a: 'Older memory foam did. Modern memory foam mattresses use gel infusion, copper, open-cell construction, or phase-change covers to dissipate heat — most current models sleep cooler than traditional foam. If you sleep hot, look specifically for "cooling" or "gel-infused" in the description, or consider a hybrid (foam over coils) which breathes more.',
+    a: 'Older memory foam did. Modern memory foam mattresses use gel infusion, copper, open-cell construction, or phase-change covers to dissipate heat, most current models sleep cooler than traditional foam. If you sleep hot, look specifically for "cooling" or "gel-infused" in the description, or consider a hybrid (foam over coils) which breathes more.',
   },
   {
     q: 'Is memory foam good for side sleepers?',
-    a: 'Yes — memory foam is typically the best material for side sleepers because it contours around the shoulder and hip, distributing pressure instead of concentrating it where the body curves. Look for a medium to medium-soft firmness; firm foam reduces the pressure-relief benefit that makes the material work for side sleeping.',
+    a: 'Yes, memory foam is typically the best material for side sleepers because it contours around the shoulder and hip, distributing pressure instead of concentrating it where the body curves. Look for a medium to medium-soft firmness; firm foam reduces the pressure-relief benefit that makes the material work for side sleeping.',
   },
   {
     q: 'How long does a memory foam mattress last?',
@@ -64,11 +64,11 @@ const MEMORY_FOAM_FAQ: FaqItem[] = [
 const HYBRID_FAQ: FaqItem[] = [
   {
     q: 'What is a hybrid mattress?',
-    a: 'A hybrid combines a pocketed-coil support unit with foam or latex comfort layers on top. You get the contour and pressure relief of foam plus the airflow, edge support, and bounce of innersprings. Most shoppers do well on a hybrid — it’s the most universally comfortable material we carry.',
+    a: 'A hybrid combines a pocketed-coil support unit with foam or latex comfort layers on top. You get the contour and pressure relief of foam plus the airflow, edge support, and bounce of innersprings. Most shoppers do well on a hybrid, it’s the most universally comfortable material we carry.',
   },
   {
     q: 'Are hybrid mattresses good for hot sleepers?',
-    a: 'Yes — the coil layer creates an airflow channel under the comfort foam, which lets heat escape much better than an all-foam mattress. Hot sleepers usually prefer hybrid or latex over pure memory foam for this reason.',
+    a: 'Yes, the coil layer creates an airflow channel under the comfort foam, which lets heat escape much better than an all-foam mattress. Hot sleepers usually prefer hybrid or latex over pure memory foam for this reason.',
   },
   {
     q: 'How is a hybrid different from a traditional innerspring?',
@@ -79,11 +79,11 @@ const HYBRID_FAQ: FaqItem[] = [
 const LATEX_FAQ: FaqItem[] = [
   {
     q: 'Is latex naturally cooling?',
-    a: 'Yes — natural latex is one of the most breathable mattress materials available. Its open-cell structure allows airflow, and many latex mattresses use moisture-wicking covers (TENCEL, organic cotton, copper-infused fabric) to enhance cooling further. Latex is our top recommendation for hot sleepers.',
+    a: 'Yes, natural latex is one of the most breathable mattress materials available. Its open-cell structure allows airflow, and many latex mattresses use moisture-wicking covers (TENCEL, organic cotton, copper-infused fabric) to enhance cooling further. Latex is our top recommendation for hot sleepers.',
   },
   {
     q: 'How long does a latex mattress last?',
-    a: '15–20 years with proper rotation — the longest-lasting mattress material we carry. Natural latex is highly durable and resists body impressions much better than memory foam or innerspring. The longer lifespan often makes latex the most cost-effective mattress over time despite the higher upfront price.',
+    a: '15–20 years with proper rotation, the longest-lasting mattress material we carry. Natural latex is highly durable and resists body impressions much better than memory foam or innerspring. The longer lifespan often makes latex the most cost-effective mattress over time despite the higher upfront price.',
   },
   {
     q: 'Is natural latex safe? Any chemical concerns?',
@@ -94,22 +94,22 @@ const LATEX_FAQ: FaqItem[] = [
 const INNERSPRING_FAQ: FaqItem[] = [
   {
     q: 'Are innerspring mattresses outdated?',
-    a: 'Modern innersprings use individually-wrapped pocketed coils, foam-encased edges, and substantial comfort layers — very different from the loud, transfer-prone innersprings of decades past. They remain a strong choice for shoppers who want classic bounce, excellent airflow, and a firmer feel. Brands like Stearns & Foster, Chattam & Wells, and Englander are still primarily innerspring.',
+    a: 'Modern innersprings use individually-wrapped pocketed coils, foam-encased edges, and substantial comfort layers, very different from the loud, transfer-prone innersprings of decades past. They remain a strong choice for shoppers who want classic bounce, excellent airflow, and a firmer feel. Brands like Stearns & Foster, Chattam & Wells, and Englander are still primarily innerspring.',
   },
   {
     q: 'Do innerspring mattresses sleep hot?',
-    a: 'Innerspring is actually one of the coolest mattress types — the open coil core allows continuous air circulation. Hot sleepers often do better on an innerspring or hybrid than on an all-foam mattress.',
+    a: 'Innerspring is actually one of the coolest mattress types, the open coil core allows continuous air circulation. Hot sleepers often do better on an innerspring or hybrid than on an all-foam mattress.',
   },
   {
     q: 'What’s the difference between pocketed coils and continuous coils?',
-    a: 'Pocketed coils are individually wrapped in fabric and move independently — better motion isolation, more conforming. Continuous (or Bonnell) coils are connected by wire and move as a unit — historically cheaper, more bouncy, less individual support. Almost every quality innerspring we carry today uses pocketed coils.',
+    a: 'Pocketed coils are individually wrapped in fabric and move independently, better motion isolation, more conforming. Continuous (or Bonnell) coils are connected by wire and move as a unit, historically cheaper, more bouncy, less individual support. Almost every quality innerspring we carry today uses pocketed coils.',
   },
 ];
 
 const TEMPUR_FAQ: FaqItem[] = [
   {
     q: 'Is Tempur-Pedic worth the price?',
-    a: 'For shoppers who specifically want the original TEMPUR memory foam feel and a long-term mattress (10+ years), yes. The viscoelastic foam Tempur-Pedic invented contours like nothing else — it’s the gold standard side-by-side. The premium is for the material formulation and the 10-year warranty, not just the brand name.',
+    a: 'For shoppers who specifically want the original TEMPUR memory foam feel and a long-term mattress (10+ years), yes. The viscoelastic foam Tempur-Pedic invented contours like nothing else, it’s the gold standard side-by-side. The premium is for the material formulation and the 10-year warranty, not just the brand name.',
   },
   {
     q: 'Does Tempur-Pedic sleep hot?',
@@ -117,7 +117,7 @@ const TEMPUR_FAQ: FaqItem[] = [
   },
   {
     q: 'How long does a Tempur-Pedic last?',
-    a: 'Tempur-Pedic mattresses are warrantied 10 years and typically last 12–15 years with proper care. Their density (the TEMPUR material is denser than typical memory foam) is what drives the longevity — and what justifies the premium.',
+    a: 'Tempur-Pedic mattresses are warrantied 10 years and typically last 12–15 years with proper care. Their density (the TEMPUR material is denser than typical memory foam) is what drives the longevity, and what justifies the premium.',
   },
 ];
 
@@ -132,7 +132,7 @@ const STEARNS_FAQ: FaqItem[] = [
   },
   {
     q: 'What’s the difference between Lux Estate and Reserve collections?',
-    a: 'Lux Estate is the mid-luxury tier with hand-tufting and IntelliCoil HD support. Reserve is the top-tier collection — hand-tufted by master craftsmen, cashmere-blend covers, and the deepest pillow-top builds (up to 17 inches). Both come in firm, plush, and Euro-top variants across multiple sizes.',
+    a: 'Lux Estate is the mid-luxury tier with hand-tufting and IntelliCoil HD support. Reserve is the top-tier collection, hand-tufted by master craftsmen, cashmere-blend covers, and the deepest pillow-top builds (up to 17 inches). Both come in firm, plush, and Euro-top variants across multiple sizes.',
   },
 ];
 
@@ -147,14 +147,14 @@ const HELIX_FAQ: FaqItem[] = [
   },
   {
     q: 'Is Helix Sleep good for side sleepers?',
-    a: 'Yes — the Midnight (medium) and Midnight Luxe (medium with deeper comfort layer) are particularly good for side sleepers. They contour at the shoulders and hips while the pocketed coils keep the spine aligned. Try both at any of our 5 LA showrooms to compare.',
+    a: 'Yes, the Midnight (medium) and Midnight Luxe (medium with deeper comfort layer) are particularly good for side sleepers. They contour at the shoulders and hips while the pocketed coils keep the spine aligned. Try both at any of our 5 LA showrooms to compare.',
   },
 ];
 
 const SOUTHERLAND_FAQ: FaqItem[] = [
   {
     q: 'What is the Scandinavian Collection by Southerland?',
-    a: 'Southerland’s Scandinavian Collection is a CertiPUR-US-certified natural latex line built in Minnesota. Natural latex over pocketed coils, with TENCEL and copper-gel covers. Models include the firm Stockholm, the medium Anniversary, and the plush Sandmahn — covering 13–16 inch heights and firm to plush comfort levels.',
+    a: 'Southerland’s Scandinavian Collection is a CertiPUR-US-certified natural latex line built in Minnesota. Natural latex over pocketed coils, with TENCEL and copper-gel covers. Models include the firm Stockholm, the medium Anniversary, and the plush Sandmahn, covering 13–16 inch heights and firm to plush comfort levels.',
   },
   {
     q: 'How long does a Southerland mattress last?',
@@ -173,41 +173,41 @@ const ENGLANDER_FAQ: FaqItem[] = [
   },
   {
     q: 'Is Englander made in the USA?',
-    a: 'Yes — every Englander mattress is manufactured in the United States by a family-owned company that has been building mattresses since 1894.',
+    a: 'Yes, every Englander mattress is manufactured in the United States by a family-owned company that has been building mattresses since 1894.',
   },
   {
     q: 'Are Englander mattresses good for back sleepers?',
-    a: 'Yes — the O’Conner and Allendale firm and luxury-firm Euro-top configurations provide the steady lumbar support back sleepers need, with enough cushioning at the surface to relieve pressure on the shoulders and hips.',
+    a: 'Yes, the O’Conner and Allendale firm and luxury-firm Euro-top configurations provide the steady lumbar support back sleepers need, with enough cushioning at the surface to relieve pressure on the shoulders and hips.',
   },
 ];
 
 const SALE_FAQ: FaqItem[] = [
   {
     q: 'Are the mattresses on the sale page brand new?',
-    a: 'Yes. Floor models and clearance mattresses are brand new — they may have been displayed at one of our 5 LA showrooms where shoppers tried them for a few minutes at a time, but they were never slept on. Every clearance mattress ships with the same 120-night Love Your Bed Guarantee as full-price models.',
+    a: 'Yes. Floor models and clearance mattresses are brand new, they may have been displayed at one of our 5 LA showrooms where shoppers tried them for a few minutes at a time, but they were never slept on. Every clearance mattress ships with the same 120-night Love Your Bed Guarantee as full-price models.',
   },
   {
     q: 'Why are these mattresses discounted?',
-    a: 'Mostly because they’re last season’s models or because we’re rotating in newer styles. Brands periodically refresh their lineups and we discount the previous-generation models to clear floor space. The mattresses themselves haven’t changed in quality — just the year on the spec sheet.',
+    a: 'Mostly because they’re last season’s models or because we’re rotating in newer styles. Brands periodically refresh their lineups and we discount the previous-generation models to clear floor space. The mattresses themselves haven’t changed in quality, just the year on the spec sheet.',
   },
   {
     q: 'Can I see clearance mattresses in person before buying?',
-    a: 'Yes — clearance mattresses are typically on the floor at the same showrooms where they were originally displayed. Call the showroom nearest you to confirm availability before driving over: Koreatown (213) 984-4654, West LA (310) 507-8024, La Brea (323) 275-4715, Studio City (818) 247-7790, Glendale (818) 275-6592.',
+    a: 'Yes, clearance mattresses are typically on the floor at the same showrooms where they were originally displayed. Call the showroom nearest you to confirm availability before driving over: Koreatown (213) 984-4654, West LA (310) 507-8024, La Brea (323) 275-4715, Studio City (818) 247-7790, Glendale (818) 275-6592.',
   },
 ];
 
 const BED_FRAME_FAQ: FaqItem[] = [
   {
     q: 'Do I need a box spring with these bed frames?',
-    a: 'It depends on the frame. Platform frames have built-in slat or panel support, so no box spring is needed — the mattress sits directly on the frame. Traditional metal frames and some bed frames do need a foundation or box spring underneath. Each product page notes what it requires; if you are unsure, tell us your mattress and we will confirm before delivery.',
+    a: 'It depends on the frame. Platform frames have built-in slat or panel support, so no box spring is needed, the mattress sits directly on the frame. Traditional metal frames and some bed frames do need a foundation or box spring underneath. Each product page notes what it requires; if you are unsure, tell us your mattress and we will confirm before delivery.',
   },
   {
     q: 'How far apart should the slats be for my mattress?',
-    a: 'For foam and hybrid mattresses, keep slat gaps to 3 inches or less; for innerspring, 4 inches or less. Wider gaps let the mattress sag between slats and can void the mattress warranty. If a frame has wide slats, a bunkie board adds a flat supportive layer on top — we stock those too.',
+    a: 'For foam and hybrid mattresses, keep slat gaps to 3 inches or less; for innerspring, 4 inches or less. Wider gaps let the mattress sag between slats and can void the mattress warranty. If a frame has wide slats, a bunkie board adds a flat supportive layer on top, we stock those too.',
   },
   {
     q: 'Will this frame fit my mattress size?',
-    a: 'Our frames come in Twin through California King. Match the frame size to your mattress size — a Queen frame fits a Queen mattress. Adjustable-base-compatible frames are noted on the product page. See our mattress sizes guide at /pages/mattress-sizes for exact dimensions.',
+    a: 'Our frames come in Twin through California King. Match the frame size to your mattress size, a Queen frame fits a Queen mattress. Adjustable-base-compatible frames are noted on the product page. See our mattress sizes guide at /pages/mattress-sizes for exact dimensions.',
   },
   {
     q: 'Do you deliver and assemble the bed frame?',
@@ -218,11 +218,11 @@ const BED_FRAME_FAQ: FaqItem[] = [
 const ADJUSTABLE_FAQ: FaqItem[] = [
   {
     q: 'Will an adjustable base work with my current mattress?',
-    a: 'Most modern foam, hybrid, and latex mattresses flex with an adjustable base — that covers nearly everything we sell. Traditional innerspring mattresses with a rigid border are the exception and may not bend safely. If you tell us your mattress model when you order, we will confirm compatibility before delivery; you can also check our mattress types page for which constructions are adjustable-friendly.',
+    a: 'Most modern foam, hybrid, and latex mattresses flex with an adjustable base, that covers nearly everything we sell. Traditional innerspring mattresses with a rigid border are the exception and may not bend safely. If you tell us your mattress model when you order, we will confirm compatibility before delivery; you can also check our mattress types page for which constructions are adjustable-friendly.',
   },
   {
     q: 'What does an adjustable base actually do?',
-    a: 'At minimum, independent head and foot elevation — useful for reading, TV, working in bed, easing acid reflux, reducing snoring, and taking pressure off the lower back (the zero-gravity preset is the most-requested setting). Premium bases on this page add wireless remotes, programmable presets, under-bed lighting, USB charging, and massage.',
+    a: 'At minimum, independent head and foot elevation, useful for reading, TV, working in bed, easing acid reflux, reducing snoring, and taking pressure off the lower back (the zero-gravity preset is the most-requested setting). Premium bases on this page add wireless remotes, programmable presets, under-bed lighting, USB charging, and massage.',
   },
   {
     q: 'Does an adjustable base replace my box spring?',
@@ -233,7 +233,7 @@ const ADJUSTABLE_FAQ: FaqItem[] = [
 const PILLOW_FAQ: FaqItem[] = [
   {
     q: 'How do I pick a pillow for my sleep position?',
-    a: 'Pillow loft should fill the gap between your neck and the mattress so your spine stays neutral. Side sleepers generally need a higher, firmer pillow; back sleepers a medium loft; stomach sleepers a thin, soft one. Getting this right matters as much for neck and shoulder comfort as the mattress itself — take the 2-minute sleep quiz at /sleep-quiz if you are unsure of your dominant position.',
+    a: 'Pillow loft should fill the gap between your neck and the mattress so your spine stays neutral. Side sleepers generally need a higher, firmer pillow; back sleepers a medium loft; stomach sleepers a thin, soft one. Getting this right matters as much for neck and shoulder comfort as the mattress itself, take the 2-minute sleep quiz at /sleep-quiz if you are unsure of your dominant position.',
   },
   {
     q: 'What are these pillows made of?',
@@ -241,18 +241,18 @@ const PILLOW_FAQ: FaqItem[] = [
   },
   {
     q: 'How often should a pillow be replaced?',
-    a: 'Roughly every 1–3 years depending on material — down-alternative breaks down soonest, memory foam and latex last longest. Quick test: fold the pillow in half; if it stays folded instead of springing back, it has lost support and it is time to replace it.',
+    a: 'Roughly every 1–3 years depending on material, down-alternative breaks down soonest, memory foam and latex last longest. Quick test: fold the pillow in half; if it stays folded instead of springing back, it has lost support and it is time to replace it.',
   },
 ];
 
 const GENERIC_FAQ: FaqItem[] = [
   {
     q: 'Can I try these mattresses in person before I buy?',
-    a: 'Yes. Every model on this page is on the floor at one of our 5 LA showrooms — Koreatown, West LA, La Brea, Studio City, and Glendale. No appointment needed. Lie down on it for as long as you want.',
+    a: 'Yes. Every model on this page is on the floor at one of our 5 LA showrooms, Koreatown, West LA, La Brea, Studio City, and Glendale. No appointment needed. Lie down on it for as long as you want.',
   },
   {
     q: 'How do I know which firmness to choose?',
-    a: 'Take our 2-minute sleep quiz at /sleep-quiz — we match firmness to your sleep position, body weight, and any pain points. You can also call us at (800) 218-3578 and talk to a real person who fits mattresses for a living.',
+    a: 'Take our 2-minute sleep quiz at /sleep-quiz, we match firmness to your sleep position, body weight, and any pain points. You can also call us at (800) 218-3578 and talk to a real person who fits mattresses for a living.',
   },
   {
     q: 'What sizes are available?',
@@ -275,8 +275,8 @@ const QUEEN_FAQ: FaqItem[] = [
     a: 'A standard queen mattress is 60 inches wide by 80 inches long. It comfortably fits one adult with room to spread out, or two adults who don\'t mind sleeping close. We recommend a bedroom at least 10x10 feet to leave walking space around the bed; 12x12 or larger is ideal.',
   },
   {
-    q: 'Queen vs full — which should I get?',
-    a: 'A queen is 6 inches wider than a full (60" vs 54") and 5 inches longer (80" vs 75"). For couples, queen is the practical minimum — full is too narrow to share comfortably. For a single adult, full works if your room is tight, but queen is worth the upgrade if you have the space and the budget.',
+    q: 'Queen vs full, which should I get?',
+    a: 'A queen is 6 inches wider than a full (60" vs 54") and 5 inches longer (80" vs 75"). For couples, queen is the practical minimum, full is too narrow to share comfortably. For a single adult, full works if your room is tight, but queen is worth the upgrade if you have the space and the budget.',
   },
   {
     q: 'Do I need a special foundation for a queen mattress?',
@@ -286,8 +286,8 @@ const QUEEN_FAQ: FaqItem[] = [
 
 const KING_FAQ: FaqItem[] = [
   {
-    q: 'King vs California king — what\'s the difference?',
-    a: 'A standard king is 76" wide by 80" long — the widest mattress made. A California king is narrower but longer at 72" wide by 84" long. King suits couples who want maximum side-to-side space; Cal King suits sleepers 6 feet or taller who need the extra length. Both use king-sized bedding, but the sheets are not interchangeable between the two.',
+    q: 'King vs California king, what\'s the difference?',
+    a: 'A standard king is 76" wide by 80" long, the widest mattress made. A California king is narrower but longer at 72" wide by 84" long. King suits couples who want maximum side-to-side space; Cal King suits sleepers 6 feet or taller who need the extra length. Both use king-sized bedding, but the sheets are not interchangeable between the two.',
   },
   {
     q: 'Will a king mattress fit through my doorway and hallway?',
@@ -295,14 +295,14 @@ const KING_FAQ: FaqItem[] = [
   },
   {
     q: 'How much room do I need for a king bed?',
-    a: 'We recommend a bedroom at least 12x12 feet for a king — that leaves enough wall clearance for nightstands and walking around. A 13x13 or larger room gives more comfortable circulation. The bed itself is 76" wide, so account for at least 24" of walking space on each side.',
+    a: 'We recommend a bedroom at least 12x12 feet for a king, that leaves enough wall clearance for nightstands and walking around. A 13x13 or larger room gives more comfortable circulation. The bed itself is 76" wide, so account for at least 24" of walking space on each side.',
   },
 ];
 
 const CAL_KING_FAQ: FaqItem[] = [
   {
     q: 'Is a California king right for me?',
-    a: 'California king is the right pick if you or your partner is 6 feet tall or taller — its 84" length gives you 4 extra inches of foot room compared to a standard king or queen. The trade-off is 4" less width than a standard king (72" vs 76"). For couples under 6 feet, a standard king is usually the better fit.',
+    a: 'California king is the right pick if you or your partner is 6 feet tall or taller, its 84" length gives you 4 extra inches of foot room compared to a standard king or queen. The trade-off is 4" less width than a standard king (72" vs 76"). For couples under 6 feet, a standard king is usually the better fit.',
   },
   {
     q: 'Are California king sheets harder to find?',
@@ -310,22 +310,22 @@ const CAL_KING_FAQ: FaqItem[] = [
   },
   {
     q: 'Does a California king need a special bed frame?',
-    a: 'Yes — Cal King bed frames and foundations are sized specifically (72" x 84"); a standard king frame is too wide and too short. Most major brands offer both king and Cal King variants of every bed frame, foundation, and adjustable base. We confirm frame compatibility before delivery so you don\'t end up with a mismatch.',
+    a: 'Yes, Cal King bed frames and foundations are sized specifically (72" x 84"); a standard king frame is too wide and too short. Most major brands offer both king and Cal King variants of every bed frame, foundation, and adjustable base. We confirm frame compatibility before delivery so you don\'t end up with a mismatch.',
   },
 ];
 
 const TWIN_FAQ: FaqItem[] = [
   {
-    q: 'Twin vs Twin XL — which one do I need?',
-    a: 'A standard twin is 38" wide by 75" long; a Twin XL is the same width but 5" longer at 80". Twin is right for kids and shorter adults; Twin XL is the choice for taller teens, college students (most dorm beds require Twin XL), and adults who need foot room. For bunk beds and trundles, check the frame spec — most are sized for standard twin.',
+    q: 'Twin vs Twin XL, which one do I need?',
+    a: 'A standard twin is 38" wide by 75" long; a Twin XL is the same width but 5" longer at 80". Twin is right for kids and shorter adults; Twin XL is the choice for taller teens, college students (most dorm beds require Twin XL), and adults who need foot room. For bunk beds and trundles, check the frame spec, most are sized for standard twin.',
   },
   {
     q: 'Is a twin mattress okay for an adult?',
-    a: 'For a single adult under 6 feet, yes — a twin works in a guest room, studio apartment, or anywhere space is tight. For taller adults, jump to Twin XL or Full. Couples should not share a twin; it\'s only 38" wide (a queen is 60").',
+    a: 'For a single adult under 6 feet, yes, a twin works in a guest room, studio apartment, or anywhere space is tight. For taller adults, jump to Twin XL or Full. Couples should not share a twin; it\'s only 38" wide (a queen is 60").',
   },
   {
     q: 'What\'s the right foundation for a twin?',
-    a: 'A twin foundation, box spring, slatted platform, or adjustable base. For bunk beds and trundles, check the maximum mattress thickness on the frame — most cap out at 8–10 inches for the top bunk for safety reasons. We stock low-profile twins specifically for bunks.',
+    a: 'A twin foundation, box spring, slatted platform, or adjustable base. For bunk beds and trundles, check the maximum mattress thickness on the frame, most cap out at 8–10 inches for the top bunk for safety reasons. We stock low-profile twins specifically for bunks.',
   },
 ];
 
@@ -336,21 +336,21 @@ const TWIN_XL_FAQ: FaqItem[] = [
   },
   {
     q: 'Will Twin sheets fit a Twin XL mattress?',
-    a: 'No — the 5-inch length difference means a Twin fitted sheet will be too short. Use Twin XL bedding specifically. We carry Twin XL sheets, mattress protectors, and bedding sets at every showroom and online.',
+    a: 'No, the 5-inch length difference means a Twin fitted sheet will be too short. Use Twin XL bedding specifically. We carry Twin XL sheets, mattress protectors, and bedding sets at every showroom and online.',
   },
   {
     q: 'Can I use two Twin XL mattresses as a Split King?',
-    a: 'Yes — two Twin XL mattresses placed side-by-side equal the exact dimensions of a standard King (76" x 80"). This is the standard configuration for couples using a split adjustable base where each side can elevate independently. If you go this route, look for Twin XLs designed to pair (the seam down the middle should be flush).',
+    a: 'Yes, two Twin XL mattresses placed side-by-side equal the exact dimensions of a standard King (76" x 80"). This is the standard configuration for couples using a split adjustable base where each side can elevate independently. If you go this route, look for Twin XLs designed to pair (the seam down the middle should be flush).',
   },
 ];
 
 const FULL_FAQ: FaqItem[] = [
   {
     q: 'What are full mattress dimensions?',
-    a: 'A full (also called "double") mattress is 54" wide by 75" long. It\'s a 16" upgrade in width over a twin and works well for a single adult or a child transitioning out of a twin. Two adults sharing a full have only 27" each — narrower than a single twin — so couples should generally go up to a queen.',
+    a: 'A full (also called "double") mattress is 54" wide by 75" long. It\'s a 16" upgrade in width over a twin and works well for a single adult or a child transitioning out of a twin. Two adults sharing a full have only 27" each, narrower than a single twin, so couples should generally go up to a queen.',
   },
   {
-    q: 'Full vs queen — when is full the right call?',
+    q: 'Full vs queen, when is full the right call?',
     a: 'Full is the right call when your bedroom is too tight for a queen (under 9x9 feet), you\'re shopping for a single adult or teen, or you want to save $100–$300 compared to a comparable queen. Queen is the right call for couples, for guest rooms where adult guests might stay overnight, or anytime you have the space.',
   },
   {
@@ -362,7 +362,7 @@ const FULL_FAQ: FaqItem[] = [
 const SPLIT_KING_FAQ: FaqItem[] = [
   {
     q: 'What exactly is a split king mattress?',
-    a: 'A split king is two Twin XL mattresses placed side-by-side that together equal a standard King (76" x 80"). The split lets each side adjust independently on a split adjustable base — one person can elevate the head for reading while the other stays flat, or use different firmness preferences on each side.',
+    a: 'A split king is two Twin XL mattresses placed side-by-side that together equal a standard King (76" x 80"). The split lets each side adjust independently on a split adjustable base, one person can elevate the head for reading while the other stays flat, or use different firmness preferences on each side.',
   },
   {
     q: 'Why would I want a split king instead of a regular king?',
@@ -382,22 +382,22 @@ const SPLIT_KING_FAQ: FaqItem[] = [
 const BACK_PAIN_FAQ: FaqItem[] = [
   {
     q: 'What\'s the best mattress firmness for back pain?',
-    a: 'Medium-firm is the most-recommended firmness for back pain across decades of sleep-medicine research — firm enough to keep the spine aligned, soft enough to relieve pressure at the shoulders and hips. Too soft and the lower back sags; too firm and the shoulders/hips bear concentrated pressure. Our sleep quiz at /sleep-quiz factors body weight and sleep position into the firmness recommendation.',
+    a: 'Medium-firm is the most-recommended firmness for back pain across decades of sleep-medicine research, firm enough to keep the spine aligned, soft enough to relieve pressure at the shoulders and hips. Too soft and the lower back sags; too firm and the shoulders/hips bear concentrated pressure. Our sleep quiz at /sleep-quiz factors body weight and sleep position into the firmness recommendation.',
   },
   {
     q: 'Memory foam or hybrid for back pain?',
-    a: 'Both work, but hybrids (foam over coils) tend to suit a wider range of back-pain shoppers because the coil support keeps the spine neutral while the foam relieves pressure. Memory foam is a strong pick if you specifically have shoulder/hip pressure issues — it contours more deeply. Innerspring without comfort foam is generally too firm and unyielding for chronic back pain.',
+    a: 'Both work, but hybrids (foam over coils) tend to suit a wider range of back-pain shoppers because the coil support keeps the spine neutral while the foam relieves pressure. Memory foam is a strong pick if you specifically have shoulder/hip pressure issues, it contours more deeply. Innerspring without comfort foam is generally too firm and unyielding for chronic back pain.',
   },
   {
     q: 'How long until a new mattress relieves my back pain?',
-    a: 'Allow 30 nights for your body to adjust — that\'s why our 120-night guarantee requires a 30-night minimum before exchange. Most shoppers feel improvement within 2 weeks; full benefits show up by day 30–60. If pain worsens or doesn\'t improve at all after 30 nights, use the one-time comfort exchange to switch firmness or construction — no restocking fee, just the flat $100 exchange service.',
+    a: 'Allow 30 nights for your body to adjust, that\'s why our 120-night guarantee requires a 30-night minimum before exchange. Most shoppers feel improvement within 2 weeks; full benefits show up by day 30–60. If pain worsens or doesn\'t improve at all after 30 nights, use the one-time comfort exchange to switch firmness or construction, no restocking fee, just the flat $100 exchange service.',
   },
 ];
 
 const SIDE_SLEEPER_FAQ: FaqItem[] = [
   {
     q: 'What\'s the best mattress for side sleepers?',
-    a: 'Memory foam and hybrid mattresses with a medium to medium-soft firmness work best for side sleepers. They contour around the shoulder and hip — the two pressure points that bear your body weight in this position — instead of forcing them to push back against a firm surface. Latex is also a strong option, especially for hot sleepers who want side-sleeper comfort without the heat retention of foam.',
+    a: 'Memory foam and hybrid mattresses with a medium to medium-soft firmness work best for side sleepers. They contour around the shoulder and hip, the two pressure points that bear your body weight in this position, instead of forcing them to push back against a firm surface. Latex is also a strong option, especially for hot sleepers who want side-sleeper comfort without the heat retention of foam.',
   },
   {
     q: 'Will a firm mattress hurt side sleepers?',
@@ -405,37 +405,37 @@ const SIDE_SLEEPER_FAQ: FaqItem[] = [
   },
   {
     q: 'What pillow do I need with a side-sleeper mattress?',
-    a: 'A medium-to-high loft pillow that fills the gap between your neck and the mattress — usually 4–6 inches of loft for side sleepers. Side sleeping with a flat pillow drops the head and twists the neck. Memory foam, shredded foam, and latex pillows all work; cycling 1–3 years is typical regardless of material.',
+    a: 'A medium-to-high loft pillow that fills the gap between your neck and the mattress, usually 4–6 inches of loft for side sleepers. Side sleeping with a flat pillow drops the head and twists the neck. Memory foam, shredded foam, and latex pillows all work; cycling 1–3 years is typical regardless of material.',
   },
 ];
 
 const COUPLES_FAQ: FaqItem[] = [
   {
     q: 'What\'s the best mattress size for couples?',
-    a: 'Queen (60" x 80") is the practical minimum for couples — each person gets 30" of personal space, similar to a twin bed. King (76" x 80") adds 16 more inches of width and is the better pick if you have the bedroom space and one or both of you moves around at night. California king is the right call only if one of you is 6\'+ tall and needs the 4 extra inches of length.',
+    a: 'Queen (60" x 80") is the practical minimum for couples, each person gets 30" of personal space, similar to a twin bed. King (76" x 80") adds 16 more inches of width and is the better pick if you have the bedroom space and one or both of you moves around at night. California king is the right call only if one of you is 6\'+ tall and needs the 4 extra inches of length.',
   },
   {
     q: 'How do I find a mattress that works for two different sleepers?',
-    a: 'Look for three features: medium firmness (the universal middle ground for differing preferences), strong motion isolation (so one partner\'s movement doesn\'t wake the other — memory foam and pocketed-coil hybrids both excel), and reinforced edges (lets you sleep all the way to the edge without rolling off). If preferences are truly opposite, a Split King with two Twin XLs lets each side use a different firmness.',
+    a: 'Look for three features: medium firmness (the universal middle ground for differing preferences), strong motion isolation (so one partner\'s movement doesn\'t wake the other, memory foam and pocketed-coil hybrids both excel), and reinforced edges (lets you sleep all the way to the edge without rolling off). If preferences are truly opposite, a Split King with two Twin XLs lets each side use a different firmness.',
   },
   {
-    q: 'My partner sleeps hot but I sleep cold — what do we do?',
-    a: 'Look for hybrid or latex mattresses (both breathe better than all-foam) with a cooling cover — those are neutral for cool sleepers but actively help hot sleepers. Pair with a dual-zone heated mattress pad so the cold sleeper can warm just their side. Avoid all-foam mattresses without cooling tech if one partner runs hot.',
+    q: 'My partner sleeps hot but I sleep cold, what do we do?',
+    a: 'Look for hybrid or latex mattresses (both breathe better than all-foam) with a cooling cover, those are neutral for cool sleepers but actively help hot sleepers. Pair with a dual-zone heated mattress pad so the cold sleeper can warm just their side. Avoid all-foam mattresses without cooling tech if one partner runs hot.',
   },
 ];
 
 const STOMACH_SLEEPER_FAQ: FaqItem[] = [
   {
     q: 'What firmness is best for stomach sleepers?',
-    a: 'Medium-firm to firm (roughly 6.5–8 on a 10-point scale). Stomach sleeping puts your heaviest region — the hips and pelvis — in the middle of the mattress; on a soft bed those sink in, the lower back overextends into a U, and you wake with lumbar pain. A firmer surface keeps the torso level and the spine neutral. Take our sleep quiz at /sleep-quiz for a firmness match based on your weight.',
+    a: 'Medium-firm to firm (roughly 6.5–8 on a 10-point scale). Stomach sleeping puts your heaviest region, the hips and pelvis, in the middle of the mattress; on a soft bed those sink in, the lower back overextends into a U, and you wake with lumbar pain. A firmer surface keeps the torso level and the spine neutral. Take our sleep quiz at /sleep-quiz for a firmness match based on your weight.',
   },
   {
     q: 'Is memory foam bad for stomach sleepers?',
-    a: 'Deep, plush memory foam usually is — it lets the hips sink and the back arch. If you love the foam feel, choose a firmer, denser foam or a foam-over-coil hybrid where the coils stop the midsection from bottoming out. Firmer latex and pocketed-coil hybrids are the safer categories for stomach sleeping.',
+    a: 'Deep, plush memory foam usually is, it lets the hips sink and the back arch. If you love the foam feel, choose a firmer, denser foam or a foam-over-coil hybrid where the coils stop the midsection from bottoming out. Firmer latex and pocketed-coil hybrids are the safer categories for stomach sleeping.',
   },
   {
     q: 'What pillow should stomach sleepers use?',
-    a: 'The thinnest you can find — 2 inches of loft or less, or no pillow at all. A tall pillow cranes the neck up and sideways all night. Many stomach sleepers slide a thin pillow under the hips instead, which flattens the lumbar curve and takes pressure off the lower back.',
+    a: 'The thinnest you can find, 2 inches of loft or less, or no pillow at all. A tall pillow cranes the neck up and sideways all night. Many stomach sleepers slide a thin pillow under the hips instead, which flattens the lumbar curve and takes pressure off the lower back.',
   },
 ];
 
@@ -446,15 +446,15 @@ const HEAVY_FAQ: FaqItem[] = [
   },
   {
     q: 'Do heavier sleepers need a firmer mattress?',
-    a: 'Usually a touch firmer than the label suggests — a "medium" feels softer to a 250 lb sleeper than to a 150 lb one because more weight compresses the comfort layers. Most heavier shoppers are happiest on medium-firm to firm. Side sleepers over ~230 lb are the exception and still need enough give at the shoulder and hip; a thicker hybrid solves both.',
+    a: 'Usually a touch firmer than the label suggests, a "medium" feels softer to a 250 lb sleeper than to a 150 lb one because more weight compresses the comfort layers. Most heavier shoppers are happiest on medium-firm to firm. Side sleepers over ~230 lb are the exception and still need enough give at the shoulder and hip; a thicker hybrid solves both.',
   },
   {
     q: 'How long will a mattress last for a heavier person?',
-    a: 'Heavier loads accelerate wear, so durability matters most. Latex and high-quality pocketed-coil hybrids hold up best (8–10+ years); cheap all-foam beds can develop body impressions within a couple of years. Edge support also matters — reinforced perimeters keep the usable surface from collapsing where you sit to get in and out.',
+    a: 'Heavier loads accelerate wear, so durability matters most. Latex and high-quality pocketed-coil hybrids hold up best (8–10+ years); cheap all-foam beds can develop body impressions within a couple of years. Edge support also matters, reinforced perimeters keep the usable surface from collapsing where you sit to get in and out.',
   },
   {
     q: 'Is there a weight limit on these mattresses?',
-    a: 'Most quality mattresses support 250–350 lb per side comfortably; many hybrids are rated higher. The bigger factor is the foundation — make sure your base or adjustable frame has center support and is rated for the combined weight. Our team can confirm the per-side rating on any model; ask in-store or on chat.',
+    a: 'Most quality mattresses support 250–350 lb per side comfortably; many hybrids are rated higher. The bigger factor is the foundation, make sure your base or adjustable frame has center support and is rated for the combined weight. Our team can confirm the per-side rating on any model; ask in-store or on chat.',
   },
 ];
 
@@ -471,25 +471,25 @@ const SOFT_FAQ: FaqItem[] = [
   },
   {
     q: 'Will I sink in too much on a plush mattress?',
-    a: 'Modern plush mattresses use multi-density comfort layers — a softer top for pressure relief over a denser support core that prevents you from sinking too deep. The sensation is "cradled" rather than "swallowed." If you\'re between two firmness options and worried about sinking, the medium-plush or medium variant is usually the right move.',
+    a: 'Modern plush mattresses use multi-density comfort layers, a softer top for pressure relief over a denser support core that prevents you from sinking too deep. The sensation is "cradled" rather than "swallowed." If you\'re between two firmness options and worried about sinking, the medium-plush or medium variant is usually the right move.',
   },
   {
     q: 'How long does a plush mattress hold its shape?',
-    a: 'Quality plush mattresses last 7–10 years before noticeable body impressions appear. Rotation every 3–6 months extends the life significantly, especially for one-sided builds (which is most modern plush mattresses). Plush mattresses do soften over their first few months of use as the foam breaks in — this is normal and expected.',
+    a: 'Quality plush mattresses last 7–10 years before noticeable body impressions appear. Rotation every 3–6 months extends the life significantly, especially for one-sided builds (which is most modern plush mattresses). Plush mattresses do soften over their first few months of use as the foam breaks in, this is normal and expected.',
   },
 ];
 
 const MEDIUM_FAQ: FaqItem[] = [
   {
     q: 'What does "medium firmness" actually feel like?',
-    a: 'Medium sits right in the middle of the firmness scale — softer than a hotel mattress, firmer than a pillow-top. You feel cradled at the shoulder and hip without sinking deep into the bed. Medium is the most universally-comfortable firmness across body types and sleep positions, which is why it\'s our most-recommended setting from the sleep quiz.',
+    a: 'Medium sits right in the middle of the firmness scale, softer than a hotel mattress, firmer than a pillow-top. You feel cradled at the shoulder and hip without sinking deep into the bed. Medium is the most universally-comfortable firmness across body types and sleep positions, which is why it\'s our most-recommended setting from the sleep quiz.',
   },
   {
     q: 'Is medium too soft for back sleepers?',
-    a: 'Usually no — medium provides enough lumbar support for most back sleepers while contouring at the shoulders. The exceptions are back sleepers over 230 lbs who often need medium-firm to keep the lower back from sinking, and back sleepers with chronic lumbar pain who tend to do better on medium-firm to firm.',
+    a: 'Usually no, medium provides enough lumbar support for most back sleepers while contouring at the shoulders. The exceptions are back sleepers over 230 lbs who often need medium-firm to keep the lower back from sinking, and back sleepers with chronic lumbar pain who tend to do better on medium-firm to firm.',
   },
   {
-    q: 'Medium vs medium-firm — how do I choose?',
+    q: 'Medium vs medium-firm, how do I choose?',
     a: 'Medium suits side sleepers, lighter body weights (under 180 lbs), and shoppers who want pressure relief at the shoulders/hips. Medium-firm suits back and stomach sleepers, heavier body weights (over 200 lbs), and shoppers with back pain who need stronger lumbar support. Combo sleepers often do well on medium-firm because it doesn\'t restrict position changes.',
   },
 ];
@@ -497,15 +497,15 @@ const MEDIUM_FAQ: FaqItem[] = [
 const MEDIUM_FIRM_FAQ: FaqItem[] = [
   {
     q: 'Who should buy a medium-firm mattress?',
-    a: 'Medium-firm is the firmness most-recommended by sleep researchers for back pain — it keeps the spine aligned without concentrating pressure. It also suits back sleepers, stomach sleepers, combination sleepers, and anyone over about 200 lbs who needs more support than a medium provides. It\'s our top recommendation when the sleep quiz is ambiguous between firmness levels.',
+    a: 'Medium-firm is the firmness most-recommended by sleep researchers for back pain, it keeps the spine aligned without concentrating pressure. It also suits back sleepers, stomach sleepers, combination sleepers, and anyone over about 200 lbs who needs more support than a medium provides. It\'s our top recommendation when the sleep quiz is ambiguous between firmness levels.',
   },
   {
     q: 'Will medium-firm feel hard?',
-    a: 'No — medium-firm still contours at the shoulders and hips, just less deeply than a medium. Think "supportive with cushion" rather than "hard." If you\'re used to a soft mattress, there\'s a 1–2 week adjustment period as your body adapts. If after 30 nights it still feels too firm, our 120-night guarantee lets you exchange for a softer model.',
+    a: 'No, medium-firm still contours at the shoulders and hips, just less deeply than a medium. Think "supportive with cushion" rather than "hard." If you\'re used to a soft mattress, there\'s a 1–2 week adjustment period as your body adapts. If after 30 nights it still feels too firm, our 120-night guarantee lets you exchange for a softer model.',
   },
   {
     q: 'Is medium-firm good for side sleepers?',
-    a: 'For side sleepers over 200 lbs, often yes — heavier shoppers compress softer mattresses too much and end up out of alignment. Lighter side sleepers (under 180 lbs) usually prefer medium or medium-soft because they need more contour at the shoulder and hip. The sleep quiz factors body weight into the firmness recommendation.',
+    a: 'For side sleepers over 200 lbs, often yes, heavier shoppers compress softer mattresses too much and end up out of alignment. Lighter side sleepers (under 180 lbs) usually prefer medium or medium-soft because they need more contour at the shoulder and hip. The sleep quiz factors body weight into the firmness recommendation.',
   },
 ];
 
@@ -516,11 +516,11 @@ const FIRM_FAQ: FaqItem[] = [
   },
   {
     q: 'Will a firm mattress hurt my shoulders and hips?',
-    a: 'It can — firm mattresses don\'t let the shoulder and hip sink in, which concentrates pressure on those points. Side sleepers typically wake with shoulder, hip, or arm pain on a firm mattress unless they\'re very lightweight. If you side-sleep, look for medium or medium-firm instead. If you back- or stomach-sleep, firm is usually well-tolerated.',
+    a: 'It can, firm mattresses don\'t let the shoulder and hip sink in, which concentrates pressure on those points. Side sleepers typically wake with shoulder, hip, or arm pain on a firm mattress unless they\'re very lightweight. If you side-sleep, look for medium or medium-firm instead. If you back- or stomach-sleep, firm is usually well-tolerated.',
   },
   {
     q: 'Is firm or extra-firm right for back pain?',
-    a: 'Medium-firm — not firm or extra-firm — is the firmness most-supported by research for back pain. Firm mattresses can actually worsen lower-back pain by failing to contour to the lumbar curve. Try medium-firm first; only step up to firm or extra-firm if you specifically prefer a less-contouring feel and don\'t have side-sleeper pressure-point issues.',
+    a: 'Medium-firm, not firm or extra-firm, is the firmness most-supported by research for back pain. Firm mattresses can actually worsen lower-back pain by failing to contour to the lumbar curve. Try medium-firm first; only step up to firm or extra-firm if you specifically prefer a less-contouring feel and don\'t have side-sleeper pressure-point issues.',
   },
 ];
 
@@ -531,15 +531,15 @@ const FIRM_FAQ: FaqItem[] = [
 const COOLING_FAQ: FaqItem[] = [
   {
     q: 'What actually makes a mattress "cooling"?',
-    a: 'Three things, usually in combination: (1) breathable construction — hybrids and innersprings allow more airflow than all-foam; (2) heat-dissipating materials in the comfort layer — gel-infused foam, copper, graphite, or phase-change material; (3) cooling covers like TENCEL, copper-blend fabric, or phase-change cooling fabric on the surface. The best cooling mattresses combine all three.',
+    a: 'Three things, usually in combination: (1) breathable construction, hybrids and innersprings allow more airflow than all-foam; (2) heat-dissipating materials in the comfort layer, gel-infused foam, copper, graphite, or phase-change material; (3) cooling covers like TENCEL, copper-blend fabric, or phase-change cooling fabric on the surface. The best cooling mattresses combine all three.',
   },
   {
     q: 'Are gel-infused mattresses really cooler?',
-    a: 'Modestly. Gel-infused foam pulls heat away from the body for the first few hours of sleep, but it can saturate and lose effectiveness in the later hours. For shoppers who run very hot, look for phase-change cooling covers (Tempur-Pedic ProBreeze, Stearns & Foster) or hybrid construction with a copper-infused or TENCEL cover — these tend to cool more consistently through the night than gel alone.',
+    a: 'Modestly. Gel-infused foam pulls heat away from the body for the first few hours of sleep, but it can saturate and lose effectiveness in the later hours. For shoppers who run very hot, look for phase-change cooling covers (Tempur-Pedic ProBreeze, Stearns & Foster) or hybrid construction with a copper-infused or TENCEL cover, these tend to cool more consistently through the night than gel alone.',
   },
   {
-    q: 'What\'s the coolest material — foam, hybrid, or latex?',
-    a: 'Latex generally sleeps coolest because of its open-cell structure and natural airflow. Hybrid is a close second — the coil core lets heat escape under the comfort foam. All-foam mattresses sleep warmest by default; adding cooling features (gel, phase-change covers) helps but rarely matches the airflow of a hybrid or latex bed. Hot sleepers should look at latex or hybrid first.',
+    q: 'What\'s the coolest material, foam, hybrid, or latex?',
+    a: 'Latex generally sleeps coolest because of its open-cell structure and natural airflow. Hybrid is a close second, the coil core lets heat escape under the comfort foam. All-foam mattresses sleep warmest by default; adding cooling features (gel, phase-change covers) helps but rarely matches the airflow of a hybrid or latex bed. Hot sleepers should look at latex or hybrid first.',
   },
 ];
 
@@ -549,27 +549,27 @@ const PILLOW_TOP_FAQ: FaqItem[] = [
     a: 'A pillow-top is a mattress with an extra layer of cushioning material sewn or attached on top of the main mattress, giving a noticeably softer, more cradled feel at the surface. Pillow-tops were historically attached as a separate layer; modern pillow-tops are usually integrated into the cover. They\'re popular with shoppers who want luxury-hotel softness without giving up the support of a firm core underneath.',
   },
   {
-    q: 'Pillow-top vs Euro-top — what\'s the difference?',
-    a: 'A pillow-top sits on top of the mattress with a visible gap or "gusset" around the edge, giving it a distinct rounded look. A Euro-top is integrated flush with the sides of the mattress for a more uniform, modern profile. Functionally similar — both add a soft comfort layer — but Euro-tops typically have better edge support because the comfort layer extends all the way to the sides.',
+    q: 'Pillow-top vs Euro-top, what\'s the difference?',
+    a: 'A pillow-top sits on top of the mattress with a visible gap or "gusset" around the edge, giving it a distinct rounded look. A Euro-top is integrated flush with the sides of the mattress for a more uniform, modern profile. Functionally similar, both add a soft comfort layer, but Euro-tops typically have better edge support because the comfort layer extends all the way to the sides.',
   },
   {
     q: 'Will a pillow-top mattress hold up over time?',
-    a: 'Quality pillow-tops last 7–10 years before noticeable body impressions. Rotation every 3–6 months is critical — pillow-tops are one-sided builds, so rotating distributes wear evenly across the surface. Brands like Stearns & Foster and Chattam & Wells use hand-tufted construction to anchor the comfort layer and minimize shifting over time.',
+    a: 'Quality pillow-tops last 7–10 years before noticeable body impressions. Rotation every 3–6 months is critical, pillow-tops are one-sided builds, so rotating distributes wear evenly across the surface. Brands like Stearns & Foster and Chattam & Wells use hand-tufted construction to anchor the comfort layer and minimize shifting over time.',
   },
 ];
 
 const LUXURY_FAQ: FaqItem[] = [
   {
     q: 'What makes a mattress "luxury"?',
-    a: 'Luxury mattresses use higher-grade materials (Talalay latex, cashmere-blend covers, copper-infused foams, hand-tufted construction), deeper builds (14–17 inches vs the standard 10–12), and longer warranties (typically 15+ years). The brands in this category — Stearns & Foster, Chattam & Wells, Tempur-Pedic, Aireloom, Hastens — invest in materials and craftsmanship that mid-tier mattresses can\'t justify at their price points.',
+    a: 'Luxury mattresses use higher-grade materials (Talalay latex, cashmere-blend covers, copper-infused foams, hand-tufted construction), deeper builds (14–17 inches vs the standard 10–12), and longer warranties (typically 15+ years). The brands in this category, Stearns & Foster, Chattam & Wells, Tempur-Pedic, Aireloom, Hastens, invest in materials and craftsmanship that mid-tier mattresses can\'t justify at their price points.',
   },
   {
     q: 'Is a luxury mattress worth 2–3x the price of a mid-tier model?',
-    a: 'For shoppers planning to keep the mattress 10+ years, often yes — the cost per year of use ends up similar, and the comfort and durability are noticeably better. For shoppers who replace mattresses every 5–7 years or have a tight budget, a quality mid-tier model usually delivers 80% of the luxury experience for 40% of the price. Our showroom team can walk you through the side-by-side trade-offs.',
+    a: 'For shoppers planning to keep the mattress 10+ years, often yes, the cost per year of use ends up similar, and the comfort and durability are noticeably better. For shoppers who replace mattresses every 5–7 years or have a tight budget, a quality mid-tier model usually delivers 80% of the luxury experience for 40% of the price. Our showroom team can walk you through the side-by-side trade-offs.',
   },
   {
     q: 'What\'s the longest-lasting luxury mattress?',
-    a: 'Natural-latex luxury mattresses last the longest — 15–20+ years with proper care. Southerland\'s Scandinavian Collection (12-year warranty), Tempur-Pedic\'s ProAdapt and LuxeAdapt lines (10-year), and Stearns & Foster\'s Reserve collection (15-year) are the longest-lifespan options we carry. Latex consistently outlasts memory foam and innerspring at the luxury tier.',
+    a: 'Natural-latex luxury mattresses last the longest, 15–20+ years with proper care. Southerland\'s Scandinavian Collection (12-year warranty), Tempur-Pedic\'s ProAdapt and LuxeAdapt lines (10-year), and Stearns & Foster\'s Reserve collection (15-year) are the longest-lifespan options we carry. Latex consistently outlasts memory foam and innerspring at the luxury tier.',
   },
 ];
 
@@ -580,11 +580,11 @@ const BED_IN_BOX_FAQ: FaqItem[] = [
   },
   {
     q: 'Will a bed-in-a-box mattress reach full size?',
-    a: 'Yes — modern bed-in-a-box mattresses are engineered to recover full size after compression. Allow 24–72 hours for the foam layers to fully expand before sleeping on it. Some mattresses may have an initial off-gassing smell from the new foam; airing out the bedroom for a few hours typically resolves it.',
+    a: 'Yes, modern bed-in-a-box mattresses are engineered to recover full size after compression. Allow 24–72 hours for the foam layers to fully expand before sleeping on it. Some mattresses may have an initial off-gassing smell from the new foam; airing out the bedroom for a few hours typically resolves it.',
   },
   {
     q: 'Bed-in-a-box vs traditional white-glove delivery?',
-    a: 'Bed-in-a-box is faster to set up and easier to get up stairs/through tight doorways. White-glove delivery (free over $499 in LA) includes setup, removal of packaging, and haul-away of your old mattress — so you skip the heavy lifting and disposal hassle. Bed-in-a-box ships nationally; white-glove is LA-only.',
+    a: 'Bed-in-a-box is faster to set up and easier to get up stairs/through tight doorways. White-glove delivery (free over $499 in LA) includes setup, removal of packaging, and haul-away of your old mattress, so you skip the heavy lifting and disposal hassle. Bed-in-a-box ships nationally; white-glove is LA-only.',
   },
 ];
 
@@ -735,27 +735,27 @@ export function categoryIntroFor(handle: string, title: string): string {
 
   // Brand-specific intros (highest specificity)
   if (h.includes('tempur')) {
-    return `Tempur-Pedic uses the original NASA-developed TEMPUR memory foam — the same material the brand has built around for 30+ years. Models range from the all-foam ProAdapt and Adapt collections to the hybrid LuxeAdapt with pocketed coils underneath, so back, side, and combo sleepers all have a fit. Every Tempur-Pedic sold at LA Mattress comes with white-glove delivery and our 120-night Love Your Bed Guarantee.`;
+    return `Tempur-Pedic uses the original NASA-developed TEMPUR memory foam, the same material the brand has built around for 30+ years. Models range from the all-foam ProAdapt and Adapt collections to the hybrid LuxeAdapt with pocketed coils underneath, so back, side, and combo sleepers all have a fit. Every Tempur-Pedic sold at LA Mattress comes with white-glove delivery and our 120-night Love Your Bed Guarantee.`;
   }
   if (h.includes('stearns') && h.includes('foster')) {
-    return `Stearns & Foster is a hand-tufted, hand-built mattress brand owned by Sealy — best known for the Estate and Reserve collections built with IntelliCoil pocketed support and cashmere-blend covers. Most models are 14–17 inches tall with deep pillow-top or Euro-top comfort layers, made for shoppers who want a classic luxury mattress feel. Try them in person at any of our 5 LA showrooms.`;
+    return `Stearns & Foster is a hand-tufted, hand-built mattress brand owned by Sealy, best known for the Estate and Reserve collections built with IntelliCoil pocketed support and cashmere-blend covers. Most models are 14–17 inches tall with deep pillow-top or Euro-top comfort layers, made for shoppers who want a classic luxury mattress feel. Try them in person at any of our 5 LA showrooms.`;
   }
   if (h.includes('helix')) {
-    return `Helix Sleep is a build-to-fit hybrid brand — every model layers individually pocketed coils under foam comfort layers and a knit cover. The Core, Luxe, and Elite collections step up in coil count, foam density, and cover technology so you can match your budget to the level of pressure relief and edge support you want.`;
+    return `Helix Sleep is a build-to-fit hybrid brand, every model layers individually pocketed coils under foam comfort layers and a knit cover. The Core, Luxe, and Elite collections step up in coil count, foam density, and cover technology so you can match your budget to the level of pressure relief and edge support you want.`;
   }
   if (h.includes('southerland') || h.includes('scandinavian')) {
-    return `Southerland's Scandinavian Collection is a CertiPUR-US-certified latex line built in Minnesota — natural latex over a pocketed-coil support unit, with TENCEL and copper-gel covers across the lineup. Latex is the longest-lasting mattress material we stock (15+ year life with proper rotation) and runs cooler than memory foam, which is why we recommend it for hot sleepers.`;
+    return `Southerland's Scandinavian Collection is a CertiPUR-US-certified latex line built in Minnesota, natural latex over a pocketed-coil support unit, with TENCEL and copper-gel covers across the lineup. Latex is the longest-lasting mattress material we stock (15+ year life with proper rotation) and runs cooler than memory foam, which is why we recommend it for hot sleepers.`;
   }
   if (h.includes('englander')) {
-    return `Englander is a fourth-generation American mattress builder — best known for the O'Conner and Allendale luxury innerspring lines. Pocketed coils and gel-infused memory foam comfort layers in heights from 14–17 inches, in firm Euro-top and plush box-top builds. Made in the USA.`;
+    return `Englander is a fourth-generation American mattress builder, best known for the O'Conner and Allendale luxury innerspring lines. Pocketed coils and gel-infused memory foam comfort layers in heights from 14–17 inches, in firm Euro-top and plush box-top builds. Made in the USA.`;
   }
 
   // Use-case / sleeper-type intros (win over material/size matches).
   if (h.includes('stomach-sleeper')) {
-    return `Stomach sleepers need a firmer surface than most — the hips and pelvis carry the weight in this position, and on a soft mattress they sink in and bend the lower back out of line. The mattresses on this page run medium-firm to firm in hybrid, latex, and denser-foam builds that keep your torso level and your spine neutral. Try them in person at any of our 5 LA showrooms; free white-glove delivery in Los Angeles and a 120-night Love Your Bed Guarantee.`;
+    return `Stomach sleepers need a firmer surface than most, the hips and pelvis carry the weight in this position, and on a soft mattress they sink in and bend the lower back out of line. The mattresses on this page run medium-firm to firm in hybrid, latex, and denser-foam builds that keep your torso level and your spine neutral. Try them in person at any of our 5 LA showrooms; free white-glove delivery in Los Angeles and a 120-night Love Your Bed Guarantee.`;
   }
   if (h.includes('heavy') || h.includes('plus-size') || h.includes('big-and-tall')) {
-    return `Heavier sleepers need more from a mattress — sturdier support, denser foams, taller builds, and reinforced edges that hold up over years of higher load. The mattresses here are hybrid and innerspring constructions with high-gauge pocketed coils and high-density comfort layers (generally 12"+ tall) chosen for durability and proper support without bottoming out. Free white-glove delivery across Los Angeles, 120-night Love Your Bed Guarantee, and 0% APR financing on orders of $1,500+.`;
+    return `Heavier sleepers need more from a mattress, sturdier support, denser foams, taller builds, and reinforced edges that hold up over years of higher load. The mattresses here are hybrid and innerspring constructions with high-gauge pocketed coils and high-density comfort layers (generally 12"+ tall) chosen for durability and proper support without bottoming out. Free white-glove delivery across Los Angeles, 120-night Love Your Bed Guarantee, and 0% APR financing on orders of $1,500+.`;
   }
 
   // Size-specific intros. Only cal-king gets one so far (deep audit
@@ -766,29 +766,29 @@ export function categoryIntroFor(handle: string, title: string): string {
   // Checked BEFORE the material/accessory matches; 'california-king'
   // must also beat any plain 'king' handling ever added below.
   if (h.includes('california-king') || h.includes('cal-king')) {
-    return `A California King size mattress is 72" wide by 84" long — 4 inches narrower and 4 inches longer than a standard King (76" × 80"), making it the longest stock mattress size we sell and the right pick for sleepers over 6'2" or bedrooms that are deeper than they are wide. Every Cal King on this page ships with free white-glove delivery anywhere in Los Angeles, a 120-night Love Your Bed Guarantee, and 0% APR financing on orders of $1,500+. Not sure between King and Cal King? The width-vs-length trade-off is the whole decision — see the guide below or lie on both at any of our 5 LA showrooms.`;
+    return `A California King size mattress is 72" wide by 84" long, 4 inches narrower and 4 inches longer than a standard King (76" × 80"), making it the longest stock mattress size we sell and the right pick for sleepers over 6'2" or bedrooms that are deeper than they are wide. Every Cal King on this page ships with free white-glove delivery anywhere in Los Angeles, a 120-night Love Your Bed Guarantee, and 0% APR financing on orders of $1,500+. Not sure between King and Cal King? The width-vs-length trade-off is the whole decision, see the guide below or lie on both at any of our 5 LA showrooms.`;
   }
 
   // Material-specific intros
   if (h.includes('memory-foam') || h.includes('foam')) {
-    return `Memory foam contours to your body and isolates motion better than any other mattress type — the ideal choice for side sleepers who want pressure relief at the shoulders and hips, and for anyone who shares a bed with a restless partner. The trade-off is heat retention; we recommend choosing a foam with gel infusion, copper, or open-cell cooling tech if you sleep hot.`;
+    return `Memory foam contours to your body and isolates motion better than any other mattress type, the ideal choice for side sleepers who want pressure relief at the shoulders and hips, and for anyone who shares a bed with a restless partner. The trade-off is heat retention; we recommend choosing a foam with gel infusion, copper, or open-cell cooling tech if you sleep hot.`;
   }
   if (h.includes('hybrid')) {
-    return `Hybrid mattresses combine memory foam or latex comfort layers with a pocketed-coil base for the best of both feel and support. The coils provide breathability and edge stability that pure foam can't match, while the comfort layers give you the contouring foam is known for. Most mattress shoppers do well on a hybrid — it's the most universally comfortable category we carry.`;
+    return `Hybrid mattresses combine memory foam or latex comfort layers with a pocketed-coil base for the best of both feel and support. The coils provide breathability and edge stability that pure foam can't match, while the comfort layers give you the contouring foam is known for. Most mattress shoppers do well on a hybrid, it's the most universally comfortable category we carry.`;
   }
   if (h.includes('latex')) {
-    return `Latex is the longest-lasting and most breathable mattress material we sell — 15+ year typical life span, with a buoyant, responsive feel that doesn't sink in like memory foam. It's our top recommendation for hot sleepers and shoppers with joint pain. Most latex mattresses are built with natural Talalay or Dunlop latex over a pocketed-coil support layer.`;
+    return `Latex is the longest-lasting and most breathable mattress material we sell, 15+ year typical life span, with a buoyant, responsive feel that doesn't sink in like memory foam. It's our top recommendation for hot sleepers and shoppers with joint pain. Most latex mattresses are built with natural Talalay or Dunlop latex over a pocketed-coil support layer.`;
   }
   if (h.includes('innerspring')) {
-    return `Innerspring mattresses use a steel coil support unit topped with comfort foam, fiber, or pillow-top layers — the most traditional mattress construction, with the bounce and edge support that hybrid and foam mattresses don't replicate. We stock Stearns & Foster, Englander, and Eastman House innerspring builds with pocketed coils for motion isolation and pillow-top or Euro-top comfort layers.`;
+    return `Innerspring mattresses use a steel coil support unit topped with comfort foam, fiber, or pillow-top layers, the most traditional mattress construction, with the bounce and edge support that hybrid and foam mattresses don't replicate. We stock Stearns & Foster, Englander, and Eastman House innerspring builds with pocketed coils for motion isolation and pillow-top or Euro-top comfort layers.`;
   }
 
   // Accessory categories
   if (h.includes('adjustable')) {
-    return `Adjustable bases let you raise your head and feet independently — for reading, working, TV, easing acid reflux and snoring, and taking pressure off the lower back with the zero-gravity preset. The bases on this page replace your existing foundation and pair with nearly every foam, hybrid, and latex mattress we carry. White-glove delivery includes assembly and free haul-away of your old foundation; try the controls in person at any of our 5 LA showrooms.`;
+    return `Adjustable bases let you raise your head and feet independently, for reading, working, TV, easing acid reflux and snoring, and taking pressure off the lower back with the zero-gravity preset. The bases on this page replace your existing foundation and pair with nearly every foam, hybrid, and latex mattress we carry. White-glove delivery includes assembly and free haul-away of your old foundation; try the controls in person at any of our 5 LA showrooms.`;
   }
   if (h.includes('pillow')) {
-    return `The right pillow keeps your neck and spine aligned with your mattress — loft should match your sleep position (higher and firmer for side sleepers, medium for back, thin for stomach). The pillows on this page range from contouring memory foam and natural latex to adjustable shredded-fill and cooling-gel options for hot sleepers. Free delivery in Los Angeles on qualifying orders.`;
+    return `The right pillow keeps your neck and spine aligned with your mattress, loft should match your sleep position (higher and firmer for side sleepers, medium for back, thin for stomach). The pillows on this page range from contouring memory foam and natural latex to adjustable shredded-fill and cooling-gel options for hot sleepers. Free delivery in Los Angeles on qualifying orders.`;
   }
 
   // Sale / clearance
@@ -798,7 +798,7 @@ export function categoryIntroFor(handle: string, title: string): string {
 
   // Size-specific
   if (h.includes('queen')) {
-    return `Queen-size mattresses (60" × 80") are the most popular size we sell — large enough for two adults, compact enough for most bedrooms. ${title} on this page span every material, firmness, and budget. Free white-glove delivery in Los Angeles on orders over $499.`;
+    return `Queen-size mattresses (60" × 80") are the most popular size we sell, large enough for two adults, compact enough for most bedrooms. ${title} on this page span every material, firmness, and budget. Free white-glove delivery in Los Angeles on orders over $499.`;
   }
   if (h.includes('king')) {
     return `King-size mattresses (76" × 80") give two adults the most sleeping surface of any standard size. ${title} on this page are stocked across every material, firmness, and budget tier. Free white-glove delivery in Los Angeles on orders over $499.`;
@@ -808,7 +808,7 @@ export function categoryIntroFor(handle: string, title: string): string {
   }
 
   // Generic mattress fallback
-  return `Every model on this page is on the floor at one of our 5 LA showrooms — Koreatown, West LA, La Brea, Studio City, and Glendale — so you can try before you buy. Free white-glove delivery on orders over $499 anywhere in Los Angeles, 120-night Love Your Bed Guarantee, and 0% APR financing through Synchrony and Acima.`;
+  return `Every model on this page is on the floor at one of our 5 LA showrooms, Koreatown, West LA, La Brea, Studio City, and Glendale, so you can try before you buy. Free white-glove delivery on orders over $499 anywhere in Los Angeles, 120-night Love Your Bed Guarantee, and 0% APR financing through Synchrony and Acima.`;
 }
 
 /**

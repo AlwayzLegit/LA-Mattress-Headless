@@ -299,7 +299,7 @@ export function BuyBox({ options, variants, priceRange, compareAtPriceRange, pro
         </p>
       ) : null}
 
-      {/* Trust strip — inline with the ATC, not at the top of the page,
+      {/* Trust strip, inline with the ATC, not at the top of the page,
           so the reassurance lands at the decision moment (analytics: 94%
           PDP→ATC drop). Phrasings match the canonical site claims
           (cart-drawer, footer trust strip). */}

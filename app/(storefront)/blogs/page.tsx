@@ -52,7 +52,7 @@ const FEATURED: { handle: string; title: string; blurb: string }[] = [
   {
     handle: 'how-to-choose-a-mattress',
     title: 'How to Choose a Mattress',
-    blurb: 'The complete buyer’s guide — sleep position, body weight, type, firmness, and budget, in the order that matters.',
+    blurb: 'The complete buyer’s guide, sleep position, body weight, type, firmness, and budget, in the order that matters.',
   },
   {
     handle: 'best-mattress-for-back-pain',
@@ -67,12 +67,12 @@ const FEATURED: { handle: string; title: string; blurb: string }[] = [
   {
     handle: 'best-mattress-for-side-sleepers',
     title: 'Best Mattress for Side Sleepers',
-    blurb: 'Why side sleepers need pressure relief at the shoulders and hips — and the firmness range that delivers it.',
+    blurb: 'Why side sleepers need pressure relief at the shoulders and hips, and the firmness range that delivers it.',
   },
   {
     handle: 'when-to-buy-a-mattress',
     title: 'When Is the Best Time to Buy a Mattress?',
-    blurb: 'The sale calendar — Memorial Day, Labor Day, Black Friday — and when waiting actually costs you.',
+    blurb: 'The sale calendar, Memorial Day, Labor Day, Black Friday, and when waiting actually costs you.',
   },
   {
     handle: 'where-to-buy-a-mattress-in-los-angeles',
@@ -86,14 +86,14 @@ const FEATURED_BLOG_HANDLE = 'mattress-buying-guide';
 export const metadata: Metadata = {
   title: { absolute: 'Mattress & Sleep Guides · LA Mattress Store' },
   description:
-    'Expert mattress buying guides and sleep advice from LA Mattress Store — how to choose a mattress, the best mattress for back pain and side sleepers, pricing, and when to buy. Five LA showrooms.',
+    'Expert mattress buying guides and sleep advice from LA Mattress Store, how to choose a mattress, the best mattress for back pain and side sleepers, pricing, and when to buy. Five LA showrooms.',
   alternates: { canonical: '/blogs' },
   openGraph: {
     type: 'website',
     url: '/blogs',
     title: 'Mattress & Sleep Guides · LA Mattress Store',
     description:
-      'Expert mattress buying guides and sleep advice from LA Mattress Store — researched against the brands we actually stock.',
+      'Expert mattress buying guides and sleep advice from LA Mattress Store, researched against the brands we actually stock.',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
   },
 };
@@ -136,7 +136,7 @@ export default function BlogsHubPage() {
               <h1 className="h-display">Guides &amp; advice</h1>
               <p className="lp-hero-lede" style={{ maxWidth: '72ch' }}>
                 Buying-guide articles and sleep advice written the way our showroom staff
-                would explain it — by sleep position, body weight, temperature, pain points,
+                would explain it, by sleep position, body weight, temperature, pain points,
                 and budget. Researched against the brands we actually stock and tested
                 against what real customers tell us after a week on the mattress.
               </p>
@@ -155,7 +155,7 @@ export default function BlogsHubPage() {
         <div className="container">
           <h2 id="blogs-featured" className="h2">Start here: the buyer&apos;s guide</h2>
           <p className="muted" style={{ maxWidth: '64ch', marginTop: 'var(--s-2)' }}>
-            If you&apos;re shopping for a mattress, read these six in order — they cover
+            If you&apos;re shopping for a mattress, read these six in order, they cover
             every decision from first question to delivery.
           </p>
           <div className="gd-grid" style={{ marginTop: 'var(--s-5)' }} aria-label="Featured guides">

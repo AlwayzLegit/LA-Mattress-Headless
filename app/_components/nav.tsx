@@ -411,7 +411,7 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
           <div className="nav-actions">
             {/*
               Search, Saved, Account collapse into the hamburger drawer
-              on mobile — industry-standard pattern (Casper, Saatva,
+              on mobile, industry-standard pattern (Casper, Saatva,
               Mattress Firm all do this) that keeps the mobile top bar
               uncluttered. Cart + hamburger stay visible always because
               they're the two highest-frequency mobile taps. The
@@ -507,7 +507,7 @@ export function Nav({ brands = [] }: { brands?: NavBrand[] }) {
       {mobileOpen ? (
         <div className="mobile-drawer" role="dialog" aria-label="Site menu" aria-modal="true" ref={mobileDrawerRef}>
           <div className="mobile-drawer-hd">
-            {/* Plain <img> — same rationale as the header logo
+            {/* Plain <img>, same rationale as the header logo
                 (perf-img-10); reused from cache when the drawer opens. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

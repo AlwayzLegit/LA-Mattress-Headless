@@ -22,7 +22,7 @@ import { formatMonthlyPayment, FINANCING_DEFAULT_MONTHS } from '@/lib/financing-
 
 export const metadata: Metadata = {
   title: 'Cart',
-  description: 'Review your order — LA Mattress Store.',
+  description: 'Review your order, LA Mattress Store.',
   robots: { index: false, follow: false },
 };
 
@@ -43,7 +43,7 @@ export default async function CartPage() {
             <div className="eyebrow">Cart</div>
             <h1 className="h1" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>Your cart is empty.</h1>
             <p className="muted" style={{ marginBottom: 'var(--s-5)', maxWidth: '50ch' }}>
-              Browse mattresses, adjustable beds, and bedding — or come visit us in person at one of our 5 LA showrooms.
+              Browse mattresses, adjustable beds, and bedding, or come visit us in person at one of our 5 LA showrooms.
             </p>
             <div style={{ display: 'flex', gap: 'var(--s-3)', flexWrap: 'wrap' }}>
               <Link href="/collections/mattresses" className="btn btn-primary">Shop mattresses</Link>
@@ -180,7 +180,7 @@ export default async function CartPage() {
             >
               <Icon name="shield" size={16} />
               <span>
-                <strong>Protect your investment.</strong> A mattress protector keeps your 120-night exchange intact — stains void it.
+                <strong>Protect your investment.</strong> A mattress protector keeps your 120-night exchange intact, stains void it.
               </span>
               <Icon name="arrow-right" size={14} />
             </Link>
@@ -245,7 +245,7 @@ export default async function CartPage() {
           </CheckoutLink>
           <OrderNote />
           <ul className="pdp-trust" style={{ marginTop: 'var(--s-4)', borderTop: '1px solid var(--line)', paddingTop: 'var(--s-4)' }}>
-            <li><Icon name="lock" size={16} /> Secure checkout — encrypted by Shopify</li>
+            <li><Icon name="lock" size={16} /> Secure checkout, encrypted by Shopify</li>
             <li><Icon name="shield" size={16} /> 120-night Love Your Bed exchange</li>
             <li><Icon name="truck" size={16} /> Free white-glove delivery on $499+</li>
           </ul>
@@ -255,7 +255,7 @@ export default async function CartPage() {
       {/* "You may also like" reuses the PDP cross-sell rail. railId is
           intentionally omitted: it's added by PR1 (RelatedRail scroll
           buttons) which is an independent branch. Once PR1 lands the
-          cart instance gets the default rail id — collision-free since
+          cart instance gets the default rail id, collision-free since
           the cart page never co-renders the PDP rail. */}
       {crossSell.length > 0 ? (
         <RelatedRail

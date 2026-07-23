@@ -199,7 +199,7 @@ export default async function SearchPage(props: Params) {
         <section className="section">
           <p className="muted" style={{ maxWidth: '60ch', marginBottom: 'var(--s-5)' }}>
             Try searching for a brand (Tempur-Pedic, Stearns &amp; Foster), a size (queen, king),
-            or a feature (cooling, adjustable) — or pick a category below.
+            or a feature (cooling, adjustable), or pick a category below.
           </p>
           <div className="nf-grid" style={{ marginTop: 0 }}>
             {[
@@ -571,8 +571,8 @@ function SearchAllTab({
             </Link>
           </div>
           <div className="plp-grid">
-            {/* PlpCard — shared with /collections and the search
-                Mattresses tab — so the heart, financing line, sale
+            {/* PlpCard, shared with /collections and the search
+                Mattresses tab, so the heart, financing line, sale
                 ribbon, etc. show up consistently across every grid. */}
             {products.map((p, idx) => (
               <PlpCard key={p.id} product={p} priority={idx < 3} />

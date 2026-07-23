@@ -162,13 +162,13 @@ export function buildProductFaq(product: Product): FaqItem[] {
 
   items.push({
     q: `Is delivery free on the ${name}?`,
-    a: 'Yes — free white-glove delivery anywhere in Los Angeles on orders over $499, including setup and free haul-away of your old mattress. Order by 4pm for same-day delivery.',
+    a: 'Yes, free white-glove delivery anywhere in Los Angeles on orders over $499, including setup and free haul-away of your old mattress. Order by 4pm for same-day delivery.',
   });
 
   const trial = product.specs.trialNights ?? 120;
   items.push({
     q: `What if the ${name} isn't comfortable?`,
-    a: `You have our ${trial}-night comfort exchange. Sleep on it for at least 30 nights, and if it isn't right, exchange it for another mattress — we handle the pickup and redelivery.`,
+    a: `You have our ${trial}-night comfort exchange. Sleep on it for at least 30 nights, and if it isn't right, exchange it for another mattress, we handle the pickup and redelivery.`,
   });
 
   if (product.specs.warrantyYears !== null) {
@@ -180,12 +180,12 @@ export function buildProductFaq(product: Product): FaqItem[] {
 
   items.push({
     q: 'Can I finance this mattress?',
-    a: 'Yes — 0% APR financing through Synchrony on approved credit, plus Acima lease-to-own with no credit needed. Most applicants are approved in minutes at checkout or in any showroom.',
+    a: 'Yes, 0% APR financing through Synchrony on approved credit, plus Acima lease-to-own with no credit needed. Most applicants are approved in minutes at checkout or in any showroom.',
   });
 
   items.push({
     q: `Can I try the ${name} in person?`,
-    a: 'Yes — our Los Angeles showrooms in Koreatown, West LA, La Brea, Studio City, and Glendale carry our lineup on the floor. Walk-ins welcome, no appointment needed.',
+    a: 'Yes, our Los Angeles showrooms in Koreatown, West LA, La Brea, Studio City, and Glendale carry our lineup on the floor. Walk-ins welcome, no appointment needed.',
   });
 
   return items;

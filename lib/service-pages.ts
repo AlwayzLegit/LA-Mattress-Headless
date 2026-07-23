@@ -69,7 +69,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
     trust: [
       { icon: 'shield', title: 'Manufacturer-backed', sub: 'Tempur-Pedic, Sealy, Stearns & Foster + more' },
       { icon: 'phone', title: 'We file the claim for you', sub: 'Photos in, submission handled, decision relayed' },
-      { icon: 'check', title: '120-night comfort exchange', sub: 'Separate from warranty — covers preference' },
+      { icon: 'check', title: '120-night comfort exchange', sub: 'Separate from warranty, covers preference' },
     ],
     cta: {
       headline: 'Have a warranty question or claim to file?',
@@ -79,7 +79,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
   },
   'love-your-bed-guarantee': {
     eyebrow: '120-night comfort exchange',
-    lede: 'Sleep on it for at least 30 nights. If it isn’t right, swap it for any other mattress within 120 nights of delivery — we handle the pickup, drop-off, and recycling.',
+    lede: 'Sleep on it for at least 30 nights. If it isn’t right, swap it for any other mattress within 120 nights of delivery, we handle the pickup, drop-off, and recycling.',
     trust: [
       { icon: 'check', title: 'One exchange per purchase', sub: 'Any other in-stock mattress, any brand, any size' },
       { icon: 'shield', title: 'No restocking fees', sub: 'Trade up: pay the difference. Trade down: no refund.' },
@@ -92,7 +92,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
   },
   'mattress-store-delivery': {
     eyebrow: 'Free white-glove delivery',
-    lede: 'Free delivery on every order over $499 across LA. Order by 4 PM and we often deliver the same day — setup, old-mattress haul-away, and stair carry all included.',
+    lede: 'Free delivery on every order over $499 across LA. Order by 4 PM and we often deliver the same day, setup, old-mattress haul-away, and stair carry all included.',
     trust: [
       { icon: 'truck', title: 'Same-day in LA', sub: 'On in-stock orders placed by 4 PM' },
       { icon: 'check', title: 'White-glove setup', sub: 'Bedroom delivery, full setup, packaging removed' },
@@ -106,7 +106,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
   },
   'mattress-store-contact': {
     eyebrow: 'Real local team, no call center',
-    lede: 'Every call, email, and chat goes to a sleep consultant at one of our LA showrooms — no offshored support, no scripts.',
+    lede: 'Every call, email, and chat goes to a sleep consultant at one of our LA showrooms, no offshored support, no scripts.',
     trust: [
       { icon: 'phone', title: SITE_PHONE_DISPLAY, sub: '10 AM – 8 PM Pacific, daily' },
       { icon: 'mail', title: 'lamattressplus@gmail.com', sub: 'Reply within one business day' },
@@ -123,7 +123,7 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
     lede: 'A family-owned LA mattress store with five neighborhood showrooms, expert sleep consultants, and free white-glove delivery across the city. The brands you know, the prices you compare, the service that makes the difference.',
     trust: [
       { icon: 'home', title: 'Family-owned in LA', sub: 'Five showrooms across the city' },
-      { icon: 'check', title: 'Trained on every brand', sub: 'Expert help, no upsell pressure — you pick what fits you' },
+      { icon: 'check', title: 'Trained on every brand', sub: 'Expert help, no upsell pressure, you pick what fits you' },
       { icon: 'shield', title: '120-night Love Your Bed exchange', sub: 'If it isn’t right, we swap it' },
     ],
     cta: {
@@ -134,11 +134,11 @@ export const SERVICE_PAGES: Record<ServicePageHandle, ServicePageConfig> = {
   },
   'lowest-price-guarantee': {
     eyebrow: 'Price guarantee',
-    lede: 'Find the same mattress for less at an authorized retailer and we beat their price by 10% — for up to 30 days after you buy. Here’s exactly how it works.',
+    lede: 'Find the same mattress for less at an authorized retailer and we beat their price by 10%, for up to 30 days after you buy. Here’s exactly how it works.',
     trust: [
-      { icon: 'check', title: 'We beat it by 10%', sub: 'Not just match — 10% below the competitor’s price' },
+      { icon: 'check', title: 'We beat it by 10%', sub: 'Not just match, 10% below the competitor’s price' },
       { icon: 'shield', title: '30 days after purchase', sub: 'Price drops later? We refund the difference + 10%' },
-      { icon: 'card', title: 'No haggling, no paperwork', sub: 'Send the link or ad — we verify and handle it' },
+      { icon: 'card', title: 'No haggling, no paperwork', sub: 'Send the link or ad, we verify and handle it' },
     ],
     cta: {
       headline: 'Found a lower price? Send it over.',

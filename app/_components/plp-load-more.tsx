@@ -128,7 +128,7 @@ export function PlpLoadMore({
       <div className="plp-pagination">
         {error ? (
           <p className="muted" role="status" style={{ marginBottom: 'var(--s-3)' }}>
-            Couldn&rsquo;t load more — please try again.
+            Couldn&rsquo;t load more, please try again.
           </p>
         ) : null}
         {hasMore ? (

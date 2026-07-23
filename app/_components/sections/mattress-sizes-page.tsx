@@ -202,7 +202,7 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
 
           {/* Answer-first summary. The 20260621 Semrush audit found the
               size/dimension informational cluster lost rankings to
-              Google's AI Overviews — those queries now get answered in
+              Google's AI Overviews, those queries now get answered in
               the SERP, so the click never arrives. This concise,
               extractable "at a glance" block high on the page gives AI
               Overviews + featured snippets a clean source to cite (and
@@ -218,17 +218,17 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
               ))}
             </ul>
             <p className="muted">
-              Queen is the most popular size in the US; King is the widest and California King the longest. Split King — two Twin XL halves — is used on adjustable bases. Full dimensions in inches, feet, and centimeters are in the table below.
+              Queen is the most popular size in the US; King is the widest and California King the longest. Split King, two Twin XL halves, is used on adjustable bases. Full dimensions in inches, feet, and centimeters are in the table below.
             </p>
           </section>
 
-          {/* To-scale comparison — the lead graphic. All seven sizes
+          {/* To-scale comparison, the lead graphic. All seven sizes
               drawn at one px-per-inch scale, bottom-aligned, so the
               relative footprints are obvious at a glance. */}
           <section className="sz-scale" aria-labelledby="sizes-scale-heading">
             <h2 id="sizes-scale-heading" className="h2 ms-section-h">Every mattress size to scale</h2>
             <p className="muted ms-section-lede">
-              All seven standard sizes drawn to the same scale, narrowest to widest — so you can see exactly how much bed each one gives you, and whether it sleeps one or two.
+              All seven standard sizes drawn to the same scale, narrowest to widest, so you can see exactly how much bed each one gives you, and whether it sleeps one or two.
             </p>
             <div className="sz-lineup-scroll">
               <div className="sz-lineup">
@@ -245,12 +245,12 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
             </div>
           </section>
 
-          {/* Per-size visual cards — a scaled bed icon with sleeper
+          {/* Per-size visual cards, a scaled bed icon with sleeper
               silhouettes plus the at-a-glance specs and a shop link. */}
           <section className="sz-cards-sec" aria-labelledby="sizes-cards-heading">
             <h2 id="sizes-cards-heading" className="h2 ms-section-h">Compare every size</h2>
             <p className="muted ms-section-lede">
-              Who each size suits, the smallest bedroom it works in, and what we stock — tap any size to shop it.
+              Who each size suits, the smallest bedroom it works in, and what we stock, tap any size to shop it.
             </p>
             <div className="sz-grid">
               {MATTRESS_SIZES.map((s) => (
@@ -303,7 +303,7 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
           <section className="ms-dims" aria-labelledby={DIMS_HEADING_ID}>
             <h2 id={DIMS_HEADING_ID} className="h2 ms-section-h">Mattress dimensions in inches, feet &amp; cm</h2>
             <p className="muted ms-section-lede">
-              Every standard US mattress size with its full dimension breakdown — inches (the spec sheet), feet (room planning), and centimeters (international bedding).
+              Every standard US mattress size with its full dimension breakdown, inches (the spec sheet), feet (room planning), and centimeters (international bedding).
             </p>
             <div className="ms-dims-tablewrap">
               <table className="ms-dims-table">
@@ -339,7 +339,7 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
           {/* Specialty / RV / camper sizes. SEMrush 20260612 ideas:
               the sizes hub ranked for "camper mattress", "measure your
               rv", "60 x 75", and "custom size" queries it never
-              answered — shoppers landed on standard-size content and
+              answered, shoppers landed on standard-size content and
               bounced. Non-standard dimensions live in their own table
               (separate SPECIALTY_SIZES list) so the to-scale diagram
               and standard tables stay clean. */}
@@ -347,7 +347,7 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
             <h2 id="specialty-sizes-heading" className="h2 ms-section-h">Specialty, RV &amp; camper sizes</h2>
             <p className="muted ms-section-lede">
               RVs, campers, antique frames, and odd rooms use non-standard dimensions. RV specs vary by
-              manufacturer — measure your RV&rsquo;s platform (width, length, and corner cuts) before buying,
+              manufacturer, measure your RV&rsquo;s platform (width, length, and corner cuts) before buying,
               and ask any showroom about custom size options.
             </p>
             <div className="ms-dims-tablewrap">
@@ -369,7 +369,7 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
                         {s.usedIn}
                         {s.guideHref ? (
                           <>
-                            {' — '}
+                            {', '}
                             <Link href={s.guideHref}>{s.guideLabel ?? 'guide'}</Link>
                           </>
                         ) : null}
@@ -388,7 +388,7 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
           <section className="ms-faq" aria-labelledby={FAQ_HEADING_ID}>
             <h2 id={FAQ_HEADING_ID} className="h2 ms-section-h">Mattress size FAQs</h2>
             <p className="muted ms-section-lede">
-              The 14 questions shoppers ask us most often about bed sizes — answered.
+              The 14 questions shoppers ask us most often about bed sizes, answered.
             </p>
             <div className="ms-faq-list">
               {MATTRESS_SIZES_FAQ.map((item) => (
@@ -411,7 +411,7 @@ export function MattressSizesPage({ page }: { page: PageLike }) {
           </section>
 
           {/* Related guides. Curated cross-links to the merchant blog
-              cluster — closes the loop so link equity flows from the hub
+              cluster, closes the loop so link equity flows from the hub
               back to the 20 refreshed size/comparison articles, and so
               crawlers can discover the full cluster from /pages/mattress-sizes.
               Grouped By size / Comparisons / Practical so it scans cleanly

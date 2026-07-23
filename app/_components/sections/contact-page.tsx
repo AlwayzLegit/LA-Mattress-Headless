@@ -80,7 +80,7 @@ export async function ContactPage({
       icon: 'pin',
       title: 'Visit a showroom',
       value: '5 LA locations',
-      sub: 'Walk in — no appointment needed',
+      sub: 'Walk in, no appointment needed',
       href: '/pages/mattress-store-locations',
     },
     {
@@ -123,7 +123,7 @@ export async function ContactPage({
           ) : null}
         </header>
 
-        {/* Contact action cards — the primary call-to-action. Real links
+        {/* Contact action cards, the primary call-to-action. Real links
             (tel / mailto / showrooms); the chat card points to the global
             widget. Replaces the generic trust strip for this page. */}
         <section className="contact-actions" aria-label="Ways to reach us">
@@ -157,7 +157,7 @@ export async function ContactPage({
           })}
         </section>
 
-        {/* All-five-showroom map — custom static map (only our pins, no
+        {/* All-five-showroom map, custom static map (only our pins, no
             competitors, no third-party request). Same component the
             locations index uses. */}
         <div style={{ marginTop: 'var(--s-6)' }}>

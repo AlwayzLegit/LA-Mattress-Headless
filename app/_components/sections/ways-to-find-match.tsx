@@ -54,7 +54,7 @@ const WAYS: WayCard[] = [
     kind: 'chat',
     eyebrow: 'Ask anything',
     title: 'Chat with a sleep expert',
-    body: 'Powered by Claude. Get a real recommendation for back pain, hot sleepers, side sleepers — anything in plain English.',
+    body: 'Powered by Claude. Get a real recommendation for back pain, hot sleepers, side sleepers, anything in plain English.',
     icon: 'chat',
     cta: 'Open chat',
   },
@@ -82,7 +82,7 @@ export function WaysToFindMatch() {
           <div className="eyebrow">Find your match</div>
           <h2 id="ways-h" className="h2 ways-title">Three ways to pick the right mattress.</h2>
           <p className="muted ways-lede">
-            Different shoppers, different decision styles. Pick whichever feels right —
+            Different shoppers, different decision styles. Pick whichever feels right, 
             you can always switch between them.
           </p>
         </header>
@@ -112,7 +112,7 @@ export function WaysToFindMatch() {
                   type="button"
                   className="ways-card ways-card-button"
                   onClick={onChatClick}
-                  aria-label={`${w.title} — opens the AI shopping assistant`}
+                  aria-label={`${w.title}, opens the AI shopping assistant`}
                 >
                   {body}
                 </button>

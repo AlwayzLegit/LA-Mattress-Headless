@@ -3,10 +3,10 @@ import { Icon } from '../icon';
 import { PRICE_MATCH_TEXT } from '@/lib/faq';
 
 const REASONS: { icon: 'shield' | 'home' | 'truck' | 'card' | 'star'; title: string; body: string }[] = [
-  { icon: 'shield', title: 'Authorized dealer', body: 'Genuine Tempur-Pedic, Stearns & Foster, Diamond, Helix and more — never gray-market or knockoff models with mismatched warranties.' },
-  { icon: 'home', title: 'Five-showroom buying power', body: 'One family-owned operation across 5 LA showrooms buys deep and prices sharp — the savings pass to you, not a national chain’s ad budget.' },
-  { icon: 'star', title: 'Trained sleep consultants', body: 'Our consultants know every brand on the floor — they help you find the right mattress at the right price, not the most expensive one.' },
-  { icon: 'card', title: 'Floor models & clearance', body: 'Discontinued and floor-sample mattresses are marked down hard — ask in any showroom what’s on clearance that week.' },
+  { icon: 'shield', title: 'Authorized dealer', body: 'Genuine Tempur-Pedic, Stearns & Foster, Diamond, Helix and more, never gray-market or knockoff models with mismatched warranties.' },
+  { icon: 'home', title: 'Five-showroom buying power', body: 'One family-owned operation across 5 LA showrooms buys deep and prices sharp, the savings pass to you, not a national chain’s ad budget.' },
+  { icon: 'star', title: 'Trained sleep consultants', body: 'Our consultants know every brand on the floor, they help you find the right mattress at the right price, not the most expensive one.' },
+  { icon: 'card', title: 'Floor models & clearance', body: 'Discontinued and floor-sample mattresses are marked down hard, ask in any showroom what’s on clearance that week.' },
 ];
 
 /**
@@ -29,7 +29,7 @@ export function PriceConfidencePage() {
           <div className="eyebrow">Shop with confidence</div>
           <h1 className="h1" style={{ marginTop: 'var(--s-3)' }}>Our low price guarantee</h1>
           <p className="muted" style={{ maxWidth: '62ch', marginTop: 'var(--s-3)' }}>
-            Great mattresses at honest prices — backed by a real price match and a
+            Great mattresses at honest prices, backed by a real price match and a
             120-night sleep trial with one comfort exchange per purchase.
           </p>
         </header>

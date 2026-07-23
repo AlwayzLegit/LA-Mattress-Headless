@@ -18,7 +18,7 @@ export function FreeShippingBar({ subtotal }: { subtotal: { amount: string; curr
     <div className="cart-freeship-bar" data-unlocked={unlocked ? 'true' : 'false'}>
       <p className="cart-freeship-msg">
         {unlocked ? (
-          <><strong>Free white-glove delivery unlocked</strong> — setup &amp; old-mattress haul-away included.</>
+          <><strong>Free white-glove delivery unlocked</strong>, setup &amp; old-mattress haul-away included.</>
         ) : (
           <>Add{' '}
             <strong className="tnum">

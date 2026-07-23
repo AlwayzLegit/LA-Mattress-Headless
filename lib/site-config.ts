@@ -99,10 +99,10 @@ export const SOCIAL_PROFILES: readonly string[] = [
 ] as const;
 
 /* ────────────────────────────────────────────────────────────────────
-   Formatter helpers — derive the same display shapes the static
+   Formatter helpers, derive the same display shapes the static
    constants expose from a live LiveSiteConfig (or any { phoneDigits }
    object). Callers that fetch via getSiteConfig() use these to render
-   the same way the static fallback does — single source of formatting
+   the same way the static fallback does, single source of formatting
    truth across static + dynamic paths.
    ──────────────────────────────────────────────────────────────────── */
 

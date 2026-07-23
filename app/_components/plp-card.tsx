@@ -86,14 +86,14 @@ export function PlpCard({
           <div className="pcard-brand">{product.vendor}</div>
           <div className="pcard-name">{product.title}</div>
           {/* CRO review 2026-07-22: a visible "1 review" line hurts more
-              than no line — suppress the badge below 10 reviews on
+              than no line, suppress the badge below 10 reviews on
               browse grids (the PDP keeps its own fuller treatment). */}
           {product.reviews && product.reviews.count >= 10 ? (
             <div className="pcard-reviews"><ReviewsBadge reviews={product.reviews} size="inline" /></div>
           ) : null}
           <PcardSpecs specs={product.specs} />
           {/* CRO review 2026-07-22: "$399 – $749" ranges read as
-              ambiguity — "From $399" communicates the entry price
+              ambiguity, "From $399" communicates the entry price
               (passing the same Money twice collapses the range
               formatter to a single price). Single-price products render
               the bare price with no prefix. */}

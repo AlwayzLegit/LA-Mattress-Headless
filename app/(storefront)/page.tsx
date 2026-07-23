@@ -57,9 +57,9 @@ const LOCAL_BUSINESS_ID = 'https://www.mattressstoreslosangeles.com/#localbusine
 // missing/empty or the Storefront fetch fails, so the homepage never
 // ships blank metadata. Keep them keyword-tuned as a safe default.
 const FALLBACK_TITLE =
-  'Mattress Store Los Angeles — Sales & Same-Day Delivery | LA Mattress';
+  'Mattress Store Los Angeles, Sales & Same-Day Delivery | LA Mattress';
 const FALLBACK_DESCRIPTION =
-  'LA Mattress Store — shop mattress sales in Los Angeles on Tempur-Pedic, ' +
+  'LA Mattress Store, shop mattress sales in Los Angeles on Tempur-Pedic, ' +
   'Stearns & Foster, Helix & more. Free same-day LA delivery + 120-night exchange.';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -144,8 +144,8 @@ export default async function Home() {
   return (
     <main>
       {/* Phase 308 SEO PR C: canonical homepage <h1>. Visually hidden
-          (.sr-only) so the visual hierarchy is unchanged — hero slide 0
-          still reads as the prominent title to a sighted shopper — but
+          (.sr-only) so the visual hierarchy is unchanged, hero slide 0
+          still reads as the prominent title to a sighted shopper, but
           screen readers + search engines see this as the page's primary
           heading. Carries all four homepage target keywords Semrush
           flagged as missing from the previous slide-0-based <h1>
@@ -157,7 +157,7 @@ export default async function Home() {
       {/* Quiz lead-in sits directly under the hero so the first
           interactive surface on the homepage is the "find your match"
           path. Pre-fills /sleep-quiz?position=<id> on tap, dropping
-          the shopper at Q2 — sunk-cost commitment that lifts quiz
+          the shopper at Q2, sunk-cost commitment that lifts quiz
           completion vs. a cold start. Industry-standard placement
           (Helix, Casper, Nectar all put it above the fold). */}
       <QuizLeadIn />
@@ -167,7 +167,7 @@ export default async function Home() {
           that returns null pre-hydration and pops in a full ~400px-tall
           section once it reads localStorage. With it placed under the
           hero, the post-hydration pop-in pushed every subsequent
-          section down within the visible viewport — PostHog web-vitals
+          section down within the visible viewport, PostHog web-vitals
           captured a homepage CLS p95 of 0.79 (severe, sourced from the
           ~5% of returning visitors with 2+ recently-viewed items).
           Demoting it below PopularProducts moves the shift below the

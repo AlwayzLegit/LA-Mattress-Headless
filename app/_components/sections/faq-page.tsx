@@ -39,7 +39,7 @@ export async function FaqPage() {
           <h1 className="h1" style={{ marginTop: 'var(--s-3)' }}>Frequently asked questions</h1>
           <p className="muted" style={{ maxWidth: '60ch', marginTop: 'var(--s-3)' }}>
             Delivery, financing, our price match, the 120-night exchange, and how to
-            choose — answered. Still stuck? Call us or visit any of our 5 LA showrooms.
+            choose, answered. Still stuck? Call us or visit any of our 5 LA showrooms.
           </p>
         </header>
 

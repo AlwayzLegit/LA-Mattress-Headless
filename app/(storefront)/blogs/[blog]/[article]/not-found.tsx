@@ -11,7 +11,7 @@ export default function ArticleNotFound() {
   return (
     <main className="container" style={{ paddingTop: 'var(--s-10)', paddingBottom: 'var(--s-10)' }}>
       <div style={{ maxWidth: 720 }}>
-        <div className="eyebrow">404 — Article</div>
+        <div className="eyebrow">404, Article</div>
         <h1 className="h-display" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>
           Lost in<br />the night.
         </h1>

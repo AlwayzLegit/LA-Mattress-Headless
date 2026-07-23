@@ -53,7 +53,7 @@ export function QuizLeadIn() {
               role="listitem"
               href={`/sleep-quiz?position=${p.id}`}
               className="quiz-leadin-card"
-              aria-label={`Start the sleep quiz — ${p.label.toLowerCase()} sleeper`}
+              aria-label={`Start the sleep quiz, ${p.label.toLowerCase()} sleeper`}
             >
               <span className="quiz-leadin-card-label">{p.label}</span>
               <span className="quiz-leadin-card-sub muted">{p.sublabel}</span>

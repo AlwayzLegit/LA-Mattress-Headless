@@ -20,7 +20,7 @@ export type FaqItem = { q: string; a: string };
 // homepage FAQ, the /pages/faq FAQ, their FAQPage JSON-LD, and the
 // /pages/low-price-guarantee callout, so the wording can never drift.
 export const PRICE_MATCH_TEXT =
-  'Yes — if you find the same mattress for less at any authorized retailer within 30 days, we’ll refund the difference plus 10%.';
+  'Yes. If you find the same mattress for less at any authorized retailer within 30 days, we’ll refund the difference plus 10%.';
 
 export const HOMEPAGE_FAQ: FaqItem[] = [
   {
@@ -33,15 +33,15 @@ export const HOMEPAGE_FAQ: FaqItem[] = [
   },
   {
     q: 'What if I don’t like it?',
-    a: '120-night comfort exchange. Sleep on it for at least 30 nights, then if it’s not right, exchange for any other mattress — we credit the full original price.',
+    a: '120-night comfort exchange. Sleep on it for at least 30 nights, then if it’s not right, exchange for any other mattress, and we credit the full original price.',
   },
   {
     q: 'Is financing actually 0%?',
-    a: 'Yes. We offer 0% APR financing through Synchrony and Acima on approved credit — terms vary by purchase amount and partner. Apply at checkout or in any showroom.',
+    a: 'Yes. We offer 0% APR financing through Synchrony and Acima on approved credit. Terms vary by purchase amount and partner. Apply at checkout or in any showroom.',
   },
   {
     q: 'Can I see them in person first?',
-    a: 'Absolutely — that’s the whole point. Every mattress is on the floor at one of our 5 LA showrooms. No appointment needed.',
+    a: 'Absolutely, that’s the whole point. Every mattress is on the floor at one of our 5 LA showrooms. No appointment needed.',
   },
   {
     q: 'Do you remove my old mattress?',
@@ -53,19 +53,19 @@ export const HOMEPAGE_FAQ: FaqItem[] = [
   // brands) that weren't covered above.
   {
     q: 'Do you carry cooling mattresses?',
-    a: 'Yes — gel memory foam, phase-change covers, and breathable hybrids from Tempur-Pedic, Diamond, Helix and more. Tell us how hot you sleep in the 2-minute sleep quiz and we’ll narrow it down.',
+    a: 'Yes: gel memory foam, phase-change covers, and breathable hybrids from Tempur-Pedic, Diamond, Helix and more. Tell us how hot you sleep in the 2-minute sleep quiz and we’ll narrow it down.',
   },
   {
     q: 'What mattress sizes do you stock?',
-    a: 'Every standard size — Twin, Twin XL, Full, Queen, King, California King, and Split King — on the floor at all 5 LA showrooms, in most brands and comfort levels.',
+    a: 'Every standard size (Twin, Twin XL, Full, Queen, King, California King, and Split King) on the floor at all 5 LA showrooms, in most brands and comfort levels.',
   },
   {
     q: 'Can I finance with bad credit?',
-    a: 'Yes. Alongside 0% APR Synchrony financing on approved credit, we offer Acima lease-to-own with no credit needed — most customers are approved in minutes in-store or at checkout.',
+    a: 'Yes. Alongside 0% APR Synchrony financing on approved credit, we offer Acima lease-to-own with no credit needed. Most customers are approved in minutes in-store or at checkout.',
   },
   {
     q: 'Which mattress brands do you sell?',
-    a: 'Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Helix, Englander, Chattam & Wells, Eastman House, Southerland and more — plus our own value-priced private label.',
+    a: 'Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Helix, Englander, Chattam & Wells, Eastman House, Southerland and more, plus our own value-priced private label.',
   },
 ];
 
@@ -100,11 +100,11 @@ export const FAQ_PAGE_SECTIONS: FaqSection[] = [
       },
       {
         q: 'Is financing actually 0%?',
-        a: 'Yes. We offer 0% APR financing through Synchrony and Acima on approved credit — terms vary by purchase amount and partner. Apply at checkout or in any showroom.',
+        a: 'Yes. We offer 0% APR financing through Synchrony and Acima on approved credit. Terms vary by purchase amount and partner. Apply at checkout or in any showroom.',
       },
       {
         q: 'Can I finance with bad credit?',
-        a: 'Yes. Alongside 0% APR Synchrony financing on approved credit, we offer Acima lease-to-own with no credit needed — most customers are approved in minutes in-store or at checkout.',
+        a: 'Yes. Alongside 0% APR Synchrony financing on approved credit, we offer Acima lease-to-own with no credit needed. Most customers are approved in minutes in-store or at checkout.',
       },
     ],
   },
@@ -126,7 +126,7 @@ export const FAQ_PAGE_SECTIONS: FaqSection[] = [
     items: [
       {
         q: 'What if I don’t like it?',
-        a: '120-night comfort exchange. Sleep on it for at least 30 nights, then if it’s not right, exchange for any other mattress — we credit the full original price.',
+        a: '120-night comfort exchange. Sleep on it for at least 30 nights, then if it’s not right, exchange for any other mattress, and we credit the full original price.',
       },
     ],
   },
@@ -135,11 +135,11 @@ export const FAQ_PAGE_SECTIONS: FaqSection[] = [
     items: [
       {
         q: 'Can I see them in person first?',
-        a: 'Absolutely — that’s the whole point. Every mattress is on the floor at one of our 5 LA showrooms. No appointment needed.',
+        a: 'Absolutely, that’s the whole point. Every mattress is on the floor at one of our 5 LA showrooms. No appointment needed.',
       },
       {
         q: 'Will I get a hard sell?',
-        a: 'No. Our sleep consultants are trained on every brand we carry — real advice, not a hard sell. Lie down as long as you want and leave when you want. Five LA showrooms: Koreatown, West LA, La Brea / Hancock Park, Studio City, and Glendale.',
+        a: 'No. Our sleep consultants are trained on every brand we carry: real advice, not a hard sell. Lie down as long as you want and leave when you want. Five LA showrooms: Koreatown, West LA, La Brea / Hancock Park, Studio City, and Glendale.',
       },
     ],
   },
@@ -152,15 +152,15 @@ export const FAQ_PAGE_SECTIONS: FaqSection[] = [
       },
       {
         q: 'Do you carry cooling mattresses?',
-        a: 'Yes — gel memory foam, phase-change covers, and breathable hybrids from Tempur-Pedic, Diamond, Helix and more. Tell us how hot you sleep in the 2-minute sleep quiz and we’ll narrow it down.',
+        a: 'Yes: gel memory foam, phase-change covers, and breathable hybrids from Tempur-Pedic, Diamond, Helix and more. Tell us how hot you sleep in the 2-minute sleep quiz and we’ll narrow it down.',
       },
       {
         q: 'What mattress sizes do you stock?',
-        a: 'Every standard size — Twin, Twin XL, Full, Queen, King, California King, and Split King — on the floor at all 5 LA showrooms, in most brands and comfort levels.',
+        a: 'Every standard size (Twin, Twin XL, Full, Queen, King, California King, and Split King) on the floor at all 5 LA showrooms, in most brands and comfort levels.',
       },
       {
         q: 'Which mattress brands do you sell?',
-        a: 'Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Helix, Englander, Chattam & Wells, Eastman House, Southerland and more — plus our own value-priced private label.',
+        a: 'Tempur-Pedic, Stearns & Foster, Sealy, Diamond, Spring Air, Helix, Englander, Chattam & Wells, Eastman House, Southerland and more, plus our own value-priced private label.',
       },
     ],
   },

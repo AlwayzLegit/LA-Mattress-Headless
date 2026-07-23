@@ -66,9 +66,9 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   if (!SHOPIFY_CONFIGURED) return { title: 'Blog' };
   const blog = await getBlogByHandle({ handle: params.blog, first: 1 }).catch(() => null);
   if (!blog) return { title: 'Blog not found' };
-  const title = capTitle(firstNonEmpty(blog.seo.title, `${blog.title} — LA Mattress Store`));
+  const title = capTitle(firstNonEmpty(blog.seo.title, `${blog.title}, LA Mattress Store`));
   const description = truncDescription(
-    firstNonEmpty(blog.seo.description, `Articles from ${blog.title} — LA Mattress Store.`),
+    firstNonEmpty(blog.seo.description, `Articles from ${blog.title}, LA Mattress Store.`),
   );
   const url = `/blogs/${blog.handle}`;
   // Paginated cursor URLs (`?after=...`) duplicate the blog index with
@@ -193,7 +193,7 @@ export default async function BlogIndexPage(props: Params) {
             <>
               {/* Card titles below are h3s; without an h2 the outline
                   jumps h1->h3 for every card (audit a11y-headings-05).
-                  Visually hidden — the grid is self-evident sighted. */}
+                  Visually hidden, the grid is self-evident sighted. */}
               <h2 className="sr-only">Featured and recent articles</h2>
               <div className="gd-grid" aria-label="Articles">
                 {articles.map((a, idx) => {
@@ -258,7 +258,7 @@ export default async function BlogIndexPage(props: Params) {
           <div className="container">
             <h2 id="blog-archive" className="h2">All {displayTitle} articles</h2>
             <p className="muted" style={{ maxWidth: '64ch', marginTop: 'var(--s-2)' }}>
-              The complete archive — every article in {displayTitle}, A to Z.
+              The complete archive, every article in {displayTitle}, A to Z.
             </p>
             <ul className="html-sitemap-list" style={{ marginTop: 'var(--s-5)' }}>
               {archive.map((a) => (

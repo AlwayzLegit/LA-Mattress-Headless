@@ -33,8 +33,8 @@ export default function WishlistPage() {
         <div className="eyebrow">Your shortlist</div>
         <h1 className="h-display">Saved mattresses.</h1>
         <p className="muted wishlist-lede">
-          Tap the heart on any mattress to keep it here. The list lives in your browser — no account, no
-          email — and stays put across visits on this device.
+          Tap the heart on any mattress to keep it here. The list lives in your browser, no account, no
+          email, and stays put across visits on this device.
         </p>
       </header>
 

@@ -39,7 +39,7 @@ const DEPRECATED_BLOG_HANDLES = new Set(['beds-mattresses']);
 export const metadata: Metadata = {
   title: { absolute: 'Sitemap · LA Mattress Store' },
   description:
-    'Full directory of every page, mattress collection, brand, blog article, and policy at LA Mattress Store — five LA showrooms, premium mattresses, white-glove delivery.',
+    'Full directory of every page, mattress collection, brand, blog article, and policy at LA Mattress Store, five LA showrooms, premium mattresses, white-glove delivery.',
   alternates: { canonical: '/pages/sitemap' },
   robots: { index: true, follow: true },
 };
@@ -71,7 +71,7 @@ export default function HtmlSitemapPage() {
           The full directory of pages, collections, brands, blog articles, and policies on
           mattressstoreslosangeles.com. {nonEmptyCollections.length} collections,{' '}
           {publishedPages.length} pages, {liveBlogs.length} blogs with {totalArticles}{' '}
-          articles, and {inventoryProducts.length} mattresses. Five Los Angeles showrooms —
+          articles, and {inventoryProducts.length} mattresses. Five Los Angeles showrooms, 
           Koreatown, West LA, La Brea, Studio City, Glendale.
         </p>
       </header>
@@ -107,8 +107,8 @@ export default function HtmlSitemapPage() {
       <section className="html-sitemap-section" aria-labelledby="hs-quiz">
         <h2 id="hs-quiz" className="h2">Tools &amp; utilities</h2>
         <ul className="html-sitemap-list">
-          <li><Link href="/blogs">Guides — all mattress &amp; sleep articles</Link></li>
-          <li><Link href="/sleep-quiz">Sleep Quiz — 2-minute mattress match</Link></li>
+          <li><Link href="/blogs">Guides, all mattress &amp; sleep articles</Link></li>
+          <li><Link href="/sleep-quiz">Sleep Quiz, 2-minute mattress match</Link></li>
           <li><Link href="/compare">Compare mattresses</Link></li>
           <li><Link href="/wishlist">Wishlist</Link></li>
           <li><Link href="/search">Search</Link></li>

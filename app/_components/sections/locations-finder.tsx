@@ -202,7 +202,7 @@ export function LocationsFinder({ showrooms }: Props) {
                 <Link
                   href={`/pages/${s.handle}`}
                   className="location-card-photo"
-                  aria-label={`${s.name} — view details`}
+                  aria-label={`${s.name}, view details`}
                 >
                   <Image
                     src={s.imageUrl}

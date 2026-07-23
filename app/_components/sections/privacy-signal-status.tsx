@@ -59,7 +59,7 @@ export function PrivacySignalStatus() {
         <p className="muted" style={{ margin: '0 0 var(--s-3)', lineHeight: 1.55 }}>
           You&rsquo;ve opted this browser out of the sale or sharing of personal information.
           Advertising-related analytics are disabled. This preference is stored on this
-          browser only — use the form below (or GPC) to cover other browsers and devices.
+          browser only, use the form below (or GPC) to cover other browsers and devices.
         </p>
       ) : (
         <p className="muted" style={{ margin: '0 0 var(--s-3)', lineHeight: 1.55 }}>
@@ -68,7 +68,7 @@ export function PrivacySignalStatus() {
           <a href="https://globalprivacycontrol.org/" target="_blank" rel="noopener noreferrer">
             Global Privacy Control
           </a>
-          {' '}— we honor it.
+          {' '}, we honor it.
         </p>
       )}
       {state.gpc ? null : (
