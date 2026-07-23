@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { getBlogByHandle } from '@/lib/shopify';
@@ -12,6 +11,8 @@ import { displayAuthorName } from '@/lib/article-author';
 import { resolveRedirectPath } from '@/lib/sanitize';
 import { Icon } from '@/app/_components/icon';
 import { SITE_URL } from '@/lib/site-config';
+import { BlogArticleFeed, type ArticleCard } from './blog-article-feed';
+import { BlogArchiveList } from './blog-archive-list';
 
 /**
  * Every published, non-redirected article in this blog, sorted A–Z, as a
@@ -123,10 +124,29 @@ export default async function BlogIndexPage(props: Params) {
   const articles = blog.articles.nodes;
   const archive = fullArchiveFor(params.blog);
   const displayTitle = toSentenceCase(stripBrandSuffix(blog.title));
-  const nextHref =
-    blog.articles.pageInfo.hasNextPage && blog.articles.pageInfo.endCursor
-      ? `/blogs/${blog.handle}?${new URLSearchParams({ after: blog.articles.pageInfo.endCursor }).toString()}`
-      : null;
+  // Seed the infinite-scroll feed with the first slice, server-rendered
+  // for LCP + crawlability. Subsequent slices are appended client-side
+  // from /api/blog-articles (no page navigation). Author name + date
+  // label are pre-computed here so the client renders plain strings and
+  // can't drift from this SSR markup at hydration.
+  const initialCards: ArticleCard[] = articles.map((a) => ({
+    id: a.id,
+    handle: a.handle,
+    title: a.title,
+    excerpt: a.excerpt ?? null,
+    imageUrl: a.image?.url ?? null,
+    imageAlt: a.image?.altText ?? a.title,
+    publishedAt: a.publishedAt,
+    dateLabel: new Date(a.publishedAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }),
+    authorName: displayAuthorName(a.author),
+  }));
+  const initialCursor = blog.articles.pageInfo.hasNextPage
+    ? blog.articles.pageInfo.endCursor
+    : null;
 
   const breadcrumbLd = {
     '@context': 'https://schema.org',
@@ -170,7 +190,7 @@ export default async function BlogIndexPage(props: Params) {
                 {blogIntroFor(blog.handle)}
               </p>
               <div className="lp-hero-meta">
-                <span><strong>{articles.length}</strong> articles on this page</span>
+                <span><strong>{archive.length > 0 ? archive.length : articles.length}</strong> articles</span>
                 <span><strong>5</strong> LA showrooms</span>
                 <span><strong>No</strong> email signup required</span>
               </div>
@@ -195,59 +215,18 @@ export default async function BlogIndexPage(props: Params) {
                   jumps h1->h3 for every card (audit a11y-headings-05).
                   Visually hidden, the grid is self-evident sighted. */}
               <h2 className="sr-only">Featured and recent articles</h2>
-              <div className="gd-grid" aria-label="Articles">
-                {articles.map((a, idx) => {
-                  const cat = blog.title;
-                  const date = new Date(a.publishedAt);
-                  const dateLabel = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                  return (
-                    <Link
-                      key={a.id}
-                      href={`/blogs/${blog.handle}/${a.handle}`}
-                      className="gd-card"
-                    >
-                      <div className="gd-card-img">
-                        {a.image ? (
-                          <Image
-                            src={a.image.url}
-                            alt={a.image.altText ?? a.title}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            style={{ objectFit: 'cover' }}
-                            priority={!after && idx < 3}
-                          />
-                        ) : (
-                          <span className="ph-label" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>[Article image]</span>
-                        )}
-                      </div>
-                      <div className="gd-card-body">
-                        <div className="gd-card-meta">
-                          <span>{cat}</span>
-                          <span aria-hidden="true">·</span>
-                          <time dateTime={a.publishedAt}>{dateLabel}</time>
-                        </div>
-                        <h3>{a.title}</h3>
-                        {a.excerpt ? <p className="gd-card-excerpt">{a.excerpt}</p> : null}
-                        <div className="gd-card-foot">
-                          <span className="muted">
-                            By {displayAuthorName(a.author)}
-                          </span>
-                          <span className="arrow">
-                            Read <Icon name="arrow-right" size={14} />
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-              {nextHref ? (
-                <div className="plp-pagination" style={{ marginTop: 'var(--s-7)' }}>
-                  <Link href={nextHref} className="btn btn-ghost btn-lg">
-                    Load more <Icon name="arrow-right" size={16} />
-                  </Link>
-                </div>
-              ) : null}
+              {/* Phase: infinite-scroll feed. The first slice is
+                  server-rendered here; subsequent slices append
+                  client-side (IntersectionObserver + a "Load more"
+                  fallback button) via /api/blog-articles. Replaces the
+                  old `?after=` <Link> that navigated to a fresh page and
+                  reset the visible cards. */}
+              <BlogArticleFeed
+                blogHandle={blog.handle}
+                blogTitle={blog.title}
+                initialArticles={initialCards}
+                initialCursor={initialCursor}
+              />
             </>
           )}
         </div>
@@ -260,13 +239,11 @@ export default async function BlogIndexPage(props: Params) {
             <p className="muted" style={{ maxWidth: '64ch', marginTop: 'var(--s-2)' }}>
               The complete archive, every article in {displayTitle}, A to Z.
             </p>
-            <ul className="html-sitemap-list" style={{ marginTop: 'var(--s-5)' }}>
-              {archive.map((a) => (
-                <li key={a.handle}>
-                  <Link href={`/blogs/${blog.handle}/${a.handle}`}>{a.title}</Link>
-                </li>
-              ))}
-            </ul>
+            {/* Every link stays in the SSR DOM (the depth-3 crawl-path
+                guarantee), but the overflow past the first chunk is
+                collapsed behind a disclosure so a 600-article blog is no
+                longer a wall of links. See blog-archive-list.tsx. */}
+            <BlogArchiveList blogHandle={blog.handle} items={archive} />
           </div>
         </section>
       ) : null}
