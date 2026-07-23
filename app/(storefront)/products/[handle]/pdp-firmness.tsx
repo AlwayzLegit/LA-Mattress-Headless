@@ -84,12 +84,12 @@ function firmnessHeadline(score: number): string {
 
 function firmnessLede(score: number): string {
   if (score <= 3)
-    return `A ${score}/10 firmness — soft enough to cradle hips and shoulders. Best for side sleepers under 200 lb.`;
+    return `A ${score}/10 firmness, soft enough to cradle hips and shoulders. Best for side sleepers under 200 lb.`;
   if (score <= 5)
-    return `A ${score}/10 firmness — soft enough to relieve pressure on shoulders and hips, firm enough to keep your spine in line. Most-recommended firmness for combination sleepers.`;
+    return `A ${score}/10 firmness, soft enough to relieve pressure on shoulders and hips, firm enough to keep your spine in line. Most-recommended firmness for combination sleepers.`;
   if (score <= 7)
-    return `A ${score}/10 firmness — gentle support without sinking. Good for back and combination sleepers, plus side sleepers over 200 lb.`;
-  return `A ${score}/10 firmness — supportive top with minimal contour. Best for back and stomach sleepers, plus heavier sleepers who want less hug.`;
+    return `A ${score}/10 firmness, gentle support without sinking. Good for back and combination sleepers, plus side sleepers over 200 lb.`;
+  return `A ${score}/10 firmness, supportive top with minimal contour. Best for back and stomach sleepers, plus heavier sleepers who want less hug.`;
 }
 
 function fitLabel(fit: SleepPositionFit): string {

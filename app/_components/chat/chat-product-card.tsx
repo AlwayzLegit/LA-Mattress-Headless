@@ -67,7 +67,7 @@ export function ChatProductCard({ card }: { card: ChatProductCardData }) {
     >
       {card.imageUrl ? (
         <div className="chat-card-img">
-          {/* Plain <img> intentionally — the chat panel isn't a hot
+          {/* Plain <img> intentionally, the chat panel isn't a hot
               path for the image optimizer, and next/image inside a
               fixed-width card here over-complicates the sizing. The
               Shopify CDN serves WebP by default with cache headers. */}

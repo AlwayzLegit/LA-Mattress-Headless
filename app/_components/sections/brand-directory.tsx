@@ -40,7 +40,7 @@ export async function BrandDirectory() {
       <div className="eyebrow">The brands we carry</div>
       <h2 id="brand-directory-h" className="h2">Every brand, on the floor.</h2>
       <p className="muted" style={{ maxWidth: '60ch', marginTop: 'var(--s-2)' }}>
-        We&apos;re an authorized dealer for every brand below — set up across our
+        We&apos;re an authorized dealer for every brand below, set up across our
         five Los Angeles showrooms so you can lie down and compare before you buy.
       </p>
       <div className="brands-page-grid" aria-label="Mattress and bedding brands">

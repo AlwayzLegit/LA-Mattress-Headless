@@ -53,7 +53,7 @@ export function PdpReviewsSection({ productGid, productHandle, reviews }: Props)
           `.jdgm-write-rev-link` CTA originally added in #334 was
           built on the belief that Judge.me's preloader binds a
           click handler to anchors with that class once the widget
-          hydrates. On the live PDP that binding never took — the
+          hydrates. On the live PDP that binding never took, the
           button visually existed but only ever triggered the
           default anchor scroll + URL hash, with no form opening.
           Two follow-up fixes (#350, #353) tried to repair the
@@ -82,7 +82,7 @@ export function PdpReviewsSection({ productGid, productHandle, reviews }: Props)
               attributes in internal links"). Re-added after the #12
               investigation: it had been removed on a hunch that it broke
               "Load more", but Judge.me confirmed that bug was their NEW
-              widget mis-binding on headless — they switched the shop to
+              widget mis-binding on headless, they switched the shop to
               the LEGACY widget, which is what this component ran
               alongside in production for months without issue. It only
               mutates the `rel` attribute (no node moves) and skips

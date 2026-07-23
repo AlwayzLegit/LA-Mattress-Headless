@@ -88,7 +88,7 @@ export function LegalPage({
           <p>
             Questions? Call us at{' '}
             <a href={`tel:${SITE_PHONE_TEL}`}>{SITE_PHONE_DISPLAY}</a> or{' '}
-            <Link href="/pages/mattress-store-contact">contact a showroom</Link> — every call
+            <Link href="/pages/mattress-store-contact">contact a showroom</Link>, every call
             reaches a real person at a real store.
           </p>
         </aside>

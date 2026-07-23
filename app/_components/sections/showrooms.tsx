@@ -50,7 +50,7 @@ export function Showrooms() {
         <div className="showrooms-head-right">
           <p className="muted showrooms-lede">
             Every mattress we sell is on the floor at one of our five Los Angeles
-            showrooms. Lie down as long as you want — no appointments, no pressure.
+            showrooms. Lie down as long as you want, no appointments, no pressure.
           </p>
           <RailScrollButtons
             railId={RAIL_ID}
@@ -71,7 +71,7 @@ export function Showrooms() {
                 {imageUrl ? (
                   <Image
                     src={imageUrl}
-                    alt={`${s.name} mattress store showroom — ${s.address}, Los Angeles`}
+                    alt={`${s.name} mattress store showroom, ${s.address}, Los Angeles`}
                     fill
                     sizes="(max-width: 880px) 78vw, 360px"
                     style={{ objectFit: 'cover' }}

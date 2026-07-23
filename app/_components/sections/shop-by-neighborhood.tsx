@@ -47,7 +47,7 @@ export function ShopByNeighborhood() {
           <div className="eyebrow">Free white-glove delivery</div>
           <h2 id="sbn-h" className="h2">Shop mattresses near your neighborhood.</h2>
           <p className="muted shop-by-neighborhood-lede">
-            Free same-day mattress delivery across Los Angeles — same brands, same prices,
+            Free same-day mattress delivery across Los Angeles, same brands, same prices,
             same service, whether you&rsquo;re in Beverly Hills, Pasadena, or Long Beach.
             Pick your neighborhood to see your nearest showroom.
           </p>

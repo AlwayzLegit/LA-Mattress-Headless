@@ -31,7 +31,7 @@ export const LOCAL_GUIDES: LocalGuide[] = [
   {
     href: '/blogs/mattress-buying-guide/best-mattress-for-back-pain-in-los-angeles-a-local-buyers-guide',
     title: 'Best mattress for back pain in LA',
-    blurb: 'A local buyer’s guide to the support and firmness that ease back pain — and where to try them.',
+    blurb: 'A local buyer’s guide to the support and firmness that ease back pain, and where to try them.',
   },
   {
     href: '/blogs/mattress-buying-guide/best-mattress-for-lower-back-pain-los-angeles',
@@ -41,6 +41,6 @@ export const LOCAL_GUIDES: LocalGuide[] = [
   {
     href: '/blogs/sleep-blog/best-cooling-mattress-for-hot-sleepers-in-los-angeles-2026-guide',
     title: 'Best cooling mattress for hot sleepers',
-    blurb: 'Cooling builds that handle warm LA nights — gel foams and breathable hybrids compared.',
+    blurb: 'Cooling builds that handle warm LA nights, gel foams and breathable hybrids compared.',
   },
 ];

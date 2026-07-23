@@ -19,12 +19,12 @@ type FlowConfig = { heading: string; lede: string; steps: Step[] };
 const FLOWS: Record<string, FlowConfig> = {
   'love-your-bed-guarantee': {
     heading: 'How the 120-night exchange works',
-    lede: 'Choose with confidence — if the feel isn’t right after a fair trial, we make the swap easy.',
+    lede: 'Choose with confidence, if the feel isn’t right after a fair trial, we make the swap easy.',
     steps: [
       {
         icon: 'home',
         title: 'Sleep on it 30 nights',
-        body: 'Give your body at least 30 nights to adjust to a new mattress before deciding — break-in is real.',
+        body: 'Give your body at least 30 nights to adjust to a new mattress before deciding, break-in is real.',
       },
       {
         icon: 'phone',
@@ -34,7 +34,7 @@ const FLOWS: Record<string, FlowConfig> = {
       {
         icon: 'truck',
         title: 'We pick up & redeliver',
-        body: 'We collect the original and bring your new pick — any in-stock mattress, any brand, any size. A flat $100 exchange service fee covers the pickup and redelivery.',
+        body: 'We collect the original and bring your new pick, any in-stock mattress, any brand, any size. A flat $100 exchange service fee covers the pickup and redelivery.',
       },
       {
         icon: 'card',
@@ -45,17 +45,17 @@ const FLOWS: Record<string, FlowConfig> = {
   },
   'lowest-price-guarantee': {
     heading: 'How the price guarantee works',
-    lede: 'Find it cheaper and we don’t just match — we beat it by 10%, before or after you buy.',
+    lede: 'Find it cheaper and we don’t just match, we beat it by 10%, before or after you buy.',
     steps: [
       {
         icon: 'search',
         title: 'Find a lower price',
-        body: 'Spot the same mattress for less at an authorized retailer — in-store or online.',
+        body: 'Spot the same mattress for less at an authorized retailer, in-store or online.',
       },
       {
         icon: 'mail',
         title: 'Send us the link or ad',
-        body: 'Share it with us — no haggling and no paperwork on your end. Works up to 30 days after purchase too.',
+        body: 'Share it with us, no haggling and no paperwork on your end. Works up to 30 days after purchase too.',
       },
       {
         icon: 'shield',
@@ -65,13 +65,13 @@ const FLOWS: Record<string, FlowConfig> = {
       {
         icon: 'card',
         title: 'We beat it by 10%',
-        body: 'Not just match — 10% below the competitor’s price. Already bought? We refund the difference plus 10%.',
+        body: 'Not just match, 10% below the competitor’s price. Already bought? We refund the difference plus 10%.',
       },
     ],
   },
   warranty: {
     heading: 'How a warranty claim works',
-    lede: 'Every mattress is backed by the manufacturer’s warranty — and we file the claim for you.',
+    lede: 'Every mattress is backed by the manufacturer’s warranty, and we file the claim for you.',
     steps: [
       {
         icon: 'alert',

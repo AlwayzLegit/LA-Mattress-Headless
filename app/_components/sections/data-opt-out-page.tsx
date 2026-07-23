@@ -30,7 +30,7 @@ export function DataOptOutPage() {
         <p className="muted" style={{ fontSize: 18, lineHeight: 1.55, maxWidth: '60ch' }}>
           California residents have the right to opt out of the sale or sharing of their
           personal information, request access to or deletion of their data, and ask us to
-          correct inaccurate information. Use the form below — we&rsquo;ll respond within
+          correct inaccurate information. Use the form below, we&rsquo;ll respond within
           45 days, as required by California law.
         </p>
       </header>
@@ -52,7 +52,7 @@ export function DataOptOutPage() {
           <ul className="ccpa-aside-list">
             <li>
               <Icon name="phone" size={16} />{' '}
-              <a href={`tel:${SITE_PHONE_TEL}`}>{SITE_PHONE_DISPLAY}</a> — call during showroom hours.
+              <a href={`tel:${SITE_PHONE_TEL}`}>{SITE_PHONE_DISPLAY}</a>, call during showroom hours.
             </li>
             <li>
               <Icon name="card" size={16} />{' '}

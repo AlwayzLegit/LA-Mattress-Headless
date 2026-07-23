@@ -46,9 +46,9 @@ import { AnalyticsShopify } from '../_components/analytics-shopify';
 // Store details → Brand) when the merchant has filled them in.
 // Hardcoded fallbacks fire when Shopify isn't configured or Brand
 // fields are blank, so unconfigured stores still render correctly.
-const FALLBACK_TITLE = 'LA Mattress — Sleep, engineered in Los Angeles.';
+const FALLBACK_TITLE = 'LA Mattress, Sleep, engineered in Los Angeles.';
 const FALLBACK_DESCRIPTION =
-  'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond — white-glove delivery & 0% APR financing.';
+  'Family-owned LA mattress store with 5 showrooms. Tempur-Pedic, Stearns & Foster, Helix, Diamond, white-glove delivery & 0% APR financing.';
 const FALLBACK_OG_DESCRIPTION =
   'Five LA showrooms. Premium mattress brands, same-day delivery, 0% APR financing. Family-owned since 2012.';
 
@@ -137,7 +137,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
         {announcement ? <AnnouncementBar data={announcement} /> : <TopBar />}
         <Nav brands={brands} />
         {/* Slim sitewide trust bar with interlinks, directly under
-            the header (static — scrolls away). De-duped from TopBar. */}
+            the header (static, scrolls away). De-duped from TopBar. */}
         <TrustStrip />
         {/*
           Skip-link target. tabIndex={-1} is required: without it, the
@@ -154,16 +154,16 @@ export default async function StorefrontLayout({ children }: { children: React.R
         <ChatWidget />
         {/* Email-capture promo modal ("20% off your first order of
             $499+"). Self-gates: opens on 8s dwell / exit-intent, once
-            per visitor, off /admin, /account, /checkout — see
+            per visitor, off /admin, /account, /checkout, see
             promo-popup.tsx. Inside CartProvider so it can auto-apply the
             code to the cart on signup. */}
         <PromoPopup />
         {/* Mobile-only sticky Call + Find-a-store bar (the showroom store's
-            top conversions). Self-gates off /products/* etc. — see
+            top conversions). Self-gates off /products/* etc., see
             sticky-contact-bar.tsx. */}
         <StickyContactBar />
         {/* Delegated tel:/maps click tracking (phone_click /
-            directions_click) — see contact-click-tracker.tsx. */}
+            directions_click), see contact-click-tracker.tsx. */}
         <ContactClickTracker />
         <Announcer />
       </CartProvider>

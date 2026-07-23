@@ -130,7 +130,7 @@ export function ComparisonPage({
             <section className="cmpx-decide" aria-labelledby="cmpx-decide-h">
               <h2 id="cmpx-decide-h" className="h2 mt-section-h">{extras.decideHeading}</h2>
               <p className="muted mt-section-lede">
-                The short version — match yourself to the column that sounds like you. Still torn? Try both at any of our showrooms.
+                The short version, match yourself to the column that sounds like you. Still torn? Try both at any of our showrooms.
               </p>
               <div className="cmpx-decide-grid">
                 {extras.decide.map((card) => (

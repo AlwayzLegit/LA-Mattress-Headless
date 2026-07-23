@@ -50,7 +50,7 @@ export async function ShowroomDetail({
           Our {showroom.area} showroom at {showroom.street}
           {showroom.crossStreet ? ` (${showroom.crossStreet})` : ''} is the closest
           LA Mattress store for {areaList}. Free white-glove delivery anywhere in
-          Los Angeles on orders over $499 — same-day when you order by 4 PM, with
+          Los Angeles on orders over $499, same-day when you order by 4 PM, with
           setup and free haul-away of your old mattress included.
         </p>
         <ul className="showroom-chips" aria-label={`Areas served from the ${showroom.area} showroom`}>
@@ -66,7 +66,7 @@ export async function ShowroomDetail({
           <h2 id="sd-nbhd-h" className="h2">LA neighborhoods near the {showroom.area} store</h2>
           <p className="muted" style={{ maxWidth: '64ch' }}>
             The {showroom.area} showroom is the closest LA Mattress store for these
-            neighborhoods — open yours for local delivery details, drive directions,
+            neighborhoods, open yours for local delivery details, drive directions,
             and the brands we keep on the floor.
           </p>
           <ul className="showroom-chips" aria-label={`Neighborhoods served from the ${showroom.area} showroom`}>
@@ -87,7 +87,7 @@ export async function ShowroomDetail({
           <h2 id="sd-brands-h" className="h2">Every brand we carry, on the {showroom.area} floor</h2>
           <p className="muted" style={{ maxWidth: '64ch' }}>
             Lie down and compare every mattress brand we sell, side by side, before
-            you decide — expert help when you want it, space to think when you don&rsquo;t.
+            you decide, expert help when you want it, space to think when you don&rsquo;t.
           </p>
           <ul className="showroom-chips" aria-label="Mattress brands on the showroom floor">
             {brands.map((b) => (
@@ -107,19 +107,19 @@ export async function ShowroomDetail({
         <ul className="showroom-expect-list">
           <li>
             <Icon name="home" size={18} />
-            <span><strong>Walk-ins welcome.</strong> No appointment needed — every mattress on the {showroom.area} floor is set up to try. Plan 20–40 minutes for a thorough visit.</span>
+            <span><strong>Walk-ins welcome.</strong> No appointment needed, every mattress on the {showroom.area} floor is set up to try. Plan 20–40 minutes for a thorough visit.</span>
           </li>
           <li>
             <Icon name="shield" size={18} />
-            <span><strong>Expert, no-pressure help.</strong> Our sleep consultants are trained on every brand we carry — they help you narrow it down, then leave you to think.</span>
+            <span><strong>Expert, no-pressure help.</strong> Our sleep consultants are trained on every brand we carry, they help you narrow it down, then leave you to think.</span>
           </li>
           <li>
             <Icon name="truck" size={18} />
-            <span><strong>Same-day LA delivery.</strong> Order by 4 PM for same-day white-glove delivery — setup and old-mattress haul-away included on orders over $499.</span>
+            <span><strong>Same-day LA delivery.</strong> Order by 4 PM for same-day white-glove delivery, setup and old-mattress haul-away included on orders over $499.</span>
           </li>
           <li>
             <Icon name="card" size={18} />
-            <span><strong>0% APR financing.</strong> Through Synchrony and Acima on approved credit — apply in-store or online, usually approved in under a minute.</span>
+            <span><strong>0% APR financing.</strong> Through Synchrony and Acima on approved credit, apply in-store or online, usually approved in under a minute.</span>
           </li>
         </ul>
         <div className="showroom-expect-cta">
@@ -139,7 +139,7 @@ export async function ShowroomDetail({
           {/* Phase 308 SEO audit: route the showroom's merchant CMS
               body through autoLinkArticleBody so the body picks up
               first-mention internal links to brand collections, size
-              pages, the sleep quiz, etc. — same pattern every other
+              pages, the sleep quiz, etc., same pattern every other
               CMS-body-rendering template uses (service-page,
               comparison-page, contact-page, legal-page, default page
               fallback in pages/[handle]/page.tsx). Without this,
@@ -165,7 +165,7 @@ export async function ShowroomDetail({
           {otherShowrooms.map((s) => (
             <li key={s.handle}>
               <Link href={`/pages/${s.handle}`} className="showroom-chip showroom-chip-link">
-                {s.area} — {s.street}
+                {s.area}, {s.street}
               </Link>
             </li>
           ))}
@@ -188,7 +188,7 @@ export async function ShowroomDetail({
           </li>
           <li>
             <Link href="/blogs/mattress-buying-guide/mattress-store-near-me-los-angeles" className="showroom-chip showroom-chip-link">
-              Mattress store near me — LA showrooms
+              Mattress store near me, LA showrooms
             </Link>
           </li>
           <li>

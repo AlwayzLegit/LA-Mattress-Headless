@@ -86,7 +86,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     firstNonEmpty(
       article.seo.description,
       article.excerpt,
-      `${article.title} — LA Mattress Store buying guide`,
+      `${article.title}, LA Mattress Store buying guide`,
     ),
   );
   const url = `/blogs/${article.blog.handle}/${article.handle}`;
@@ -309,7 +309,7 @@ function ArticleView({ article }: { article: Article }) {
         <div className="container gd-cta-band-inner">
           <div>
             <h3>Read more from {article.blog.title}.</h3>
-            <p>Buying guides and sleep advice — no email signup required.</p>
+            <p>Buying guides and sleep advice, no email signup required.</p>
           </div>
           <div className="gd-cta-actions">
             <Link href={`/blogs/${article.blog.handle}`} className="btn btn-primary btn-lg">

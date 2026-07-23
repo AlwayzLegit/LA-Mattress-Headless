@@ -27,7 +27,7 @@ const STEPS: Array<{ n: number; icon: IconName; title: string; body: string }> =
     n: 2,
     icon: 'phone',
     title: 'We schedule your window',
-    body: 'We confirm a delivery window that works for you — often the same day when you order by 4 PM on in-stock items.',
+    body: 'We confirm a delivery window that works for you, often the same day when you order by 4 PM on in-stock items.',
   },
   {
     n: 3,
@@ -39,7 +39,7 @@ const STEPS: Array<{ n: number; icon: IconName; title: string; body: string }> =
     n: 4,
     icon: 'shield',
     title: 'Free old-mattress haul-away',
-    body: 'We take your old mattress and recycle it through California’s mattress recycling program — at no charge.',
+    body: 'We take your old mattress and recycle it through California’s mattress recycling program, at no charge.',
   },
 ];
 
@@ -70,7 +70,7 @@ export function DeliveryExtras() {
       <section className="fin-steps-sec" aria-labelledby="del-steps-h">
         <h2 id="del-steps-h" className="h2 mt-section-h">How white-glove delivery works</h2>
         <p className="muted mt-section-lede">
-          From checkout to a made-up bed in four steps — we handle the lifting, setup, and disposal.
+          From checkout to a made-up bed in four steps, we handle the lifting, setup, and disposal.
         </p>
         <ol className="fin-steps">
           {STEPS.map((s) => (
@@ -98,7 +98,7 @@ export function DeliveryExtras() {
       </figure>
 
       <section className="svc-included-sec" aria-labelledby="del-incl-h">
-        <h2 id="del-incl-h" className="h2 mt-section-h">What’s included — every delivery</h2>
+        <h2 id="del-incl-h" className="h2 mt-section-h">What’s included, every delivery</h2>
         <p className="muted mt-section-lede">
           White-glove service is the standard, not an upsell. Every qualifying order includes all of this.
         </p>

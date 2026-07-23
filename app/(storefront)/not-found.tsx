@@ -30,7 +30,7 @@ export default function NotFound() {
             Lost in<br />the night.
           </h1>
           <p className="muted" style={{ fontSize: 18, lineHeight: 1.5, maxWidth: '50ch', marginBottom: 'var(--s-6)' }}>
-            The page you&rsquo;re looking for doesn&rsquo;t exist — maybe a discontinued product or an old promotion. Pick a category to keep shopping, or call us and we&rsquo;ll find what you&rsquo;re after.
+            The page you&rsquo;re looking for doesn&rsquo;t exist, maybe a discontinued product or an old promotion. Pick a category to keep shopping, or call us and we&rsquo;ll find what you&rsquo;re after.
           </p>
         </div>
 

@@ -66,7 +66,7 @@ export function NewsletterForm({
         onSuccess?.();
       } else {
         setStatus('error');
-        setError(data.error === 'invalid_email' ? 'That email looks off — try again.' : 'Something went wrong. Try again later.');
+        setError(data.error === 'invalid_email' ? 'That email looks off, try again.' : 'Something went wrong. Try again later.');
       }
     } catch {
       setStatus('error');
@@ -83,7 +83,7 @@ export function NewsletterForm({
         aria-live="polite"
         tabIndex={-1}
       >
-        Thanks — we&rsquo;ll be in touch when the next markdown drops.
+        Thanks, we&rsquo;ll be in touch when the next markdown drops.
       </div>
     );
   }

@@ -59,7 +59,7 @@ export function DeliveryDate({ initialDate }: { initialDate: string | null }) {
       </div>
       <p className="muted cart-delivery-help">
         Pick the day you&apos;d like white-glove delivery. We&apos;ll confirm the
-        window by phone — most LA orders deliver within 1–3 days.
+        window by phone, most LA orders deliver within 1–3 days.
       </p>
 
       {mounted ? (
@@ -97,7 +97,7 @@ export function DeliveryDate({ initialDate }: { initialDate: string | null }) {
       {pretty ? (
         <p className="cart-delivery-confirm" role="status">
           <Icon name="check" size={14} /> Requested for {pretty}
-          {saving ? ' — saving…' : ''}
+          {saving ? ', saving…' : ''}
         </p>
       ) : null}
     </section>

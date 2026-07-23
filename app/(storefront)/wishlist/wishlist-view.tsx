@@ -70,7 +70,7 @@ export function WishlistView() {
           Tap the heart on any mattress to save it here.
         </h2>
         <p className="muted" style={{ maxWidth: '52ch', marginBottom: 'var(--s-5)' }}>
-          Saved mattresses live in your browser — no account needed. Use it as a shortlist while you decide,
+          Saved mattresses live in your browser, no account needed. Use it as a shortlist while you decide,
           or share the page with a partner before booking a showroom visit.
         </p>
         <div className="wishlist-empty-actions">

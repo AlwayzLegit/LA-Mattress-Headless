@@ -63,7 +63,7 @@ function getOrCreateSessionId(): string | null {
 const SUGGESTED_PROMPTS = [
   'What mattress is best for back pain?',
   'Compare Tempur-Pedic and Stearns & Foster',
-  "I'm a side sleeper under 150 lbs — what would you recommend?",
+  "I'm a side sleeper under 150 lbs, what would you recommend?",
   "What's your return policy?",
 ];
 
@@ -506,7 +506,7 @@ export function ChatConversation() {
             <div className="chat-msg chat-msg-assistant">
               <p>
                 Hi! I&rsquo;m a sleep assistant. Ask me about mattresses, brands,
-                sleep position, returns, or financing — anything that helps you
+                sleep position, returns, or financing, anything that helps you
                 pick the right bed.
               </p>
             </div>

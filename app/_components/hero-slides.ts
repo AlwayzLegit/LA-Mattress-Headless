@@ -22,7 +22,7 @@ export const FALLBACK_HERO_SLIDES: HeroSlide[] = [
   {
     eyebrow: 'Try before you buy · 5 LA showrooms',
     title: 'The Los Angeles\nmattress store.',
-    body: '5 mattress stores across Los Angeles — Koreatown, Studio City, Glendale, West LA, and La Brea. Lie down on every mattress we sell, then book free white-glove delivery.',
+    body: '5 mattress stores across Los Angeles, Koreatown, Studio City, Glendale, West LA, and La Brea. Lie down on every mattress we sell, then book free white-glove delivery.',
     primary:   { label: 'Find a store',         icon: 'pin',         href: '/pages/mattress-store-locations' },
     secondary: { label: 'Book an appointment',                       href: '/pages/mattress-store-contact' },
     // Alt text serves SEO (image search + a11y). Phase 302: tighten from
@@ -36,7 +36,7 @@ export const FALLBACK_HERO_SLIDES: HeroSlide[] = [
   {
     eyebrow: 'Premium brands · Same-day Los Angeles delivery',
     title: 'Sleep, engineered\nin Los Angeles.',
-    body: 'Tempur-Pedic, Stearns & Foster, Helix, Diamond and more — delivered across Los Angeles, often the same day.',
+    body: 'Tempur-Pedic, Stearns & Foster, Helix, Diamond and more, delivered across Los Angeles, often the same day.',
     primary:   { label: 'Shop mattresses',     icon: 'arrow-right', href: '/collections/mattresses' },
     secondary: { label: 'Take the 2-min quiz',                      href: '/sleep-quiz' },
     // Phase 302: was "Brand lifestyle bedroom" — generic stock-photo

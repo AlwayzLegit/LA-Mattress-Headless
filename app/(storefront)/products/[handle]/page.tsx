@@ -116,7 +116,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     firstNonEmpty(
       product.seo.description,
       product.description,
-      `${product.title} — buy at LA Mattress Store, Los Angeles.`,
+      `${product.title}, buy at LA Mattress Store, Los Angeles.`,
     ),
   );
   const url = `/products/${product.handle}`;
@@ -254,7 +254,7 @@ function PdpStoreFacts({ product }: { product: Product }) {
   const primary = pickPrimaryCollection(product.collections);
   return (
     <p>
-      Order it for free white-glove delivery anywhere in Los Angeles — setup and
+      Order it for free white-glove delivery anywhere in Los Angeles, setup and
       old-mattress haul-away included, same-day when you order by 4&nbsp;pm.{' '}
       <Link href="/pages/mattress-store-financing">0% APR financing</Link> is available
       through Synchrony and Acima, and you can try it in person at any of our{' '}
@@ -409,7 +409,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
             />
 
             {/* Financing-per-month callout below the price psychology of
-                the BuyBox. Renders only for products $1,500+ — the
+                the BuyBox. Renders only for products $1,500+, the
                 Synchrony promo minimum. Industry-standard pattern
                 (Tempur-Pedic, Saatva, Casper all carry this) that reframes
                 a $2,699 mattress as a $112/mo decision. Links to the
@@ -458,7 +458,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
                 <Icon name="shield" size={18} />
                 <div>
                   <div className="pdp-delivery-title">120-night comfort exchange</div>
-                  <div className="muted pdp-delivery-sub">Sleep on it for 4 months — exchange free if it isn&rsquo;t right</div>
+                  <div className="muted pdp-delivery-sub">Sleep on it for 4 months, exchange free if it isn&rsquo;t right</div>
                 </div>
               </div>
               <div className="pdp-delivery-row">
@@ -475,7 +475,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
                 <Icon name="pin" size={18} />
                 <div>
                   <div className="pdp-delivery-title">Try it at a showroom</div>
-                  <div className="muted pdp-delivery-sub">On the floor at all 5 LA showrooms — Koreatown, West LA, La Brea, Studio City, Glendale →</div>
+                  <div className="muted pdp-delivery-sub">On the floor at all 5 LA showrooms, Koreatown, West LA, La Brea, Studio City, Glendale →</div>
                 </div>
               </Link>
             </div>
@@ -499,7 +499,7 @@ function ProductView({ product, related }: { product: Product; related: ProductS
               <h2 className="h2">About this mattress</h2>
               <div className="rte" dangerouslySetInnerHTML={{ __html: autoLinkArticleBody(sanitizeShopifyHtml(product.descriptionHtml)) }} />
               {/* Short merchant copy still leaves the page thin (SEMrush
-                  issue 112) — top it up with the spec-derived paragraph +
+                  issue 112), top it up with the spec-derived paragraph +
                   the store-facts paragraph + internal links rather than
                   overriding the merchant prose. The spec sentences are
                   distinct structured facts (height, build, feel, sizes,

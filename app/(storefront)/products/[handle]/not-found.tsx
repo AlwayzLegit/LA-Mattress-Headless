@@ -12,12 +12,12 @@ export default function ProductNotFound() {
   return (
     <main className="container" style={{ paddingTop: 'var(--s-10)', paddingBottom: 'var(--s-10)' }}>
       <div style={{ maxWidth: 720 }}>
-        <div className="eyebrow">404 — Product</div>
+        <div className="eyebrow">404, Product</div>
         <h1 className="h-display" style={{ margin: 'var(--s-4) 0 var(--s-5)' }}>
           Lost in<br />the night.
         </h1>
         <p className="muted" style={{ fontSize: 18, lineHeight: 1.5, maxWidth: '50ch', marginBottom: 'var(--s-6)' }}>
-          We can&rsquo;t find that product — it may be discontinued or the link may be wrong.
+          We can&rsquo;t find that product, it may be discontinued or the link may be wrong.
           Try one of these instead:
         </p>
         <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>

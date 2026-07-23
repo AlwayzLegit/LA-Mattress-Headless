@@ -54,7 +54,7 @@ export default async function ComparePage({ searchParams }: Search) {
         <h1 className="h1">Compare mattresses</h1>
         <p className="muted compare-lede">
           {products.length === 0
-            ? 'Pick mattresses from any collection page using the "Compare" button — up to 4 — then come back to this page.'
+            ? 'Pick mattresses from any collection page using the "Compare" button, up to 4, then come back to this page.'
             : products.length === 1
               ? 'Add at least one more mattress to see them side by side.'
               : `Comparing ${products.length} mattress${products.length === 1 ? '' : 'es'}.`}
@@ -76,7 +76,7 @@ export default async function ComparePage({ searchParams }: Search) {
           aria-describedby="compare-table-scroll-hint"
           tabIndex={0}
         >
-          {/* sr-only scroll affordance — the wrap is `tabIndex={0}` so AT
+          {/* sr-only scroll affordance, the wrap is `tabIndex={0}` so AT
               users can land on it; this hint tells them what to do once
               they have. The wrap horizontally scrolls on mobile when more
               than ~2 products are selected. */}
@@ -132,7 +132,7 @@ export default async function ComparePage({ searchParams }: Search) {
                   PLP / PDP / cart / quiz so a side-by-side decision
                   sees the monthly anchor right under the cash price.
                   Falls back to em-dash for products below the $1,500
-                  Synchrony threshold (matches the "—" pattern other
+                  Synchrony threshold (matches the ", " pattern other
                   unavailable rows use). */}
               <SpecRow label={`0% APR · ${FINANCING_DEFAULT_MONTHS} mo`}>
                 {products.map((p) => {
@@ -142,29 +142,29 @@ export default async function ComparePage({ searchParams }: Search) {
                   );
                   return (
                     <td key={p.id} className="tnum">
-                      {m ? `From ${m}` : '—'}
+                      {m ? `From ${m}` : ', '}
                     </td>
                   );
                 })}
               </SpecRow>
               <SpecRow label="Brand">
-                {products.map((p) => <td key={p.id}>{p.vendor || '—'}</td>)}
+                {products.map((p) => <td key={p.id}>{p.vendor || ', '}</td>)}
               </SpecRow>
               <SpecRow label="Material">
-                {products.map((p) => <td key={p.id}>{p.specs.materialType || p.productType || '—'}</td>)}
+                {products.map((p) => <td key={p.id}>{p.specs.materialType || p.productType || ', '}</td>)}
               </SpecRow>
               <SpecRow label="Firmness">
-                {products.map((p) => <td key={p.id}>{p.specs.firmness || '—'}</td>)}
+                {products.map((p) => <td key={p.id}>{p.specs.firmness || ', '}</td>)}
               </SpecRow>
               <SpecRow label="Height">
                 {products.map((p) => (
-                  <td key={p.id}>{p.specs.heightInches !== null ? `${p.specs.heightInches}"` : '—'}</td>
+                  <td key={p.id}>{p.specs.heightInches !== null ? `${p.specs.heightInches}"` : ', '}</td>
                 ))}
               </SpecRow>
               <SpecRow label="Sizes">
                 {products.map((p) => {
                   const opt = p.options.find((o) => /size/i.test(o.name));
-                  if (!opt) return <td key={p.id}>—</td>;
+                  if (!opt) return <td key={p.id}>, </td>;
                   // Sort sizes in canonical mattress order so the row reads as
                   // parallel across products (otherwise products list sizes in
                   // whatever order they were added in Shopify Admin).
@@ -178,12 +178,12 @@ export default async function ComparePage({ searchParams }: Search) {
               </SpecRow>
               <SpecRow label="Comfort trial">
                 {products.map((p) => (
-                  <td key={p.id}>{p.specs.trialNights !== null ? `${p.specs.trialNights} nights` : '—'}</td>
+                  <td key={p.id}>{p.specs.trialNights !== null ? `${p.specs.trialNights} nights` : ', '}</td>
                 ))}
               </SpecRow>
               <SpecRow label="Warranty">
                 {products.map((p) => (
-                  <td key={p.id}>{p.specs.warrantyYears !== null ? `${p.specs.warrantyYears} years` : '—'}</td>
+                  <td key={p.id}>{p.specs.warrantyYears !== null ? `${p.specs.warrantyYears} years` : ', '}</td>
                 ))}
               </SpecRow>
               <SpecRow label="Available">
@@ -196,7 +196,7 @@ export default async function ComparePage({ searchParams }: Search) {
                   <td key={p.id}>
                     {p.reviews
                       ? `${p.reviews.rating.toFixed(1)} / 5 · ${p.reviews.count.toLocaleString()} review${p.reviews.count === 1 ? '' : 's'}`
-                      : '—'}
+                      : ', '}
                   </td>
                 ))}
               </SpecRow>
@@ -217,7 +217,7 @@ export default async function ComparePage({ searchParams }: Search) {
 
       {products.length > 0 ? (
         <p className="muted compare-fineprint">
-          A &ldquo;—&rdquo; means that detail isn&rsquo;t published for that mattress yet.
+          A &ldquo;, &rdquo; means that detail isn&rsquo;t published for that mattress yet.
           Call us at <a href={`tel:${SITE_PHONE_TEL}`}>{SITE_PHONE_DISPLAY}</a> or stop by a
           showroom and we&rsquo;ll walk you through the differences in person.
         </p>

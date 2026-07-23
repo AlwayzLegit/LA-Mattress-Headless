@@ -76,7 +76,7 @@ export const COMPARISON_EXTRAS: Partial<Record<ComparisonPageHandle, ComparisonE
     ],
     feel: {
       heading: 'How they feel, rated',
-      note: 'Based on the side-by-side above — more dots means more of that quality.',
+      note: 'Based on the side-by-side above, more dots means more of that quality.',
       axes: [
         { label: 'Pressure relief', left: 4, right: 5 },
         { label: 'Motion isolation', left: 3, right: 5 },
@@ -106,7 +106,7 @@ export const COMPARISON_EXTRAS: Partial<Record<ComparisonPageHandle, ComparisonE
           'Are shopping outside the LA service area and need a national chain nearby',
           'Want a Mattress Firm-exclusive house brand (Sleepy’s, Therapedic)',
           'Are relocating and want store presence in your destination market',
-          'Find the same SKU cheaper there — our 10%-beat price guarantee still applies',
+          'Find the same SKU cheaper there, our 10%-beat price guarantee still applies',
         ],
       },
     ],

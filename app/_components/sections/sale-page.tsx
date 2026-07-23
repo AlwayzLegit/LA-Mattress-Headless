@@ -131,7 +131,7 @@ export function SalePage({
             borderBottom: '1px solid #d4a700',
           }}
         >
-          Preview mode — this sale page is not yet live to the public (goes live{' '}
+          Preview mode, this sale page is not yet live to the public (goes live{' '}
           {page.availableAt
             ? new Date(page.availableAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
             : 'on its scheduled date'}
@@ -184,7 +184,7 @@ export function SalePage({
           <h1 className="sale-page-title">{cleanTitle}</h1>
           {saleHasEnded ? (
             <p className="sale-page-lede">
-              This event has ended. The brands featured here are usually included in our next sale — check current offers below, or call us at{' '}
+              This event has ended. The brands featured here are usually included in our next sale, check current offers below, or call us at{' '}
               <a href={`tel:${SITE_PHONE_TEL}`} style={{ color: 'inherit', textDecoration: 'underline' }}>{SITE_PHONE_DISPLAY}</a>{' '}
               for early access to upcoming markdowns.
             </p>
@@ -212,7 +212,7 @@ export function SalePage({
         </div>
       </header>
 
-      {/* Trust strip — same trio used by the homepage TrustBar. Visible
+      {/* Trust strip, same trio used by the homepage TrustBar. Visible
           immediately below the hero so the value-prop is reinforced
           before the shopper scrolls into the grid. */}
       <section className="sale-page-trust" aria-label="What's included with every order">
@@ -241,7 +241,7 @@ export function SalePage({
         </div>
       </section>
 
-      {/* Featured product grid — first 12 best-sellers from the on-sale
+      {/* Featured product grid, first 12 best-sellers from the on-sale
           collection. Same PlpCard component every other PLP uses, so
           the look stays consistent and shoppers see real product cards
           with prices, ratings, brand tags, etc. */}
@@ -250,7 +250,7 @@ export function SalePage({
           <div className="container">
             <header className="sale-page-grid-head">
               <h2 id="sale-grid-h" className="h2">Featured deals</h2>
-              <p className="muted">A few of our best-selling mattresses currently on sale. {onSaleCount > 12 ? `${onSaleCount}+ models discounted in total — see all below.` : null}</p>
+              <p className="muted">A few of our best-selling mattresses currently on sale. {onSaleCount > 12 ? `${onSaleCount}+ models discounted in total, see all below.` : null}</p>
               <nav className="sale-page-chips" aria-label="Shop by category">
                 {SALE_CATEGORY_CHIPS.map((chip) => (
                   <Link key={chip.href} href={chip.href} className="sale-page-chip">
@@ -278,7 +278,7 @@ export function SalePage({
         </section>
       ) : null}
 
-      {/* Shop-by-category cards — the high-intent evergreen collections
+      {/* Shop-by-category cards, the high-intent evergreen collections
           (queen/king/firm/memory-foam) the holiday hub supports. Gives
           shoppers a fast path into the catalog and reinforces those
           collections' "[x] mattress sale" rankings via internal links. */}
@@ -286,7 +286,7 @@ export function SalePage({
         <div className="container">
           <header className="sale-page-grid-head">
             <h2 id="sale-shopby-h" className="h2">Shop the sale by size &amp; feel</h2>
-            <p className="muted">Jump to the most-shopped categories — every one is included in the sale.</p>
+            <p className="muted">Jump to the most-shopped categories, every one is included in the sale.</p>
           </header>
           <div className="sale-page-shopby-grid">
             {SALE_SHOP_BY.map((c) => (
@@ -301,7 +301,7 @@ export function SalePage({
       </section>
 
       {/* Merchant-authored long-form body. Sale terms, brand callouts,
-          showroom hours, etc. — anything they type into the Shopify
+          showroom hours, etc., anything they type into the Shopify
           page body renders here. */}
       {page.body ? (
         <article className="container sale-page-body">
@@ -309,7 +309,7 @@ export function SalePage({
         </article>
       ) : null}
 
-      {/* "Read more" guides — links to the supporting Mattress Buying
+      {/* "Read more" guides, links to the supporting Mattress Buying
           Guide articles so undecided shoppers can research, and so the
           hub passes link equity to that cluster. */}
       <section className="sale-page-guides" aria-labelledby="sale-guides-h">
@@ -331,7 +331,7 @@ export function SalePage({
         </div>
       </section>
 
-      {/* Footer CTA — repeat the primary action at the end of the page
+      {/* Footer CTA, repeat the primary action at the end of the page
           so a shopper who scrolled all the way down doesn't have to
           scroll back up to convert. */}
       <section className="sale-page-foot-cta">

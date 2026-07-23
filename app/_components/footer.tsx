@@ -85,7 +85,7 @@ export async function Footer() {
     <footer className="footer">
       <div className="container footer-top">
         <div className="footer-newsletter">
-          {/* Marketing headline — visually heading-styled, but it labels
+          {/* Marketing headline, visually heading-styled, but it labels
               the newsletter form below so we promote it to a real <h2>
               with aria-labelledby so the form region is named. */}
           <h2 id="footer-newsletter-h" className="h2 footer-h">Sleep on it.</h2>
@@ -182,7 +182,7 @@ export async function Footer() {
         <div className="footer-meta-line muted">© 2026 LA Mattress Store. All rights reserved.</div>
         {/* Legal-links row. The previous version had "Accessibility"
             and "Do Not Sell My Info" both pointing at the same CCPA
-            opt-out destination — misleading. Removed the misnamed
+            opt-out destination, misleading. Removed the misnamed
             "Accessibility" entry; the honest CCPA label stays. Add a
             real /pages/accessibility link here when one ships. */}
         <ul className="footer-legal-links">

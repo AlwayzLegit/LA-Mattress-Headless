@@ -187,7 +187,7 @@ export function PromoPopup() {
               {applyState === 'applying'
                 ? 'Adding it to your cart…'
                 : applyState === 'applied'
-                  ? 'Applied to your cart — 20% comes off at checkout on orders $499+.'
+                  ? 'Applied to your cart, 20% comes off at checkout on orders $499+.'
                   : 'Enter it at checkout to take 20% off orders $499+.'}
             </p>
             <Link
@@ -206,7 +206,7 @@ export function PromoPopup() {
             </h2>
             <p id={bodyId} className="promo-popup-sub">
               On any mattress order of <strong>$499 or more</strong>. Join our email
-              list and we&rsquo;ll send your code — then apply it to your cart instantly.
+              list and we&rsquo;ll send your code, then apply it to your cart instantly.
             </p>
             <NewsletterForm source="popup" onSuccess={onSignupSuccess} />
             <p className="promo-popup-fine">

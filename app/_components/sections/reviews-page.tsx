@@ -38,7 +38,7 @@ export async function ReviewsPage() {
           <h1 className="h1" style={{ margin: 'var(--s-3) 0 var(--s-4)' }}>Customer reviews</h1>
           <p className="muted" style={{ fontSize: 18, lineHeight: 1.55, maxWidth: '60ch' }}>
             We&rsquo;re collecting verified reviews from real LA Mattress shoppers. Check back
-            soon — or{' '}
+            soon, or{' '}
             <a href={`tel:${SITE_PHONE_TEL}`} className="link-arrow">
               call us at {SITE_PHONE_DISPLAY} <Icon name="phone" size={14} />
             </a>{' '}
@@ -97,29 +97,29 @@ export async function ReviewsPage() {
         </div>
         <p className="muted" style={{ fontSize: 16, lineHeight: 1.55, maxWidth: '60ch', marginTop: 'var(--s-4)' }}>
           These are real reviews from verified LA Mattress Store shoppers, collected via Judge.me.
-          We don&rsquo;t edit them, we don&rsquo;t cherry-pick — what you see is what they wrote.
+          We don&rsquo;t edit them, we don&rsquo;t cherry-pick, what you see is what they wrote.
         </p>
         {/* Phase 260c: expanded review-program copy. SEMrush flagged
-            /pages/reviews for low word count — the review cards
+            /pages/reviews for low word count, the review cards
             themselves are merchant-authored content; the surrounding
             page chrome was thin. This paragraph explains the program
             mechanics and gives crawlers more text to index. */}
         <div className="muted" style={{ fontSize: 15, lineHeight: 1.6, maxWidth: '65ch', marginTop: 'var(--s-5)' }}>
           <p style={{ marginBottom: 'var(--s-3)' }}>
             We use Judge.me to collect verified reviews because it ties each review to a real
-            order — every reviewer below actually bought and slept on the mattress they&rsquo;re
+            order, every reviewer below actually bought and slept on the mattress they&rsquo;re
             describing. A few weeks after delivery, Judge.me emails them a request to share their
             experience. We don&rsquo;t edit the wording, we don&rsquo;t suppress negative reviews,
             and we don&rsquo;t pay reviewers. If a mattress shows up with a 4-star average rather
-            than a 5, that&rsquo;s honest signal — and we&rsquo;d rather you have that signal
+            than a 5, that&rsquo;s honest signal, and we&rsquo;d rather you have that signal
             before you spend $1,500 on a bed than after.
           </p>
           <p>
             Reviews surface across the site: aggregate ratings appear on every product card
             in our PLPs, full reviews live on each product&rsquo;s detail page, and this page
             shows the latest 4-star-and-above reviews across the whole catalog. If you have
-            questions a review didn&rsquo;t answer, every showroom is open daily — Koreatown,
-            West LA, La Brea, Studio City, Glendale — or call{' '}
+            questions a review didn&rsquo;t answer, every showroom is open daily, Koreatown,
+            West LA, La Brea, Studio City, Glendale, or call{' '}
             <a href={`tel:${SITE_PHONE_TEL}`} className="link-arrow">
               {SITE_PHONE_DISPLAY}
             </a>.
@@ -136,7 +136,7 @@ export async function ReviewsPage() {
       <footer className="reviews-page-footer">
         <p className="muted" style={{ maxWidth: '60ch', fontSize: 15, lineHeight: 1.6 }}>
           Just bought a mattress? You&rsquo;ll get a request from Judge.me a couple weeks
-          after delivery. Honest reviews — good or bad — help everyone shop smarter.
+          after delivery. Honest reviews, good or bad, help everyone shop smarter.
         </p>
         <Link href="/collections/mattresses" className="btn btn-primary">
           Shop mattresses <Icon name="arrow-right" size={14} />

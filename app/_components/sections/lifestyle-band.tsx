@@ -28,7 +28,7 @@ export function LifestyleBand() {
           <h2 className="h2">Lie down before you buy.</h2>
           <p>
             Test every brand on the floor with zero pressure, then take it home with free same-day
-            white-glove delivery across Los Angeles — and 120 nights to be sure.
+            white-glove delivery across Los Angeles, and 120 nights to be sure.
           </p>
           <Link href="/pages/mattress-store-locations" className="btn btn-lg btn-on-dark">
             Find your showroom

@@ -53,7 +53,7 @@ export type Showroom = {
 export const FALLBACK_SHOWROOMS: Showroom[] = [
   {
     handle: 'koreatown-best-mattress-store',
-    name: 'LA Mattress Store — Koreatown',
+    name: 'LA Mattress Store, Koreatown',
     area: 'Koreatown',
     street: '201 S Western Ave',
     city: 'Los Angeles',
@@ -73,7 +73,7 @@ export const FALLBACK_SHOWROOMS: Showroom[] = [
   },
   {
     handle: 'best-mattress-store-west-la',
-    name: 'LA Mattress Store — West LA',
+    name: 'LA Mattress Store, West LA',
     area: 'West Los Angeles',
     street: '10861 W Pico Blvd',
     city: 'Los Angeles',
@@ -93,7 +93,7 @@ export const FALLBACK_SHOWROOMS: Showroom[] = [
   },
   {
     handle: 'best-mattress-store-la-brea',
-    name: 'LA Mattress Store — La Brea / Hancock Park',
+    name: 'LA Mattress Store, La Brea / Hancock Park',
     area: 'La Brea',
     street: '300 S La Brea Ave',
     city: 'Los Angeles',
@@ -113,7 +113,7 @@ export const FALLBACK_SHOWROOMS: Showroom[] = [
   },
   {
     handle: 'mattress-store-studio-city',
-    name: 'LA Mattress Store — Studio City',
+    name: 'LA Mattress Store, Studio City',
     area: 'Studio City',
     street: '12306 Ventura Blvd',
     city: 'Studio City',
@@ -133,7 +133,7 @@ export const FALLBACK_SHOWROOMS: Showroom[] = [
   },
   {
     handle: 'mattress-store-in-glendale',
-    name: 'LA Mattress Store — Glendale',
+    name: 'LA Mattress Store, Glendale',
     area: 'Glendale',
     street: '201 N Central Ave',
     city: 'Glendale',
@@ -162,7 +162,7 @@ export const FALLBACK_SHOWROOMS: Showroom[] = [
 export function formatPhone(phone: string): string {
   // Strip `+1-` prefix if present, then format the remaining digits.
   const digits = phone.replace(/^\+1-?/, '').replace(/[^\d]/g, '');
-  if (digits.length !== 10) return phone; // unexpected — surface as-is
+  if (digits.length !== 10) return phone; // unexpected, surface as-is
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 

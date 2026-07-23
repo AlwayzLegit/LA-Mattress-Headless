@@ -36,11 +36,11 @@ export function isGuidePage(handle: string): handle is GuidePageHandle {
 export const GUIDE_PAGES: Record<GuidePageHandle, GuidePageConfig> = {
   'mattress-sizes': {
     eyebrow: 'Buying guide · Sizes & dimensions',
-    lede: 'From Twin to California King — every standard mattress size we stock, with exact dimensions, who each one fits, and the smallest bedroom it works in.',
+    lede: 'From Twin to California King, every standard mattress size we stock, with exact dimensions, who each one fits, and the smallest bedroom it works in.',
     trust: [
       { icon: 'check', title: 'Try every size in-store', sub: 'All six sizes on the floor at our 5 LA showrooms' },
       { icon: 'truck', title: 'Free white-glove delivery', sub: 'Same-day across LA on orders over $499' },
-      { icon: 'shield', title: '120-night comfort exchange', sub: 'Swap it if the size isn’t right — no restocking fee' },
+      { icon: 'shield', title: '120-night comfort exchange', sub: 'Swap it if the size isn’t right, no restocking fee' },
     ],
     cta: {
       headline: 'Not sure which size fits your room?',
@@ -50,7 +50,7 @@ export const GUIDE_PAGES: Record<GuidePageHandle, GuidePageConfig> = {
   },
   'mattress-types': {
     eyebrow: 'Buying guide · Mattress types',
-    lede: 'Memory foam, hybrid, innerspring, or latex — how the four mattress types actually feel, who each one fits, and what to watch out for.',
+    lede: 'Memory foam, hybrid, innerspring, or latex, how the four mattress types actually feel, who each one fits, and what to watch out for.',
     trust: [
       { icon: 'check', title: 'Feel all four types in-store', sub: 'Foam, hybrid, innerspring & latex, side-by-side' },
       { icon: 'truck', title: 'Free white-glove delivery', sub: 'Same-day across LA on orders over $499' },

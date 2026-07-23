@@ -35,7 +35,7 @@ export default function AccountPage() {
         </h1>
         <p className="muted" style={{ fontSize: 17, lineHeight: 1.55, maxWidth: '52ch', marginBottom: 'var(--s-6)' }}>
           Order tracking and account management live on our secure checkout subdomain.
-          A unified account experience here is in the works — until then, your saved
+          A unified account experience here is in the works, until then, your saved
           mattresses and recently-viewed list live below.
         </p>
 
@@ -87,7 +87,7 @@ export default function AccountPage() {
           <div className="eyebrow">Need help with an order?</div>
           <p style={{ margin: 'var(--s-3) 0 var(--s-4)' }}>
             For order status, delivery scheduling, exchanges, or warranty claims, reach our team
-            directly — most questions are resolved on the first call.
+            directly, most questions are resolved on the first call.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--s-3)' }}>
             <a href={`tel:${SITE_PHONE_TEL}`} className="btn btn-primary">

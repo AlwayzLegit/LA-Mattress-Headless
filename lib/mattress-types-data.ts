@@ -121,7 +121,7 @@ export const MATTRESS_TYPES: MattressType[] = [
     name: 'Innerspring',
     slug: 'innerspring',
     collectionHref: '/collections/innerspring-mattresses',
-    tagline: 'A traditional coil core — bouncy, breathable, supportive.',
+    tagline: 'A traditional coil core, bouncy, breathable, supportive.',
     layers: [
       { label: 'Pillow-top / comfort layer', kind: 'foam', units: 1.5, fill: FILL.foamSoft },
       { label: 'Steel coil core', kind: 'coil', units: 4.5, fill: FILL.coilTint },

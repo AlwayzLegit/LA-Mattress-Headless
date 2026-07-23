@@ -165,7 +165,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
       page.seo.description,
       page.bodySummary,
       neighborhood?.defaultBlurb,
-      `${page.title} — LA Mattress Store`,
+      `${page.title}, LA Mattress Store`,
     ),
   );
   const url = `/pages/${page.handle}`;

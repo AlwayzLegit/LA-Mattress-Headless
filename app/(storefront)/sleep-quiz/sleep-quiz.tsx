@@ -275,7 +275,7 @@ export function SleepQuiz({ productPicksPromise }: { productPicksPromise: Promis
       </div>
       <div className="quiz-meta">
         <span className="muted tnum">{idx + 1} / {total}</span>
-        {/* Only offer "skip" once there's at least one answer — skipping
+        {/* Only offer "skip" once there's at least one answer, skipping
             with zero input produces a meaningless generic match. */}
         {answeredCount > 0 ? (
           <button

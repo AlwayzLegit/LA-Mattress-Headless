@@ -59,7 +59,7 @@ export async function NeighborhoodPage({
 
   return (
     <main className="container">
-      {/* Full-width wrapper (NOT .cms-page — that pins content to a 760px
+      {/* Full-width wrapper (NOT .cms-page, that pins content to a 760px
           left column, which left the product grid / trust strip / showroom
           tiles crammed left with the right half of the desktop page empty).
           Prose blocks below carry their own readable max-width. */}
@@ -92,7 +92,7 @@ export async function NeighborhoodPage({
               `Mattress store in ${neighborhood.name}${/\bLA\b/.test(neighborhood.name) ? '' : ', Los Angeles'}`}
           </h1>
           <p className="lp-hero-lede" style={{ maxWidth: '60ch' }}>
-            Free white-glove delivery to {neighborhood.name} on orders over $499 — same-day if you order by 4pm.{' '}
+            Free white-glove delivery to {neighborhood.name} on orders over $499, same-day if you order by 4pm.{' '}
             {primaryShowroom
               ? `Visit our ${primaryShowroom.area} showroom to try every mattress in person.`
               : 'Visit any of our 5 LA showrooms to try every mattress in person.'}
@@ -136,7 +136,7 @@ export async function NeighborhoodPage({
             <Icon name="card" size={18} />
             <div>
               <div className="locations-trust-title">0% APR financing</div>
-              <div className="locations-trust-sub">Synchrony &amp; Acima — instant approval</div>
+              <div className="locations-trust-sub">Synchrony &amp; Acima, instant approval</div>
             </div>
           </div>
         </section>
@@ -178,7 +178,7 @@ export async function NeighborhoodPage({
             <h2 id="np-shop-h" className="h2">Best-selling mattresses we deliver to {neighborhood.name}</h2>
             <p className="muted" style={{ maxWidth: '60ch' }}>
               Every model below ships free to {neighborhood.name} with white-glove setup and old-mattress haul-away
-              {primaryShowroom ? ` — or come test them in person at our ${primaryShowroom.area} showroom.` : '.'}
+              {primaryShowroom ? `, or come test them in person at our ${primaryShowroom.area} showroom.` : '.'}
             </p>
             <nav className="sale-page-chips" aria-label="Shop mattresses by type" style={{ marginTop: 'var(--s-4)' }}>
               {SALE_CATEGORY_CHIPS.map((chip) => (
@@ -241,7 +241,7 @@ export async function NeighborhoodPage({
                 : 'Other LA neighborhoods we serve'}
             </h2>
             <p className="muted" style={{ maxWidth: '60ch' }}>
-              We deliver to these nearby neighborhoods from the same showroom — open
+              We deliver to these nearby neighborhoods from the same showroom, open
               one for local delivery details and the brands we keep on the floor.
             </p>
             <ul
@@ -265,7 +265,7 @@ export async function NeighborhoodPage({
             <div className="eyebrow">Local mattress guides</div>
             <h2 id="np-guides-h" className="h2">Buying guides for Los Angeles sleepers</h2>
             <p className="muted" style={{ maxWidth: '60ch' }}>
-              Local picks and advice from our sleep team — read up before you visit the showroom.
+              Local picks and advice from our sleep team, read up before you visit the showroom.
             </p>
             <div className="nf-grid" style={{ marginTop: 'var(--s-5)' }}>
               {LOCAL_GUIDES.map((g) => (

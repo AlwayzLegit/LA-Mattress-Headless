@@ -111,7 +111,7 @@ export function SleepQuizResult({
             Find a showroom
           </Link>
         </div>
-        {/* Trust strip — same vocabulary as the PDP delivery info,
+        {/* Trust strip, same vocabulary as the PDP delivery info,
             scaled down to a horizontal row below the result CTAs. Tells
             a freshly-matched shopper what they get for clicking through
             (free delivery, 120-night exchange, 0% APR) right when
@@ -227,7 +227,7 @@ function QuizProductHero({ pick, onClick }: { pick: ProductSummary; onClick: () 
     <Link
       href={`/products/${pick.handle}`}
       className="quiz-result-product"
-      aria-label={`Shop ${pick.vendor} ${pick.title} — our top pick for you`}
+      aria-label={`Shop ${pick.vendor} ${pick.title}, our top pick for you`}
       onClick={onClick}
     >
       <div className="quiz-result-product-img ph" style={{ aspectRatio: '1' }}>

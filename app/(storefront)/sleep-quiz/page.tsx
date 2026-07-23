@@ -15,8 +15,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     url: '/sleep-quiz',
-    title: 'Sleep Quiz — LA Mattress Store',
-    description: '8 questions, under 2 minutes — get a mattress matched to how you sleep.',
+    title: 'Sleep Quiz, LA Mattress Store',
+    description: '8 questions, under 2 minutes, get a mattress matched to how you sleep.',
     // Quiz route has no associated image. Explicit reference to
     // app/opengraph-image.tsx so a share renders the brand card —
     // matches the Phase 180 fallback already on collection / article /
@@ -81,31 +81,31 @@ export default function SleepQuizPage() {
             <div className="eyebrow">Sleep Quiz</div>
             <h1 className="h1">Find your mattress in 8 questions.</h1>
             <p className="lp-hero-lede">
-              Tell us how you sleep — position, body, temperature, partner needs — and we&rsquo;ll
+              Tell us how you sleep, position, body, temperature, partner needs, and we&rsquo;ll
               shortlist the right mattresses for you. Free, under two minutes, no email required.
             </p>
             {/* Phase 260c: expanded descriptive copy beneath the quiz lede.
-                SEMrush flagged /sleep-quiz for low word count — the quiz UI
+                SEMrush flagged /sleep-quiz for low word count, the quiz UI
                 itself is mostly hidden inside form interactions, so the
                 visible above-the-fold prose was thin. This paragraph also
                 explains the methodology to shoppers who want to know how
                 the recommendation is computed before answering. */}
             <p className="muted" style={{ maxWidth: '64ch', marginTop: 'var(--s-3)' }}>
-              The quiz recommends one of four mattress materials — memory foam, hybrid, latex,
-              or innerspring — based on the eight inputs that drive the decision in our showrooms.
+              The quiz recommends one of four mattress materials, memory foam, hybrid, latex,
+              or innerspring, based on the eight inputs that drive the decision in our showrooms.
               Sleep position decides how much contour you need at the shoulders and hips. Body
               weight changes how much pushback the support layer needs to give back. Temperature
               sensitivity decides whether memory foam will sleep too hot. Pain points (back,
               neck, joints) decide which support profile reduces pressure on the right spots.
               Partner motion decides how much isolation the foam layers need. And budget decides
-              which tier we recommend — value, mid, or premium — across the brands we stock
+              which tier we recommend, value, mid, or premium, across the brands we stock
               (Tempur-Pedic, Stearns &amp; Foster, Helix, Diamond, Southerland, Englander, Eastman
               House). You can try every recommendation in person at one of our 5 LA showrooms
               before buying, and every mattress ships with a 120-night Love Your Bed Guarantee.
             </p>
           </header>
           {/* Suspense boundary required for the useSearchParams() inside
-              SleepQuiz — the homepage lead-in deep-links here with
+              SleepQuiz, the homepage lead-in deep-links here with
               `?position=<id>` to pre-fill Q0. Without the boundary,
               Next 15 forces this page off static rendering. Fallback is
               a placeholder of roughly the same shape so the layout

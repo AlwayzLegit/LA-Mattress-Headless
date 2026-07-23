@@ -17,10 +17,10 @@ export const QUESTIONS: Question[] = [
     title: 'How do you usually fall asleep?',
     helper: 'Your dominant position drives how much contour you need at the shoulders and hips.',
     options: [
-      { id: 'side',    label: 'On my side',         sublabel: 'Most common — needs contour' },
+      { id: 'side',    label: 'On my side',         sublabel: 'Most common, needs contour' },
       { id: 'back',    label: 'On my back',         sublabel: 'Wants steady support' },
       { id: 'stomach', label: 'On my stomach',      sublabel: 'Best on firmer surfaces' },
-      { id: 'combo',   label: 'I move around — combo', sublabel: 'Wants responsiveness' },
+      { id: 'combo',   label: 'I move around, combo', sublabel: 'Wants responsiveness' },
     ],
   },
   {
@@ -48,7 +48,7 @@ export const QUESTIONS: Question[] = [
     title: 'What firmness usually feels best?',
     options: [
       { id: 'soft',   label: 'Soft',         sublabel: 'Sink-in plush' },
-      { id: 'medium', label: 'Medium',       sublabel: 'Balanced — most popular' },
+      { id: 'medium', label: 'Medium',       sublabel: 'Balanced, most popular' },
       { id: 'firm',   label: 'Firm',         sublabel: 'Supportive top' },
       { id: 'unsure', label: 'Not sure',     sublabel: 'Show me a balanced default' },
     ],
@@ -66,7 +66,7 @@ export const QUESTIONS: Question[] = [
   {
     id: 'material',
     title: "Any preference on what it's made of?",
-    helper: 'Skip if you’re open — we’ll match based on the rest.',
+    helper: 'Skip if you’re open, we’ll match based on the rest.',
     options: [
       { id: 'foam',         label: 'Memory foam',        sublabel: 'Contour, motion isolation' },
       { id: 'hybrid',       label: 'Hybrid (foam + coils)', sublabel: 'Bounce + contour' },
@@ -81,7 +81,7 @@ export const QUESTIONS: Question[] = [
     options: [
       { id: 'solo',         label: 'I sleep solo' },
       { id: 'partner',      label: 'I sleep with a partner' },
-      { id: 'partner-move', label: 'My partner moves a lot — motion matters' },
+      { id: 'partner-move', label: 'My partner moves a lot, motion matters' },
     ],
   },
   {
@@ -316,14 +316,14 @@ function rationaleFor(a: Answers, m: Material): string[] {
   if (a.position === 'side')                   out.push('Side sleepers benefit from contour around shoulders and hips.');
   if (a.position === 'back')                   out.push('Back sleepers want steady support that holds the lumbar curve.');
   if (a.position === 'stomach')                out.push('Stomach sleepers do best on firmer surfaces that keep hips from sinking.');
-  if (a.temp === 'hot')                        out.push('You sleep hot — we leaned toward builds that breathe.');
+  if (a.temp === 'hot')                        out.push('You sleep hot, we leaned toward builds that breathe.');
   if (a.partner === 'partner-move')            out.push('Foam and hybrid layers absorb motion well for partner sleep.');
   if (a.pain === 'back')                       out.push('Lower-back relief comes from a supportive transition layer under the comfort foams.');
   if (a.pain === 'joint')                      out.push('Joint pressure eases with deeper contour at the shoulders and hips.');
   if (a.pain === 'neck')                       out.push('Neck pain often improves with consistent surface tension and the right pillow.');
   if (a.weight === 'heavy' && m !== 'foam')    out.push('Hybrid and innerspring builds give better long-term support for heavier bodies.');
-  if (a.firmness === 'soft' && m === 'foam')   out.push('You like a plush feel — memory foam gives that hug.');
-  if (a.firmness === 'firm' && m !== 'foam')   out.push('You like firmer support — coils and latex push back instead of sinking.');
+  if (a.firmness === 'soft' && m === 'foam')   out.push('You like a plush feel, memory foam gives that hug.');
+  if (a.firmness === 'firm' && m !== 'foam')   out.push('You like firmer support, coils and latex push back instead of sinking.');
   // Cap at 3 for a tidy result block.
   return out.slice(0, 3);
 }

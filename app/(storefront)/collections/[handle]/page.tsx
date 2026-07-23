@@ -186,7 +186,7 @@ async function CollectionBody({ handle }: { handle: string }) {
             actually a mattress sub-category (handle ends in
             `-mattresses`). Bedding-accessory collections (pillows,
             sheets, mattress-toppers, etc.) and the root mattresses
-            collection itself stay at 2 levels — they don't belong
+            collection itself stay at 2 levels, they don't belong
             under /collections/mattresses in the natural hierarchy.
             Must match isMattressSubCategoryHandle() in
             lib/collection-jsonld.ts so the visible breadcrumb
@@ -268,7 +268,7 @@ async function CollectionBody({ handle }: { handle: string }) {
             {/* Every client island below that reads useSearchParams gets
                 its own tight <Suspense> boundary. On a static route,
                 useSearchParams client-side-renders the tree up to the
-                NEAREST boundary — without these, the bailout would climb
+                NEAREST boundary, without these, the bailout would climb
                 to the page-level Suspense and the prerendered HTML would
                 be a skeleton instead of the product grid (the whole point
                 of the perf-isr-07 restructure). Fallbacks keep the layout
@@ -317,7 +317,7 @@ async function CollectionBody({ handle }: { handle: string }) {
                 fetched grid (via /api/load-more-products) when it does.
                 It deliberately avoids useSearchParams (event + popstate
                 driven instead) so this whole subtree stays in the static
-                HTML — see the component docblock. */}
+                HTML, see the component docblock. */}
             <PlpParamResults
               handle={collection.handle}
               initialCount={collection.products.nodes.length}

@@ -232,7 +232,7 @@ export function MattressTypesPage({ page }: { page: PageLike }) {
             ))}
           </section>
 
-          {/* Visual type cards — the lead graphic. Placed ABOVE the
+          {/* Visual type cards, the lead graphic. Placed ABOVE the
               merchant body so the page opens on imagery (cutaway
               diagrams + feel visuals) rather than a wall of prose,
               then the editorial body goes deeper below. */}
@@ -296,7 +296,7 @@ export function MattressTypesPage({ page }: { page: PageLike }) {
             </div>
           </section>
 
-          {/* Comparison matrix — the same ratings, cross-tabulated so a
+          {/* Comparison matrix, the same ratings, cross-tabulated so a
               shopper can scan one axis across all four types. */}
           <section className="mt-matrix" aria-labelledby={MATRIX_HEADING_ID}>
             <h2 id={MATRIX_HEADING_ID} className="h2 mt-section-h">Feel comparison at a glance</h2>

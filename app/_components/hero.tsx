@@ -65,7 +65,7 @@ export function Hero({
                   {/* All slides render as <p>, not <h1>. Phase 250 had
                       slide 0 carrying the H1 (and slides 1+ rendering
                       identical .hero-title styling on <p>) so the page
-                      had exactly one H1 — but the slide title comes
+                      had exactly one H1, but the slide title comes
                       from a Shopify metaobject which the merchant
                       controls. Phase 308 SEO audit (Semrush 20260530)
                       flagged the homepage for missing target keywords
@@ -76,7 +76,7 @@ export function Hero({
                       every slide renders as <p> now and the page's
                       canonical H1 is a code-controlled visually-
                       hidden element at the top of <main> in
-                      app/(storefront)/page.tsx — keyword-loaded,
+                      app/(storefront)/page.tsx, keyword-loaded,
                       deterministic, edited via PR. */}
                   {/* Phase 292 (cowork MEDIUM#11): the \n in the slide
                       title is a visual line break (flex-column .hero-line
