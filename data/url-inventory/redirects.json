@@ -1,8 +1,8 @@
 {
   "$schema": "Shopify redirects inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-07-03T19:38:47.669Z",
-  "$count": 2031,
+  "$pulledAt": "2026-07-23T06:26:08.128Z",
+  "$count": 2038,
   "redirects": [
     {
       "id": "gid://shopify/UrlRedirect/31411395",
@@ -12145,13 +12145,13 @@
     {
       "id": "gid://shopify/UrlRedirect/489894641917",
       "source": "/blogs/sales/best-presidents-day-mattress-sale-2024",
-      "destination": "/pages/presidents-day-sale-2027",
+      "destination": "/collections/on-sale",
       "permanent": true
     },
     {
       "id": "gid://shopify/UrlRedirect/489894674685",
       "source": "/blogs/sales/memorial-day-discount-on-mattresses-in-la",
-      "destination": "/pages/memorial-day-sale-2027",
+      "destination": "/pages/memorial-day-sale-2026",
       "permanent": true
     },
     {
@@ -12176,6 +12176,48 @@
       "id": "gid://shopify/UrlRedirect/489894805757",
       "source": "/blogs/extra-info/what-is-polyurethane-foam",
       "destination": "/blogs/mattress-buying-guide/what-is-polyurethane-foam",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489927835901",
+      "source": "/pages/mattress-store-playa-del-rey",
+      "destination": "/pages/mattress-store-marina-del-rey",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489927868669",
+      "source": "/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed",
+      "destination": "/blogs/mattress-buying-guide/full-size-bed-dimensions-width-couples",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489960472829",
+      "source": "/blogs/sales",
+      "destination": "/collections/on-sale",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489960505597",
+      "source": "/products/olive-8-firm-value-collection-mattress-by-spring-air",
+      "destination": "/collections/spring-air-mattresses",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489960538365",
+      "source": "/products/luxe-gel-memory-foam-plush-by-venus-mattress-limited-stock-may-not-be-available",
+      "destination": "/collections/gel-foam-mattresses",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489960571133",
+      "source": "/pages/free-120-night-comfort-guarantee",
+      "destination": "/pages/love-your-bed-guarantee",
+      "permanent": true
+    },
+    {
+      "id": "gid://shopify/UrlRedirect/489990881533",
+      "source": "/pages/quiz",
+      "destination": "/sleep-quiz",
       "permanent": true
     },
     {

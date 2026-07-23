@@ -1,7 +1,7 @@
 {
   "$schema": "Shopify blogs inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-07-03T19:38:47.666Z",
+  "$pulledAt": "2026-07-23T06:26:08.125Z",
   "$count": 7,
   "blogs": [
     {
@@ -2800,7 +2800,7 @@
       "handle": "mattress-buying-guide",
       "id": "gid://shopify/Blog/89331695869",
       "title": "Mattress Buying Guide | Find Your Perfect Mattress",
-      "updatedAt": "2026-07-03T03:07:43Z",
+      "updatedAt": "2026-07-23T03:12:08Z",
       "articles": [
         {
           "handle": "12-steps-buying-new-mattress-5647",
@@ -4176,7 +4176,7 @@
           "title": "Best Mattress for Osteoporosis",
           "isPublished": true,
           "publishedAt": "2024-06-09T19:40:38Z",
-          "updatedAt": "2026-05-23T06:25:25Z"
+          "updatedAt": "2026-07-22T15:51:06Z"
         },
         {
           "handle": "best-mattress-for-plus-size-couples",
@@ -4224,7 +4224,7 @@
           "title": "Best Flex King Mattress",
           "isPublished": true,
           "publishedAt": "2024-06-17T15:20:38Z",
-          "updatedAt": "2026-05-23T06:25:59Z"
+          "updatedAt": "2026-07-22T15:51:07Z"
         },
         {
           "handle": "how-to-get-water-out-of-a-mattress",
@@ -4296,7 +4296,7 @@
           "title": "Best Mattress for Joint Pain",
           "isPublished": true,
           "publishedAt": "2024-06-30T12:51:20Z",
-          "updatedAt": "2026-05-23T06:26:32Z"
+          "updatedAt": "2026-07-13T15:15:08Z"
         },
         {
           "handle": "what-type-of-mattress-is-best-for-child",
@@ -4528,7 +4528,7 @@
           "title": "Is it Safe to Buy a Used Mattress?",
           "isPublished": true,
           "publishedAt": "2024-07-29T20:28:13Z",
-          "updatedAt": "2026-05-23T06:28:02Z"
+          "updatedAt": "2026-07-22T15:51:09Z"
         },
         {
           "handle": "top-chattam-and-wells-mattress-reviews",
@@ -4560,7 +4560,7 @@
           "title": "Best Back Supporter Mattresses of 2024",
           "isPublished": true,
           "publishedAt": "2024-08-04T20:13:58Z",
-          "updatedAt": "2026-05-23T06:28:17Z"
+          "updatedAt": "2026-07-22T15:51:08Z"
         },
         {
           "handle": "clearance-mattress-outlets-in-la",
@@ -4680,7 +4680,7 @@
           "title": "Best High End Mattresses",
           "isPublished": true,
           "publishedAt": "2024-08-21T19:56:27Z",
-          "updatedAt": "2026-06-19T16:38:28Z"
+          "updatedAt": "2026-07-22T15:51:07Z"
         },
         {
           "handle": "best-mattress-for-painful-hips",
@@ -4768,7 +4768,7 @@
           "title": "Best Mattress Topper for Hospital Bed",
           "isPublished": true,
           "publishedAt": "2024-09-04T11:57:52Z",
-          "updatedAt": "2026-05-23T06:30:43Z"
+          "updatedAt": "2026-07-22T15:51:06Z"
         },
         {
           "handle": "king-size-bed-frames",
@@ -4792,7 +4792,7 @@
           "title": "High Rise Bed Frames",
           "isPublished": true,
           "publishedAt": "2024-09-06T14:53:08Z",
-          "updatedAt": "2026-05-23T06:30:57Z"
+          "updatedAt": "2026-07-22T15:51:04Z"
         },
         {
           "handle": "best-bed-sheets-for-sensitive-skin",
@@ -4832,7 +4832,7 @@
           "title": "Best Bed Sheets for Allergies",
           "isPublished": true,
           "publishedAt": "2024-09-11T16:10:01Z",
-          "updatedAt": "2026-05-23T06:31:24Z"
+          "updatedAt": "2026-07-19T15:30:05Z"
         },
         {
           "handle": "best-bed-sheet-materials-for-summer",
@@ -4904,7 +4904,7 @@
           "title": "Best Affordable Non-Toxic Mattress Toppers",
           "isPublished": true,
           "publishedAt": "2024-09-22T05:04:37Z",
-          "updatedAt": "2026-05-23T06:32:06Z"
+          "updatedAt": "2026-07-22T15:51:08Z"
         },
         {
           "handle": "best-affordable-non-toxic-mattresses",
@@ -4960,7 +4960,7 @@
           "title": "Best Mattress Topper for Rheumatoid Arthritis",
           "isPublished": true,
           "publishedAt": "2024-09-30T09:47:07Z",
-          "updatedAt": "2026-05-23T06:32:41Z"
+          "updatedAt": "2026-07-22T15:51:05Z"
         },
         {
           "handle": "best-mattress-topper-to-make-bed-softer",
@@ -4984,7 +4984,7 @@
           "title": "Best Twin Mattresses for Toddlers",
           "isPublished": true,
           "publishedAt": "2024-10-03T18:59:11Z",
-          "updatedAt": "2026-05-23T06:33:04Z"
+          "updatedAt": "2026-07-13T15:15:09Z"
         },
         {
           "handle": "best-mattress-that-doesnt-sag",
@@ -5000,7 +5000,7 @@
           "title": "Best Mattress Topper for Bed Sores",
           "isPublished": true,
           "publishedAt": "2024-10-05T17:31:50Z",
-          "updatedAt": "2026-05-23T06:33:19Z"
+          "updatedAt": "2026-07-22T15:51:06Z"
         },
         {
           "handle": "best-mattress-topper-for-kids",
@@ -5080,7 +5080,7 @@
           "title": "What Type Of Mattress Is Best For An Adjustable Bed?",
           "isPublished": true,
           "publishedAt": "2024-10-18T14:57:50Z",
-          "updatedAt": "2026-05-23T06:34:28Z"
+          "updatedAt": "2026-07-22T15:51:01Z"
         },
         {
           "handle": "best-black-bedroom-sets",
@@ -5208,7 +5208,7 @@
           "title": "Memory Foam vs. Hybrid Mattresses: Which is Better for Couples",
           "isPublished": true,
           "publishedAt": "2024-11-07T06:19:30Z",
-          "updatedAt": "2026-05-23T06:35:25Z"
+          "updatedAt": "2026-07-22T15:51:02Z"
         },
         {
           "handle": "the-impact-of-a-high-quality-mattress-on-posture-and-joint-health",
@@ -5296,7 +5296,7 @@
           "title": "10 Reasons Why Your Mattress Needs to be Replaced",
           "isPublished": true,
           "publishedAt": "2024-11-20T01:30:11Z",
-          "updatedAt": "2026-05-23T06:36:16Z"
+          "updatedAt": "2026-07-13T15:15:06Z"
         },
         {
           "handle": "best-black-friday-deals-on-furniture",
@@ -5360,7 +5360,7 @@
           "title": "The Role of Mattress Height and Support in Creating a Luxurious Sleep Experience",
           "isPublished": true,
           "publishedAt": "2024-11-28T17:55:27Z",
-          "updatedAt": "2026-05-23T06:36:39Z"
+          "updatedAt": "2026-07-19T15:25:19Z"
         },
         {
           "handle": "how-to-set-up-a-sleep-friendly-bedroom-with-the-right-mattress-and-accessories",
@@ -5392,7 +5392,7 @@
           "title": "The Connection Between Quality Sleep and Relationship Health",
           "isPublished": true,
           "publishedAt": "2024-12-03T19:40:14Z",
-          "updatedAt": "2026-05-23T06:37:03Z"
+          "updatedAt": "2026-07-13T15:15:05Z"
         },
         {
           "handle": "best-black-friday-deals-on-mattresses",
@@ -6240,7 +6240,7 @@
           "title": "Is Latex Mattresses the Best Mattress for Culver City?",
           "isPublished": true,
           "publishedAt": "2025-05-23T05:10:45Z",
-          "updatedAt": "2026-05-23T06:40:00Z"
+          "updatedAt": "2026-07-22T15:51:03Z"
         },
         {
           "handle": "why-adjustable-beds-are-gaining-popularity-in-westwood",
@@ -6344,7 +6344,7 @@
           "title": "Short Queen vs Standard Queen Mattress: Best Choice for RVs and Campers",
           "isPublished": true,
           "publishedAt": "2025-06-02T02:17:00Z",
-          "updatedAt": "2026-05-23T06:40:20Z"
+          "updatedAt": "2026-07-22T15:51:01Z"
         },
         {
           "handle": "olympic-queen-mattresses-size-benefits-where-to-buy",
@@ -6696,7 +6696,7 @@
           "title": "Can You Use a Box Spring with a Memory Foam Mattress?",
           "isPublished": true,
           "publishedAt": "2025-07-06T20:42:43Z",
-          "updatedAt": "2026-05-23T06:42:26Z"
+          "updatedAt": "2026-07-22T15:51:04Z"
         },
         {
           "handle": "the-gel-vs-foam-showdown-find-the-best-fit-for-your-sleep-style",
@@ -6736,7 +6736,7 @@
           "title": "Do Memory Foam Mattresses Make You Sweat?",
           "isPublished": true,
           "publishedAt": "2025-07-09T20:54:57Z",
-          "updatedAt": "2026-05-23T06:42:48Z"
+          "updatedAt": "2026-07-22T15:51:09Z"
         },
         {
           "handle": "sealy-vs-serta-mattress-which-brand-delivers-the-best-sleep",
@@ -6752,7 +6752,7 @@
           "title": "Is a Plush Mattress Good for Back Pain Relief?",
           "isPublished": true,
           "publishedAt": "2025-07-10T20:58:53Z",
-          "updatedAt": "2026-06-11T17:03:35Z"
+          "updatedAt": "2026-07-22T15:51:03Z"
         },
         {
           "handle": "spring-vs-foam-is-a-spring-mattress-good-for-back-pain",
@@ -6776,7 +6776,7 @@
           "title": "Are Low Beds Better for Your Back? Discover the Ergonomic & Health Benefits",
           "isPublished": true,
           "publishedAt": "2025-07-11T23:36:30Z",
-          "updatedAt": "2026-05-28T11:58:27Z"
+          "updatedAt": "2026-07-22T15:51:10Z"
         },
         {
           "handle": "the-best-mattress-for-degenerative-disc-disease-a-comprehensive-guide",
@@ -6784,7 +6784,7 @@
           "title": "The Best Mattress for Degenerative Disc Disease: A Comprehensive Guide",
           "isPublished": true,
           "publishedAt": "2025-07-14T13:54:28Z",
-          "updatedAt": "2026-05-23T06:43:32Z"
+          "updatedAt": "2026-07-22T15:51:01Z"
         },
         {
           "handle": "signs-it-s-time-to-replace-your-memory-foam-mattress",
@@ -6792,7 +6792,7 @@
           "title": "Signs It’s Time to Replace Your Memory Foam Mattress",
           "isPublished": true,
           "publishedAt": "2025-07-14T13:59:16Z",
-          "updatedAt": "2026-05-23T06:43:39Z"
+          "updatedAt": "2026-07-13T15:15:08Z"
         },
         {
           "handle": "can-memory-foam-mattresses-cause-overheating-and-night-sweats",
@@ -6840,7 +6840,7 @@
           "title": "Pocket Coil vs Innerspring Mattresses: What’s the Difference?",
           "isPublished": true,
           "publishedAt": "2025-07-18T14:25:24Z",
-          "updatedAt": "2026-05-23T06:44:08Z"
+          "updatedAt": "2026-07-22T15:51:02Z"
         },
         {
           "handle": "how-do-i-know-if-my-mattress-is-too-firm-signs-to-watch-for",
@@ -6848,7 +6848,7 @@
           "title": "How Do I Know If My Mattress Is Too Firm? Signs to Watch For",
           "isPublished": true,
           "publishedAt": "2025-07-20T22:45:49Z",
-          "updatedAt": "2026-05-23T06:44:16Z"
+          "updatedAt": "2026-07-22T15:51:04Z"
         },
         {
           "handle": "do-firm-mattresses-really-last-longer-durability-explained",
@@ -6872,7 +6872,7 @@
           "title": "Can an Englander Visco Mattress Be Used on Adjustable Beds?",
           "isPublished": true,
           "publishedAt": "2025-07-23T01:13:06Z",
-          "updatedAt": "2026-05-23T06:44:37Z"
+          "updatedAt": "2026-07-22T15:51:05Z"
         },
         {
           "handle": "pocket-spring-mattresses-do-they-sleep-cooler-than-memory-foam",
@@ -6912,7 +6912,7 @@
           "title": "Pocket Spring vs Hybrid Mattresses: Which Should You Choose?",
           "isPublished": true,
           "publishedAt": "2025-07-28T20:39:38Z",
-          "updatedAt": "2026-05-23T06:44:58Z"
+          "updatedAt": "2026-07-22T15:51:02Z"
         },
         {
           "handle": "how-big-is-a-california-king-mattress-in-feet",
@@ -6952,7 +6952,7 @@
           "title": "What’s the Difference Between Eastern King and California King?",
           "isPublished": true,
           "publishedAt": "2025-08-02T09:23:42Z",
-          "updatedAt": "2026-05-23T06:45:20Z"
+          "updatedAt": "2026-07-13T15:10:03Z"
         },
         {
           "handle": "do-allergy-mattress-covers-work-against-bed-bugs-too",
@@ -6984,7 +6984,7 @@
           "title": "How to Choose the Best Allergy Mattress Cover for Your Needs?",
           "isPublished": true,
           "publishedAt": "2025-08-05T15:55:54Z",
-          "updatedAt": "2026-06-11T17:13:10Z"
+          "updatedAt": "2026-07-13T15:15:06Z"
         },
         {
           "handle": "what-to-know-before-buying-a-california-king-mattress-for-sensitive-sleepers",
@@ -7000,7 +7000,7 @@
           "title": "Can You Put an Air Mattress on a Bed Frame?",
           "isPublished": true,
           "publishedAt": "2025-08-12T20:21:41Z",
-          "updatedAt": "2026-05-28T12:11:31Z"
+          "updatedAt": "2026-07-22T15:51:05Z"
         },
         {
           "handle": "will-a-queen-bed-frame-fit-a-full-size-mattress",
@@ -7024,7 +7024,7 @@
           "title": "Signs of Bed Bugs on Foam Mattresses and What to Do?",
           "isPublished": true,
           "publishedAt": "2025-08-17T17:54:13Z",
-          "updatedAt": "2026-05-23T06:46:15Z"
+          "updatedAt": "2026-07-13T15:15:08Z"
         },
         {
           "handle": "pros-and-cons-of-using-an-air-mattress-long-term",
@@ -7312,7 +7312,7 @@
           "title": "King Size Bed Frames: Which Style and Size Should You Choose?",
           "isPublished": true,
           "publishedAt": "2025-10-23T14:21:33Z",
-          "updatedAt": "2026-05-22T14:41:24Z"
+          "updatedAt": "2026-07-13T15:15:07Z"
         },
         {
           "handle": "tempur-pedic-mattress-review-2025-pros-cons-and-alternatives",
@@ -7320,7 +7320,7 @@
           "title": "Tempur-Pedic Mattress Review 2025: Pros, Cons, and Alternatives",
           "isPublished": true,
           "publishedAt": "2025-10-24T14:36:42Z",
-          "updatedAt": "2026-05-22T14:41:15Z"
+          "updatedAt": "2026-07-13T15:15:07Z"
         },
         {
           "handle": "mattress-store-vs-online-which-is-the-better-way-to-buy",
@@ -7384,7 +7384,7 @@
           "title": "What Is the Best Mattress for Fibromyalgia Pain Relief?",
           "isPublished": true,
           "publishedAt": "2025-11-06T15:04:16Z",
-          "updatedAt": "2026-05-23T06:47:06Z"
+          "updatedAt": "2026-07-13T15:15:06Z"
         },
         {
           "handle": "can-a-mattress-cause-restless-legs-syndrome",
@@ -7640,7 +7640,7 @@
           "title": "When Is the Best Time to Buy a Mattress? 2026 Sales Calendar",
           "isPublished": false,
           "publishedAt": null,
-          "updatedAt": "2026-05-14T23:19:46Z"
+          "updatedAt": "2026-07-04T16:11:39Z"
         },
         {
           "handle": "when-to-buy-a-mattress",
@@ -7680,7 +7680,7 @@
           "title": "Best Mattress for Back Pain in Los Angeles: A Local Buyer's Guide",
           "isPublished": true,
           "publishedAt": "2026-06-10T15:11:47Z",
-          "updatedAt": "2026-06-12T16:04:52Z"
+          "updatedAt": "2026-07-04T16:11:42Z"
         },
         {
           "handle": "same-day-mattress-delivery-los-angeles",
@@ -7776,7 +7776,7 @@
           "title": "How to Choose a Mattress: An LA Buyer's Guide",
           "isPublished": true,
           "publishedAt": "2026-06-25T03:08:02Z",
-          "updatedAt": "2026-06-25T03:08:02Z"
+          "updatedAt": "2026-07-04T16:11:45Z"
         },
         {
           "handle": "best-mattress-for-kids",
@@ -7784,7 +7784,7 @@
           "title": "Best Mattress for Kids: A Parent's Buying Guide",
           "isPublished": true,
           "publishedAt": "2026-06-25T19:58:36Z",
-          "updatedAt": "2026-06-25T19:58:37Z"
+          "updatedAt": "2026-07-04T16:11:47Z"
         },
         {
           "handle": "best-mattress-for-shoulder-pain",
@@ -7800,7 +7800,7 @@
           "title": "Honest Purple Mattress Review + LA Alternatives to Try",
           "isPublished": true,
           "publishedAt": "2026-06-26T18:08:36Z",
-          "updatedAt": "2026-06-26T18:08:36Z"
+          "updatedAt": "2026-07-04T16:11:50Z"
         },
         {
           "handle": "nectar-mattress-alternatives-los-angeles",
@@ -7808,7 +7808,7 @@
           "title": "Honest Nectar Mattress Review + LA Alternatives to Try",
           "isPublished": true,
           "publishedAt": "2026-06-26T18:09:20Z",
-          "updatedAt": "2026-06-26T18:09:20Z"
+          "updatedAt": "2026-07-04T16:11:52Z"
         },
         {
           "handle": "casper-mattress-alternatives-los-angeles",
@@ -7816,7 +7816,7 @@
           "title": "Honest Casper Mattress Review + Best LA Alternatives to Try",
           "isPublished": true,
           "publishedAt": "2026-06-26T18:10:11Z",
-          "updatedAt": "2026-06-26T18:10:11Z"
+          "updatedAt": "2026-07-04T16:13:58Z"
         },
         {
           "handle": "do-you-need-a-box-spring-platform-bed-bunkie-board",
@@ -7824,7 +7824,7 @@
           "title": "Box Spring vs Foundation vs Platform Base vs Bunkie Board",
           "isPublished": true,
           "publishedAt": "2026-06-26T18:12:24Z",
-          "updatedAt": "2026-06-26T18:12:24Z"
+          "updatedAt": "2026-07-04T16:14:01Z"
         },
         {
           "handle": "dreamcloud-mattress-review-alternatives-los-angeles",
@@ -7832,7 +7832,7 @@
           "title": "Honest DreamCloud Review and Best LA Alternatives",
           "isPublished": true,
           "publishedAt": "2026-06-26T19:56:54Z",
-          "updatedAt": "2026-06-26T19:56:54Z"
+          "updatedAt": "2026-07-04T16:14:05Z"
         },
         {
           "handle": "avocado-mattress-alternatives-los-angeles",
@@ -7840,7 +7840,7 @@
           "title": "Avocado Mattress Review & Better LA Alternatives to Try",
           "isPublished": true,
           "publishedAt": "2026-06-26T19:57:46Z",
-          "updatedAt": "2026-06-26T19:57:46Z"
+          "updatedAt": "2026-07-04T16:14:07Z"
         },
         {
           "handle": "leesa-mattress-alternatives-los-angeles",
@@ -7848,7 +7848,7 @@
           "title": "Leesa Mattress Review: Honest Take + LA Alternatives to Try",
           "isPublished": true,
           "publishedAt": "2026-06-26T20:00:45Z",
-          "updatedAt": "2026-06-26T20:00:45Z"
+          "updatedAt": "2026-07-04T16:14:10Z"
         },
         {
           "handle": "how-to-dispose-of-a-mattress-los-angeles",
@@ -7856,7 +7856,7 @@
           "title": "How to Dispose of a Mattress in Los Angeles (Free Recycling Options)",
           "isPublished": true,
           "publishedAt": "2026-06-27T03:06:51Z",
-          "updatedAt": "2026-06-27T03:07:06Z"
+          "updatedAt": "2026-07-04T16:14:12Z"
         },
         {
           "handle": "best-mattress-for-adjustable-bed",
@@ -7864,7 +7864,7 @@
           "title": "Best Mattresses for an Adjustable Bed Base (and What Won't Work)",
           "isPublished": true,
           "publishedAt": "2026-06-28T03:07:13Z",
-          "updatedAt": "2026-06-28T03:07:13Z"
+          "updatedAt": "2026-07-04T16:16:00Z"
         },
         {
           "handle": "what-is-a-euro-top-mattress",
@@ -7872,7 +7872,7 @@
           "title": "What Is a Euro Top Mattress? Euro Top vs Pillow Top Explained",
           "isPublished": true,
           "publishedAt": "2026-06-29T03:07:59Z",
-          "updatedAt": "2026-06-29T03:07:59Z"
+          "updatedAt": "2026-07-04T16:16:03Z"
         },
         {
           "handle": "how-to-make-a-mattress-firmer",
@@ -7880,7 +7880,7 @@
           "title": "How to Make a Mattress Firmer: 7 Fixes That Actually Work",
           "isPublished": true,
           "publishedAt": "2026-06-30T03:09:11Z",
-          "updatedAt": "2026-06-30T03:09:11Z"
+          "updatedAt": "2026-07-04T16:16:06Z"
         },
         {
           "handle": "best-mattress-for-pregnancy",
@@ -7888,7 +7888,7 @@
           "title": "Best Mattress for Pregnancy: Comfort & Support Through Every Trimester",
           "isPublished": true,
           "publishedAt": "2026-07-01T13:52:12Z",
-          "updatedAt": "2026-07-01T13:53:22Z"
+          "updatedAt": "2026-07-04T16:16:10Z"
         },
         {
           "handle": "best-mattress-for-scoliosis",
@@ -7896,7 +7896,7 @@
           "title": "Best Mattress for Scoliosis: Spinal Support That Adapts to Your Curve",
           "isPublished": true,
           "publishedAt": "2026-07-02T03:09:54Z",
-          "updatedAt": "2026-07-02T03:09:55Z"
+          "updatedAt": "2026-07-04T16:16:12Z"
         },
         {
           "handle": "how-long-does-it-take-to-break-in-a-mattress",
@@ -7904,7 +7904,375 @@
           "title": "How Long Does It Take to Break In a New Mattress?",
           "isPublished": true,
           "publishedAt": "2026-07-03T03:07:28Z",
-          "updatedAt": "2026-07-03T03:07:43Z"
+          "updatedAt": "2026-07-04T16:16:14Z"
+        },
+        {
+          "handle": "innerspring-vs-memory-foam",
+          "id": "gid://shopify/Article/601032524029",
+          "title": "Innerspring vs Memory Foam: Which Mattress Is Right for You?",
+          "isPublished": true,
+          "publishedAt": "2026-07-04T03:07:08Z",
+          "updatedAt": "2026-07-13T15:15:03Z"
+        },
+        {
+          "handle": "how-to-make-a-mattress-softer",
+          "id": "gid://shopify/Article/601034326269",
+          "title": "How to Make a Mattress Softer: Toppers and Easy Fixes",
+          "isPublished": true,
+          "publishedAt": "2026-07-04T16:33:19Z",
+          "updatedAt": "2026-07-13T15:15:03Z"
+        },
+        {
+          "handle": "best-mattress-for-combination-sleepers",
+          "id": "gid://shopify/Article/601034359037",
+          "title": "Best Mattress for Combination Sleepers: Comfort in Every Position",
+          "isPublished": true,
+          "publishedAt": "2026-07-04T16:34:08Z",
+          "updatedAt": "2026-07-13T15:15:04Z"
+        },
+        {
+          "handle": "new-mattress-smell-off-gassing",
+          "id": "gid://shopify/Article/601034391805",
+          "title": "New Mattress Smell: What Causes Off-Gassing and How to Get Rid of It",
+          "isPublished": true,
+          "publishedAt": "2026-07-04T16:34:58Z",
+          "updatedAt": "2026-07-13T15:15:03Z"
+        },
+        {
+          "handle": "how-to-move-a-mattress-without-damaging-it",
+          "id": "gid://shopify/Article/601036128509",
+          "title": "How to Move a Mattress Without Damaging It",
+          "isPublished": true,
+          "publishedAt": "2026-07-05T03:06:09Z",
+          "updatedAt": "2026-07-05T03:06:10Z"
+        },
+        {
+          "handle": "how-to-store-a-mattress-the-right-way",
+          "id": "gid://shopify/Article/601036161277",
+          "title": "How to Store a Mattress the Right Way (So It Lasts)",
+          "isPublished": true,
+          "publishedAt": "2026-07-05T03:07:23Z",
+          "updatedAt": "2026-07-05T03:07:24Z"
+        },
+        {
+          "handle": "mattress-warranties-explained",
+          "id": "gid://shopify/Article/601036194045",
+          "title": "Mattress Warranties Explained: What's Covered and What Voids Them",
+          "isPublished": true,
+          "publishedAt": "2026-07-05T03:08:48Z",
+          "updatedAt": "2026-07-05T03:08:49Z"
+        },
+        {
+          "handle": "best-mattress-for-sofa-bed",
+          "id": "gid://shopify/Article/601041600765",
+          "title": "Best Mattress for a Sofa Bed or Pull-Out Couch",
+          "isPublished": true,
+          "publishedAt": "2026-07-06T03:08:02Z",
+          "updatedAt": "2026-07-06T03:08:04Z"
+        },
+        {
+          "handle": "how-to-fix-a-sagging-mattress",
+          "id": "gid://shopify/Article/601041633533",
+          "title": "How to Fix a Sagging Mattress: Practical Fixes and When to Replace",
+          "isPublished": true,
+          "publishedAt": "2026-07-06T03:09:15Z",
+          "updatedAt": "2026-07-06T03:09:16Z"
+        },
+        {
+          "handle": "best-mattress-for-herniated-disc",
+          "id": "gid://shopify/Article/601041666301",
+          "title": "Best Mattress for a Herniated Disc: Support Without Extra Pressure",
+          "isPublished": true,
+          "publishedAt": "2026-07-06T03:10:18Z",
+          "updatedAt": "2026-07-06T03:10:19Z"
+        },
+        {
+          "handle": "how-much-does-a-mattress-weigh",
+          "id": "gid://shopify/Article/601050120445",
+          "title": "How Much Does a Mattress Weigh? Weights by Size and Type",
+          "isPublished": true,
+          "publishedAt": "2026-07-07T03:07:32Z",
+          "updatedAt": "2026-07-07T03:07:33Z"
+        },
+        {
+          "handle": "best-mattress-for-daybed-or-trundle",
+          "id": "gid://shopify/Article/601050153213",
+          "title": "Best Mattress for a Daybed or Trundle Bed",
+          "isPublished": true,
+          "publishedAt": "2026-07-07T03:08:37Z",
+          "updatedAt": "2026-07-07T03:08:38Z"
+        },
+        {
+          "handle": "best-mattress-topper-for-back-pain",
+          "id": "gid://shopify/Article/601074925821",
+          "title": "Best Mattress Topper for Back Pain: What Actually Helps",
+          "isPublished": true,
+          "publishedAt": "2026-07-09T03:05:57Z",
+          "updatedAt": "2026-07-09T03:05:58Z"
+        },
+        {
+          "handle": "how-to-clean-pee-out-of-a-mattress",
+          "id": "gid://shopify/Article/601074958589",
+          "title": "How to Clean Pee Out of a Mattress (Fresh & Dried Stains)",
+          "isPublished": true,
+          "publishedAt": "2026-07-09T03:06:47Z",
+          "updatedAt": "2026-07-09T03:06:48Z"
+        },
+        {
+          "handle": "what-is-a-mattress-topper",
+          "id": "gid://shopify/Article/601074991357",
+          "title": "What Is a Mattress Topper? Types, Benefits & How to Choose",
+          "isPublished": true,
+          "publishedAt": "2026-07-09T03:07:35Z",
+          "updatedAt": "2026-07-09T03:07:35Z"
+        },
+        {
+          "handle": "double-sided-flippable-mattresses",
+          "id": "gid://shopify/Article/601082495229",
+          "title": "Double-Sided (Flippable) Mattresses: Pros, Cons & Are They Worth It?",
+          "isPublished": true,
+          "publishedAt": "2026-07-10T03:05:38Z",
+          "updatedAt": "2026-07-10T03:05:49Z"
+        },
+        {
+          "handle": "best-mattress-for-snoring",
+          "id": "gid://shopify/Article/601082527997",
+          "title": "Best Mattress for Snoring: How the Right Bed Helps You Breathe Easier",
+          "isPublished": true,
+          "publishedAt": "2026-07-10T03:06:34Z",
+          "updatedAt": "2026-07-10T03:06:41Z"
+        },
+        {
+          "handle": "best-mattress-for-spinal-stenosis",
+          "id": "gid://shopify/Article/601082560765",
+          "title": "Best Mattress for Spinal Stenosis: Support That Eases the Spine",
+          "isPublished": true,
+          "publishedAt": "2026-07-10T03:07:24Z",
+          "updatedAt": "2026-07-10T03:07:34Z"
+        },
+        {
+          "handle": "mattress-protector-vs-mattress-pad",
+          "id": "gid://shopify/Article/601087377661",
+          "title": "Mattress Protector vs Mattress Pad: What's the Difference?",
+          "isPublished": true,
+          "publishedAt": "2026-07-11T03:06:39Z",
+          "updatedAt": "2026-07-11T03:06:41Z"
+        },
+        {
+          "handle": "how-much-weight-can-a-bunk-bed-hold",
+          "id": "gid://shopify/Article/601087410429",
+          "title": "How Much Weight Can a Bunk Bed Hold? Weight Limits Explained",
+          "isPublished": true,
+          "publishedAt": "2026-07-11T03:07:31Z",
+          "updatedAt": "2026-07-11T03:07:32Z"
+        },
+        {
+          "handle": "how-to-keep-a-mattress-from-sliding",
+          "id": "gid://shopify/Article/601087443197",
+          "title": "How to Keep a Mattress From Sliding (Simple Fixes)",
+          "isPublished": true,
+          "publishedAt": "2026-07-11T03:08:18Z",
+          "updatedAt": "2026-07-11T03:08:19Z"
+        },
+        {
+          "handle": "how-to-get-rid-of-dust-mites-in-a-mattress",
+          "id": "gid://shopify/Article/601097732349",
+          "title": "How to Get Rid of Dust Mites in a Mattress",
+          "isPublished": true,
+          "publishedAt": "2026-07-13T04:13:04Z",
+          "updatedAt": "2026-07-13T04:15:01Z"
+        },
+        {
+          "handle": "can-you-put-a-mattress-on-the-floor",
+          "id": "gid://shopify/Article/601097765117",
+          "title": "Can You Put a Mattress on the Floor? Pros, Cons & Risks",
+          "isPublished": true,
+          "publishedAt": "2026-07-13T04:13:51Z",
+          "updatedAt": "2026-07-13T04:15:01Z"
+        },
+        {
+          "handle": "how-often-should-you-rotate-a-mattress",
+          "id": "gid://shopify/Article/601097797885",
+          "title": "How Often Should You Rotate a Mattress?",
+          "isPublished": true,
+          "publishedAt": "2026-07-13T04:14:38Z",
+          "updatedAt": "2026-07-13T04:15:01Z"
+        },
+        {
+          "handle": "how-to-get-stains-out-of-a-mattress",
+          "id": "gid://shopify/Article/601105006845",
+          "title": "How to Get Stains Out of a Mattress: A Step-by-Step Guide",
+          "isPublished": true,
+          "publishedAt": "2026-07-14T03:05:52Z",
+          "updatedAt": "2026-07-14T03:05:53Z"
+        },
+        {
+          "handle": "how-to-disinfect-a-mattress",
+          "id": "gid://shopify/Article/601105039613",
+          "title": "How to Disinfect a Mattress the Right Way",
+          "isPublished": true,
+          "publishedAt": "2026-07-14T03:06:39Z",
+          "updatedAt": "2026-07-14T03:06:40Z"
+        },
+        {
+          "handle": "best-mattress-for-menopause",
+          "id": "gid://shopify/Article/601105072381",
+          "title": "Best Mattress for Menopause: Sleep Cooler Through Night Sweats",
+          "isPublished": true,
+          "publishedAt": "2026-07-14T03:07:27Z",
+          "updatedAt": "2026-07-14T03:07:28Z"
+        },
+        {
+          "handle": "how-to-clean-a-mattress-topper",
+          "id": "gid://shopify/Article/601123389693",
+          "title": "How to Clean a Mattress Topper (Foam & Fiber): Step-by-Step",
+          "isPublished": true,
+          "publishedAt": "2026-07-16T18:11:51Z",
+          "updatedAt": "2026-07-16T18:15:19Z"
+        },
+        {
+          "handle": "how-to-wash-a-mattress-protector",
+          "id": "gid://shopify/Article/601123422461",
+          "title": "How to Wash a Mattress Protector (Without Ruining It)",
+          "isPublished": true,
+          "publishedAt": "2026-07-16T18:18:09Z",
+          "updatedAt": "2026-07-16T18:19:04Z"
+        },
+        {
+          "handle": "how-to-attach-a-headboard-to-a-bed-frame",
+          "id": "gid://shopify/Article/601123455229",
+          "title": "How to Attach a Headboard to a Bed Frame: A Step-by-Step Guide",
+          "isPublished": true,
+          "publishedAt": "2026-07-16T18:19:46Z",
+          "updatedAt": "2026-07-16T18:20:49Z"
+        },
+        {
+          "handle": "how-to-get-rid-of-bed-bugs-in-a-mattress",
+          "id": "gid://shopify/Article/601127452925",
+          "title": "How to Get Rid of Bed Bugs in a Mattress: A Step-by-Step Removal Guide",
+          "isPublished": true,
+          "publishedAt": "2026-07-17T03:10:53Z",
+          "updatedAt": "2026-07-17T03:10:59Z"
+        },
+        {
+          "handle": "best-mattress-topper-for-hip-pain",
+          "id": "gid://shopify/Article/601127518461",
+          "title": "Best Mattress Topper for Hip Pain: Cushioning That Actually Relieves Pressure",
+          "isPublished": true,
+          "publishedAt": "2026-07-17T03:11:28Z",
+          "updatedAt": "2026-07-17T03:11:34Z"
+        },
+        {
+          "handle": "best-mattress-topper-for-hot-sleepers",
+          "id": "gid://shopify/Article/601127583997",
+          "title": "Best Mattress Topper for Hot Sleepers: Cooling Comfort Without a New Mattress",
+          "isPublished": true,
+          "publishedAt": "2026-07-17T03:12:02Z",
+          "updatedAt": "2026-07-17T03:12:08Z"
+        },
+        {
+          "handle": "does-medicare-cover-adjustable-beds",
+          "id": "gid://shopify/Article/601130729725",
+          "title": "Does Medicare Cover Adjustable Beds? What to Know Before You Buy",
+          "isPublished": true,
+          "publishedAt": "2026-07-17T09:09:23Z",
+          "updatedAt": "2026-07-17T09:09:24Z"
+        },
+        {
+          "handle": "best-mattress-toppers-2026",
+          "id": "gid://shopify/Article/601138364669",
+          "title": "Best Mattress Toppers of 2026: Top Picks for Every Sleeper",
+          "isPublished": true,
+          "publishedAt": "2026-07-19T03:11:27Z",
+          "updatedAt": "2026-07-19T03:11:29Z"
+        },
+        {
+          "handle": "zero-gravity-adjustable-bed",
+          "id": "gid://shopify/Article/601138397437",
+          "title": "What Is Zero Gravity on an Adjustable Bed? Benefits Explained",
+          "isPublished": true,
+          "publishedAt": "2026-07-19T03:11:54Z",
+          "updatedAt": "2026-07-19T03:11:54Z"
+        },
+        {
+          "handle": "how-to-keep-a-mattress-topper-from-sliding",
+          "id": "gid://shopify/Article/601138430205",
+          "title": "How to Keep a Mattress Topper From Sliding (Simple Fixes)",
+          "isPublished": true,
+          "publishedAt": "2026-07-19T03:12:14Z",
+          "updatedAt": "2026-07-19T03:12:15Z"
+        },
+        {
+          "handle": "crib-mattress-buying-guide",
+          "id": "gid://shopify/Article/601146851581",
+          "title": "Crib Mattress Buying Guide: Sizes, Safety Standards & What to Look For",
+          "isPublished": true,
+          "publishedAt": "2026-07-21T03:11:18Z",
+          "updatedAt": "2026-07-21T03:11:19Z"
+        },
+        {
+          "handle": "split-king-mattress-guide",
+          "id": "gid://shopify/Article/601146884349",
+          "title": "Split King Mattress: What It Is, Why Couples Choose It & Where to Buy",
+          "isPublished": true,
+          "publishedAt": "2026-07-21T03:11:42Z",
+          "updatedAt": "2026-07-21T03:11:43Z"
+        },
+        {
+          "handle": "silk-pillowcase-guide",
+          "id": "gid://shopify/Article/601146917117",
+          "title": "Silk Pillowcase Benefits: Is It Worth the Switch?",
+          "isPublished": true,
+          "publishedAt": "2026-07-21T03:12:04Z",
+          "updatedAt": "2026-07-21T03:12:05Z"
+        },
+        {
+          "handle": "how-long-does-it-take-a-memory-foam-mattress-to-expand",
+          "id": "gid://shopify/Article/601152782589",
+          "title": "How Long Does It Take a Memory Foam Mattress to Expand?",
+          "isPublished": true,
+          "publishedAt": "2026-07-22T03:10:13Z",
+          "updatedAt": "2026-07-22T03:10:27Z"
+        },
+        {
+          "handle": "how-to-cut-a-memory-foam-mattress",
+          "id": "gid://shopify/Article/601152815357",
+          "title": "How to Cut a Memory Foam Mattress: A Step-by-Step Guide",
+          "isPublished": true,
+          "publishedAt": "2026-07-22T03:10:55Z",
+          "updatedAt": "2026-07-22T03:11:00Z"
+        },
+        {
+          "handle": "how-to-keep-sheets-on-an-adjustable-bed",
+          "id": "gid://shopify/Article/601152848125",
+          "title": "How to Keep Sheets From Sliding Off an Adjustable Bed",
+          "isPublished": true,
+          "publishedAt": "2026-07-22T03:11:28Z",
+          "updatedAt": "2026-07-22T03:11:35Z"
+        },
+        {
+          "handle": "what-is-a-trundle-bed",
+          "id": "gid://shopify/Article/601170182397",
+          "title": "What Is a Trundle Bed? Sizes, Pros, Cons & How to Choose",
+          "isPublished": true,
+          "publishedAt": "2026-07-23T03:11:18Z",
+          "updatedAt": "2026-07-23T03:11:20Z"
+        },
+        {
+          "handle": "how-to-fix-a-squeaky-bed-frame",
+          "id": "gid://shopify/Article/601170215165",
+          "title": "How to Fix a Squeaky Bed Frame: Practical Fixes That Actually Work",
+          "isPublished": true,
+          "publishedAt": "2026-07-23T03:11:44Z",
+          "updatedAt": "2026-07-23T03:11:45Z"
+        },
+        {
+          "handle": "what-is-a-loft-bed",
+          "id": "gid://shopify/Article/601170247933",
+          "title": "What Is a Loft Bed? Pros, Cons, Safety & Who It's For",
+          "isPublished": true,
+          "publishedAt": "2026-07-23T03:12:07Z",
+          "updatedAt": "2026-07-23T03:12:08Z"
         }
       ]
     },
@@ -7912,7 +8280,7 @@
       "handle": "sleep-blog",
       "id": "gid://shopify/Blog/89331728637",
       "title": "Sleep Blog | Tips, Research & Wellness",
-      "updatedAt": "2026-06-19T16:33:07Z",
+      "updatedAt": "2026-07-22T15:51:08Z",
       "articles": [
         {
           "handle": "clothing-sleep-6073",
@@ -8248,7 +8616,7 @@
           "title": "Why Does My Mattress Feel Like It's Moving?",
           "isPublished": true,
           "publishedAt": "2024-01-06T18:16:48Z",
-          "updatedAt": "2026-05-23T06:06:12Z"
+          "updatedAt": "2026-07-22T15:51:08Z"
         },
         {
           "handle": "sleep-better-sleep-schedule",
@@ -8432,7 +8800,7 @@
       "handle": "mattress-care-tips",
       "id": "gid://shopify/Blog/89331761405",
       "title": "Mattress Care Tips | Extend Your Mattress Life",
-      "updatedAt": "2026-06-19T16:34:19Z",
+      "updatedAt": "2026-07-13T15:15:04Z",
       "articles": [
         {
           "handle": "madcap-cottage-bedroom-therapy",
@@ -8816,7 +9184,7 @@
           "title": "How to Clean a Sweat-Stained Mattress?",
           "isPublished": true,
           "publishedAt": "2024-03-08T20:34:32Z",
-          "updatedAt": "2026-05-23T06:12:26Z"
+          "updatedAt": "2026-07-13T15:15:04Z"
         },
         {
           "handle": "how-long-does-a-mattress-take-to-dry",
@@ -8928,7 +9296,7 @@
       "handle": "sleep-health",
       "id": "gid://shopify/Blog/89331794173",
       "title": "Sleep Health | Science, Benefits & Tips",
-      "updatedAt": "2026-06-19T15:24:51Z",
+      "updatedAt": "2026-07-22T15:51:00Z",
       "articles": [
         {
           "handle": "cant-sleep-caffeine-297634",
@@ -9184,7 +9552,7 @@
           "title": "Do TempurPedic Mattresses Have Fiberglass?",
           "isPublished": true,
           "publishedAt": "2023-11-27T17:48:21Z",
-          "updatedAt": "2026-05-22T14:39:01Z"
+          "updatedAt": "2026-07-13T13:31:08Z"
         },
         {
           "handle": "how-much-deep-sleep-do-we-need",
@@ -9296,7 +9664,7 @@
           "title": "How to Sleep After Back Surgery",
           "isPublished": true,
           "publishedAt": "2024-03-18T10:30:37Z",
-          "updatedAt": "2026-05-23T06:13:41Z"
+          "updatedAt": "2026-07-13T13:53:38Z"
         },
         {
           "handle": "can-you-sleep-with-a-back-support-belt-on-guide-to-sleeping-in-a-back-brace",
@@ -9304,7 +9672,7 @@
           "title": "Can You Sleep with a Back Support Belt On? Guide to Sleeping in a Back Brace",
           "isPublished": true,
           "publishedAt": "2024-03-19T13:40:16Z",
-          "updatedAt": "2026-05-23T06:13:48Z"
+          "updatedAt": "2026-07-22T15:51:00Z"
         },
         {
           "handle": "how-to-relieve-upper-back-pain-while-sleeping",
@@ -9312,7 +9680,7 @@
           "title": "How to Relieve Upper Back Pain While Sleeping",
           "isPublished": true,
           "publishedAt": "2024-03-19T13:47:39Z",
-          "updatedAt": "2026-05-23T06:13:56Z"
+          "updatedAt": "2026-07-13T13:55:47Z"
         },
         {
           "handle": "when-can-you-sleep-on-your-back-after-hip-replacement",
@@ -9320,7 +9688,7 @@
           "title": "When Can You Sleep On Your Back After Hip Replacement?",
           "isPublished": true,
           "publishedAt": "2024-03-21T20:39:17Z",
-          "updatedAt": "2026-06-13T22:39:39Z"
+          "updatedAt": "2026-07-19T15:27:00Z"
         },
         {
           "handle": "do-beautyrest-mattresses-have-fiberglass",

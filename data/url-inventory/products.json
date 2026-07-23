@@ -1,8 +1,8 @@
 {
   "$schema": "Shopify products inventory snapshot",
   "$source": "Shopify Admin GraphQL (la-mattress.myshopify.com) via scripts/pull-inventory.mjs",
-  "$pulledAt": "2026-07-03T19:38:47.664Z",
-  "$count": 256,
+  "$pulledAt": "2026-07-23T06:26:08.122Z",
+  "$count": 292,
   "products": [
     {
       "handle": "standard-foundation-box-spring",
@@ -11,7 +11,7 @@
       "vendor": "Eastman House",
       "productType": "Foundations",
       "publishedAt": "2016-05-12T02:47:00Z",
-      "updatedAt": "2026-06-02T13:38:48Z",
+      "updatedAt": "2026-07-20T05:56:50Z",
       "seoTitle": "Standard Profile 9\" Box Spring Universal Flat Foundation",
       "seoDescription": "Standard Profile 9\" Box Spring Foundation in Los Angeles includes free delivery with mattress. Queen from $259 offers rigid flat support at traditional bed height.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Foundation.jpg?v=1689171402"
@@ -23,7 +23,7 @@
       "vendor": "Restonic",
       "productType": "Latex Mattress",
       "publishedAt": "2022-05-09T23:11:44Z",
-      "updatedAt": "2026-06-22T03:26:22Z",
+      "updatedAt": "2026-07-20T05:56:50Z",
       "seoTitle": "Twin XL Restonic Natural Latex Collection Enchantment Firm 12\" FLOOR SAMPLE Clearance Mattress",
       "seoDescription": "Twin XL Restonic Natural Latex Collection Enchantment Firm 12\" FLOOR SAMPLE Clearance Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/enchantment_wob_8d0ad700-f742-4525-bb09-c9912a6214b0.jpg?v=1689171483"
@@ -35,7 +35,7 @@
       "vendor": "Eastman House",
       "productType": "Foundations",
       "publishedAt": "2016-05-12T02:47:00Z",
-      "updatedAt": "2026-06-02T13:38:41Z",
+      "updatedAt": "2026-07-20T05:56:51Z",
       "seoTitle": "Low Profile 4\" Box Spring Flat Universal Foundation",
       "seoDescription": "Low Profile 4\" Box Spring Foundation in Los Angeles includes free delivery with mattress. Queen from $259 offers rigid support at lower bed height.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/BLACKFOUNDATIONLOWPROFILE.jpg?v=1689171510"
@@ -47,7 +47,7 @@
       "vendor": "Diamond",
       "productType": "Foundations",
       "publishedAt": "2016-05-12T02:47:00Z",
-      "updatedAt": "2026-06-02T13:38:46Z",
+      "updatedAt": "2026-07-20T05:56:51Z",
       "seoTitle": "Bunkie Board 2\" Ultra Low Flat Foundation",
       "seoDescription": "Diamond Bunkie Board 2\" foundation in Los Angeles includes free delivery with mattress. Ultra-low profile rigid support for mattresses on platform beds or bunk beds.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/bunkie_board.jpg?v=1739813462"
@@ -59,7 +59,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2019-05-30T22:12:36Z",
-      "updatedAt": "2026-06-21T15:46:22Z",
+      "updatedAt": "2026-07-20T05:56:51Z",
       "seoTitle": "Tempur-Pedic TEMPUR-ProAdapt® Soft 12\" Mattress",
       "seoDescription": "Tempur-Pedic TEMPUR-ProAdapt® Soft 12\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/pro-adapt-soft-cover.jpg?v=1739813427"
@@ -71,7 +71,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Hybrid Mattress",
       "publishedAt": "2019-05-30T22:35:13Z",
-      "updatedAt": "2026-06-21T15:46:22Z",
+      "updatedAt": "2026-07-20T05:56:51Z",
       "seoTitle": "Tempur-Pedic TEMPUR-ProAdapt® Medium Hybrid 12\" Mattress",
       "seoDescription": "Tempur-Pedic TEMPUR-ProAdapt® Medium Hybrid 12\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR f...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/27340193_fpx.webp?v=1743542844"
@@ -83,7 +83,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2019-05-30T22:42:20Z",
-      "updatedAt": "2026-06-21T15:49:03Z",
+      "updatedAt": "2026-07-20T05:56:51Z",
       "seoTitle": "Tempur-Pedic TEMPUR-ProAdapt® Firm 12\" Mattress",
       "seoDescription": "Tempur-Pedic TEMPUR-ProAdapt® Firm 12\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/pro-adapt-firm-main-cover.jpg?v=1739813348"
@@ -95,7 +95,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2019-05-31T22:03:11Z",
-      "updatedAt": "2026-06-21T15:48:28Z",
+      "updatedAt": "2026-07-20T05:56:51Z",
       "seoTitle": "Tempur-Pedic TEMPUR-LuxeAdapt® 13\" Firm Mattress",
       "seoDescription": "The Tempur-Pedic TEMPUR-LuxeAdapt® 13\" Firm Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this luxurious firm mattress.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/35080-21-TEM_Adapt_Launch_LuxeAdapt_PDP_Firm_hybrid_ATF_A_01-IC1-HeroRoom_709x709-cover.jpg?v=1739813298"
@@ -107,7 +107,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2019-10-02T05:30:46Z",
-      "updatedAt": "2026-06-21T15:49:03Z",
+      "updatedAt": "2026-07-20T05:56:52Z",
       "seoTitle": "Tempur-Pedic TEMPUR-Adapt® 11\" Medium Mattress",
       "seoDescription": "The Tempur-Pedic TEMPUR-Adapt® 11\" Medium Mattress, available in Twin, Full, Queen, and King sizes. Upgrade your sleep with this medium firmness mattress.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Screenshot2024-05-06115034-COVER.jpg?v=1739812938"
@@ -119,7 +119,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2021-11-20T02:59:26Z",
-      "updatedAt": "2026-06-30T20:58:24Z",
+      "updatedAt": "2026-07-22T17:41:08Z",
       "seoTitle": "Diamond Rock Extra Firm 12\" Mattress",
       "seoDescription": "Diamond Rock Extra Firm 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers the firmest Diamond innerspring with 20-year warranty.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/TheRock_2_TightTop_12_inch.jpg2.jpg?v=1739812823"
@@ -131,7 +131,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2021-12-07T00:18:40Z",
-      "updatedAt": "2026-06-21T15:46:22Z",
+      "updatedAt": "2026-07-20T05:56:52Z",
       "seoTitle": "Diamond Lucille Firm Natural Latex Lux Euro Top 15\" Mattress",
       "seoDescription": "Diamond Lucille Firm Natural Latex 15\" mattress in Los Angeles includes free delivery. Queen from $3,899 offers natural Talalay latex with organic cotton and pocketed coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/DiamondLucilleNaturalLatexLuxEuroTop15Mattress.jpg?v=1739812750"
@@ -143,7 +143,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2021-12-07T00:23:03Z",
-      "updatedAt": "2026-06-22T03:26:23Z",
+      "updatedAt": "2026-07-20T05:56:52Z",
       "seoTitle": "Diamond Lucille Medium Natural Latex Luxury Euro Top 15\" Mattress",
       "seoDescription": "Diamond Lucille Medium Natural Latex 15\" mattress in Los Angeles includes free delivery. Queen from $3,899 offers natural Talalay latex with organic cotton for all sleeping positions.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/DiamondLucilleNaturalLatexLuxEuroTop15Mattress_4d73d509-defc-4ec4-80b8-c13ef11b87ea.jpg?v=1739812734"
@@ -155,7 +155,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2021-12-07T02:51:02Z",
-      "updatedAt": "2026-06-22T03:26:25Z",
+      "updatedAt": "2026-07-20T05:56:52Z",
       "seoTitle": "Diamond Lucille Plush Natural Latex Lux Euro Top 15\" Mattress",
       "seoDescription": "Diamond Lucille Plush Natural Latex 15\" mattress in Los Angeles includes free delivery. Queen from $3,899 offers plush Talalay latex with organic cotton for side sleepers.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/DiamondLucilleNaturalLatexLuxEuroTop15Mattress_a2ccb7ed-e9e6-4129-84ab-34eb533f988c.jpg?v=1739812716"
@@ -167,7 +167,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2023-11-11T19:59:27Z",
-      "updatedAt": "2026-06-21T15:46:21Z",
+      "updatedAt": "2026-07-20T05:56:53Z",
       "seoTitle": "Diamond Diana Firm Natural Latex Lux Euro Top 14\" Mattress",
       "seoDescription": "Diamond Diana Firm Natural Latex 14\" mattress in Los Angeles includes free delivery. Queen from $3,549 offers natural Talalay latex with organic cotton and 20-year warranty.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Diana-latex-firm-mattress-lifestyle-card_daaa2b29-62dd-4178-8993-31061126e3e6.png?v=1739812679"
@@ -179,7 +179,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2021-12-07T04:32:26Z",
-      "updatedAt": "2026-06-22T03:26:28Z",
+      "updatedAt": "2026-07-20T05:56:53Z",
       "seoTitle": "Diamond Diana Plush Natural Latex Lux Euro Top 16\" Mattress",
       "seoDescription": "Diamond Diana Plush Natural Latex 16\" mattress in Los Angeles includes free delivery. Queen from $3,549 offers plush Talalay latex cushioning for side sleepers.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Diana-latex-firm-mattress-lifestyle-card_f44736f3-4f82-4a6b-9f3d-37a27a3fc813.png?v=1739812670"
@@ -191,7 +191,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Foundations",
       "publishedAt": "2022-01-04T01:33:26Z",
-      "updatedAt": "2026-06-02T16:00:31Z",
+      "updatedAt": "2026-07-20T05:56:53Z",
       "seoTitle": "TEMPUR-Flat® High 9\" Box Spring Flat Foundation by TEMPUR-Pedic",
       "seoDescription": "TEMPUR-Flat foundation by Tempur-Pedic. Standard height (5\") flat base designed for Tempur-Pedic mattresses. Solid, reliable mattress support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/foundations-standard-base-tempur-pedic-box-spring-high-profile.png?v=1739812521"
@@ -203,7 +203,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Foundations",
       "publishedAt": "2022-01-04T02:14:45Z",
-      "updatedAt": "2026-06-02T13:38:47Z",
+      "updatedAt": "2026-07-20T05:56:53Z",
       "seoTitle": "TEMPUR-Flat® Low Profile 5\" Box Spring Flat Foundation by Tempur-Pedic",
       "seoDescription": "TEMPUR-Flat high profile foundation (9\") by Tempur-Pedic. Extra height flat base for easier bed entry. Perfect pairing for any Tempur-Pedic mattress.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/foundations-standard-base-tempur-pedic-box-spring-low-5in-profile.png?v=1739812517"
@@ -215,7 +215,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Foundations",
       "publishedAt": "2022-01-04T02:20:07Z",
-      "updatedAt": "2026-06-02T13:38:43Z",
+      "updatedAt": "2026-07-20T05:56:53Z",
       "seoTitle": "TEMPUR-Pedic Foundation TEMPUR-Flat® Ultra Low Profile 2\" Flat",
       "seoDescription": "TEMPUR-Pedic Foundation TEMPUR-Flat® Ultra Low Profile 2\" Flat aka Box Spring is available in sizes: twin, full, queen, king, California king at LA Mattress Store.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/foundations-standard-base-tempur-pedic-box-spring-ultra-low-profile.png?v=1732226985"
@@ -227,7 +227,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Foundations",
       "publishedAt": "2022-01-09T01:35:25Z",
-      "updatedAt": "2026-06-02T13:38:47Z",
+      "updatedAt": "2026-07-20T05:56:54Z",
       "seoTitle": "Stearns & Foster Foundation Standard Profile 9\"",
       "seoDescription": "Stearns & Foster Standard 9\" Foundation in Los Angeles includes free delivery with mattress. Queen from $315 offers rigid flat support at traditional bed height.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/SF_9in_Foundation_1250x780_2.original.jpg?v=1689172106"
@@ -239,7 +239,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Foundations",
       "publishedAt": "2022-01-09T01:40:12Z",
-      "updatedAt": "2026-06-02T13:38:44Z",
+      "updatedAt": "2026-07-20T05:56:54Z",
       "seoTitle": "Stearns & Foster Foundation Low Profile 5\" (Box Spring)",
       "seoDescription": "Stearns & Foster Low Profile 5\" Foundation in Los Angeles includes free delivery with mattress. Queen from $315 offers rigid flat support for lower bed height.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/SF_5in_Foundation_1250x780_2.original.jpg?v=1689172108"
@@ -251,7 +251,7 @@
       "vendor": "Eastman House",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-02-12T02:56:39Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:56:54Z",
       "seoTitle": "Eastman House Micah Firm 12.5\" Mattress",
       "seoDescription": "Eastman House Micah Firm 12.5\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers firm support with a touch of surface comfort.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/EastmanMicahFirm.png?v=1739812482"
@@ -263,7 +263,7 @@
       "vendor": "Eastman House",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-02-13T22:57:04Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:56:54Z",
       "seoTitle": "Eastman House Royal Sands Firm Luxury Gel Memory Foam 13.5\" Mattress",
       "seoDescription": "Eastman House Royal Sands Firm Luxury Gel Memory Foam 13.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchan...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/EastmanRoyalSandsFirm-resize.png?v=1739812438"
@@ -275,7 +275,7 @@
       "vendor": "Eastman House",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-03-15T02:14:48Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:56:54Z",
       "seoTitle": "Eastman House Spruce Firm 9\" Mattress",
       "seoDescription": "Eastman House Spruce Firm 9\" mattress in Los Angeles includes free delivery. Queen from $749 offers firm innerspring support from a 160-year American heritage brand.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Eastman_House_Spruce_Firm_9_Mattress_ff448687-f497-4fbf-9ce8-0985fcd28b71.png?v=1775395334"
@@ -287,7 +287,7 @@
       "vendor": "Eastman House",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-03-15T02:29:00Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:56:55Z",
       "seoTitle": "Eastman House Spruce Medium Pillow Top 11\" Mattress",
       "seoDescription": "Eastman House Spruce Medium Pillow Top 11\" mattress in Los Angeles includes free delivery. Queen from $949 offers pillow top comfort at an entry-level price from a 160-year brand.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Eastman_House_Spruce_Medium_Pillow_Top_11_Mattress_ec7bfd5e-df73-427c-81eb-197ff71b30f7.png?v=1775395336"
@@ -299,7 +299,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2022-04-02T21:39:14Z",
-      "updatedAt": "2026-06-22T03:26:28Z",
+      "updatedAt": "2026-07-20T05:56:55Z",
       "seoTitle": "Diamond Diana Medium Natural Latex Lux Euro Top 15.5\" Mattress",
       "seoDescription": "Diamond Diana Medium Natural Latex 15.5\" mattress in Los Angeles includes free delivery. Queen from $3,549 offers balanced natural Talalay latex for all sleeping positions.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Diana-latex-firm-mattress-lifestyle-card.png?v=1739812329"
@@ -311,7 +311,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2026-01-19T01:36:27Z",
-      "updatedAt": "2026-07-03T00:34:23Z",
+      "updatedAt": "2026-07-20T05:56:55Z",
       "seoTitle": "Diamond Dreamstage Value Collection Topaz Firm Tight Top 7\" Mattress",
       "seoDescription": "Diamond Topaz Firm 7\" mattress in Los Angeles includes free delivery. Queen from $399 offers California-made innerspring quality with 20-year warranty.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Diamond_Dreamstage_Value_Firm_Tight_Top_b9dfd81e-5d64-4bc8-afaf-865406f0ff60.png?v=1775395335"
@@ -323,7 +323,7 @@
       "vendor": "Eastman House",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-05-07T01:59:11Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:56:55Z",
       "seoTitle": "Eastman House Royal Sands Medium Luxury Gel Memory Foam Pillow Top 14\" Mattress",
       "seoDescription": "Eastman House Royal Sands Medium Luxury Gel Memory Foam Pillow Top 14\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night com...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/EastmanRoyalSandsPillowTop.png?v=1739812108"
@@ -335,7 +335,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Pillows",
       "publishedAt": "2026-04-06T03:15:37Z",
-      "updatedAt": "2026-06-02T16:00:49Z",
+      "updatedAt": "2026-07-20T05:56:56Z",
       "seoTitle": "Tempur-Pedic Pillow Tempur-Adapt ProMid + Cooling Pillow",
       "seoDescription": "Shop the Tempur-Pedic Pillow Tempur-Adapt ProMid + Cooling Pillow available in sizes: queen and king at LA mattress Store.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/TEMPUR-AdaptProMidSoftPlusCoolingPillow.webp?v=1739811813"
@@ -347,7 +347,7 @@
       "vendor": "Southerland",
       "productType": "Foundations",
       "publishedAt": "2022-06-08T19:09:33Z",
-      "updatedAt": "2026-06-02T15:59:56Z",
+      "updatedAt": "2026-07-20T05:56:56Z",
       "seoTitle": "Smokey Low Profile 5\" Metal Box Spring Flat Foundation",
       "seoDescription": "Smokey 4\" low profile box spring metal foundation. Slim design reduces bed height while providing solid mattress support. All sizes available.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Smokey-foundation-low-profile-foundation.webp-3.webp?v=1739811791"
@@ -359,7 +359,7 @@
       "vendor": "Southerland",
       "productType": "Foundations",
       "publishedAt": "2022-06-08T19:16:11Z",
-      "updatedAt": "2026-06-10T13:14:59Z",
+      "updatedAt": "2026-07-20T05:56:56Z",
       "seoTitle": "Smokey Standard Profile 9\" Metal Box Spring Flat Foundation",
       "seoDescription": "Smokey 9\" standard profile metal box spring foundation. Classic height flat foundation with steel construction. Reliable support for any mattress.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Smokey-foundation-standard.webp?v=1739811786"
@@ -371,7 +371,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-06-17T20:07:32Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:56:56Z",
       "seoTitle": "Chattam & Wells Lismore Luxury Firm 13\" Mattress",
       "seoDescription": "Chattam & Wells Lismore Luxury Firm 13\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Chattam-Lismore-Angle_web.jpg?v=1739811775"
@@ -383,7 +383,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-06-17T20:14:26Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:56:56Z",
       "seoTitle": "Chattam & Wells Miramare Luxury Firm 13\" Mattress",
       "seoDescription": "Chattam & Wells Miramare luxury mattress from the Palace Collection. Handcrafted with premium materials for exceptional comfort and lasting support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Chattam_and_Wells_The_Miramare_at_LA_Mattress_Store_2.png?v=1774962128"
@@ -395,7 +395,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-06-17T19:42:18Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:56:57Z",
       "seoTitle": "Chattam & Wells Chantilly Luxury Plush 14.5\" Mattress",
       "seoDescription": "Chattam & Wells Chantilly Luxury Plush 14.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR fina...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Chattam-Chantilly-Angle_web.jpg?v=1739811753"
@@ -407,7 +407,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-06-17T19:34:11Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:56:57Z",
       "seoTitle": "Chattam & Wells The Ashford Luxury Medium Euro Top 15.5\" Mattress",
       "seoDescription": "Chattam & Wells The Ashford Luxury Medium Euro Top 15.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange,...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/LA_Mattress_Store_-_Chattam_Wells.png?v=1774961693"
@@ -419,7 +419,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-06-17T19:53:12Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:56:57Z",
       "seoTitle": "Chattam & Wells Kensington Medium Luxury Euro Top 17\" Mattress",
       "seoDescription": "Chattam & Wells Kensington Medium Luxury Euro Top 17\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0%...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Chattam_WellsKensingtonPlushLuxuryEuroTop17Mattress.jpg?v=1739811724"
@@ -431,7 +431,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Foundations",
       "publishedAt": "2022-06-17T21:16:06Z",
-      "updatedAt": "2026-06-02T16:06:21Z",
+      "updatedAt": "2026-07-20T05:56:57Z",
       "seoTitle": "Chattam & Wells Heavy Duty 4\" Foundation",
       "seoDescription": "Chattam & Wells Heavy Duty 4\" Foundation at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Chattam-Box-Spring-3QL_R3.jpg?v=1739811706"
@@ -443,7 +443,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Foundations",
       "publishedAt": "2022-06-17T21:17:06Z",
-      "updatedAt": "2026-06-02T15:57:42Z",
+      "updatedAt": "2026-07-20T05:56:57Z",
       "seoTitle": "Chattam & Wells Heavy Duty 9\" Foundation",
       "seoDescription": "Chattam & Wells Heavy Duty 9\" Foundation at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Chattam-Box-Spring-3QL_R3_05f4768d-1779-45fc-a631-1041170d43ac.jpg?v=1739811700"
@@ -455,7 +455,7 @@
       "vendor": "Harvest Green",
       "productType": "Latex Mattress",
       "publishedAt": "2022-08-07T23:33:02Z",
-      "updatedAt": "2026-06-24T21:41:26Z",
+      "updatedAt": "2026-07-20T05:56:58Z",
       "seoTitle": "Harvest Green GOTS Certified 11\" Mattress",
       "seoDescription": "Harvest Green Original GOTS Certified 11\" mattress in Los Angeles includes free delivery. Queen from $1,799 offers firm natural latex, made in USA.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/HarvestGreenOriginalGOTSCertified11Mattress.heic?v=1694120787"
@@ -467,7 +467,7 @@
       "vendor": "Eastman House",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-08-11T23:04:58Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:56:58Z",
       "seoTitle": "Eastman House Micah Extra Firm Gel Memory Foam Mattress",
       "seoDescription": "Eastman House Micah Extra Firm 12\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers the firmest Micah with minimal cushioning for maximum support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/EastmanMicahFirm_f4d606d5-8117-47e5-a8a0-473e2bb767fb.png?v=1739811401"
@@ -479,7 +479,7 @@
       "vendor": "Eastman House",
       "productType": "Innerspring Mattress",
       "publishedAt": "2022-08-28T19:20:29Z",
-      "updatedAt": "2026-06-21T15:07:51Z",
+      "updatedAt": "2026-07-20T05:56:58Z",
       "seoTitle": "Eastman House Micah 12.5\" Medium Plush Mattress",
       "seoDescription": "Eastman House Micah Medium Plush 12.5\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers the softest Micah with cushioning for side sleepers.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/EastmanMicahFirm_d952de04-bfca-4d4e-be0e-61d2166c1d44.png?v=1739811360"
@@ -491,7 +491,7 @@
       "vendor": "Harvest Green",
       "productType": "Latex Mattress",
       "publishedAt": "2022-09-10T20:33:18Z",
-      "updatedAt": "2026-06-24T21:41:27Z",
+      "updatedAt": "2026-07-20T05:56:58Z",
       "seoTitle": "Harvest Green Essential 10\" Organic Mattress",
       "seoDescription": "Harvest Green Essential GOTS Certified 10\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers firm natural latex, made in USA.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/HarvestGreenEssentialGOTSCertified10Mattress.jpg?v=1739811316"
@@ -503,7 +503,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:14Z",
-      "updatedAt": "2026-06-24T21:36:39Z",
+      "updatedAt": "2026-07-20T05:56:58Z",
       "seoTitle": null,
       "seoDescription": "Malouf Dusk Tencel Lyocell sheet set in Los Angeles — free delivery. Cooling, breathable, eco-friendly with deep-pocket fit. From $165.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Dusk-tencel-sheet-set-la-mattress-stores-2.jpg?v=1723940753"
@@ -515,7 +515,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:23Z",
-      "updatedAt": "2026-06-24T21:36:41Z",
+      "updatedAt": "2026-07-20T05:56:59Z",
       "seoTitle": null,
       "seoDescription": "Malouf White Tencel Lyocell sheet set in Los Angeles — free delivery. Cooling, breathable, eco-friendly with deep-pocket fit. From $165.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/White-tencel-bedding-sheets-set-la-mattress-stores-2.jpg?v=1723940981"
@@ -527,7 +527,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:16Z",
-      "updatedAt": "2026-06-24T21:36:42Z",
+      "updatedAt": "2026-07-20T05:56:59Z",
       "seoTitle": "Malouf Ecru Tencel™ Lyocell Sheet Set",
       "seoDescription": "Malouf Ecru Tencel Lyocell sheet set in Los Angeles — free delivery. Cooling, breathable, eco-friendly fit for extra-deep mattresses. From $165.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Ecru-Tencel-sheet-set-la-mattress-stores-2.jpg?v=1723940968"
@@ -539,7 +539,7 @@
       "vendor": "Malouf",
       "productType": "Pillowcases",
       "publishedAt": "2026-04-16T08:08:13Z",
-      "updatedAt": "2026-06-24T21:36:45Z",
+      "updatedAt": "2026-07-20T05:56:59Z",
       "seoTitle": "Malouf Dusk Botanical Tencel™ Pillowcase Set",
       "seoDescription": "Malouf Dusk Tencel Lyocell pillowcase set in Los Angeles — free delivery. Cooling, breathable, eco-friendly. King and Queen. From $55.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Dusk-tencel-sheet-set-la-mattress-stores-3_215ea02b-4bec-4850-9ecb-4da874135599.jpg?v=1689172464"
@@ -551,7 +551,7 @@
       "vendor": "Malouf",
       "productType": "Pillowcases",
       "publishedAt": "2026-04-16T08:08:15Z",
-      "updatedAt": "2026-06-24T21:36:46Z",
+      "updatedAt": "2026-07-20T05:56:59Z",
       "seoTitle": null,
       "seoDescription": "Malouf Ecru Tencel Lyocell pillowcase set in Los Angeles — free delivery. Cooling, breathable, eco-friendly. King and Queen. From $55.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Ecru-Tencel-sheet-set-la-mattress-stores-4_f169a71a-235b-4e31-aa03-1b08f50ec4ae.jpg?v=1689172469"
@@ -563,7 +563,7 @@
       "vendor": "Malouf",
       "productType": "Pillowcases",
       "publishedAt": "2026-04-16T08:08:22Z",
-      "updatedAt": "2026-06-24T21:36:48Z",
+      "updatedAt": "2026-07-20T05:56:59Z",
       "seoTitle": null,
       "seoDescription": "Malouf White Tencel Lyocell pillowcase set in Los Angeles — free delivery. Cooling, breathable, eco-friendly. King and Queen. From $55.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/White-tencel-bedding-sheets-set-la-mattress-stores-3_75394c8c-b4ca-4099-984c-c30703913ec2.jpg?v=1689172521"
@@ -575,7 +575,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:26Z",
-      "updatedAt": "2026-06-24T21:37:00Z",
+      "updatedAt": "2026-07-20T05:57:00Z",
       "seoTitle": null,
       "seoDescription": "Malouf White soft-knit microfiber sheet set in Los Angeles — free delivery. Cozy, easy-care, deep-pocket fit. From $60.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/MA90QQWHMS-BrushedMicrofiberSheets03041648735801-600x600.jpg?v=1723940603"
@@ -587,7 +587,7 @@
       "vendor": "Malouf",
       "productType": "Pillowcases",
       "publishedAt": "2026-04-16T08:08:25Z",
-      "updatedAt": "2026-06-24T21:37:01Z",
+      "updatedAt": "2026-07-20T05:57:00Z",
       "seoTitle": "Malouf Soft Knit Microfiber Pillowcase Set",
       "seoDescription": "Malouf White soft-knit microfiber pillowcase set in Los Angeles — free delivery. Cozy, easy-care comfort. King and Queen. From $35.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/MA90QQWHMS-BrushedMicrofiberSheets03041648735801-600x600_e8d81d6b-b5dc-4f4c-8143-d61f73f41ebd.jpg?v=1723940574"
@@ -599,7 +599,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:09Z",
-      "updatedAt": "2026-06-24T21:37:02Z",
+      "updatedAt": "2026-07-20T05:57:00Z",
       "seoTitle": null,
       "seoDescription": "Malouf Ash soft-knit microfiber sheet set in Los Angeles — free delivery. Cozy, wrinkle-resistant, deep-pocket fit. From $60.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/ash-brushed-microfiber-sheet-set-malouf-la-mattress-2.jpg?v=1723940618"
@@ -611,7 +611,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:12Z",
-      "updatedAt": "2026-06-24T21:37:09Z",
+      "updatedAt": "2026-07-20T05:57:01Z",
       "seoTitle": "Malouf Driftwood Soft Knit Microfiber Sheet Combo",
       "seoDescription": "Malouf Driftwood soft-knit microfiber sheet set in Los Angeles — free delivery. Velvety, easy-care, deep-pocket fit. From $60.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Driiftwood-microfiber-sheet-set-malouf-la-mattress-2.jpg?v=1739810954"
@@ -623,7 +623,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:19Z",
-      "updatedAt": "2026-06-24T21:37:21Z",
+      "updatedAt": "2026-07-20T05:57:01Z",
       "seoTitle": null,
       "seoDescription": "Malouf Pacific soft-knit microfiber sheet set in Los Angeles — free delivery. Cozy, easy-care, deep-pocket fit. From $60.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Brushed-Microfiber-Sheets-set-pacific-malouf.jpg?v=1739810940"
@@ -635,7 +635,7 @@
       "vendor": "Southerland",
       "productType": "Latex Mattress",
       "publishedAt": "2023-04-11T03:05:57Z",
-      "updatedAt": "2026-06-22T03:26:31Z",
+      "updatedAt": "2026-07-20T05:57:01Z",
       "seoTitle": "Southerland Sandmahn 16\" Plush Latex Foam Mattress",
       "seoDescription": "Southerland Scandinavian Sandmahn Plush Box Top 16\" mattress in Los Angeles includes free delivery. Queen from $3,519 offers plush Talalay latex with GOLS organic latex and copper cooling.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/ScandinavianCollectionSoutherland_05944f77-7b9d-4dd8-8fd8-92fe9d711f13.jpg?v=1739810397"
@@ -647,7 +647,7 @@
       "vendor": "Southerland",
       "productType": "Latex Mattress",
       "publishedAt": "2023-04-22T18:20:49Z",
-      "updatedAt": "2026-06-22T03:26:33Z",
+      "updatedAt": "2026-07-20T05:57:01Z",
       "seoTitle": "Southerland Stockholm Luxury Firm Euro Top Mattress",
       "seoDescription": "Southerland Scandinavian Stockholm Luxury Firm Euro Top 13\" mattress in Los Angeles includes free delivery. Queen from $2,639 offers GOLS organic latex with copper cooling and euro top comfort.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/scandinavian-mattress-clean-cool-comfort-southerland-la-mattress.png?v=1739810380"
@@ -659,7 +659,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-12T02:18:28Z",
-      "updatedAt": "2026-06-21T15:46:22Z",
+      "updatedAt": "2026-07-20T05:57:01Z",
       "seoTitle": "Stearns & Foster Studio Medium 14\" Mattress",
       "seoDescription": "Stearns & Foster Studio Medium 14\" mattress in Los Angeles includes free delivery. Queen from $1,799 offers IntelliCoil HD coil-within-a-coil support and TENCEL fiber cover.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterStudioMedium14Mattress.jpg?v=1739810335"
@@ -671,7 +671,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-12T02:18:47Z",
-      "updatedAt": "2026-06-26T16:32:58Z",
+      "updatedAt": "2026-07-20T05:57:01Z",
       "seoTitle": "Stearns & Foster Studio Medium Euro Pillow Top Mattress",
       "seoDescription": "Stearns & Foster Studio Medium Euro Pillow Top 14.5\" mattress in Los Angeles includes free delivery. Queen from $1,999 offers euro pillow top cushioning with IntelliCoil HD.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterStudioMediumEuroPillowTop14.5Mattress.jpg?v=1739810311"
@@ -683,7 +683,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-12T02:02:22Z",
-      "updatedAt": "2026-06-21T15:46:21Z",
+      "updatedAt": "2026-07-20T05:57:02Z",
       "seoTitle": "Stearns & Foster Estate® Firm Euro Pillow Top Mattress",
       "seoDescription": "Stearns & Foster Estate Firm Euro Pillow Top 15\" mattress in Los Angeles includes free delivery. Queen from $2,599 offers firm support with flush euro pillow top cushioning.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterEstate_EuroPillowTop15Mattress.jpg?v=1739810292"
@@ -695,7 +695,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-12T02:08:21Z",
-      "updatedAt": "2026-06-21T15:46:18Z",
+      "updatedAt": "2026-07-20T05:57:02Z",
       "seoTitle": "Stearns & Foster Estate® 15\" Soft Pillow Top Mattress",
       "seoDescription": "Stearns & Foster Estate Soft Pillow Top 15\" mattress in Los Angeles includes free delivery. Queen from $2,599 offers pillow top plus TEMPUR-Indulge foam for side sleepers.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterEstate_EuroPillowTop15Mattress_2cd0324b-1ddd-4fd7-bd75-1d20d1259d72.jpg?v=1739810268"
@@ -707,7 +707,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-12T01:57:48Z",
-      "updatedAt": "2026-06-21T15:46:19Z",
+      "updatedAt": "2026-07-20T05:57:02Z",
       "seoTitle": "Stearns & Foster Estate® Firm 14.5\" Mattress",
       "seoDescription": "Stearns & Foster Estate Firm 14.5\" mattress in Los Angeles includes free delivery. Queen from $2,399 offers firm IntelliCoil HD support for back and stomach sleepers.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterEstate_ExtraFirm13.5Mattress.jpg?v=1739810248"
@@ -719,7 +719,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-12T01:57:42Z",
-      "updatedAt": "2026-06-21T15:46:19Z",
+      "updatedAt": "2026-07-20T05:57:02Z",
       "seoTitle": "Stearns & Foster Estate® Plush 14.5\" Mattress",
       "seoDescription": "Stearns & Foster Estate Plush 14.5\" mattress in Los Angeles includes free delivery. Queen from $2,399 offers TEMPUR-Indulge memory foam with IntelliCoil HD support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterEstate_Plush14.5Mattress.jpg?v=1739810217"
@@ -731,7 +731,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-12T03:34:54Z",
-      "updatedAt": "2026-06-21T15:46:22Z",
+      "updatedAt": "2026-07-20T05:57:03Z",
       "seoTitle": "Stearns & Foster Lux Estate Ultra Firm Mattress",
       "seoDescription": "Stearns & Foster Lux Estate Ultra Firm 14.5\" mattress in Los Angeles includes free delivery. Queen from $3,199 offers premium ultra firm support with AirVent cooling.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterLuxEstate_Medium14.5Mattress_b55edb97-4dfb-45d9-9476-6872a3d6c496.jpg?v=1739810201"
@@ -743,7 +743,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-13T00:35:26Z",
-      "updatedAt": "2026-06-21T15:46:22Z",
+      "updatedAt": "2026-07-20T05:57:03Z",
       "seoTitle": "Stearns & Foster Lux Estate® Medium Mattress - 14.5\"",
       "seoDescription": "Stearns & Foster Lux Estate Medium 14.5\" mattress in Los Angeles includes free delivery. Queen from $3,199 offers Enhanced TEMPUR-Indulge foam with AirVent cooling system.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterLuxEstate_Medium14.5Mattress.jpg?v=1739810182"
@@ -755,7 +755,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-13T00:54:59Z",
-      "updatedAt": "2026-06-21T15:46:22Z",
+      "updatedAt": "2026-07-20T05:57:03Z",
       "seoTitle": "Stearns & Foster Lux Estate Firm Pillow Top Mattress | LA Mattress Store",
       "seoDescription": "Stearns & Foster Lux Estate Firm Pillow Top 16\" mattress in Los Angeles includes free delivery. Queen from $3,499 offers firm support with pillow top comfort and AirVent cooling.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterLuxEstate_FirmPillowTop16Mattress.jpg?v=1739810161"
@@ -767,7 +767,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-13T01:54:10Z",
-      "updatedAt": "2026-06-21T15:46:22Z",
+      "updatedAt": "2026-07-20T05:57:03Z",
       "seoTitle": "Stearns & Foster Lux Estate® 16\" Pillow Top Mattress",
       "seoDescription": "Stearns & Foster Lux Estate Plush Pillow Top 16\" mattress in Los Angeles includes free delivery. Queen from $3,499 offers deep pillow top with TEMPUR-Indulge foam and AirVent cooling.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterLuxEstate_FirmPillowTop16Mattress_b32604e4-7e66-444a-bc85-ee6e48af39a9.jpg?v=1739810144"
@@ -779,7 +779,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Hybrid Mattress",
       "publishedAt": "2023-05-13T02:48:05Z",
-      "updatedAt": "2026-06-21T15:46:22Z",
+      "updatedAt": "2026-07-20T05:57:03Z",
       "seoTitle": "Stearns & Foster Lux Hybrid Firm Mattress",
       "seoDescription": "Stearns & Foster Lux Hybrid Firm 14.5\" mattress in Los Angeles includes free delivery. Queen from $3,599 offers responsive hybrid foam with IntelliCoil HD and AirVent cooling.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterLuxHybridFirm14.5Mattress.jpg?v=1739810127"
@@ -791,7 +791,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Hybrid Mattress",
       "publishedAt": "2023-05-13T02:48:57Z",
-      "updatedAt": "2026-06-21T15:46:18Z",
+      "updatedAt": "2026-07-20T05:57:04Z",
       "seoTitle": "Stearns & Foster Lux Hybrid Plush Mattress 14.5\"",
       "seoDescription": "Stearns & Foster Lux Hybrid Plush 14.5\" mattress in Los Angeles includes free delivery. Queen from $3,599 offers responsive plush hybrid foam, soft without slow sinking, with AirVent cooling.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterLuxHybridPlush14.5Mattress.jpg?v=1739810114"
@@ -803,7 +803,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Hybrid Mattress",
       "publishedAt": "2023-05-13T02:57:18Z",
-      "updatedAt": "2026-06-21T15:46:21Z",
+      "updatedAt": "2026-07-20T05:57:04Z",
       "seoTitle": "Stearns & Foster Lux Hybrid Medium 14\" Mattress",
       "seoDescription": "Stearns & Foster Lux Hybrid Medium 14\" mattress in Los Angeles includes free delivery. Queen from $3,599 offers responsive hybrid foam with IntelliCoil HD and AirVent cooling.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterLuxHybridFirm14.5Mattress_d4bb43ba-526c-49ec-b649-f0afc8f33e8b.jpg?v=1739810095"
@@ -815,7 +815,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-13T03:23:02Z",
-      "updatedAt": "2026-06-21T15:46:19Z",
+      "updatedAt": "2026-07-20T05:57:04Z",
       "seoTitle": "Stearns & Foster Reserve® Medium Mattress 16\"",
       "seoDescription": "Stearns & Foster Reserve Medium 16\" mattress in Los Angeles includes free delivery. Queen from $4,799 offers hand-tufted construction with cashmere cover and advanced IntelliCoil HD.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterReserve_Medium16Mattress.jpg?v=1739810066"
@@ -827,7 +827,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-05-13T20:05:44Z",
-      "updatedAt": "2026-06-21T15:47:12Z",
+      "updatedAt": "2026-07-20T05:57:04Z",
       "seoTitle": "Stearns & Foster Estate® Ultra Firm 13.5\" Mattress",
       "seoDescription": "Stearns & Foster Estate Ultra Firm 13.5\" mattress in Los Angeles includes free delivery. Queen from $2,399 offers maximum firmness with minimal comfort layer over IntelliCoil HD.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterEstate_Plush14.5Mattress_959120b3-a493-448c-97e4-1cde73ea2098.jpg?v=1739810041"
@@ -839,7 +839,7 @@
       "vendor": "Diamond",
       "productType": "Bed in a Box",
       "publishedAt": "2023-06-16T21:12:55Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:57:04Z",
       "seoTitle": "Diamond ProGel Memory Foam 8\" Firm Mattress",
       "seoDescription": "Diamond ProGel Firm 8\" memory foam mattress in Los Angeles includes free delivery. Queen from $959 offers compact gel foam bed-in-a-box with 20-year warranty.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/10_Pro_Gel_AF.webp?v=1772526094"
@@ -851,7 +851,7 @@
       "vendor": "Diamond",
       "productType": "Bed in a Box",
       "publishedAt": "2023-06-16T21:27:18Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:57:05Z",
       "seoTitle": "Diamond ProGel Medium Gel Memory Foam 10\" Mattress",
       "seoDescription": "Diamond ProGel Medium 10\" gel memory foam mattress in Los Angeles includes free delivery. Queen from $1,039 offers balanced gel foam bed-in-a-box with 20-year warranty.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/10_Pro_Gel_AF.webp?v=1772526094"
@@ -863,7 +863,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-06-27T18:47:28Z",
-      "updatedAt": "2026-06-21T15:47:12Z",
+      "updatedAt": "2026-07-20T05:57:05Z",
       "seoTitle": "Stearns & Foster Reserve® Soft Pillow Top Mattress",
       "seoDescription": "Stearns & Foster Reserve Soft Pillow Top 17\" mattress in Los Angeles includes free delivery. Queen from $5,499 offers hand-tufted cashmere pillow top, the most luxurious S&F made.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterReserve_SoftPillowTop17Mattress.jpg?v=1739809659"
@@ -875,7 +875,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2023-06-30T02:00:35Z",
-      "updatedAt": "2026-06-24T21:41:07Z",
+      "updatedAt": "2026-07-20T05:57:05Z",
       "seoTitle": "Tempur-Pedic TEMPUR-LuxeBreeze® Firm Mattress",
       "seoDescription": "Tempur-Pedic TEMPUR-LuxeBreeze Firm 13\" mattress in Los Angeles includes free delivery. Queen from $5,399 offers firm cooling memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Tempur-pedic-luxe-breeze-firm-13-mattress-la-mattress-stores.jpg?v=1739809576"
@@ -887,7 +887,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2023-06-30T02:03:02Z",
-      "updatedAt": "2026-06-24T21:41:09Z",
+      "updatedAt": "2026-07-20T05:57:05Z",
       "seoTitle": "Tempur-Pedic TEMPUR-LuxeBreeze® Soft Mattress",
       "seoDescription": "Tempur-Pedic TEMPUR-LuxeBreeze Soft 13\" mattress in Los Angeles includes free delivery. Queen from $5,399 offers soft cooling memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Tempur-pedic-luxe-breeze-soft-13-mattress-la-mattress-stores.jpg?v=1739809562"
@@ -899,7 +899,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Hybrid Mattress",
       "publishedAt": "2023-06-30T02:32:10Z",
-      "updatedAt": "2026-06-24T21:41:11Z",
+      "updatedAt": "2026-07-20T05:57:05Z",
       "seoTitle": "Tempur-Pedic TEMPUR-LuxeBreeze® Medium Hybrid Mattress",
       "seoDescription": "Tempur-Pedic TEMPUR-LuxeBreeze Medium Hybrid 13\" mattress in Los Angeles includes free delivery. Queen from $5,399 offers medium cooling hybrid support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Tempur-pedic-luxe-breeze-medium-hyrbid-13-mattress-la-mattress-stores.jpg?v=1739809547"
@@ -911,7 +911,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2023-06-30T02:56:17Z",
-      "updatedAt": "2026-06-24T21:41:12Z",
+      "updatedAt": "2026-07-20T05:57:06Z",
       "seoTitle": "Tempur-Pedic ProBreeze Medium 12\" Mattress",
       "seoDescription": "Tempur-Pedic TEMPUR-ProBreeze Medium 12\" mattress in Los Angeles includes free delivery. Queen from $4,099 offers medium cooling memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Tempur-pedic-pro-breeze-medium-12-mattress-la-mattress-stores.jpg?v=1739809510"
@@ -923,7 +923,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:18Z",
-      "updatedAt": "2026-06-24T21:37:22Z",
+      "updatedAt": "2026-07-20T05:57:06Z",
       "seoTitle": null,
       "seoDescription": "Malouf Opal Tencel Lyocell sheet set in Los Angeles — free delivery. Cooling, breathable, eco-friendly with deep-pocket fit. From $165.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Opal-tencel-sheet-set-la-mattress-stores-2.jpg?v=1739808586"
@@ -935,7 +935,7 @@
       "vendor": "Malouf",
       "productType": "Pillowcases",
       "publishedAt": "2026-04-16T08:08:11Z",
-      "updatedAt": "2026-06-24T21:37:23Z",
+      "updatedAt": "2026-07-20T05:57:06Z",
       "seoTitle": null,
       "seoDescription": "Malouf Driftwood soft-knit microfiber pillowcase set in Los Angeles — free delivery. Cozy, easy-care comfort. King and Queen. From $35.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/MA90QQWHMS-BrushedMicrofiberSheets03041648735801-600x600_5d7fd22c-919e-4295-a2cc-b75f45f5b9d7.jpg?v=1723940587"
@@ -947,7 +947,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:20Z",
-      "updatedAt": "2026-06-24T21:37:24Z",
+      "updatedAt": "2026-07-20T05:57:06Z",
       "seoTitle": null,
       "seoDescription": "Malouf Sage linen-weave cotton sheet set in Los Angeles — free delivery. Lightweight, breathable, made in the USA. From $134.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/linen-weave-cotton-sheet-set.jpg?v=1739808536"
@@ -959,7 +959,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:17Z",
-      "updatedAt": "2026-06-24T21:37:25Z",
+      "updatedAt": "2026-07-20T05:57:06Z",
       "seoTitle": null,
       "seoDescription": "Malouf Fog linen-weave cotton sheet set in Los Angeles — free delivery. Lightweight, breathable, easy-care comfort. From $134.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/MA12QQSACS-Fog1639410648-600x600.jpg?v=1739808517"
@@ -971,7 +971,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:24Z",
-      "updatedAt": "2026-06-24T21:37:26Z",
+      "updatedAt": "2026-07-20T05:57:07Z",
       "seoTitle": null,
       "seoDescription": "Malouf White linen-weave cotton sheet set in Los Angeles — free delivery. Lightweight, breathable, easy-care comfort. From $134.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/MA12QQSACS-White1639410648-600x600.jpg?v=1739808497"
@@ -983,7 +983,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:21Z",
-      "updatedAt": "2026-06-24T21:37:26Z",
+      "updatedAt": "2026-07-20T05:57:07Z",
       "seoTitle": null,
       "seoDescription": "Malouf Sand linen-weave cotton sheet set in Los Angeles — free delivery. Lightweight, breathable, easy-care comfort. From $134.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/MA12QQSACS-sand1639410648-600x600.jpg?v=1739808472"
@@ -995,7 +995,7 @@
       "vendor": "Eclipse",
       "productType": "Bed in a Box",
       "publishedAt": "2023-10-28T01:19:37Z",
-      "updatedAt": "2026-06-24T21:41:14Z",
+      "updatedAt": "2026-07-20T05:57:07Z",
       "seoTitle": "Eclipse Cares 10\" Firm Mattress - USA Made Comfort",
       "seoDescription": "Eclipse Cares Ease Hybrid 10\" Firm mattress in Los Angeles includes free delivery. Queen from $999 offers firm pocketed coil hybrid support, made in USA.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Ease-lifestyle.jpg?v=1739808311"
@@ -1007,7 +1007,7 @@
       "vendor": "Eclipse",
       "productType": "Bed in a Box",
       "publishedAt": "2023-10-28T01:19:39Z",
-      "updatedAt": "2026-06-24T21:41:19Z",
+      "updatedAt": "2026-07-20T05:57:07Z",
       "seoTitle": "Eclipse Cares Peacefulness Hybrid 12\" Mattress",
       "seoDescription": "Eclipse Cares Peacefulness Hybrid 12\" Medium mattress in Los Angeles includes free delivery. Queen from $879 offers medium CopperGel pocketed coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/PEACEFULNESSROOMVIEWcopy.jpg?v=1739808275"
@@ -1019,7 +1019,7 @@
       "vendor": "Eclipse",
       "productType": "Bed in a Box",
       "publishedAt": "2023-10-28T01:19:18Z",
-      "updatedAt": "2026-06-24T21:41:21Z",
+      "updatedAt": "2026-07-20T05:57:07Z",
       "seoTitle": "Eclipse Cares Kindness Hybrid 13\" Firm Mattress",
       "seoDescription": "Eclipse Cares Kindness Hybrid 13\" Firm mattress in Los Angeles includes free delivery. Queen from $959 offers firm CopperGel pocketed coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/KINDNESSplushroomview.jpg?v=1739808258"
@@ -1031,7 +1031,7 @@
       "vendor": "Eclipse",
       "productType": "Bed in a Box",
       "publishedAt": "2023-10-28T01:24:59Z",
-      "updatedAt": "2026-06-24T21:41:22Z",
+      "updatedAt": "2026-07-20T05:57:08Z",
       "seoTitle": "Eclipse Cares Kindness Hybrid 13\" Mattress",
       "seoDescription": "Eclipse Cares Kindness Hybrid 13\" Plush mattress in Los Angeles includes free delivery. Queen from $959 offers plush CopperGel pocketed coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/KINDNESSFIRMROOMVIEW_2d2558b1-efe5-4d73-b93a-3930fbe2c95b.jpg?v=1739808238"
@@ -1043,7 +1043,7 @@
       "vendor": "Eastman House",
       "productType": "Innerspring Mattress",
       "publishedAt": "2026-04-06T03:21:42Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:57:08Z",
       "seoTitle": "Twin Eastman House Royal Sands Luxury Gel Mattress",
       "seoDescription": "Discover affordable luxury with the Royal Sands Mattress at LA Mattress Store. Experience ultimate comfort and quality in every night's sleep.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/EastmanRoyalSandsPlush_b7f757fd-3b1e-4db4-b718-7cdf50f31443.png?v=1739808229"
@@ -1055,7 +1055,7 @@
       "vendor": "Eastman House",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-10-30T22:29:59Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:57:08Z",
       "seoTitle": "Eastman House Royal Sands 14\" Luxury Gel Mattress",
       "seoDescription": "Shop the Twin XL Eastman House Royal Sands mattress at LA Mattress Store for affordable luxury and exceptional comfort.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/EastmanRoyalSandsPillowTop_a717c7c1-bf5e-4a66-a5bf-2c728ec509b9.png?v=1739808223"
@@ -1067,7 +1067,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Foundations",
       "publishedAt": "2023-11-06T22:33:26Z",
-      "updatedAt": "2026-06-04T06:34:11Z",
+      "updatedAt": "2026-07-20T05:57:08Z",
       "seoTitle": "TEMPUR-Flat® Box Spring Foundation by TEMPUR-Pedic",
       "seoDescription": "Discover the TEMPUR-Flat® Foundation at LA Mattress Store. Perfect support for your Tempur-Pedic mattress in various heights for all needs.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/foundations-standard-base-tempur-pedic-box-spring-high-profile_b4eb5089-7484-4ab8-9487-52bfa0738305.png?v=1734091805"
@@ -1079,7 +1079,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Foundations",
       "publishedAt": "2023-11-06T23:03:55Z",
-      "updatedAt": "2026-06-04T06:35:44Z",
+      "updatedAt": "2026-07-20T05:57:08Z",
       "seoTitle": "Stearns & Foster 9\" Flat Foundation - Premium Support",
       "seoDescription": "Stearns & Foster Flat Foundation in Los Angeles includes free delivery with mattress. Queen from $315 offers rigid flat support in 5\" low profile or 9\" standard height.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SF_9in_Foundation_1250x780_2.original_f2cc51f7-4111-4463-a0e9-cf2c70f3dda2.jpg?v=1699311661"
@@ -1091,7 +1091,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Latex Mattress",
       "publishedAt": "2023-12-15T23:40:01Z",
-      "updatedAt": "2026-06-24T21:41:26Z",
+      "updatedAt": "2026-07-20T05:57:09Z",
       "seoTitle": "Chattam & Wells Buckingham Medium Euro Top Mattress",
       "seoDescription": "Chattam & Wells Buckingham medium 18\" mattress in Los Angeles — clearance, free delivery. Queen from $7,899 offers a luxury euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Chattam_WellsKensingtonPlushLuxuryEuroTop17Mattress_f8d8f568-72e5-4392-9aaf-5bc2e50eddd7.jpg?v=1739808102"
@@ -1103,7 +1103,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2023-12-16T21:53:04Z",
-      "updatedAt": "2026-06-24T21:37:46Z",
+      "updatedAt": "2026-07-20T05:57:09Z",
       "seoTitle": "Queen Diamond Azusa Luxury Latex Euro Top Mattress",
       "seoDescription": "Diamond Azusa luxury latex plush 18\" mattress in Los Angeles — clearance, free delivery. Queen from $1,899 offers a latex euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Azusa-natural-latex-frame-view-queen.jpg?v=1739808088"
@@ -1115,7 +1115,7 @@
       "vendor": "LA Mattress Store",
       "productType": "mws_fee_generated",
       "publishedAt": "2024-01-14T19:22:36Z",
-      "updatedAt": "2026-06-20T17:42:49Z",
+      "updatedAt": "2026-07-20T05:57:09Z",
       "seoTitle": "California Mattress Recycling Fee",
       "seoDescription": "Discover the California Mattress Recycling Fee at LA Mattress Store. Make eco-friendly choices while shopping for your mattress today!",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/LA_Mattress_Store_-_Logo_Square_6adb222f-c0db-4cf6-a374-01c1eac54980.png?v=1775462936"
@@ -1127,7 +1127,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2024-05-06T20:14:56Z",
-      "updatedAt": "2026-06-24T21:37:47Z",
+      "updatedAt": "2026-07-20T05:57:09Z",
       "seoTitle": "Queen TEMPUR-ProAdapt® Soft 12\" Mattress Clearance",
       "seoDescription": "Tempur-Pedic TEMPUR-ProAdapt soft 12\" mattress in Los Angeles — clearance, free delivery. Queen from $1,999 offers cooling memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Tempur-pedic-ProAdapt-medium-hybrid-12-mattress-la-mattress-stores_b88ff561-ff8d-40c7-b0b3-fa1e9c457c58.jpg?v=1715045722"
@@ -1139,7 +1139,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2024-02-10T03:21:12Z",
-      "updatedAt": "2026-06-24T21:37:52Z",
+      "updatedAt": "2026-07-20T05:57:09Z",
       "seoTitle": "Jeremiah Plush Latex Euro Top Mattress - 15\" Clearance",
       "seoDescription": "Diamond Jeremiah plush 15\" mattress in Los Angeles — clearance, free delivery. Full from $1,000 offers a latex euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Lucille2_d41ecf2a-f91c-45c8-afcf-4c935b3a997b.png?v=1739807766"
@@ -1151,7 +1151,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Hybrid Mattress",
       "publishedAt": "2024-02-10T03:51:30Z",
-      "updatedAt": "2026-06-24T21:37:57Z",
+      "updatedAt": "2026-07-20T05:57:09Z",
       "seoTitle": "CA King Adelaide Luxury Plush Hybrid Mattress Clearance",
       "seoDescription": "Chattam & Wells Adelaide plush 13\" mattress in Los Angeles — clearance, free delivery. CA King from $1,300 offers a luxury hybrid build.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Chattam_WellsAdelaideLuxuryPlushGelHybrid13Mattress_e4fda731-a3d3-4034-9001-4c2c42c54696.jpg?v=1739807735"
@@ -1163,7 +1163,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Latex Mattress",
       "publishedAt": "2024-02-11T23:39:07Z",
-      "updatedAt": "2026-06-24T21:37:59Z",
+      "updatedAt": "2026-07-20T05:57:10Z",
       "seoTitle": "Chattam & Wells Geneva Euro Top 16\" Mattress Clearance",
       "seoDescription": "Chattam & Wells Geneva medium 16\" mattress in Los Angeles — clearance, free delivery. Split CA King from $1,999 offers a latex euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Chattam_WellsGenevaNaturalLatexMediumEuroTop16Mattress_77a9756e-5d24-425b-9b55-20e6b7ed134e.jpg?v=1739807688"
@@ -1175,7 +1175,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2024-02-12T21:36:20Z",
-      "updatedAt": "2026-06-24T21:38:00Z",
+      "updatedAt": "2026-07-20T05:57:10Z",
       "seoTitle": "Twin XL Diamond Grand Plush Euro Top Mattress",
       "seoDescription": "Diamond Grand plush 16\" mattress in Los Angeles — clearance, free delivery. Twin XL from $699 offers a pocketed-coil euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Grandpic012217_2f18bb0d-b427-4ef9-b11d-427ffbb67b16.jpg?v=1739807557"
@@ -1187,7 +1187,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2026-03-15T01:08:00Z",
-      "updatedAt": "2026-06-24T21:38:01Z",
+      "updatedAt": "2026-07-20T05:57:11Z",
       "seoTitle": "Queen Diamond Azusa Luxury Latex Firm Euro Top 18\" Mattress",
       "seoDescription": "Diamond Azusa luxury latex firm 18\" mattress in Los Angeles — clearance, free delivery. Queen from $1,699 offers a latex euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Azusa-natural-latex-frame-view-queen_a639c389-f8f6-4792-ae16-aad026952a26.jpg?v=1739807430"
@@ -1199,7 +1199,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2024-04-05T21:22:35Z",
-      "updatedAt": "2026-06-24T21:38:06Z",
+      "updatedAt": "2026-07-20T05:57:11Z",
       "seoTitle": "Queen Diamond Diana 14\" Latex Euro Top Mattress",
       "seoDescription": "Diamond Diana firm 14\" mattress in Los Angeles — clearance, free delivery. Queen from $1,799 offers a natural latex euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Diana-latex-firm-mattress-lifestyle-card_acdd42a5-e215-4040-a88a-a1bd24dcfd38.png?v=1739807411"
@@ -1211,7 +1211,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Latex Mattress",
       "publishedAt": "2024-02-21T21:29:54Z",
-      "updatedAt": "2026-06-24T21:38:09Z",
+      "updatedAt": "2026-07-20T05:57:11Z",
       "seoTitle": "Kingston Luxury Plush Euro Top CA King Mattress Clearance",
       "seoDescription": "Chattam & Wells Kingston plush 17\" mattress in Los Angeles — clearance, free delivery. CA King from $1,800 offers a natural latex euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/FranklinET-1_6e8c108d-7625-490f-87bb-3fff9f9cb1c3.jpg?v=1739807402"
@@ -1223,7 +1223,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2024-02-23T21:23:51Z",
-      "updatedAt": "2026-06-24T21:38:11Z",
+      "updatedAt": "2026-07-20T05:57:12Z",
       "seoTitle": "CA King Azusa Luxury Latex Plush Euro Top Mattress",
       "seoDescription": "Diamond Azusa luxury latex plush 18\" mattress in Los Angeles — clearance, free delivery. CA King from $1,099 offers a latex euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Azusa-natural-latex-frame-view-queen_913561db-c3dc-4363-80db-2223b4ba3681.jpg?v=1739807371"
@@ -1235,7 +1235,7 @@
       "vendor": "ErgoPedic",
       "productType": "Adjustable Beds",
       "publishedAt": "2026-04-06T03:21:44Z",
-      "updatedAt": "2026-06-24T21:37:19Z",
+      "updatedAt": "2026-07-20T05:57:12Z",
       "seoTitle": "Ergo-Pedic Expression Power Base Clearance Sale",
       "seoDescription": "Ergo-Pedic Expression adjustable bed base in Los Angeles — free delivery & setup. Wireless remote, King clearance. From $899.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/wireless_d415dbc3-8b4b-4ec8-9351-6dc2ef7c66c5.jpg?v=1709260192"
@@ -1247,7 +1247,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Foundations",
       "publishedAt": "2024-03-08T03:13:04Z",
-      "updatedAt": "2026-05-26T16:24:40Z",
+      "updatedAt": "2026-07-20T05:57:12Z",
       "seoTitle": "Queen Chattam & Wells 9\" Clearance Foundation",
       "seoDescription": "Discover the handcrafted Queen Chattam & Wells Heavy Duty Foundation at LA Mattress Store. Perfect support for your mattress awaits!",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/AdelaideFirmPlush_8f5dede9-ed73-4448-8d39-2a39ebcc6cba.jpg?v=1739807150"
@@ -1259,7 +1259,7 @@
       "vendor": "Diamond",
       "productType": "Mattresses",
       "publishedAt": "2026-03-14T21:13:07Z",
-      "updatedAt": "2026-06-21T15:47:12Z",
+      "updatedAt": "2026-07-20T05:57:12Z",
       "seoTitle": "Queen Diamond Lucille Firm Latex Euro Top Mattress",
       "seoDescription": "Experience luxury with the 15\" Lucille mattress. Visit LA Mattress Store for exclusive floor model clearance!",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/DiamondLucilleNaturalLatexLuxEuroTop15Mattress_ce794f82-93c6-41f5-80f1-b1f846c503ca.jpg?v=1739807095"
@@ -1271,7 +1271,7 @@
       "vendor": "Restonic",
       "productType": "Latex Mattress",
       "publishedAt": "2024-03-22T18:02:24Z",
-      "updatedAt": "2026-06-22T03:26:40Z",
+      "updatedAt": "2026-07-20T05:57:12Z",
       "seoTitle": "CA King Restonic Enchantment Plush 12\" Mattress Clearance",
       "seoDescription": "Discover the CA King Restonic Enchantment mattress at LA Mattress Store—luxurious, natural latex comfort at a clearance price!",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/enchantment_wob_8d0ad700-f742-4525-bb09-c9912a6214b0.jpg?v=1711130070"
@@ -1283,7 +1283,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2024-04-04T20:58:19Z",
-      "updatedAt": "2026-06-22T03:26:40Z",
+      "updatedAt": "2026-07-20T05:57:13Z",
       "seoTitle": "CA King Diamond Lucille Firm 15\" Latex Mattress",
       "seoDescription": "Discover the luxurious Lucille Firm mattress at LA Mattress Store. Shop our floor sample clearance for ultimate comfort and quality!",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/DiamondLucilleNaturalLatexLuxEuroTop15Mattress_9f1f252d-5a36-47b6-be2c-1b923cae2a54.jpg?v=1739806960"
@@ -1295,7 +1295,7 @@
       "vendor": "Southerland",
       "productType": "Latex Mattress",
       "publishedAt": "2024-04-04T22:32:57Z",
-      "updatedAt": "2026-06-22T03:26:41Z",
+      "updatedAt": "2026-07-20T05:57:13Z",
       "seoTitle": "CA King Sandmahn III Plush Mattress - Southerland",
       "seoDescription": "Discover the Sandmahn III Plush Mattress at LA Mattress Store. Enjoy cool, continuous comfort with premium gel and latex layers.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Sandmahn.ful.jpg?v=1739806958"
@@ -1307,7 +1307,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2026-03-14T20:22:47Z",
-      "updatedAt": "2026-06-21T15:47:12Z",
+      "updatedAt": "2026-07-20T05:57:13Z",
       "seoTitle": "Queen Lucille Luxury Euro Top Latex Mattress Clearance",
       "seoDescription": "Discover the Lucille Plush Mattress at LA Mattress Store. Enjoy luxury comfort and advanced technology with our 15\" floor sample clearance.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/DiamondLucilleNaturalLatexLuxEuroTop15Mattress_435b7f1d-178c-4b78-b12b-fadcb82b313b.jpg?v=1739806930"
@@ -1319,7 +1319,7 @@
       "vendor": "Savvy Rest",
       "productType": "Foundations",
       "publishedAt": "2024-04-11T19:08:12Z",
-      "updatedAt": "2026-06-24T22:02:22Z",
+      "updatedAt": "2026-07-20T05:57:13Z",
       "seoTitle": "Savvy Rest 9\" Mattress Foundation - Organic Support",
       "seoDescription": "Savvy Rest 9\" mattress foundation in Los Angeles — free delivery. Organic solid support for latex mattresses, all sizes. From $650.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SavvyFoundation01.jpg?v=1739806858"
@@ -1331,7 +1331,7 @@
       "vendor": "Savvy Rest",
       "productType": "Mattress Rug",
       "publishedAt": "2024-04-11T21:37:32Z",
-      "updatedAt": "2026-06-24T22:02:23Z",
+      "updatedAt": "2026-07-20T05:57:13Z",
       "seoTitle": null,
       "seoDescription": "Savvy Rest Queen natural mattress rug in Los Angeles — free delivery. Organic coconut fiber boosts breathability under your mattress. From $215.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/IN7A7720_edit.jpg?v=1720463181"
@@ -1343,7 +1343,7 @@
       "vendor": "Savvy Rest",
       "productType": "Latex Mattress",
       "publishedAt": "2024-04-14T00:28:55Z",
-      "updatedAt": "2026-06-24T22:02:25Z",
+      "updatedAt": "2026-07-20T05:57:14Z",
       "seoTitle": "Twin XL Savvy Rest Organic Latex Mattress Clearance",
       "seoDescription": "Savvy Rest Serenity organic latex mattress in Los Angeles includes free delivery. Twin XL from $1,000 offers GOTS-certified organic comfort.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Mattress-Afton_1080x1080-1.jpg?v=1739806740"
@@ -1355,7 +1355,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-11-11T02:52:12Z",
-      "updatedAt": "2026-06-24T21:38:19Z",
+      "updatedAt": "2026-07-20T05:57:14Z",
       "seoTitle": "Diamond Lily 12.5\" Gel Memory Foam Mattress Clearance",
       "seoDescription": "Diamond Lily medium 12.5\" mattress in Los Angeles — clearance, free delivery. Queen from $699 offers a gel memory foam euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/lily-gel-memory-foam-eurotop-medium-diamond-mattress-bed-frame.jpg?v=1713896266"
@@ -1367,7 +1367,7 @@
       "vendor": "Eastman House",
       "productType": "Foundations",
       "publishedAt": "2024-04-23T21:34:22Z",
-      "updatedAt": "2026-06-29T00:28:20Z",
+      "updatedAt": "2026-07-20T05:57:14Z",
       "seoTitle": "BIA Universal Flat Box Spring Foundation",
       "seoDescription": "BIA Universal Flat Box Spring Foundation in Los Angeles includes free delivery with mattress. Queen from $259 offers rigid flat support at standard 9-inch height.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Foundation.jpg?v=1713907420"
@@ -1379,7 +1379,7 @@
       "vendor": "Diamond",
       "productType": "Foundations",
       "publishedAt": "2024-04-23T21:38:53Z",
-      "updatedAt": "2026-05-26T16:24:42Z",
+      "updatedAt": "2026-07-20T05:57:14Z",
       "seoTitle": "Diamond Geneva Flat Box Spring Foundation",
       "seoDescription": "Diamond Geneva flat box spring foundation in Los Angeles includes free delivery with mattress. Standard height rigid support for Diamond mattresses.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Foundation_8961a3d2-d9fa-491d-a6a2-9fbd3ebc1faa.jpg?v=1713908263"
@@ -1391,7 +1391,7 @@
       "vendor": "Southerland",
       "productType": "Foundations",
       "publishedAt": "2024-04-23T22:37:30Z",
-      "updatedAt": "2026-06-29T00:28:21Z",
+      "updatedAt": "2026-07-20T05:57:14Z",
       "seoTitle": "Southerland Smokey Metal Box Spring Foundation",
       "seoDescription": "Discover the Southerland Smokey Flat Foundation at LA Mattress Store. Perfect for any mattress, crafted in the USA and available for same-day delivery!",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Smokey-foundation-standard.webp?v=1739806493"
@@ -1403,7 +1403,7 @@
       "vendor": "Malouf",
       "productType": "Sheets",
       "publishedAt": "2026-04-16T08:08:10Z",
-      "updatedAt": "2026-06-24T21:37:27Z",
+      "updatedAt": "2026-07-20T05:57:15Z",
       "seoTitle": null,
       "seoDescription": "Malouf Botanical Tencel Lyocell sheet set in Los Angeles — free delivery. Cooling, breathable, eco-friendly comfort. From $165.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Tencel-sheets-set-la-mattress-stores_6190d2d9-e122-4e44-9e0c-2e8f28681ce4.jpg?v=1713919956"
@@ -1415,7 +1415,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Innerspring Mattress",
       "publishedAt": "2024-04-25T20:50:04Z",
-      "updatedAt": "2026-06-24T21:38:15Z",
+      "updatedAt": "2026-07-20T05:57:15Z",
       "seoTitle": "Chattam & Wells Ashford Luxury Euro Top Mattress",
       "seoDescription": "Chattam & Wells Ashford medium 15.5\" mattress in Los Angeles — clearance, free delivery. Queen from $2,099 offers a luxury euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/LA_Mattress_Store_-_Chattam_Wells.png?v=1774961693"
@@ -1427,7 +1427,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2024-05-07T01:05:38Z",
-      "updatedAt": "2026-06-24T21:38:18Z",
+      "updatedAt": "2026-07-20T05:57:15Z",
       "seoTitle": "Queen Tempur-Pedic ProAdapt Medium Mattress Clearance",
       "seoDescription": "Tempur-Pedic TEMPUR-ProAdapt medium 12\" mattress in Los Angeles — clearance, free delivery. Queen from $1,999 offers cooling memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Tempur-pedic-ProAdapt-medium-hybrid-12-mattress-la-mattress-stores.jpg?v=1715043236"
@@ -1439,7 +1439,7 @@
       "vendor": "Diamond",
       "productType": "Hybrid Mattress",
       "publishedAt": "2024-05-20T02:38:47Z",
-      "updatedAt": "2026-06-21T15:09:27Z",
+      "updatedAt": "2026-07-20T05:57:15Z",
       "seoTitle": "Diamond Technogel® Melodia 14\" Medium Firm Mattress",
       "seoDescription": "Diamond Technogel Melodia 14\" medium firm hybrid mattress in Los Angeles includes free delivery. Queen from $2,999 offers Technogel cooling with hybrid coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/TechnogelMelodiaHybrid_TGMELH-10_RoomFront2.jpg?v=1739806275"
@@ -1451,7 +1451,7 @@
       "vendor": "Diamond",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2024-05-20T04:02:38Z",
-      "updatedAt": "2026-06-24T21:41:24Z",
+      "updatedAt": "2026-07-20T05:57:15Z",
       "seoTitle": "Diamond Technogel® 12\" Plush Foam Mattress",
       "seoDescription": "Diamond Technogel Estasii 12\" Plush Foam mattress in Los Angeles includes free delivery. From $3399 offers plush Technogel foam comfort.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/DM_Bedroom_14_Technogel_Estasi_SmoothTop_12_inch_V2_03_0002_54798521-6d66-48c7-8495-e2f872539e96.jpg?v=1739806160"
@@ -1463,7 +1463,7 @@
       "vendor": "Southerland",
       "productType": "Adjustable Beds",
       "publishedAt": "2026-06-20T18:13:03Z",
-      "updatedAt": "2026-06-24T21:37:16Z",
+      "updatedAt": "2026-07-20T05:57:16Z",
       "seoTitle": null,
       "seoDescription": "Southerland InMotion B26 adjustable bed base in Los Angeles — free delivery & setup. Head & foot articulation, made in USA. From $1,199.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/b26-photo.jpg?v=1739806147"
@@ -1475,7 +1475,7 @@
       "vendor": "Diamond",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2024-05-27T01:09:45Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:57:16Z",
       "seoTitle": "Armonia 11\" Firm Foam Mattress with Technogel® Technology",
       "seoDescription": "Diamond Technogel Armonia 11\" firm foam mattress in Los Angeles includes free delivery. Queen from $4,099 offers Italian Technogel cooling technology made in California.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/DM_Bedroom_14_Technogel_Armonia_SmoothTop_10_inch_V2_02_0002_Main_900x_2dc0b9e4-1b1c-481c-983f-c42c64bbaf88.jpg?v=1739806027"
@@ -1487,7 +1487,7 @@
       "vendor": "ErgoPedic",
       "productType": "Adjustable Beds",
       "publishedAt": "2026-04-06T03:21:48Z",
-      "updatedAt": "2026-06-24T21:37:18Z",
+      "updatedAt": "2026-07-20T05:57:16Z",
       "seoTitle": "Ergo-Pedic Wired Expression Power Base - Clearance Sale",
       "seoDescription": "Ergo-Pedic Wired Expression adjustable bed base in Los Angeles — free delivery & setup. Wired remote, King clearance. From $899.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/wireless_8ff5d1a5-5bfa-4d03-bc10-54d17c309441.jpg?v=1716837193"
@@ -1499,7 +1499,7 @@
       "vendor": "Rize",
       "productType": "Adjustable Beds",
       "publishedAt": "2026-04-06T03:21:50Z",
-      "updatedAt": "2026-06-24T21:37:21Z",
+      "updatedAt": "2026-07-20T05:57:16Z",
       "seoTitle": "Rize® Clarity II 13\" Adjustable Base Clearance Sale",
       "seoDescription": "Rize Clarity II adjustable bed base in Los Angeles — free delivery & setup. Massage, under-bed lights, zero-clearance design. From $900.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/clarity-2-rize-mattress-stores_a549ba2a-1091-462e-9602-954b245aacde.jpg?v=1739805953"
@@ -1511,7 +1511,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Hybrid Mattress",
       "publishedAt": "2024-06-04T20:28:34Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:57:16Z",
       "seoTitle": "Tempur-Pedic TEMPUR-LuxeAdapt® 13\" Medium Hybrid Mattress",
       "seoDescription": "Experience deep, undisturbed sleep with the LuxeAdapt® mattress at LA Mattress Store. Enjoy unmatched pressure relief and motion cancellation.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/luxe_adapt_medium_hybrid.jpg?v=1739805887"
@@ -1523,7 +1523,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2024-06-18T00:49:07Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:57:17Z",
       "seoTitle": "Spring Air Van Gogh 16\" Pillow Top Mattress",
       "seoDescription": "Spring Air Tradition Collection Van Gogh 16\" Pillow Top mattress in Los Angeles includes free delivery. Queen from $1,999 offers GOTS organic cotton, GOLS latex, organic wool, and tri-zone coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Spring-Air-Traditions-VanGogh-PT-3QL.jpg?v=1739805809"
@@ -1535,7 +1535,7 @@
       "vendor": "LA Mattress Store",
       "productType": "mws_fee_generated",
       "publishedAt": "2024-06-24T21:50:35Z",
-      "updatedAt": "2026-06-20T17:43:01Z",
+      "updatedAt": "2026-07-20T05:57:17Z",
       "seoTitle": "CA Mattress Recycling Fee",
       "seoDescription": "Discover the CA Mattress Recycling Fee at LA Mattress Store. Ensure eco-friendly disposal of your old mattress today!",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/LA_Mattress_Store_-_Logo_Square_a7402180-8c6f-4bcb-a273-aeb33ec70418.png?v=1775462937"
@@ -1547,7 +1547,7 @@
       "vendor": "Eclipse",
       "productType": "Innerspring Mattress",
       "publishedAt": "2024-07-15T16:33:18Z",
-      "updatedAt": "2026-06-24T21:41:20Z",
+      "updatedAt": "2026-07-22T17:41:08Z",
       "seoTitle": null,
       "seoDescription": "Eclipse Ice Tufted Plush Euro Top 15\" mattress in Los Angeles includes free delivery. Queen from $2,079 offers a medium-plush tufted euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Glacier-euro-top-la-mattress-5_66826a30-2a89-45a2-854a-225c52b97a27.jpg?v=1739805791"
@@ -1559,7 +1559,7 @@
       "vendor": "Eclipse",
       "productType": "Innerspring Mattress",
       "publishedAt": "2024-07-15T16:54:11Z",
-      "updatedAt": "2026-06-21T15:09:27Z",
+      "updatedAt": "2026-07-22T17:41:08Z",
       "seoTitle": "Eclipse Ice Tufted Firm Euro Top 15\" Mattress",
       "seoDescription": "Eclipse Glacier 15\" tufted firm euro top mattress. Gel-infused cooling foam with firm pocketed coil support. Great value for back and stomach sleepers.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Glacier-euro-top-la-mattress-5_66826a30-2a89-45a2-854a-225c52b97a27.jpg?v=1739805791"
@@ -1571,7 +1571,7 @@
       "vendor": "Eastman House",
       "productType": "Latex Mattress",
       "publishedAt": "2024-07-15T17:04:49Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:57:17Z",
       "seoTitle": "Eastman House Avalon Latex Hybrid 13\" Mattress",
       "seoDescription": "Eastman House Avalon Latex Hybrid Firm 13\" mattress in Los Angeles includes free delivery. Queen from $1,449 offers GOLS organic latex with 660-Series pocketed coils and hand-tufted construction.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/avalon-firm-mattress_600x_crop_center_a043d6e2-6828-42a7-b8dd-27bd847a882d.webp?v=1739805776"
@@ -1583,7 +1583,7 @@
       "vendor": "Eastman House",
       "productType": "Latex Mattress",
       "publishedAt": "2024-07-16T17:25:39Z",
-      "updatedAt": "2026-06-22T03:26:43Z",
+      "updatedAt": "2026-07-20T05:57:18Z",
       "seoTitle": "Eastman House Avalon Hybrid Plush 15.5\" Mattress",
       "seoDescription": "Eastman House Avalon Latex Hybrid Plush 15.5\" mattress in Los Angeles includes free delivery. Queen from $1,449 offers plush GOLS organic latex with hand-tufted pocketed coil hybrid.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/avalon-plush-mattress_600x_crop_center_75d76f27-70eb-4d7c-96c3-40ee2f99bd46.webp?v=1739805774"
@@ -1595,7 +1595,7 @@
       "vendor": "Eastman House",
       "productType": "Latex Mattress",
       "publishedAt": "2024-07-16T17:35:51Z",
-      "updatedAt": "2026-06-22T03:26:45Z",
+      "updatedAt": "2026-07-20T05:57:18Z",
       "seoTitle": "Eastman House Avalon Latex Hybrid Mattress - 16.5\"",
       "seoDescription": "Eastman House Avalon Latex Hybrid Ultra Pillow Top 16.5\" mattress in Los Angeles includes free delivery. Queen from $1,599 offers 3\" GOLS organic latex with hand-tufted 660-Series pocketed coils.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/avalon-ultra-pillow-top-mattress_600x_crop_center_70353746-7f8a-4728-9f37-4345b0dfbf46.webp?v=1739805772"
@@ -1607,7 +1607,7 @@
       "vendor": "Diamond",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2025-07-07T02:55:11Z",
-      "updatedAt": "2026-06-21T15:48:28Z",
+      "updatedAt": "2026-07-20T05:57:18Z",
       "seoTitle": "Diamond Clarity Firm Cool Copper Gel Memory Foam 13\" Mattress",
       "seoDescription": "Diamond Clarity Firm All-Foam 13\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers copper-infused cool gel memory foam with antimicrobial protection.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned.jpg?v=1756131467"
@@ -1619,7 +1619,7 @@
       "vendor": "Diamond",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2025-07-07T02:55:12Z",
-      "updatedAt": "2026-06-24T22:01:15Z",
+      "updatedAt": "2026-07-20T05:57:18Z",
       "seoTitle": null,
       "seoDescription": "Diamond Clarity Medium Cool Copper 13\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers copper-infused cool gel memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned.jpg?v=1756131467"
@@ -1631,31 +1631,31 @@
       "vendor": "Diamond",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2025-07-07T02:55:13Z",
-      "updatedAt": "2026-06-24T22:01:18Z",
+      "updatedAt": "2026-07-20T05:57:18Z",
       "seoTitle": null,
       "seoDescription": "Diamond Clarity Plush Cool Copper 13\" mattress in Los Angeles includes free delivery. Queen from $1,299 offers copper-infused cool gel memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned.jpg?v=1756131467"
     },
     {
-      "handle": "diamond-dreamstage-2-0-collection-clarity-plush-hybrid-cool-copper-gel-memory-foam-14-mattress-copy",
+      "handle": "diamond-dreamstage-2-0-collection-clarity-plush-hybrid-cool-copper-gel-memory-foam-14-mattress",
       "id": "gid://shopify/Product/8920937136381",
       "title": "Diamond Dreamstage 2.0 Collection Clarity Plush Hybrid Cool Copper Gel Memory Foam 14\" Mattress",
       "vendor": "Diamond",
       "productType": "Hybrid Mattress",
       "publishedAt": "2025-07-07T02:55:14Z",
-      "updatedAt": "2026-06-21T15:47:12Z",
+      "updatedAt": "2026-07-22T17:43:45Z",
       "seoTitle": "Diamond DreamStage 2.0 Clarity Plush Hybrid 14\" Mattress | LA Mattress Store",
       "seoDescription": "Diamond Clarity Plush Hybrid 14\" mattress in Los Angeles includes free delivery. Queen from $1,399 offers plush copper foam hybrid for side sleepers who run warm.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_6.jpg?v=1756131419"
     },
     {
-      "handle": "diamond-dreamstage-2-0-collection-clarity-medium-hybrid-cool-copper-gel-memory-foam-12-mattress-copy",
+      "handle": "diamond-dreamstage-2-0-collection-clarity-medium-hybrid-cool-copper-gel-memory-foam-14-mattress",
       "id": "gid://shopify/Product/8920942215421",
       "title": "Diamond Dreamstage 2.0 Collection Clarity Medium Hybrid Cool Copper Gel Memory Foam 14\" Mattress",
       "vendor": "Diamond",
       "productType": "Hybrid Mattress",
       "publishedAt": "2025-09-23T18:46:38Z",
-      "updatedAt": "2026-06-21T15:47:12Z",
+      "updatedAt": "2026-07-22T17:43:45Z",
       "seoTitle": "Diamond Clarity Medium Hybrid Cool Copper Gel Memory Foam Mattress",
       "seoDescription": "Diamond Clarity Medium Hybrid 14\" mattress in Los Angeles includes free delivery. Queen from $1,399 offers balanced copper foam hybrid for all sleeping positions.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_6_53f4dcd8-df91-4843-aa0f-486f4b0cb4af.jpg?v=1756131405"
@@ -1667,7 +1667,7 @@
       "vendor": "Diamond",
       "productType": "Hybrid Mattress",
       "publishedAt": "2025-07-07T02:55:16Z",
-      "updatedAt": "2026-06-21T15:47:12Z",
+      "updatedAt": "2026-07-20T05:57:19Z",
       "seoTitle": "Diamond Clarity Firm Hybrid Cool Copper Gel Mattress",
       "seoDescription": "Diamond Clarity Firm Hybrid 14\" mattress in Los Angeles includes free delivery. Queen from $1,399 offers copper-infused foam with pocketed coil support and airflow.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_6_a60d4b35-5e36-4bb9-8962-335288dc36f9.jpg?v=1756131387"
@@ -1679,7 +1679,7 @@
       "vendor": "Diamond",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2025-07-07T04:04:17Z",
-      "updatedAt": "2026-06-24T22:01:19Z",
+      "updatedAt": "2026-07-20T05:57:19Z",
       "seoTitle": null,
       "seoDescription": "Diamond Glory Firm Cool Gel Swirl 12\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers cooling gel swirl memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_8.jpg?v=1756131370"
@@ -1691,7 +1691,7 @@
       "vendor": "Diamond",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2025-07-07T04:04:18Z",
-      "updatedAt": "2026-06-24T22:01:23Z",
+      "updatedAt": "2026-07-20T05:57:19Z",
       "seoTitle": null,
       "seoDescription": "Diamond Glory Plush Cool Gel Swirl 12\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers cooling gel swirl memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_8_88b0d332-510c-42bd-9c65-a7dbe4355523.jpg?v=1756131354"
@@ -1703,7 +1703,7 @@
       "vendor": "Diamond",
       "productType": "Memory Foam Mattress",
       "publishedAt": "2025-07-07T04:04:19Z",
-      "updatedAt": "2026-06-24T22:01:25Z",
+      "updatedAt": "2026-07-20T05:57:20Z",
       "seoTitle": null,
       "seoDescription": "Diamond Glory Medium Cool Gel Swirl 12\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers cooling gel swirl memory foam.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_8_c9da9738-3566-4250-bceb-7310d5f5b1bd.jpg?v=1756131334"
@@ -1715,7 +1715,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-07-12T22:44:13Z",
-      "updatedAt": "2026-06-21T15:47:13Z",
+      "updatedAt": "2026-07-20T05:57:20Z",
       "seoTitle": "Diamond Dreamstage 2.0 Collection Tranquility Firm Titanium Memory Foam 16\" Mattress",
       "seoDescription": "Diamond Tranquility Firm Tight Top 16\" mattress in Los Angeles includes free delivery. Queen from $1,799 offers titanium memory foam with innerspring support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_f9790510-ad1b-45e7-894f-7849dd24e458.jpg?v=1756131317"
@@ -1727,7 +1727,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-07-12T22:44:14Z",
-      "updatedAt": "2026-06-24T22:01:27Z",
+      "updatedAt": "2026-07-20T05:57:20Z",
       "seoTitle": null,
       "seoDescription": "Diamond Tranquility Medium Titanium Euro Top 16\" mattress in Los Angeles includes free delivery. Queen from $1,799 offers titanium memory foam pillow top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_500f22b9-68a5-40fe-bd29-b9f43dd7fe93.webp?v=1756131299"
@@ -1739,7 +1739,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-07-12T22:44:15Z",
-      "updatedAt": "2026-06-21T15:48:28Z",
+      "updatedAt": "2026-07-20T05:57:20Z",
       "seoTitle": "Diamond Dreamstage 2.0 Collection Tranquility Plush Titanium Memory Foam Euro Top 16\" Mattress",
       "seoDescription": "Diamond Dreamstage 2.0 Collection Tranquility Plush Titanium Memory Foam Euro Top 16\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_e4ad8695-f237-4b97-a524-2800c57e85e4.webp?v=1756131280"
@@ -1751,7 +1751,7 @@
       "vendor": "Diamond",
       "productType": "Hybrid Mattress",
       "publishedAt": "2025-07-21T01:01:05Z",
-      "updatedAt": "2026-06-21T15:47:12Z",
+      "updatedAt": "2026-07-20T05:57:21Z",
       "seoTitle": "Diamond Black Diamond Collection Firm Hybrid Cool Titanium Gel Mattress",
       "seoDescription": "Diamond Snowbird Firm Hybrid 15\" mattress in Los Angeles includes free delivery. Queen from $2,199 offers Ice Flex cooling, titanium memory foam, and 7-Series coil system.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/BlackDiamond_Snowbird_Room_Front.jpg?v=1756131256"
@@ -1763,7 +1763,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-07-21T02:24:13Z",
-      "updatedAt": "2026-06-21T15:47:47Z",
+      "updatedAt": "2026-07-20T05:57:21Z",
       "seoTitle": "Diamond Dreamstage Collection 2.0 Grace Firm Gel Swirl Memory Foam 12\" Mattress",
       "seoDescription": "Diamond Grace Firm Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers California-made Diamond quality with 20-year warranty.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_6_f36752b3-8e56-4b9e-b92e-096fd25ade3b.jpg?v=1756131235"
@@ -1775,7 +1775,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-07-21T02:23:54Z",
-      "updatedAt": "2026-06-21T15:47:47Z",
+      "updatedAt": "2026-07-20T05:57:21Z",
       "seoTitle": "Diamond Dreamstage 2.0 Grace Plush Gel Swirl Memory Foam 12\" Mattress",
       "seoDescription": "Diamond Grace Plush Gel Swirl Memory Foam 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers plush gel foam for side sleepers at entry-level price.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_6_f36752b3-8e56-4b9e-b92e-096fd25ade3b.jpg?v=1756131235"
@@ -1787,7 +1787,7 @@
       "vendor": "Diamond",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-07-21T02:22:34Z",
-      "updatedAt": "2026-06-24T22:01:29Z",
+      "updatedAt": "2026-07-20T05:57:21Z",
       "seoTitle": null,
       "seoDescription": "Diamond Grace Quilted Medium 12\" mattress in Los Angeles includes free delivery. Queen from $799 offers quilted gel memory foam over pocketed coils.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_6_f36752b3-8e56-4b9e-b92e-096fd25ade3b.jpg?v=1756131235"
@@ -1799,7 +1799,7 @@
       "vendor": "Diamond",
       "productType": "Hybrid Mattress",
       "publishedAt": "2025-07-21T01:01:25Z",
-      "updatedAt": "2026-06-21T15:47:47Z",
+      "updatedAt": "2026-07-22T21:17:56Z",
       "seoTitle": "Diamond Black Diamond Snowbird Medium Hybrid 15\" Mattress",
       "seoDescription": "Diamond Snowbird Medium Hybrid 15\" mattress in Los Angeles includes free delivery. Queen from $2,199 offers Ice Flex cooling with balanced titanium foam for all positions.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/BlackDiamond_Snowbird_Room_Front.jpg?v=1756131256"
@@ -1811,7 +1811,7 @@
       "vendor": "Diamond",
       "productType": "Hybrid Mattress",
       "publishedAt": "2025-07-21T01:01:49Z",
-      "updatedAt": "2026-06-21T15:47:47Z",
+      "updatedAt": "2026-07-20T05:57:22Z",
       "seoTitle": "Diamond Black Diamond Snowbird Plush Hybrid 15\" Mattress | LA Mattress Store",
       "seoDescription": "Diamond Snowbird Plush Hybrid 15\" mattress in Los Angeles includes free delivery. Queen from $2,199 offers Ice Flex cooling with plush titanium foam for hot side sleepers.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_5_32f8a175-c6cd-413f-bbca-cd0c5807d09b.jpg?v=1756131193"
@@ -1823,7 +1823,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-07-26T23:51:04Z",
-      "updatedAt": "2026-06-24T22:01:36Z",
+      "updatedAt": "2026-07-20T05:57:22Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Back Supporter Francesca Plush Hybrid Euro Top 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers a gel memory foam top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Francesca_ET_Lifestyle.webp?v=1756131106"
@@ -1835,7 +1835,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-07-26T23:51:05Z",
-      "updatedAt": "2026-06-24T22:01:37Z",
+      "updatedAt": "2026-07-20T05:57:22Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Back Supporter Francesca Medium Hybrid 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers pocketed coil hybrid support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Francesca_TT_Lifestyle.webp?v=1756131055"
@@ -1847,7 +1847,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-07-26T23:51:06Z",
-      "updatedAt": "2026-06-24T22:01:37Z",
+      "updatedAt": "2026-07-20T05:57:22Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Back Supporter Francesca Firm Hybrid 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers firm pocketed coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Francesca_TT_Lifestyle.webp?v=1756131055"
@@ -1859,7 +1859,7 @@
       "vendor": "Spring Air",
       "productType": "Hybrid Mattress",
       "publishedAt": "2025-08-01T00:30:51Z",
-      "updatedAt": "2026-06-24T22:01:37Z",
+      "updatedAt": "2026-07-20T05:57:22Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Back Supporter Kaylee Extra Firm Hybrid 14\" mattress in Los Angeles includes free delivery. Queen from $1,499 offers gel memory foam pocketed coils.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Kaylee_ET_Lifestyle.webp?v=1756130974"
@@ -1871,7 +1871,7 @@
       "vendor": "Spring Air",
       "productType": "Hybrid Mattress",
       "publishedAt": "2025-08-01T00:30:51Z",
-      "updatedAt": "2026-06-24T22:01:38Z",
+      "updatedAt": "2026-07-20T05:57:23Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Back Supporter Kaylee Plush Hybrid 15.5\" mattress in Los Angeles includes free delivery. Queen from $1,499 offers plush gel memory foam coils.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Kaylee_ET_Lifestyle_2401c27f-c951-49ab-bec6-fdcd32192cbe.webp?v=1756130874"
@@ -1883,7 +1883,7 @@
       "vendor": "Spring Air",
       "productType": "Hybrid Mattress",
       "publishedAt": "2025-08-01T00:30:52Z",
-      "updatedAt": "2026-06-24T22:01:38Z",
+      "updatedAt": "2026-07-20T05:57:23Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Back Supporter Kaylee Medium Hybrid 15.5\" mattress in Los Angeles includes free delivery. Queen from $1,499 offers a gel memory foam pillow top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Kaylee_ET_Lifestyle_2.webp?v=1756130836"
@@ -1895,7 +1895,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-08T20:38:28Z",
-      "updatedAt": "2026-06-24T22:01:38Z",
+      "updatedAt": "2026-07-20T05:57:23Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Value Collection Aria Medium 11\" mattress in Los Angeles includes free delivery. Queen from $799 offers pocketed coil innerspring support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SA-2025-Line-Aria-Medium-3QL.png?v=1756130763"
@@ -1907,7 +1907,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-08T22:36:23Z",
-      "updatedAt": "2026-06-24T22:01:50Z",
+      "updatedAt": "2026-07-20T05:57:23Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Blair Plush Gel Memory Foam Euro Top 15\" mattress in Los Angeles includes free delivery. Queen from $1,439 offers a plush gel memory foam euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SA-2025-Line-Blair-Euro-Top-3QL.png?v=1756130753"
@@ -1919,7 +1919,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-09T00:49:29Z",
-      "updatedAt": "2026-06-24T22:01:51Z",
+      "updatedAt": "2026-07-20T05:57:23Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Blair Extra Firm Gel Memory Foam 13\" mattress in Los Angeles includes free delivery. Queen from $1,249 offers extra-firm gel memory foam coils.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SA-2025-Line-Lexi-Medium-3QL.png?v=1756130742"
@@ -1931,7 +1931,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-09T01:25:28Z",
-      "updatedAt": "2026-06-29T00:26:37Z",
+      "updatedAt": "2026-07-20T05:57:24Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Value Collection Erin Medium Euro Top 12\" mattress in Los Angeles includes free delivery. Queen from $899 offers a pocketed coil euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SA-2025-Line-erin-Medium-3QL.png?v=1756130735"
@@ -1943,7 +1943,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-25T17:05:37Z",
-      "updatedAt": "2026-06-24T22:01:51Z",
+      "updatedAt": "2026-07-20T05:57:24Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Lexi Plush Gel Memory Foam 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,049 offers plush gel memory foam over pocketed coils.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SA-2025-Line-Lexi-Plush-3QL.png?v=1756130730"
@@ -1955,7 +1955,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-16T02:28:06Z",
-      "updatedAt": "2026-06-24T22:01:51Z",
+      "updatedAt": "2026-07-20T05:57:24Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Demi Ultra Plush Gel Memory Foam Euro Top 16\" mattress in Los Angeles includes free delivery. Queen from $1,349 offers an ultra plush gel foam top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SA-2025-Line-Demi-Plush-Euro-Top-3QL.png?v=1756130720"
@@ -1967,7 +1967,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-16T03:29:01Z",
-      "updatedAt": "2026-06-24T22:01:52Z",
+      "updatedAt": "2026-07-20T05:57:24Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Lexi Medium Gel Memory Foam 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,049 offers gel memory foam over pocketed coils.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SA-2025-Line-Lexi-Medium-3QL_450a0fb2-9232-477b-9d65-0033f14b91e4.png?v=1756130710"
@@ -1979,7 +1979,7 @@
       "vendor": "Spring Air",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-25T17:02:40Z",
-      "updatedAt": "2026-06-24T22:01:52Z",
+      "updatedAt": "2026-07-20T05:57:24Z",
       "seoTitle": null,
       "seoDescription": "Spring Air Lexi Gel Memory Foam Euro Top 14.5\" mattress in Los Angeles includes free delivery. Queen from $1,199 offers a plush gel memory foam euro top.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/SA-2025-Line-Lexi-Euro-Top-3QL.png?v=1756130699"
@@ -1991,7 +1991,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-25T19:14:09Z",
-      "updatedAt": "2026-06-21T15:47:47Z",
+      "updatedAt": "2026-07-20T05:57:25Z",
       "seoTitle": "Stearns & Foster Estate® Medium 14.5\" Mattress",
       "seoDescription": "Stearns & Foster Estate Medium 14.5\" mattress in Los Angeles includes free delivery. Queen from $1,999 offers IntelliCoil HD with balanced comfort foam for all positions.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterEstate_ExtraFirm13.5Mattress.jpg?v=1739810248"
@@ -2003,7 +2003,7 @@
       "vendor": "Stearns & Foster",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-08-25T20:13:32Z",
-      "updatedAt": "2026-06-21T15:47:47Z",
+      "updatedAt": "2026-07-20T05:57:25Z",
       "seoTitle": "Stearns & Foster Lux Estate Medium Pillow Top 16\" Mattress | LA Mattress Store",
       "seoDescription": "Stearns & Foster Lux Estate Medium Pillow Top 16\" mattress in Los Angeles includes free delivery. Queen from $3,799 offers premium medium pillow top with AirVent cooling.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Stearns_FosterLuxEstate_FirmPillowTop16Mattress.jpg?v=1739810161"
@@ -2015,7 +2015,7 @@
       "vendor": "Southerland",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-12-21T00:31:24Z",
-      "updatedAt": "2026-06-24T21:41:40Z",
+      "updatedAt": "2026-07-20T05:57:25Z",
       "seoTitle": null,
       "seoDescription": "Southerland Cobalt Medium 13.5\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers medium-feel pocketed coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Cobalt-Firm-3-Quarters.jpg?v=1766273535"
@@ -2027,7 +2027,7 @@
       "vendor": "Southerland",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-12-21T00:31:08Z",
-      "updatedAt": "2026-06-24T21:41:17Z",
+      "updatedAt": "2026-07-20T05:57:25Z",
       "seoTitle": null,
       "seoDescription": "Southerland Cobalt Firm 13\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers firm pocketed coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Cobalt-Firm-3-Quarters_8774b007-5b6f-493f-8f4b-8e623604892a.jpg?v=1766273983"
@@ -2039,7 +2039,7 @@
       "vendor": "Southerland",
       "productType": "Innerspring Mattress",
       "publishedAt": "2025-12-21T00:30:46Z",
-      "updatedAt": "2026-06-24T21:41:18Z",
+      "updatedAt": "2026-07-20T05:57:25Z",
       "seoTitle": null,
       "seoDescription": "Southerland Cobalt Extra Firm 13\" mattress in Los Angeles includes free delivery. Queen from $1,099 offers extra firm pocketed coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Cobalt-Extra-Firm-3-Quarters.jpg?v=1766274097"
@@ -2051,7 +2051,7 @@
       "vendor": "Helix Sleep",
       "productType": "Mattresses",
       "publishedAt": "2026-03-02T08:12:03Z",
-      "updatedAt": "2026-05-26T16:24:53Z",
+      "updatedAt": "2026-07-20T05:57:28Z",
       "seoTitle": "Helix Sleep Core Collection Midnight Medium 11.5\" Mattress",
       "seoDescription": "Helix Sleep Core Collection Midnight Medium 11.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/core_zltpxi.webp?v=1772437176"
@@ -2063,7 +2063,7 @@
       "vendor": "Helix Sleep",
       "productType": "Mattresses",
       "publishedAt": "2026-03-02T08:12:04Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:57:28Z",
       "seoTitle": "Helix Sleep Luxe Collection Midnight Luxe Medium 13.5\" Mattress",
       "seoDescription": "Helix Sleep Luxe Collection Midnight Luxe Medium 13.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Module_-_Dual-Hero_-_Updated_-_03_hvutge.webp?v=1772090520"
@@ -2075,7 +2075,7 @@
       "vendor": "Helix Sleep",
       "productType": "Mattresses",
       "publishedAt": "2026-03-02T08:12:04Z",
-      "updatedAt": "2026-05-26T16:24:53Z",
+      "updatedAt": "2026-07-20T05:57:29Z",
       "seoTitle": "Helix Sleep Core Collection Twilight Firm 11.5\" Mattress",
       "seoDescription": "Helix Sleep Core Collection Twilight Firm 11.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR f...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/core-twilight_tigpk4.webp?v=1772091808"
@@ -2087,7 +2087,7 @@
       "vendor": "Helix Sleep",
       "productType": "Mattresses",
       "publishedAt": "2026-03-02T08:12:05Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:57:29Z",
       "seoTitle": "Helix Sleep Luxe Collection Twilight Luxe Firm 13.5\" Mattress",
       "seoDescription": "Helix Sleep Luxe Collection Twilight Luxe Firm 13.5\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0%...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/twilight-luxe_dpzj4d.webp?v=1772093310"
@@ -2099,7 +2099,7 @@
       "vendor": "Helix Sleep",
       "productType": "Mattresses",
       "publishedAt": "2026-03-02T08:12:05Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:57:29Z",
       "seoTitle": "Helix Sleep Elite Collection Twilight Elite Luxury Firm 15\" Mattress",
       "seoDescription": "Helix Sleep Elite Collection Twilight Elite Luxury Firm 15\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchan...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/elite_e1d5ao.webp?v=1772094092"
@@ -2111,7 +2111,7 @@
       "vendor": "Helix Sleep",
       "productType": "Mattresses",
       "publishedAt": "2026-04-02T09:24:15Z",
-      "updatedAt": "2026-06-21T15:48:57Z",
+      "updatedAt": "2026-07-20T05:57:29Z",
       "seoTitle": "Helix Sleep Elite Collection Midnight Elite Luxury Plush 15\" Mattress",
       "seoDescription": "Helix Sleep Elite Collection Midnight Elite Luxury Plush 15\" Mattress at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort excha...",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/elite_e1d5ao_5ba8629c-9e72-4286-801d-5c6460a5aa6e.webp?v=1772525383"
@@ -2123,7 +2123,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:23Z",
-      "updatedAt": "2026-06-22T03:13:17Z",
+      "updatedAt": "2026-07-20T05:57:29Z",
       "seoTitle": "Helix Midnight Medium Hybrid Mattress | LA Mattress",
       "seoDescription": "Shop the Helix Midnight medium hybrid, built for side sleepers. Memory foam comfort over pocketed coils. Free white-glove delivery and 120-night trial in LA.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Mattress_-_Core_-_Midnight_-_01_kbo54h.png?v=1772571808"
@@ -2135,7 +2135,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:23Z",
-      "updatedAt": "2026-06-22T03:13:19Z",
+      "updatedAt": "2026-07-20T05:57:30Z",
       "seoTitle": "Helix Dusk Medium-Firm Hybrid Mattress | LA Mattress",
       "seoDescription": "Shop the Helix Dusk medium-firm hybrid, built for back & combo sleepers. Pocketed coils with memory foam. Free white-glove delivery and 120-night trial in LA.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Financing_-_Core_Dusk_qww5zi.png?v=1772571819"
@@ -2147,7 +2147,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:24Z",
-      "updatedAt": "2026-06-22T03:13:27Z",
+      "updatedAt": "2026-07-20T05:57:30Z",
       "seoTitle": "Helix Dawn Firm Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Dawn firm hybrid, built for stomach & back sleepers. Reinforced pocketed coils with breathable foam. Free LA delivery and 120-night sleep trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Financing_-_Core_Dawn_tlnr0q.png?v=1772571830"
@@ -2159,7 +2159,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:25Z",
-      "updatedAt": "2026-06-22T03:13:24Z",
+      "updatedAt": "2026-07-20T05:57:30Z",
       "seoTitle": "Helix Sunset Soft Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Sunset soft hybrid, built for side sleepers craving deep pressure relief. Plush foam over pocketed coils. Free white-glove delivery in LA.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/14648564_fpx.jpg?v=1772571841"
@@ -2171,7 +2171,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:25Z",
-      "updatedAt": "2026-06-22T03:13:26Z",
+      "updatedAt": "2026-07-20T05:57:30Z",
       "seoTitle": "Helix Moonlight Med-Soft Hybrid Mattress | LA Mattress",
       "seoDescription": "Shop the Helix Moonlight medium-soft hybrid for side & combo sleepers. Cushioning foam over pocketed coils. Free LA white-glove delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Helix-Moonlight-Core_BreatheKnit_-06.png?v=1772571851"
@@ -2183,7 +2183,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:26Z",
-      "updatedAt": "2026-06-22T03:13:26Z",
+      "updatedAt": "2026-07-20T05:57:30Z",
       "seoTitle": "Helix Twilight Firm Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Twilight firm hybrid, built for back & stomach sleepers needing support. Reinforced pocketed coils. Free white-glove delivery in LA, 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Mattress_-_Core_-_Twilight_3_uxkgri.png?v=1772571862"
@@ -2195,7 +2195,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:26Z",
-      "updatedAt": "2026-06-22T03:13:28Z",
+      "updatedAt": "2026-07-20T05:57:31Z",
       "seoTitle": "Helix Plus Hybrid Mattress for Heavy Sleepers | LA Mattress",
       "seoDescription": "Shop the Helix Plus hybrid, built for sleepers 250lb+. Reinforced LSX coils and durable foam for lasting support. Free white-glove delivery in LA, 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Mattress_-_Core_-_Plus_-_Model_1_byxagr.png?v=1772571872"
@@ -2207,7 +2207,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:27Z",
-      "updatedAt": "2026-07-01T14:44:47Z",
+      "updatedAt": "2026-07-21T22:10:47Z",
       "seoTitle": "Helix Midnight Luxe Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Midnight Luxe, a premium medium hybrid for side sleepers. Zoned lumbar support and quilted pillow top. Free white-glove delivery and trial in LA.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Mattress_-_Luxe_-_Midnight_3_jrwvdk.png?v=1772571881"
@@ -2219,7 +2219,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:28Z",
-      "updatedAt": "2026-06-22T03:13:32Z",
+      "updatedAt": "2026-07-21T22:10:47Z",
       "seoTitle": "Helix Dusk Luxe Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Dusk Luxe, a premium medium-firm hybrid for back & combo sleepers. Zoned lumbar support, quilted pillow top. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/715198ULb6L._AC_UF350_350_QL50.jpg?v=1772571891"
@@ -2231,7 +2231,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:28Z",
-      "updatedAt": "2026-06-22T03:12:41Z",
+      "updatedAt": "2026-07-20T05:57:32Z",
       "seoTitle": "Helix Dawn Luxe Firm Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Dawn Luxe, a premium firm hybrid for stomach & back sleepers. Reinforced coils with zoned lumbar support. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/71jNLZJZNGL._AC_UF894_1000_QL80.jpg?v=1772571900"
@@ -2243,7 +2243,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:29Z",
-      "updatedAt": "2026-06-22T03:12:59Z",
+      "updatedAt": "2026-07-20T05:57:32Z",
       "seoTitle": "Helix Sunset Luxe Soft Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Sunset Luxe, a premium soft hybrid for side sleepers craving deep cushioning. Quilted pillow top, zoned coils. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/71YWFoMtKpL.jpg?v=1772571910"
@@ -2255,7 +2255,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:29Z",
-      "updatedAt": "2026-06-22T03:13:00Z",
+      "updatedAt": "2026-07-20T05:57:32Z",
       "seoTitle": "Helix Moonlight Luxe Med-Soft Hybrid | LA Mattress Store",
       "seoDescription": "Shop the Helix Moonlight Luxe, a premium medium-soft hybrid for side & combo sleepers. Quilted pillow top with zoned coils. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/71d3G1Kee8L._AC_UF894_1000_QL80.jpg?v=1772571920"
@@ -2267,7 +2267,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:41Z",
-      "updatedAt": "2026-06-22T03:13:06Z",
+      "updatedAt": "2026-07-20T05:57:32Z",
       "seoTitle": "Helix Twilight Luxe Firm Hybrid Mattress | LA Mattress",
       "seoDescription": "Shop the Helix Twilight Luxe, a premium firm hybrid for back & stomach sleepers. Reinforced coils with zoned lumbar support. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/71rA4-Wv02L.jpg?v=1772571929"
@@ -2279,7 +2279,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:42Z",
-      "updatedAt": "2026-06-22T03:13:04Z",
+      "updatedAt": "2026-07-20T05:57:33Z",
       "seoTitle": "Helix Midnight Elite Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Midnight Elite, the top-tier 15\" hybrid for side sleepers. Triple-zoned LSX coils, GlacioTex cooling cover. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Elite_-_Midnight_-_05_wckisl.jpg?v=1772571941"
@@ -2291,7 +2291,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:42Z",
-      "updatedAt": "2026-06-22T03:13:07Z",
+      "updatedAt": "2026-07-20T05:57:33Z",
       "seoTitle": "Helix Dusk Elite Medium-Firm Hybrid | LA Mattress Store",
       "seoDescription": "Shop the Helix Dusk Elite, top-tier 15\" hybrid for back & combo sleepers. Triple-zoned coils, GlacioTex cooling cover. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/71ZUa7JJGtL._AC_UF894_1000_QL80.jpg?v=1772571951"
@@ -2303,7 +2303,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:43Z",
-      "updatedAt": "2026-06-22T03:13:08Z",
+      "updatedAt": "2026-07-20T05:57:33Z",
       "seoTitle": "Helix Dawn Elite Firm Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Dawn Elite, top-tier 15\" firm hybrid for stomach & back sleepers. Triple-zoned coils, GlacioTex cooling. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/71ZUa7JJGtL._AC_UF894_1000_QL80_d1bf78da-9067-414d-8422-53282fec84e3.jpg?v=1772571961"
@@ -2315,7 +2315,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:44Z",
-      "updatedAt": "2026-06-22T03:13:12Z",
+      "updatedAt": "2026-07-20T05:57:33Z",
       "seoTitle": "Helix Sunset Elite Soft Hybrid Mattress | LA Mattress Store",
       "seoDescription": "Shop the Helix Sunset Elite, top-tier 15\" soft hybrid for side sleepers. Plush pillow top, triple-zoned coils, GlacioTex cooling. Free LA delivery and trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/71ZUa7JJGtL.jpg?v=1772571971"
@@ -2327,7 +2327,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:44Z",
-      "updatedAt": "2026-06-22T03:13:12Z",
+      "updatedAt": "2026-07-20T05:57:33Z",
       "seoTitle": "Helix Moonlight Elite Med-Soft Hybrid | LA Mattress Store",
       "seoDescription": "Shop the Helix Moonlight Elite, top-tier 15\" medium-soft hybrid for side & combo sleepers. Triple-zoned coils, GlacioTex cooling. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Helix_-_Dawn_-_Elite_-_01.png?v=1772571981"
@@ -2339,7 +2339,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:45Z",
-      "updatedAt": "2026-06-22T03:13:14Z",
+      "updatedAt": "2026-07-20T05:57:34Z",
       "seoTitle": "Helix Twilight Elite Firm Hybrid | LA Mattress Store",
       "seoDescription": "Shop the Helix Twilight Elite, top-tier 15\" firm hybrid for back & stomach sleepers. Reinforced coils with GlacioTex cooling. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/71ZUa7JJGtL_a5b7c86a-8f4e-48c3-b8e5-110eb957ab81.jpg?v=1772571991"
@@ -2351,7 +2351,7 @@
       "vendor": "Helix Sleep",
       "productType": "Hybrid Mattress",
       "publishedAt": "2026-06-20T18:13:45Z",
-      "updatedAt": "2026-06-22T03:13:19Z",
+      "updatedAt": "2026-07-20T05:57:34Z",
       "seoTitle": "Helix Plus Elite Hybrid for Heavy Sleepers | LA Mattress",
       "seoDescription": "Shop the Helix Plus Elite, top-tier 15\" hybrid built for sleepers 250lb+. Reinforced LSX coils, durable foam, cooling cover. Free LA delivery and 120-night trial.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Elite_-_Plus_-_05_csqszn.jpg?v=1772572000"
@@ -2363,7 +2363,7 @@
       "vendor": "Helix Sleep",
       "productType": "Foundations",
       "publishedAt": "2026-06-20T18:13:46Z",
-      "updatedAt": "2026-06-24T22:01:54Z",
+      "updatedAt": "2026-07-20T05:57:34Z",
       "seoTitle": "Helix Foundation Box Spring | LA Mattress Store",
       "seoDescription": "Helix Foundation box spring in Los Angeles — free delivery. Solid mattress support, traditional bed height, all sizes. From $199.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Foundation_-_01_irkxbj.jpg?v=1772572095"
@@ -2375,7 +2375,7 @@
       "vendor": "Helix Sleep",
       "productType": "Mattress Protectors",
       "publishedAt": "2026-06-20T18:13:47Z",
-      "updatedAt": "2026-06-24T22:01:55Z",
+      "updatedAt": "2026-07-20T05:57:34Z",
       "seoTitle": "Helix Kids Waterproof Mattress Encasement | LA Mattress",
       "seoDescription": "Helix Kids waterproof mattress encasement in Los Angeles — free delivery. Guards vs spills, allergens & bed bugs; machine washable. From $69.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Carousel_-_Mattress_-_Kids_-_05_b0c7mu.jpg?v=1772599112"
@@ -2387,7 +2387,7 @@
       "vendor": "Helix Sleep",
       "productType": "Sheets",
       "publishedAt": "2026-06-20T18:13:47Z",
-      "updatedAt": "2026-06-24T22:01:59Z",
+      "updatedAt": "2026-07-20T05:57:34Z",
       "seoTitle": "Helix Knit Weighted Blanket | LA Mattress Store",
       "seoDescription": "Helix Knit weighted blanket in Los Angeles — free delivery. Calming deep pressure, breathable knit fabric; adult & teen sizes. From $129.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/04-KnitWeightedBlanket_Grey.jpg?v=1772599122"
@@ -2399,7 +2399,7 @@
       "vendor": "Chattam & Wells",
       "productType": "Innerspring Mattress",
       "publishedAt": "2026-03-14T20:36:36Z",
-      "updatedAt": "2026-06-24T22:02:27Z",
+      "updatedAt": "2026-07-20T05:57:35Z",
       "seoTitle": null,
       "seoDescription": "Chattam & Wells Miramare luxury firm mattress in Los Angeles includes free delivery. Queen from $1,499 offers handcrafted pocketed-coil support.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Chattam_and_Wells_The_Miramare_at_LA_Mattress_Store_2.png?v=1774962128"
@@ -2411,7 +2411,7 @@
       "vendor": "Diamond",
       "productType": "Latex Mattress",
       "publishedAt": "2026-03-14T20:46:00Z",
-      "updatedAt": "2026-06-21T15:48:27Z",
+      "updatedAt": "2026-07-20T05:57:35Z",
       "seoTitle": "Queen Diamond Diana Medium Natural Latex Lux Euro Top 15.5\" Floor Model Clerance Mattress",
       "seoDescription": "Clearance: Queen Diamond Diana natural latex medium euro top 15.5\" floor model. Premium latex mattress at closeout pricing. Limited stock available.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/products/Diana-latex-firm-mattress-lifestyle-card.png?v=1739812329"
@@ -2423,7 +2423,7 @@
       "vendor": "Eclipse",
       "productType": "Innerspring Mattress",
       "publishedAt": "2026-03-15T02:02:05Z",
-      "updatedAt": "2026-05-29T18:45:17Z",
+      "updatedAt": "2026-07-22T17:41:08Z",
       "seoTitle": "Queen Eclipse Ice Tufted Firm Euro Top 15\" Floor Sample Clearance Mattress",
       "seoDescription": "Clearance: Queen Eclipse Ice 15\" tufted firm euro top floor sample. Premium cooling mattress at closeout pricing. While supplies last.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Glacier-euro-top-la-mattress-5_66826a30-2a89-45a2-854a-225c52b97a27.jpg?v=1739805791"
@@ -2435,7 +2435,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-06-20T18:22:11Z",
-      "updatedAt": "2026-06-24T22:01:49Z",
+      "updatedAt": "2026-07-20T05:57:35Z",
       "seoTitle": "Restara | LA Mattress",
       "seoDescription": "Rize Home Restara adjustable base in Los Angeles — free delivery. Wireless remote, head & foot articulation, all sizes. From $599.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310321_W.1.jpg?v=1776359287"
@@ -2447,7 +2447,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:30:00Z",
-      "updatedAt": "2026-06-25T19:26:38Z",
+      "updatedAt": "2026-07-20T05:57:35Z",
       "seoTitle": "Rize Restara Adjustable Bed Base | LA Mattress",
       "seoDescription": "Shop the Rize Home Restara adjustable bed base in Los Angeles — free white-glove delivery & setup. Head & foot lift, wireless remote, wall-hugger design. From $599.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310321_W.1_469261d6-a8d9-4b4c-a673-fca2107b3732.jpg?v=1776359314"
@@ -2459,7 +2459,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:29:59Z",
-      "updatedAt": "2026-06-24T22:01:52Z",
+      "updatedAt": "2026-07-20T05:57:36Z",
       "seoTitle": null,
       "seoDescription": "Rize Home Serenova adjustable base in Los Angeles — free delivery. Head & foot articulation, all sizes Twin to Cal King. From $829.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310114_W.1.jpg?v=1776359326"
@@ -2471,7 +2471,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:29:58Z",
-      "updatedAt": "2026-05-26T16:24:59Z",
+      "updatedAt": "2026-07-20T05:57:36Z",
       "seoTitle": "Clarity II Adjustable Base",
       "seoDescription": "Rize Home Clarity II Adjustable Base at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310120_01.jpg?v=1776359340"
@@ -2483,7 +2483,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-06-20T18:22:12Z",
-      "updatedAt": "2026-06-24T21:37:23Z",
+      "updatedAt": "2026-07-20T05:57:36Z",
       "seoTitle": null,
       "seoDescription": "Rize Home Tranquility II adjustable bed base in Los Angeles — free delivery & setup. Adjustable head & foot positioning. From $949.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310114_01.jpg?v=1776359354"
@@ -2495,7 +2495,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:29:58Z",
-      "updatedAt": "2026-05-29T20:36:08Z",
+      "updatedAt": "2026-07-20T05:57:36Z",
       "seoTitle": "Contemporary IV Adjustable Base",
       "seoDescription": "Rize Home Contemporary IV Adjustable Base at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310174_01.jpg?v=1776359368"
@@ -2507,7 +2507,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:29:57Z",
-      "updatedAt": "2026-05-26T16:24:59Z",
+      "updatedAt": "2026-07-20T05:57:36Z",
       "seoTitle": "Remedy III Adjustable Base",
       "seoDescription": "Rize Home Remedy III Adjustable Base at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310164_01.jpg?v=1776359382"
@@ -2519,7 +2519,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:29:57Z",
-      "updatedAt": "2026-05-26T16:24:59Z",
+      "updatedAt": "2026-07-20T05:57:37Z",
       "seoTitle": "Aviada Adjustable Base",
       "seoDescription": "Rize Home Aviada Adjustable Base at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310047_AdjustableBase_Aviada_Q_01.jpg?v=1776359395"
@@ -2531,7 +2531,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:29:56Z",
-      "updatedAt": "2026-05-26T16:25:00Z",
+      "updatedAt": "2026-07-20T05:57:37Z",
       "seoTitle": "Plus Adjustable Base",
       "seoDescription": "Rize Home Plus Adjustable Base at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310221_01.jpg?v=1776359409"
@@ -2543,7 +2543,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-06-20T18:22:12Z",
-      "updatedAt": "2026-06-24T21:37:24Z",
+      "updatedAt": "2026-07-20T05:57:37Z",
       "seoTitle": null,
       "seoDescription": "Rize Home Up adjustable bed base in Los Angeles — free delivery & setup. Adjustable head & foot positioning. From $575.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310150_01.jpg?v=1776359421"
@@ -2555,7 +2555,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:29:56Z",
-      "updatedAt": "2026-05-26T16:25:00Z",
+      "updatedAt": "2026-07-20T05:57:37Z",
       "seoTitle": "Rize Split",
       "seoDescription": "Rize Home Rize Split at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310190_01.jpg?v=1776359435"
@@ -2567,7 +2567,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:29:55Z",
-      "updatedAt": "2026-05-26T16:25:00Z",
+      "updatedAt": "2026-07-20T05:57:37Z",
       "seoTitle": "EZ Adjustable Base",
       "seoDescription": "Rize Home EZ Adjustable Base at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/EZAdjustable_Articulated_1310321_03_Website.jpg?v=1776359448"
@@ -2579,7 +2579,7 @@
       "vendor": "Rize Home",
       "productType": "Adjustable Base",
       "publishedAt": "2026-05-16T17:29:54Z",
-      "updatedAt": "2026-06-24T22:02:21Z",
+      "updatedAt": "2026-07-20T05:57:38Z",
       "seoTitle": null,
       "seoDescription": "Rize Home Rizer Kit adjustable base in Los Angeles — free delivery. Converts your bed to adjustable; Twin XL, Queen & King. From $939.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1310181_Accessory_RizerKit_NoLegs_Q_01.jpg?v=1776359459"
@@ -2591,7 +2591,7 @@
       "vendor": "Rize Home",
       "productType": "Steel Bed Frame",
       "publishedAt": "2026-06-20T18:22:13Z",
-      "updatedAt": "2026-06-24T22:02:00Z",
+      "updatedAt": "2026-07-20T07:21:07Z",
       "seoTitle": "EZ Bed Frame | LA Mattress",
       "seoDescription": "Rize Home EZ steel bed frame in Los Angeles — free delivery. Tool-free assembly, universal fit for all sizes. From $149.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Steel_EZ_Bed_Frame_Q_05_WEB.jpg?v=1776359469"
@@ -2603,7 +2603,7 @@
       "vendor": "Rize Home",
       "productType": "Platform Base",
       "publishedAt": "2026-05-16T17:29:54Z",
-      "updatedAt": "2026-07-01T02:04:54Z",
+      "updatedAt": "2026-07-20T05:57:38Z",
       "seoTitle": null,
       "seoDescription": "Rize Home Platform Base in Los Angeles — free delivery. Sturdy no-box-spring mattress support, all sizes Twin to Cal King. From $159.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Steel_PlatformBase_Q_01_WEB.jpg?v=1776359478"
@@ -2615,7 +2615,7 @@
       "vendor": "Rize Home",
       "productType": "Platform Base",
       "publishedAt": "2026-05-16T17:29:53Z",
-      "updatedAt": "2026-06-24T22:02:04Z",
+      "updatedAt": "2026-07-20T05:57:38Z",
       "seoTitle": null,
       "seoDescription": "Rize Home Deluxe Platform Base in Los Angeles — free delivery. Reinforced mattress support, no box spring needed, all sizes. From $229.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/DX50_4.jpg?v=1776359489"
@@ -2627,7 +2627,7 @@
       "vendor": "Rize Home",
       "productType": "Foundation",
       "publishedAt": "2026-06-20T18:22:14Z",
-      "updatedAt": "2026-06-24T22:02:05Z",
+      "updatedAt": "2026-07-20T05:57:38Z",
       "seoTitle": "EZ Foundation | LA Mattress",
       "seoDescription": "Rize Home EZ Foundation in Los Angeles — free delivery. Easy-assembly mattress support, all sizes Twin to Cal King. From $269.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/EZFD50_09.jpg?v=1776359500"
@@ -2639,7 +2639,7 @@
       "vendor": "Rize Home",
       "productType": "Steel Bed Frame",
       "publishedAt": "2026-06-20T18:22:14Z",
-      "updatedAt": "2026-06-24T22:02:11Z",
+      "updatedAt": "2026-07-20T07:20:13Z",
       "seoTitle": "Premium Bed Frame | LA Mattress",
       "seoDescription": "Rize Home Premium steel bed frame in Los Angeles — free delivery. Durable support, all sizes Twin to Cal King. From $144.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Steel_PG46_F_01_WEB.jpg?v=1776359507"
@@ -2651,7 +2651,7 @@
       "vendor": "Rize Home",
       "productType": "Steel Bed Frame",
       "publishedAt": "2026-06-20T18:22:15Z",
-      "updatedAt": "2026-06-24T22:02:12Z",
+      "updatedAt": "2026-07-20T05:57:39Z",
       "seoTitle": "Low Profile Bed Frame | LA Mattress",
       "seoDescription": "Rize Home Low Profile steel bed frame in Los Angeles — free delivery. Low-profile design, universal fit for all sizes. From $169.99.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Steel_LPTKG6_Q_01_WEB.jpg?v=1776359516"
@@ -2663,7 +2663,7 @@
       "vendor": "Rize Home",
       "productType": "Pillows",
       "publishedAt": "2026-05-15T22:02:31Z",
-      "updatedAt": "2026-05-26T16:25:01Z",
+      "updatedAt": "2026-07-20T05:57:39Z",
       "seoTitle": "RZ Cloud Pillow",
       "seoDescription": "Rize Home RZ Cloud Pillow at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/4770200_1.2.jpg?v=1776359527"
@@ -2675,7 +2675,7 @@
       "vendor": "Rize Home",
       "productType": "Pillows",
       "publishedAt": "2026-05-15T22:02:30Z",
-      "updatedAt": "2026-05-26T16:25:01Z",
+      "updatedAt": "2026-07-20T05:57:39Z",
       "seoTitle": "RZ Contour Dual Cool Pillow",
       "seoDescription": "Rize Home RZ Contour Dual Cool Pillow at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/4770035_2.2.jpg?v=1776359536"
@@ -2687,7 +2687,7 @@
       "vendor": "Rize Home",
       "productType": "Pillows",
       "publishedAt": "2026-05-15T22:02:30Z",
-      "updatedAt": "2026-05-26T16:25:01Z",
+      "updatedAt": "2026-07-20T05:57:39Z",
       "seoTitle": "RZ High Dual Cool Queen Pillow",
       "seoDescription": "Rize Home RZ High Dual Cool Queen Pillow at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/4770014_1.2.jpg?v=1776359545"
@@ -2699,7 +2699,7 @@
       "vendor": "Rize Home",
       "productType": "Pillows",
       "publishedAt": "2026-05-15T22:02:29Z",
-      "updatedAt": "2026-05-26T16:25:01Z",
+      "updatedAt": "2026-07-20T05:57:39Z",
       "seoTitle": "RZ Low Dual Cool Pillow",
       "seoDescription": "Rize Home RZ Low Dual Cool Pillow at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/4770007_1.2.jpg?v=1776359553"
@@ -2711,7 +2711,7 @@
       "vendor": "Rize Home",
       "productType": "Pillows",
       "publishedAt": "2026-05-15T22:02:29Z",
-      "updatedAt": "2026-05-26T16:25:01Z",
+      "updatedAt": "2026-07-20T05:57:40Z",
       "seoTitle": "RZ Puff Pillow",
       "seoDescription": "Rize Home RZ Puff Pillow at LA Mattress Store in Los Angeles. Free white-glove delivery, 120-night comfort exchange, 0% APR financing.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/4770207_1.2.jpg?v=1776359562"
@@ -2723,7 +2723,7 @@
       "vendor": "Rize Home",
       "productType": "Mattress Protector",
       "publishedAt": "2026-06-20T18:13:04Z",
-      "updatedAt": "2026-06-20T18:16:21Z",
+      "updatedAt": "2026-07-20T05:57:40Z",
       "seoTitle": "Ultra-Soft Waterproof Mattress Protector | LA Mattress",
       "seoDescription": "Rize Home ultra-soft waterproof mattress protector. Hypoallergenic, breathable, and silent. Fits all sizes. Buy online or in-store at LA Mattress Store.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/MattressProtector_MP300_Q_01_WEB.jpg?v=1776359571"
@@ -2735,7 +2735,7 @@
       "vendor": "Rize Home",
       "productType": "Mattress Protector",
       "publishedAt": "2026-06-20T18:22:15Z",
-      "updatedAt": "2026-06-24T21:37:26Z",
+      "updatedAt": "2026-07-20T05:57:40Z",
       "seoTitle": null,
       "seoDescription": "Tencel mattress protector in Los Angeles — free delivery. Breathable Tencel fabric, waterproof. All sizes from $79.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/MP300_01.jpg?v=1776359580"
@@ -2747,7 +2747,7 @@
       "vendor": "Rize Home",
       "productType": "Mattress Protector",
       "publishedAt": "2026-06-20T18:22:16Z",
-      "updatedAt": "2026-07-01T23:14:08Z",
+      "updatedAt": "2026-07-20T05:57:40Z",
       "seoTitle": null,
       "seoDescription": "Smooth mattress protector in Los Angeles — free delivery. Waterproof, breathable, silent. All sizes from $69.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/MP100_1.jpg?v=1776359589"
@@ -2759,7 +2759,7 @@
       "vendor": "Rize Home",
       "productType": "Mattress Protector",
       "publishedAt": "2026-06-20T18:22:16Z",
-      "updatedAt": "2026-06-24T21:37:28Z",
+      "updatedAt": "2026-07-20T05:57:40Z",
       "seoTitle": null,
       "seoDescription": "Complete encasement mattress protector in Los Angeles — free delivery. Full-zip encasement, waterproof, allergen-safe. All sizes from $79.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/MP500-Q_1.jpg?v=1776359598"
@@ -2771,7 +2771,7 @@
       "vendor": "Rize Home",
       "productType": "Platform Base",
       "publishedAt": "2026-06-20T18:22:17Z",
-      "updatedAt": "2026-06-30T19:18:32Z",
+      "updatedAt": "2026-07-20T05:57:41Z",
       "seoTitle": "Apex Pro Platform Base | LA Mattress",
       "seoDescription": "Rize Home Apex Pro Platform Base in Los Angeles — free delivery. Optional panels, sturdy support, sizes Full XL to Cal King. From $809.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/1250020_ApexPro_NoPanels_Q_01.jpg?v=1776359786"
@@ -2783,7 +2783,7 @@
       "vendor": "Rize Home",
       "productType": "Steel Bed Frame",
       "publishedAt": "2026-06-20T18:22:17Z",
-      "updatedAt": "2026-06-29T21:47:32Z",
+      "updatedAt": "2026-07-20T05:57:41Z",
       "seoTitle": "Universal Bed Frame | LA Mattress",
       "seoDescription": "Rize Home Universal steel bed frame in Los Angeles — free delivery. Adjustable universal fit, glide feet options. From $149.99.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Steel_ADATKTG6_01_WEB.jpg?v=1776359793"
@@ -2795,7 +2795,7 @@
       "vendor": "Rize Home",
       "productType": "Steel Bed Frame",
       "publishedAt": "2026-04-17T16:44:12Z",
-      "updatedAt": "2026-06-25T23:56:07Z",
+      "updatedAt": "2026-07-20T07:20:47Z",
       "seoTitle": null,
       "seoDescription": "Rize Home Deluxe steel bed frame in Los Angeles — free delivery. Center-support options, fits Twin to King. From $109.99.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Steel_DQKG6_Q_01_WEB.jpg?v=1776359807"
@@ -2807,7 +2807,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Adjustable Beds",
       "publishedAt": "2026-05-15T22:44:58Z",
-      "updatedAt": "2026-06-24T22:01:13Z",
+      "updatedAt": "2026-07-20T05:57:42Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Ergo Power Base adjustable bed base in Los Angeles — free delivery & setup. Head and foot adjustment. From $1,599.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/QK1066571_TEMU_PRI_OL.jpg?v=1778910338"
@@ -2819,7 +2819,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Adjustable Beds",
       "publishedAt": "2026-05-15T22:45:25Z",
-      "updatedAt": "2026-06-24T22:01:15Z",
+      "updatedAt": "2026-07-20T05:57:42Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Ergo Smart Base adjustable bed base in Los Angeles — free delivery & setup. App-controlled smart adjustment. From $1,899.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/QK1066575_TEMU_PRI_OL.jpg?v=1778910339"
@@ -2831,7 +2831,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Adjustable Beds",
       "publishedAt": "2026-05-15T22:45:52Z",
-      "updatedAt": "2026-06-24T22:01:16Z",
+      "updatedAt": "2026-07-20T05:57:42Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Ergo ProSmart Base adjustable bed base in Los Angeles — free delivery & setup. Smart sleep tracking & adjustment. From $2,599.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/QK1066551_TEMU_PRI_OL.jpg?v=1778910339"
@@ -2843,7 +2843,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Adjustable Beds",
       "publishedAt": "2026-05-16T04:32:28Z",
-      "updatedAt": "2026-06-24T22:01:18Z",
+      "updatedAt": "2026-07-20T05:57:42Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Ergo Extend Smart Base adjustable bed base in Los Angeles — free delivery & setup. Split King/CA King smart base. From $5,198.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/TEMPUR-Ergor-Smart-Adjustable-Base-Tempur-Pedic-603635.jpg?v=1778933121"
@@ -2855,7 +2855,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Pillows",
       "publishedAt": "2026-05-16T04:34:19Z",
-      "updatedAt": "2026-06-24T22:01:25Z",
+      "updatedAt": "2026-07-20T05:57:42Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Cloud pillow in Los Angeles — free delivery. Adaptive TEMPUR memory foam comfort. From $89.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/QK1092530_TEMU_AFR_OL.jpg?v=1778933281"
@@ -2867,7 +2867,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Pillows",
       "publishedAt": "2026-05-16T04:34:34Z",
-      "updatedAt": "2026-06-24T22:01:26Z",
+      "updatedAt": "2026-07-20T05:57:43Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Cloud Adjustable pillow in Los Angeles — free delivery. Adjustable memory foam loft. From $129.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/QK1092528_TEMU_AFR_OL.jpg?v=1778933281"
@@ -2879,7 +2879,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Pillows",
       "publishedAt": "2026-05-16T04:34:52Z",
-      "updatedAt": "2026-06-24T22:01:27Z",
+      "updatedAt": "2026-07-20T05:57:43Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Symphony pillow in Los Angeles — free delivery. Dual-sided memory foam for back & side sleepers. From $129.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/best-tempurpedic-pillow-1094987323.jpg?v=1778933914"
@@ -2891,7 +2891,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Pillows",
       "publishedAt": "2026-05-16T04:35:10Z",
-      "updatedAt": "2026-06-24T22:01:29Z",
+      "updatedAt": "2026-07-20T05:57:43Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Neck pillow in Los Angeles — free delivery. Ergonomic memory foam neck support. From $119.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/TEMPUR-NeckTM-Pillow-Tempur-Pedic-386531.jpg?v=1778933120"
@@ -2903,7 +2903,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Pillows",
       "publishedAt": "2026-05-16T04:35:28Z",
-      "updatedAt": "2026-06-24T22:01:30Z",
+      "updatedAt": "2026-07-20T05:57:43Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Adapt Pro + Cooling pillow in Los Angeles — free delivery. Cooling cover with memory foam. From $175.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/QK1092532_TEMU_AFR_OL.jpg?v=1778911809"
@@ -2915,7 +2915,7 @@
       "vendor": "Tempur-Pedic",
       "productType": "Pillows",
       "publishedAt": "2026-05-16T04:35:47Z",
-      "updatedAt": "2026-06-24T22:01:32Z",
+      "updatedAt": "2026-07-20T05:57:43Z",
       "seoTitle": null,
       "seoDescription": "Tempur-Pedic TEMPUR-Breeze Pro + Advanced Cooling pillow in Los Angeles — free delivery. Advanced cooling memory foam. From $225.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/QK1092526_TEMU_AFR_OL.jpg?v=1778911809"
@@ -2927,7 +2927,7 @@
       "vendor": "Sleep & Beyond",
       "productType": "Mattress Toppers",
       "publishedAt": "2026-05-16T04:46:17Z",
-      "updatedAt": "2026-06-24T22:01:37Z",
+      "updatedAt": "2026-07-20T05:57:44Z",
       "seoTitle": null,
       "seoDescription": "Sleep & Beyond myMerino Organic Wool mattress topper in Los Angeles — free delivery. Organic merino wool fill. From $299.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/mymerino-topper-lifestyle-001.jpg?v=1778909222"
@@ -2939,7 +2939,7 @@
       "vendor": "Sleep & Beyond",
       "productType": "Pillows",
       "publishedAt": "2026-05-16T04:46:34Z",
-      "updatedAt": "2026-06-24T22:01:38Z",
+      "updatedAt": "2026-07-20T05:57:44Z",
       "seoTitle": null,
       "seoDescription": "Sleep & Beyond myMerino Organic Wool pillow in Los Angeles — free delivery. Organic merino wool fill. From $119.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/mymerino-pillow-lifestyle-0000.jpg?v=1778909223"
@@ -2951,7 +2951,7 @@
       "vendor": "Sleep & Beyond",
       "productType": "Pillows",
       "publishedAt": "2026-05-16T04:49:16Z",
-      "updatedAt": "2026-06-24T22:01:39Z",
+      "updatedAt": "2026-07-20T05:57:44Z",
       "seoTitle": null,
       "seoDescription": "Sleep & Beyond myWool Washable Wool pillow in Los Angeles — free delivery. Washable wool fill. From $119.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/mywool-pillow-lifestyle-001.jpg?v=1778909223"
@@ -2963,7 +2963,7 @@
       "vendor": "Sleep & Beyond",
       "productType": "Pillows",
       "publishedAt": "2026-05-16T04:49:41Z",
-      "updatedAt": "2026-06-24T22:01:41Z",
+      "updatedAt": "2026-07-20T05:57:44Z",
       "seoTitle": null,
       "seoDescription": "Sleep & Beyond myWoolly Adjustable Wool pillow in Los Angeles — free delivery. Adjustable washable wool fill. From $99.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/mywoolly-pillow-lifestyle-002.jpg?v=1778909223"
@@ -2975,7 +2975,7 @@
       "vendor": "Sleep & Beyond",
       "productType": "Comforters",
       "publishedAt": "2026-05-16T04:49:58Z",
-      "updatedAt": "2026-06-24T22:01:43Z",
+      "updatedAt": "2026-07-20T05:57:44Z",
       "seoTitle": null,
       "seoDescription": "Sleep & Beyond myComforter Washable Wool comforter in Los Angeles — free delivery. Washable wool fill. From $229.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/sleep-and-beyond-mycomforter-lifestyle-00.jpg?v=1778909224"
@@ -2987,7 +2987,7 @@
       "vendor": "Sleep & Beyond",
       "productType": "Comforters",
       "publishedAt": "2026-05-16T04:50:16Z",
-      "updatedAt": "2026-06-24T22:01:44Z",
+      "updatedAt": "2026-07-20T05:57:45Z",
       "seoTitle": null,
       "seoDescription": "Sleep & Beyond myComforter Light Washable Wool comforter in Los Angeles — free delivery. Lightweight washable wool fill. From $199.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/mycomforter-light-lifestyle-001.jpg?v=1778909224"
@@ -2999,7 +2999,7 @@
       "vendor": "Sleep & Beyond",
       "productType": "Mattress Protectors",
       "publishedAt": "2026-05-16T04:50:39Z",
-      "updatedAt": "2026-06-24T22:01:46Z",
+      "updatedAt": "2026-07-20T05:57:45Z",
       "seoTitle": null,
       "seoDescription": "Sleep & Beyond Organic Cotton Waterproof mattress protector in Los Angeles — free delivery. Waterproof organic cotton. From $159.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/organic-cotton-mattress-protector-lifestyle-01.jpg?v=1778909224"
@@ -3011,7 +3011,7 @@
       "vendor": "Sleep & Beyond",
       "productType": "Sheets",
       "publishedAt": "2026-05-16T04:56:38Z",
-      "updatedAt": "2026-06-24T22:01:47Z",
+      "updatedAt": "2026-07-20T05:57:45Z",
       "seoTitle": null,
       "seoDescription": "Sleep & Beyond Organic Cotton Sateen sheet set in Los Angeles — free delivery. Organic cotton sateen weave. From $149.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/organic-cotton-sateen-sheet-set-ivory-1.jpg?v=1778909225"
@@ -3023,10 +3023,10 @@
       "vendor": "Diamond",
       "productType": "Mattress",
       "publishedAt": "2026-06-30T20:59:29Z",
-      "updatedAt": "2026-07-01T09:01:13Z",
+      "updatedAt": "2026-07-20T05:57:45Z",
       "seoTitle": "Diamond Independence Hybrid Mattress in a Box | Queen $899",
       "seoDescription": "Diamond Independence — medium hybrid mattress that ships in a box. CertiPUR-US foam, Greenguard Gold, 20-yr warranty. Queen $899, free LA delivery.",
-      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Gravity-gel-grid-diamond-mattress-hybrid_43b6f419-3cf8-455e-9d18-95637e76007b.jpg?v=1782853283"
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/diamond-independence-anniversary.jpg?v=1784134173"
     },
     {
       "handle": "diamond-dreamstage-2-0-arise-luxe-plush-hybrid-15",
@@ -3035,10 +3035,10 @@
       "vendor": "Diamond",
       "productType": "Mattress",
       "publishedAt": "2026-06-30T21:06:42Z",
-      "updatedAt": "2026-07-01T09:07:13Z",
+      "updatedAt": "2026-07-20T05:57:45Z",
       "seoTitle": "Plush Cooling Mattress for Side Sleepers | Arise Luxe",
       "seoDescription": "Diamond Arise Luxe Plush — cooling, copper-infused hybrid built for side sleepers. 7-Series coils, 20-yr warranty. Queen $1,599, free LA delivery.",
-      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_6_f7361e6d-25ae-4e68-acac-cab0f3b2609c.jpg?v=1782853631"
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/diamond-arise-luxe_48c37895-5e6d-4b29-ab1d-859961b123b0.jpg?v=1784134173"
     },
     {
       "handle": "diamond-dreamstage-2-0-arise-luxe-medium-hybrid-15",
@@ -3047,10 +3047,10 @@
       "vendor": "Diamond",
       "productType": "Mattress",
       "publishedAt": "2026-06-30T21:08:51Z",
-      "updatedAt": "2026-07-01T09:09:15Z",
+      "updatedAt": "2026-07-20T05:57:46Z",
       "seoTitle": "Best Hybrid Mattress for Couples | Arise Luxe Medium",
       "seoDescription": "Diamond Arise Luxe Medium — the default-yes hybrid for couples who sleep differently. 7-Series coils, 20-yr warranty. Queen $1,599, free LA delivery.",
-      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_6_964afbe3-0943-43f3-9f1d-e0f5c47cd1e4.jpg?v=1782853762"
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/diamond-arise-luxe_3bc4c204-9e39-4e27-a588-fc3bd53e003c.jpg?v=1784134173"
     },
     {
       "handle": "diamond-dreamstage-2-0-arise-luxe-firm-hybrid-15",
@@ -3059,10 +3059,10 @@
       "vendor": "Diamond",
       "productType": "Mattress",
       "publishedAt": "2026-06-30T21:08:55Z",
-      "updatedAt": "2026-07-01T09:09:21Z",
+      "updatedAt": "2026-07-20T05:57:46Z",
       "seoTitle": "Best Firm Mattress for Back Pain | Arise Luxe Firm",
       "seoDescription": "Diamond Arise Luxe Firm — firm hybrid built for back pain and stomach sleepers. 7-Series coils, 20-yr warranty. Queen $1,599, free LA delivery.",
-      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/GetPhotoSigned_6_227e4eed-4182-4dbc-8e83-08b6a698802e.jpg?v=1782853765"
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/diamond-arise-luxe.jpg?v=1784134173"
     },
     {
       "handle": "black-diamond-rockwell-quilted-extra-firm-hybrid-16",
@@ -3071,10 +3071,442 @@
       "vendor": "Diamond",
       "productType": "Mattress",
       "publishedAt": "2026-06-30T21:11:53Z",
-      "updatedAt": "2026-07-01T09:12:18Z",
+      "updatedAt": "2026-07-20T05:57:46Z",
       "seoTitle": "Luxury Extra Firm Mattress for Heavy People | Black Diamond",
       "seoDescription": "Black Diamond Rockwell — luxury extra-firm hybrid for heavy sleepers, titanium + charcoal cooling foam. 20-yr warranty. Queen $2,599, free LA delivery.",
       "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/BlackDiamond_Snowbird_Room_Front_cf52ec4c-bd2a-4964-a498-7ab114838f21.jpg?v=1782853936"
+    },
+    {
+      "handle": "brooklyn-bedding-copperflex-hybrid-firm-mattress",
+      "id": "gid://shopify/Product/9358245724413",
+      "title": "Brooklyn Bedding Copperflex Hybrid Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:39Z",
+      "updatedAt": "2026-07-20T05:57:46Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-copperflex-carousel-angle-lifestyle_5e68689b-7416-44f5-851f-a8e2197cf06a.jpg?v=1784474515"
+    },
+    {
+      "handle": "brooklyn-bedding-copperflex-hybrid-medium-mattress",
+      "id": "gid://shopify/Product/9358245757181",
+      "title": "Brooklyn Bedding Copperflex Hybrid Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:40Z",
+      "updatedAt": "2026-07-20T05:57:46Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-copperflex-carousel-angle-lifestyle_fb3e615c-a1da-4230-bcac-0b682dbf2ec5.jpg?v=1784474516"
+    },
+    {
+      "handle": "brooklyn-bedding-copperflex-hybrid-soft-mattress",
+      "id": "gid://shopify/Product/9358245789949",
+      "title": "Brooklyn Bedding Copperflex Hybrid Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:40Z",
+      "updatedAt": "2026-07-20T05:57:47Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-copperflex-carousel-angle-lifestyle_d6034f66-4275-4933-bfaf-74474b9304ec.jpg?v=1784474516"
+    },
+    {
+      "handle": "brooklyn-bedding-copperflex-pro-hybrid-firm-mattress",
+      "id": "gid://shopify/Product/9358245822717",
+      "title": "Brooklyn Bedding Copperflex Pro Hybrid Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:41Z",
+      "updatedAt": "2026-07-20T05:57:47Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-copperflex-pro-lifestyle-hybrid_30d2f3fd-0de1-489f-872a-e970f6cc6f11.jpg?v=1784474547"
+    },
+    {
+      "handle": "brooklyn-bedding-copperflex-pro-hybrid-medium-mattress",
+      "id": "gid://shopify/Product/9358245855485",
+      "title": "Brooklyn Bedding Copperflex Pro Hybrid Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:41Z",
+      "updatedAt": "2026-07-20T05:57:47Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-copperflex-pro-lifestyle-hybrid_2edc56f5-0168-43a9-b449-7cf57803cbef.jpg?v=1784474548"
+    },
+    {
+      "handle": "brooklyn-bedding-copperflex-pro-hybrid-soft-mattress",
+      "id": "gid://shopify/Product/9358245888253",
+      "title": "Brooklyn Bedding Copperflex Pro Hybrid Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:42Z",
+      "updatedAt": "2026-07-20T05:57:47Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-copperflex-pro-lifestyle-hybrid_32391dda-8bf4-4b7d-98b5-eb84c4168846.jpg?v=1784474548"
+    },
+    {
+      "handle": "brooklyn-bedding-signature-hybrid-firm-mattress",
+      "id": "gid://shopify/Product/9358246150397",
+      "title": "Brooklyn Bedding Signature Hybrid Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:42Z",
+      "updatedAt": "2026-07-20T05:57:47Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-signature-carousel-badge-1_99647a2a-2b45-4b59-8f66-dc31bd97aaec.jpg?v=1784473914"
+    },
+    {
+      "handle": "brooklyn-bedding-signature-hybrid-medium-mattress",
+      "id": "gid://shopify/Product/9358246183165",
+      "title": "Brooklyn Bedding Signature Hybrid Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:43Z",
+      "updatedAt": "2026-07-20T05:57:47Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-signature-carousel-badge-1_5dc9db54-e486-447b-beca-5d7645e48a4a.jpg?v=1784473914"
+    },
+    {
+      "handle": "brooklyn-bedding-signature-hybrid-soft-mattress",
+      "id": "gid://shopify/Product/9358246215933",
+      "title": "Brooklyn Bedding Signature Hybrid Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:44Z",
+      "updatedAt": "2026-07-20T05:57:48Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-signature-carousel-badge-1_5a29dafc-3973-47f3-802b-fa34ff50cb2d.jpg?v=1784473915"
+    },
+    {
+      "handle": "brooklyn-bedding-signature-hybrid-cloud-pillow-top-firm-mattress",
+      "id": "gid://shopify/Product/9358246248701",
+      "title": "Brooklyn Bedding Signature Hybrid Cloud Pillow Top Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:55Z",
+      "updatedAt": "2026-07-20T05:57:48Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-signature-carousel-upsell-front_e4a05ec0-bc34-4d09-b361-8e58e0234bf5.jpg?v=1784473934"
+    },
+    {
+      "handle": "brooklyn-bedding-signature-hybrid-cloud-pillow-top-medium-mattress",
+      "id": "gid://shopify/Product/9358246281469",
+      "title": "Brooklyn Bedding Signature Hybrid Cloud Pillow Top Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:56Z",
+      "updatedAt": "2026-07-20T05:57:48Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-signature-carousel-upsell-front_05b67aa3-56a6-423b-a845-9f2d10caaa7a.jpg?v=1784473934"
+    },
+    {
+      "handle": "brooklyn-bedding-signature-hybrid-cloud-pillow-top-soft-mattress",
+      "id": "gid://shopify/Product/9358246314237",
+      "title": "Brooklyn Bedding Signature Hybrid Cloud Pillow Top Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:56Z",
+      "updatedAt": "2026-07-20T05:57:48Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-signature-carousel-upsell-front_a6512e69-d0ec-4153-9c53-96a717c408cf.jpg?v=1784473934"
+    },
+    {
+      "handle": "brooklyn-bedding-aurora-luxe-firm-mattress",
+      "id": "gid://shopify/Product/9358246478077",
+      "title": "Brooklyn Bedding Aurora Luxe Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:57Z",
+      "updatedAt": "2026-07-20T05:57:48Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-aurora-carousel-badge-2026_803fbadb-60b1-4053-9990-fdfba8c0d362.jpg?v=1784473960"
+    },
+    {
+      "handle": "brooklyn-bedding-aurora-luxe-medium-mattress",
+      "id": "gid://shopify/Product/9358246510845",
+      "title": "Brooklyn Bedding Aurora Luxe Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:57Z",
+      "updatedAt": "2026-07-20T05:57:49Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-aurora-carousel-badge-2026_b844c14b-1277-4771-99bb-e33cc7e28cdc.jpg?v=1784473960"
+    },
+    {
+      "handle": "brooklyn-bedding-aurora-luxe-soft-mattress",
+      "id": "gid://shopify/Product/9358246543613",
+      "title": "Brooklyn Bedding Aurora Luxe Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:58Z",
+      "updatedAt": "2026-07-20T05:57:49Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-aurora-carousel-badge-2026_4a841914-23ec-4558-9464-f3d718b5c610.jpg?v=1784473960"
+    },
+    {
+      "handle": "brooklyn-bedding-aurora-luxe-cloud-pillow-top-firm-mattress",
+      "id": "gid://shopify/Product/9358246576381",
+      "title": "Brooklyn Bedding Aurora Luxe Cloud Pillow Top Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:58Z",
+      "updatedAt": "2026-07-20T05:57:49Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-aurora-carousel-upsell-front_516f4304-e2d0-4893-9f4e-3c0dd82f48aa.jpg?v=1784473978"
+    },
+    {
+      "handle": "brooklyn-bedding-aurora-luxe-cloud-pillow-top-medium-mattress",
+      "id": "gid://shopify/Product/9358246609149",
+      "title": "Brooklyn Bedding Aurora Luxe Cloud Pillow Top Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:59Z",
+      "updatedAt": "2026-07-20T05:57:49Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-aurora-carousel-upsell-front_d57c88df-fc20-4d30-865e-9c0a9360d375.jpg?v=1784473978"
+    },
+    {
+      "handle": "brooklyn-bedding-aurora-luxe-cloud-pillow-top-soft-mattress",
+      "id": "gid://shopify/Product/9358246641917",
+      "title": "Brooklyn Bedding Aurora Luxe Cloud Pillow Top Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:31:59Z",
+      "updatedAt": "2026-07-20T08:44:49Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/bb-aurora-carousel-upsell-front_617ddd6c-fe18-45d9-9609-4fe7bc39905b.jpg?v=1784473979"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-lx-hybrid-firm-mattress",
+      "id": "gid://shopify/Product/9358246740221",
+      "title": "Brooklyn Bedding ThermoBalance LX Hybrid Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:08Z",
+      "updatedAt": "2026-07-20T05:57:50Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-lx-carousel-lifestyle-badge.jpg?v=1784474604"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-lx-hybrid-medium-mattress",
+      "id": "gid://shopify/Product/9358246772989",
+      "title": "Brooklyn Bedding ThermoBalance LX Hybrid Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:09Z",
+      "updatedAt": "2026-07-20T05:57:50Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-lx-carousel-lifestyle-badge_671d0872-91b0-4934-898c-659449bd93bf.jpg?v=1784474605"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-lx-hybrid-soft-mattress",
+      "id": "gid://shopify/Product/9358246805757",
+      "title": "Brooklyn Bedding ThermoBalance LX Hybrid Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:09Z",
+      "updatedAt": "2026-07-20T05:57:50Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-lx-carousel-lifestyle-badge_983b4e77-0510-47e3-8932-51e85904dfe1.jpg?v=1784474605"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-hybrid-firm-mattress",
+      "id": "gid://shopify/Product/9358246838525",
+      "title": "Brooklyn Bedding ThermoBalance Hybrid Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:10Z",
+      "updatedAt": "2026-07-20T05:57:50Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-carousel-lifestyle-badge_d0051e29-1fdc-4bb4-b89b-208c2de5259a.jpg?v=1784474576"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-hybrid-medium-mattress",
+      "id": "gid://shopify/Product/9358246871293",
+      "title": "Brooklyn Bedding ThermoBalance Hybrid Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:10Z",
+      "updatedAt": "2026-07-20T05:57:50Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-carousel-lifestyle-badge_165d6cc1-1389-4e59-906f-27d17cb2a885.jpg?v=1784474576"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-hybrid-soft-mattress",
+      "id": "gid://shopify/Product/9358246904061",
+      "title": "Brooklyn Bedding ThermoBalance Hybrid Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:11Z",
+      "updatedAt": "2026-07-20T05:57:50Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-carousel-lifestyle-badge_226379db-5b3a-4b54-843d-4cb741b02683.jpg?v=1784474576"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-lx-elite-hybrid-firm-mattress",
+      "id": "gid://shopify/Product/9358248575229",
+      "title": "Brooklyn Bedding ThermoBalance LX Elite Hybrid Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:12Z",
+      "updatedAt": "2026-07-20T05:57:51Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-lx-elite-carousel-lifestyle.jpg?v=1784474788"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-lx-elite-hybrid-medium-mattress",
+      "id": "gid://shopify/Product/9358248607997",
+      "title": "Brooklyn Bedding ThermoBalance LX Elite Hybrid Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:12Z",
+      "updatedAt": "2026-07-20T05:57:51Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-lx-elite-carousel-lifestyle_c2b06e6a-7ed0-4488-bcac-e9064d4a56e4.jpg?v=1784474788"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-lx-elite-hybrid-soft-mattress",
+      "id": "gid://shopify/Product/9358248640765",
+      "title": "Brooklyn Bedding ThermoBalance LX Elite Hybrid Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:13Z",
+      "updatedAt": "2026-07-20T05:57:51Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-lx-elite-carousel-lifestyle_d00ada3c-7682-45f4-92bc-f784d08cd865.jpg?v=1784474788"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-elite-hybrid-firm-mattress",
+      "id": "gid://shopify/Product/9358248673533",
+      "title": "Brooklyn Bedding ThermoBalance Elite Hybrid Firm Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:22Z",
+      "updatedAt": "2026-07-20T05:57:51Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-elite-carousel-lifestyle_3d672e36-d957-4d07-b5c8-70aa23d32cfb.jpg?v=1784474685"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-elite-hybrid-medium-mattress",
+      "id": "gid://shopify/Product/9358248706301",
+      "title": "Brooklyn Bedding ThermoBalance Elite Hybrid Medium Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:22Z",
+      "updatedAt": "2026-07-20T05:57:52Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-elite-carousel-lifestyle_95d61deb-9bf3-4ed4-afde-4c3db288d856.jpg?v=1784474685"
+    },
+    {
+      "handle": "brooklyn-bedding-thermobalance-elite-hybrid-soft-mattress",
+      "id": "gid://shopify/Product/9358248739069",
+      "title": "Brooklyn Bedding ThermoBalance Elite Hybrid Soft Mattress",
+      "vendor": "Brooklyn Bedding",
+      "productType": "Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:23Z",
+      "updatedAt": "2026-07-20T05:57:52Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/thermobalance-elite-carousel-lifestyle_0047b4e6-f4c2-4035-ad5d-67297f673e08.jpg?v=1784474685"
+    },
+    {
+      "handle": "birch-natural-mattress",
+      "id": "gid://shopify/Product/9358249197821",
+      "title": "Birch Natural Mattress",
+      "vendor": "Birch",
+      "productType": "Latex Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:23Z",
+      "updatedAt": "2026-07-20T05:57:52Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Birch-Natural-Mattress-Carousel-1-JULY25_smtpv9.jpg?v=1784474001"
+    },
+    {
+      "handle": "birch-luxe-mattress",
+      "id": "gid://shopify/Product/9358249230589",
+      "title": "Birch Luxe Mattress",
+      "vendor": "Birch",
+      "productType": "Latex Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:24Z",
+      "updatedAt": "2026-07-20T05:57:53Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Birch-Luxe-Natural-Mattress-Carousel-1-JULY25_tsfsyp.jpg?v=1784474001"
+    },
+    {
+      "handle": "birch-luxe-coolforce-mattress",
+      "id": "gid://shopify/Product/9358249263357",
+      "title": "Birch Luxe + CoolForce Mattress",
+      "vendor": "Birch",
+      "productType": "Latex Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:24Z",
+      "updatedAt": "2026-07-20T05:57:53Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Birch-Luxe-Natural-Mattress-Carousel-1-JULY25_tsfsyp_55e873f8-45bd-4c06-850a-bf8f87340a86.jpg?v=1784474001"
+    },
+    {
+      "handle": "birch-elite-mattress",
+      "id": "gid://shopify/Product/9358249296125",
+      "title": "Birch Elite Mattress",
+      "vendor": "Birch",
+      "productType": "Latex Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:25Z",
+      "updatedAt": "2026-07-20T05:57:53Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Birch-Elite-Natural-Mattress-Carousel-1-JULY20_pct55b.jpg?v=1784474101"
+    },
+    {
+      "handle": "birch-elite-coolforce-mattress",
+      "id": "gid://shopify/Product/9358249328893",
+      "title": "Birch Elite + CoolForce Mattress",
+      "vendor": "Birch",
+      "productType": "Latex Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:26Z",
+      "updatedAt": "2026-07-20T05:57:53Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Birch-Elite-Natural-Mattress-Carousel-1-JULY20_pct55b_d349850a-9786-4566-9e05-20a4bf446d80.jpg?v=1784474101"
+    },
+    {
+      "handle": "birch-kids-mattress",
+      "id": "gid://shopify/Product/9358249361661",
+      "title": "Birch Kids Mattress",
+      "vendor": "Birch",
+      "productType": "Latex Hybrid Mattress",
+      "publishedAt": "2026-07-19T15:32:26Z",
+      "updatedAt": "2026-07-20T05:57:53Z",
+      "seoTitle": null,
+      "seoDescription": null,
+      "featuredImage": "https://cdn.shopify.com/s/files/1/0684/1759/files/Birch-Kids-Natural-Mattress-Carousel-1-JULY20_bslphf.jpg?v=1784474101"
     }
   ]
 }
