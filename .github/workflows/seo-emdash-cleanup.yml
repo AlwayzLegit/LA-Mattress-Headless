@@ -1,0 +1,86 @@
+name: SEO — em-dash cleanup
+
+# 2026-07-23. Runs scripts/seo-emdash-cleanup.mjs to strip em dashes
+# (—, U+2014) from Shopify content HTML — articles, products,
+# collections, or pages — replacing each with grammatically-correct
+# punctuation (period / comma) so the prose still reads naturally. The
+# em dash is a strong "AI-written" tell that litters the Word-exported
+# blog corpus. EN dashes (–) in ranges are never touched.
+#
+# Manual trigger: Actions → "SEO — em-dash cleanup" → Run workflow.
+# Pick the resource, leave "apply" false for a no-risk dry-run that
+# uploads a JSON report (with before/after context windows per item),
+# flip to true to write to Shopify.
+#
+# Required repo secrets (same as seo-article-cleanup.yml):
+#   SHOPIFY_STORE_DOMAIN  — e.g. la-mattress.myshopify.com
+#   SHOPIFY_ADMIN_TOKEN   — Admin API token with read/write content,
+#                           products, and online_store_pages scopes.
+#
+# The script is gated hard: the visible-text skeleton (tags + entities
+# stripped) must be byte-identical before/after — any item whose
+# skeleton shifts is skipped, never written — plus SHA-verify +
+# auto-rollback on real corruption. Idempotent: re-running on
+# already-clean content is a no-op.
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource:
+        description: 'Which content type to sweep.'
+        type: choice
+        default: articles
+        options:
+          - articles
+          - products
+          - collections
+          - pages
+      apply:
+        description: 'Apply changes (write to Shopify). Leave false for dry-run.'
+        type: boolean
+        default: false
+      handle:
+        description: 'Optional space-separated handle(s). Blank = every item of the resource.'
+        type: string
+        default: ''
+      limit:
+        description: 'Optional cap on the number of changed items (safety valve for first apply).'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run em-dash cleanup
+        run: |
+          ARGS="--resource=${{ inputs.resource }}"
+          if [ -n "${{ inputs.handle }}" ]; then ARGS="$ARGS ${{ inputs.handle }}"; fi
+          if [ -n "${{ inputs.limit }}" ]; then ARGS="$ARGS --limit=${{ inputs.limit }}"; fi
+          if [ "${{ inputs.apply }}" = "true" ]; then ARGS="$ARGS --apply"; fi
+          echo "::group::Invocation"
+          echo "node scripts/seo-emdash-cleanup.mjs $ARGS"
+          echo "::endgroup::"
+          node scripts/seo-emdash-cleanup.mjs $ARGS
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emdash-cleanup-${{ inputs.resource }}-${{ github.run_id }}
+          path: data/seo-backfills/emdash-cleanup-*.json
+          if-no-files-found: warn
+          retention-days: 90
