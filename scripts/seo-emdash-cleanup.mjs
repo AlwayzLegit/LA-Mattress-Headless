@@ -84,20 +84,24 @@ function stripEmDashes(html) {
   let b = html;
   // 0. Lone divider paragraphs.
   b = b.replace(new RegExp(`<p>\\s*${EMDASH_CLASS}\\s*</p>\\s*`, 'g'), '');
-  // 1–3. Dash + following word.
-  b = b.replace(new RegExp(`\\s*${EMDASH_CLASS}\\s*(\\S+)`, 'g'), (match, word) => {
-    const lead = word.match(/^(?:<[^>]+>|&[a-z]+;|["'“”‘’(*]+)*/);
+  // 1–3. Dash + (any immediately-following HTML tags) + following word.
+  // Capturing leading tags separately lets us judge the *visible* first
+  // word even when it's wrapped in a link, e.g. `… — <a href="…">Hollywood`.
+  b = b.replace(new RegExp(`\\s*${EMDASH_CLASS}\\s*((?:<[^>]+>\\s*)*)(\\S+)?`, 'g'), (match, tags, word) => {
+    tags = tags || '';
+    word = word || '';
+    const lead = word.match(/^(?:&[a-z]+;|["'“”‘’(*]+)*/);
     const rest = word.slice(lead ? lead[0].length : 0);
     const firstAlpha = rest.match(/[A-Za-z]/);
     if (firstAlpha && firstAlpha[0] === firstAlpha[0].toUpperCase()) {
-      return `. ${word}`;
+      return `. ${tags}${word}`;
     }
     const lc = (rest.match(/^[a-z]+/) || [''])[0];
     if (INDEP.has(lc)) {
       const idx = word.length - rest.length;
-      return `. ${word.slice(0, idx) + rest.charAt(0).toUpperCase() + rest.slice(1)}`;
+      return `. ${tags}${word.slice(0, idx) + rest.charAt(0).toUpperCase() + rest.slice(1)}`;
     }
-    return `, ${word}`;
+    return `, ${tags}${word}`;
   });
   return b;
 }
