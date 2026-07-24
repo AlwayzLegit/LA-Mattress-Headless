@@ -108,11 +108,6 @@
       "note": "20260626 cleanup: second near-duplicate 'mattress stores in LA' guide auto-published to the deprecated beds-mattresses blog (2026-06-20) \u2014 orphaned. Consolidate to the same mattress-buying-guide pillar."
     },
     {
-      "source": "/pages/mattress-store-playa-del-rey",
-      "destination": "/pages/mattress-store-marina-del-rey",
-      "note": "Deep audit seo-organic-04 (2026-07): this deleted page still ranks #6 for 'mattress store marina del rey' (Semrush 2026-07-03 pull) but 404s \u2014 the page was removed from Shopify with no redirect. Marina del Rey is the published neighborhood page covering the same coastal-westside area. Shopify-side redirect pending connector access; manual entry keeps www covered either way."
-    },
-    {
       "source": "/blogs/mattress-buying-guide/what-is-the-standard-size-of-a-full-bed",
       "destination": "/blogs/mattress-buying-guide/full-size-bed-dimensions-width-couples",
       "note": "Deep audit seo-organic-02 (2026-07): the 123k/mo 'full size bed dimensions' cluster was split across two surviving canonicals \u2014 this post (pos 47 on the 74k head term, 2 inbound 301s) and width-couples (pos 41 on the head term + pos 46 on the 27.1k variant). Consolidate on the stronger ranker; build-redirects-table's chain flattening re-points the 2 existing inbound redirects (measurements-room-layout-tips, how-much-space) directly at width-couples. Content fold-in of unique sections pending Shopify article access."
